@@ -78,7 +78,7 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> {
     }
 
     @Override
-    public SequenceBuilder<NucleotideSequence> getBuilder() {
+    public NucleotideSequenceBuilder getBuilder() {
         return new NucleotideSequenceBuilder();
     }
 }

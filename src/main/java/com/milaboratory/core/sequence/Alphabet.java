@@ -75,7 +75,7 @@ public abstract class Alphabet<T extends Sequence> {
      * com.milaboratory.core.sequence.Alphabets#getByName(String)} method if it is registered (see {@link
      * com.milaboratory.core.sequence.Alphabets#register(Alphabet)}).</p>
      */
-    public String getAlphabetName() {
+    public final String getAlphabetName() {
         return alphabetName;
     }
 

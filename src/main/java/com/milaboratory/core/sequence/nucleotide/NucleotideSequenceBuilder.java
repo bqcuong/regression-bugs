@@ -35,7 +35,7 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     public NucleotideSequenceBuilder(int capacity) {
-        this.storage = new Bit2Array(capacity);
+        ensureCapacity(capacity);
     }
 
     private NucleotideSequenceBuilder(Bit2Array storage, int size) {
@@ -60,6 +60,8 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     private void ensureInternalCapacity(int newSize) {
+        if (storage == null && newSize != 0)
+            storage = new Bit2Array(Math.max(newSize, 10));
         if (storage.size() >= newSize)
             return;
         storage = storage.extend(Math.max(newSize, 3 * storage.size() / 2 + 1));
@@ -69,21 +71,25 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     public NucleotideSequence createAndDestroy() {
         if (size == 0)
             return NucleotideSequence.EMPTY;
+        NucleotideSequence seq;
         if (storage.size() == size)
-            return new NucleotideSequence(storage, true);
-        return new NucleotideSequence(storage.getRange(0, size), true);
+            seq = new NucleotideSequence(storage, true);
+        else
+            seq = new NucleotideSequence(storage.getRange(0, size), true);
+        storage = null;
+        return seq;
     }
 
     @Override
     public SequenceBuilder<NucleotideSequence> append(byte letter) {
-        ensureCapacity(size + 1);
+        ensureInternalCapacity(size + 1);
         storage.set(size++, letter);
         return this;
     }
 
     @Override
     public SequenceBuilder<NucleotideSequence> append(NucleotideSequence sequence) {
-        ensureCapacity(size + sequence.size());
+        ensureInternalCapacity(size + sequence.size());
         storage.copyFrom(sequence.data, 0, size, sequence.size());
         size += sequence.size();
         return this;
