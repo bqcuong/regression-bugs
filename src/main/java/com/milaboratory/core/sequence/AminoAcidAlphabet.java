@@ -18,9 +18,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.milaboratory.core.sequence.aminoacid;
-
-import com.milaboratory.core.sequence.Alphabet;
+package com.milaboratory.core.sequence;
 
 /**
  * AA alphabet with additional symbols.<br/> "~" - non full codon. 2 or 1 nucleotides.<br/> "-" - no nucleotides
@@ -28,7 +26,7 @@ import com.milaboratory.core.sequence.Alphabet;
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  */
-public final class AminoAcidAlphabet extends Alphabet<AminoAcidSequence> {
+public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> {
     public static final AminoAcidAlphabet INSTANCE = new AminoAcidAlphabet();
     public static final byte Stop = 0;
     public static final byte A = 1;
@@ -53,10 +51,13 @@ public final class AminoAcidAlphabet extends Alphabet<AminoAcidSequence> {
     public static final byte Y = 20;
     public static final byte IncompleteCodon = 21;
 
-    private static final char[] aa = {'*', 'A', 'C', 'D', 'E', 'F',
+    private static final char[] aa = {
+            '*',
+            'A', 'C', 'D', 'E', 'F',
             'G', 'H', 'I', 'K', 'L',
             'M', 'N', 'P', 'Q', 'R',
-            'S', 'T', 'V', 'W', 'Y', '_'};
+            'S', 'T', 'V', 'W', 'Y',
+            '_'};
 
     private AminoAcidAlphabet() {
         super("aminoacid");
@@ -77,12 +78,12 @@ public final class AminoAcidAlphabet extends Alphabet<AminoAcidSequence> {
     }
 
     @Override
-    public byte size() {
-        return (byte) aa.length;
+    public int size() {
+        return aa.length;
     }
 
     @Override
-    public AminoAcidSequenceBuilder getBuilder() {
-        return new AminoAcidSequenceBuilder();
+    AminoAcidSequence createUnsafe(byte[] array) {
+        return new AminoAcidSequence(array, true);
     }
 }

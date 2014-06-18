@@ -18,9 +18,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.milaboratory.core.sequence.nucleotide;
+package com.milaboratory.core.sequence;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.not;
@@ -31,18 +30,18 @@ public class NucleotideSequencesTest {
     @Test
     public void test1() {
         NucleotideSequence sequence = new NucleotideSequence("ATTAGACATAGACA");
-        Assert.assertEquals(sequence.toString(), "ATTAGACATAGACA");
-        NucleotideSequence subSequence = sequence.getRange(0, sequence.size());
-        Assert.assertEquals(subSequence.toString(), "ATTAGACATAGACA");
-        Assert.assertEquals(subSequence.hashCode(), sequence.hashCode());
-        Assert.assertEquals(subSequence, sequence);
+        assertEquals(sequence.toString(), "ATTAGACATAGACA");
+        NucleotideSequence subSequence = sequence.getSubSequence(0, sequence.size());
+        assertEquals(subSequence.toString(), "ATTAGACATAGACA");
+        assertEquals(subSequence.hashCode(), sequence.hashCode());
+        assertEquals(subSequence, sequence);
 
         NucleotideSequence sequence1 = new NucleotideSequence("AGACATAGACA");
-        NucleotideSequence subSequence1 = sequence.getRange(3, sequence.size());
+        NucleotideSequence subSequence1 = sequence.getSubSequence(3, sequence.size());
 
-        Assert.assertEquals(subSequence1.hashCode(), sequence1.hashCode());
-        Assert.assertEquals(subSequence1, sequence1);
-        Assert.assertEquals(NucleotideSequence.EMPTY, NucleotideSequence.EMPTY.getReverseComplement());
+        assertEquals(subSequence1.hashCode(), sequence1.hashCode());
+        assertEquals(subSequence1, sequence1);
+        assertEquals(NucleotideSequence.EMPTY, NucleotideSequence.EMPTY.getReverseComplement());
     }
 
     @Test
@@ -50,7 +49,7 @@ public class NucleotideSequencesTest {
         NucleotideSequence s1 = new NucleotideSequence("ATTAGACA"),
                 s2 = new NucleotideSequence("GACATATA");
 
-        Assert.assertEquals(new NucleotideSequence("ATTAGACAGACATATA"), s1.concatenate(s2));
+        assertEquals(new NucleotideSequence("ATTAGACAGACATATA"), s1.concatenate(s2));
     }
 
     @Test

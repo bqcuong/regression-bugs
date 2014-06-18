@@ -18,9 +18,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.milaboratory.core.sequence.nucleotide;
+package com.milaboratory.core.sequence;
 
-import com.milaboratory.core.sequence.SequenceBuilder;
 import com.milaboratory.util.Bit2Array;
 
 /**
@@ -32,10 +31,6 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
 
     public NucleotideSequenceBuilder() {
         this.storage = null;
-    }
-
-    public NucleotideSequenceBuilder(int capacity) {
-        ensureCapacity(capacity);
     }
 
     private NucleotideSequenceBuilder(Bit2Array storage, int size) {
@@ -50,6 +45,8 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
 
     @Override
     public SequenceBuilder<NucleotideSequence> ensureCapacity(int capacity) {
+        if (size == -1)
+            throw new IllegalStateException("Destroyed.");
         if (storage == null && capacity > 0) {
             storage = new Bit2Array(capacity);
             return this;
@@ -60,11 +57,12 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     private void ensureInternalCapacity(int newSize) {
+        if (size == -1)
+            throw new IllegalStateException("Destroyed.");
         if (storage == null && newSize != 0)
             storage = new Bit2Array(Math.max(newSize, 10));
-        if (storage.size() >= newSize)
-            return;
-        storage = storage.extend(Math.max(newSize, 3 * storage.size() / 2 + 1));
+        if (storage.size() < newSize)
+            storage = storage.extend(Math.max(newSize, 3 * storage.size() / 2 + 1));
     }
 
     @Override
@@ -77,6 +75,7 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
         else
             seq = new NucleotideSequence(storage.getRange(0, size), true);
         storage = null;
+        size = -1;
         return seq;
     }
 
@@ -97,6 +96,6 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
 
     @Override
     public SequenceBuilder<NucleotideSequence> clone() {
-        return new NucleotideSequenceBuilder(storage.clone(), size);
+        return new NucleotideSequenceBuilder(storage == null ? null : storage.clone(), size);
     }
 }

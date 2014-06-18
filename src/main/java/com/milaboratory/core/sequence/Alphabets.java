@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.milaboratory.core.sequence.nucleotide.NucleotideAlphabet;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,8 +25,9 @@ public final class Alphabets {
 
     static {
         register(NucleotideAlphabet.INSTANCE);
-//        register(AminoAcidAlphabet.INSTANCE);
-//        register(CDRAminoAcidAlphabet.INSTANCE);
+        register(AminoAcidAlphabet.INSTANCE);
+        register(IncompleteAlphabet.INCOMPLETE_NUCLEOTIDE_ALPHABET);
+        register(IncompleteAlphabet.INCOMPLETE_AMINO_ACID_ALPHABET);
     }
 
     public static Alphabet getByName(String name) {

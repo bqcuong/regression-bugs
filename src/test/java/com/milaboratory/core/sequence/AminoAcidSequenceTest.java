@@ -1,6 +1,5 @@
-package com.milaboratory.core.sequence.aminoacid;
+package com.milaboratory.core.sequence;
 
-import com.milaboratory.core.sequence.nucleotide.NucleotideSequence;
 import org.junit.Assert;
 import org.junit.Test;
 

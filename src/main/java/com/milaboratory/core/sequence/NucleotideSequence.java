@@ -18,11 +18,9 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.milaboratory.core.sequence.nucleotide;
+package com.milaboratory.core.sequence;
 
 import com.milaboratory.core.Range;
-import com.milaboratory.core.sequence.Alphabet;
-import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.util.Bit2Array;
 
 import java.io.Serializable;
@@ -80,12 +78,12 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
     }
 
     @Override
-    public NucleotideSequence getRange(int from, int to) {
-        return getRange(new Range(from, to));
+    public NucleotideSequence getSubSequence(int from, int to) {
+        return getSubSequence(new Range(from, to));
     }
 
     @Override
-    public NucleotideSequence getRange(Range range) {
+    public NucleotideSequence getSubSequence(Range range) {
         if (range.getLower() < 0 || range.getUpper() < 0
                 || range.getLower() >= size() || range.getUpper() > size())
             throw new IndexOutOfBoundsException();
@@ -110,21 +108,28 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
         return new NucleotideSequence(transformToRC(data, 0, data.size()), true);
     }
 
-//    public AminoAcidSequence translate() {
-//        if (data.size() % 3 != 0)
-//            throw new RuntimeException("Sequence length is not dividable by 3.");
-//        return Translator.translate(this, (byte) 1);
-//    }
-
     public Bit2Array getInnerData() {
         return data.clone();
     }
 
     @Override
-    public Alphabet getAlphabet() {
+    public NucleotideAlphabet getAlphabet() {
         return ALPHABET;
     }
 
+    @Override
+    public int hashCode() {
+        int result = ALPHABET.hashCode();
+        result = 31 * result + data.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return data.equals(((NucleotideSequence) o).data);
+    }
 
     public static NucleotideSequence fromSequence(byte[] sequence, int offset, int length) {
         Bit2Array storage = new Bit2Array(length);

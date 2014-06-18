@@ -18,11 +18,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.milaboratory.core.sequence.aminoacid;
-
-import com.milaboratory.core.sequence.Alphabet;
-import com.milaboratory.core.sequence.Sequence;
-import com.milaboratory.core.sequence.nucleotide.NucleotideSequence;
+package com.milaboratory.core.sequence;
 
 import java.util.Arrays;
 
@@ -32,46 +28,26 @@ import java.util.Arrays;
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  */
-public final class AminoAcidSequence extends Sequence<AminoAcidSequence> {
-    final byte[] data;
+public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequence> {
     public static final AminoAcidSequence EMPTY = new AminoAcidSequence(new byte[0], true);
+    public static final AminoAcidAlphabet ALPHABET = AminoAcidAlphabet.INSTANCE;
 
     public AminoAcidSequence(byte[] data) {
-        this(data.clone(), true);
+        super(data.clone());
     }
 
     public AminoAcidSequence(String sequence) {
-        this(dataFromChars(sequence.toCharArray()), true);
+        super(sequence);
     }
 
     AminoAcidSequence(byte[] data, boolean unsafe) {
+        super(data);
         assert unsafe;
-        this.data = data;
     }
 
     @Override
-    public Alphabet getAlphabet() {
-        return AminoAcidAlphabet.INSTANCE;
-    }
-
-    @Override
-    public byte codeAt(int position) {
-        return data[position];
-    }
-
-    @Override
-    public int size() {
-        return data.length;
-    }
-
-    @Override
-    public AminoAcidSequence getRange(int from, int to) {
-        return new AminoAcidSequence(Arrays.copyOfRange(data, from, to), true);
-    }
-
-    @Override
-    public byte[] asArray() {
-        return data.clone();
+    public AminoAcidAlphabet getAlphabet() {
+        return ALPHABET;
     }
 
     public boolean containStops() {
@@ -87,13 +63,6 @@ public final class AminoAcidSequence extends Sequence<AminoAcidSequence> {
             if (b == AminoAcidAlphabet.Stop)
                 ++count;
         return count;
-    }
-
-    private static byte[] dataFromChars(char[] chars) {
-        byte[] data = new byte[chars.length];
-        for (int i = 0; i < chars.length; ++i)
-            data[i] = AminoAcidAlphabet.INSTANCE.codeFromSymbol(chars[i]);
-        return data;
     }
 
     public static int getTriplet(NucleotideSequence nSequence, int tripletStart) {

@@ -18,10 +18,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.milaboratory.core.sequence.nucleotide;
-
-import com.milaboratory.core.sequence.Alphabet;
-import com.milaboratory.core.sequence.SequenceBuilder;
+package com.milaboratory.core.sequence;
 
 /**
  * Nucleotide alphabet.
@@ -73,8 +70,8 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> {
     }
 
     @Override
-    public byte size() {
-        return (byte) 4;
+    public int size() {
+        return 4;
     }
 
     @Override

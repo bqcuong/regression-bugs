@@ -18,10 +18,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.milaboratory.core.sequence.aminoacid;
-
-import com.milaboratory.core.sequence.nucleotide.NucleotideAlphabet;
-import com.milaboratory.core.sequence.nucleotide.NucleotideSequence;
+package com.milaboratory.core.sequence;
 
 final class Translator {
     private static byte[] code = null;

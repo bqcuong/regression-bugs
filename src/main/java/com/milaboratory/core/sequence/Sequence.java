@@ -35,7 +35,13 @@ public abstract class Sequence<S extends Sequence> implements Comparable<S> {
 
     public abstract Alphabet<S> getAlphabet();
 
-    public abstract S getRange(int from, int to);
+    public abstract S getSubSequence(int from, int to);
+
+    public S getSubSequence(Range range) {
+        if (range.isReverse())
+            throw new IllegalArgumentException("Reverse range not supported.");
+        return getSubSequence(range.getFrom(), range.getTo());
+    }
 
     public byte[] asArray() {
         byte[] bytes = new byte[size()];
@@ -54,12 +60,6 @@ public abstract class Sequence<S extends Sequence> implements Comparable<S> {
         return getAlphabet().getBuilder().
                 ensureCapacity(other.size() + size())
                 .append((S) this).append(other).createAndDestroy();
-    }
-
-    public S getRange(Range range) {
-        if (range.isReverse())
-            throw new IllegalArgumentException("Reverse range not supported.");
-        return getRange(range.getFrom(), range.getTo());
     }
 
     @Override

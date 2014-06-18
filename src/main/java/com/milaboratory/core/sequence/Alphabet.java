@@ -51,7 +51,7 @@ public abstract class Alphabet<T extends Sequence> {
      *
      * @return the number of letters in the alphabet
      */
-    public abstract byte size();
+    public abstract int size();
 
     /**
      * Gets the code corresponding to given symbol or -1 if there is no such symbol in the alphabets
