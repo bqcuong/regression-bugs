@@ -51,6 +51,10 @@ public final class ArraySequenceBuilder<S extends AbstractArraySequence> impleme
     @Override
     public S createAndDestroy() {
         S seq;
+
+        if(data == null)
+            return alphabet.createUnsafe(new byte[0]);
+
         if (data.length == size)
             seq = alphabet.createUnsafe(data);
         else

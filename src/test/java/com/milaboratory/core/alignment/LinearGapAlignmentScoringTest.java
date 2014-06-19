@@ -16,7 +16,7 @@ public class LinearGapAlignmentScoringTest {
 
     @Test
     public void test2() throws Exception {
-        AlignmentScoring expected = LinearGapAlignmentScoring.getScoring(IncompleteNucleotideSequence.ALPHABET, 15, -24, -4);
+        AlignmentScoring expected = new LinearGapAlignmentScoring<IncompleteNucleotideSequence>(IncompleteNucleotideSequence.ALPHABET, 15, -24, -4);
         String s = GlobalObjectMappers.PRETTY.writeValueAsString(expected);
         AlignmentScoring scoring = GlobalObjectMappers.ONE_LINE.readValue(s, AlignmentScoring.class);
         Assert.assertEquals(expected, scoring);
