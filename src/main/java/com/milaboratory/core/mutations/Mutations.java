@@ -6,6 +6,8 @@ import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
 import com.milaboratory.util.IntArrayList;
 
+import java.util.Arrays;
+
 import static com.milaboratory.core.mutations.Mutation.*;
 
 /**
@@ -266,7 +268,7 @@ public final class Mutations<S extends Sequence> {
             return new Mutations<S>(alphabet, new int[0], true);
 
         //Find first mutation for the range
-        int fromIndex = firstMutationWithPosition(mutations, from);
+        int fromIndex = firstMutationWithPosition(from);
         if (fromIndex < 0)
             fromIndex = -fromIndex - 1;
 
@@ -278,7 +280,7 @@ public final class Mutations<S extends Sequence> {
             ++fromIndex;
 
         //Find last mutation
-        int toIndex = firstMutationWithPosition(mutations, fromIndex, mutations.length, to);
+        int toIndex = firstMutationWithPosition(fromIndex, mutations.length, to);
         if (toIndex < 0)
             toIndex = -toIndex - 1;
 
@@ -409,11 +411,35 @@ public final class Mutations<S extends Sequence> {
         return builder.toString();
     }
 
-    private static int firstMutationWithPosition(int[] mutations, int position) {
-        return firstMutationWithPosition(mutations, 0, mutations.length, position);
+    public String encode() {
+        return MutationsUtil.encode(mutations, alphabet);
     }
 
-    private static int firstMutationWithPosition(int[] mutations, int fromIndex, int toIndex, int position) {
+    public static <S extends Sequence<S>> Mutations<S> decode(String string, Alphabet<S> alphabet) {
+        return new Mutations<S>(alphabet, MutationsUtil.decode(string, alphabet), true);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Mutations mutations1 = (Mutations) o;
+        if (alphabet != mutations1.alphabet) return false;
+        return Arrays.equals(mutations, mutations1.mutations);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = alphabet.hashCode();
+        result = 31 * result + Arrays.hashCode(mutations);
+        return result;
+    }
+
+    public int firstMutationWithPosition(int position) {
+        return firstMutationWithPosition(0, mutations.length, position);
+    }
+
+    public int firstMutationWithPosition(int fromIndex, int toIndex, int position) {
         int low = fromIndex;
         int high = toIndex - 1;
 

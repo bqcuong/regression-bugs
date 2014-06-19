@@ -3,6 +3,9 @@ package com.milaboratory.core.alignment;
 import com.milaboratory.core.mutations.Mutation;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.MutationsUtil;
+import com.milaboratory.core.mutations.generator.GenericNucleotideMutationModel;
+import com.milaboratory.core.mutations.generator.MutationsGenerator;
+import com.milaboratory.core.mutations.generator.SubstitutionModels;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
@@ -11,6 +14,7 @@ import com.milaboratory.test.TestUtil;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.hash.TIntHashSet;
 import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,6 +28,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class AlignerTest {
+    @Test
+    public void testExtractSubstitutions1() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("ATTAGACA"),
+                seq2 = new NucleotideSequence("ACAGATAC");
+
+        final Alignment muts = Aligner.alignOnlySubstitutions(seq1, seq2);
+
+        assertEquals(seq2, muts.getGlobalMutations().mutate(seq1));
+    }
+
+    @Test
+    public void testExtractSubstitutions2() throws Exception {
+        AminoAcidSequence seq1 = new AminoAcidSequence("CASSLAPGAT"),
+                seq2 = new AminoAcidSequence("CASGLASGLT");
+
+        final Alignment muts = Aligner.alignOnlySubstitutions(seq1, seq2);
+
+        assertEquals(seq2, muts.getGlobalMutations().mutate(seq1));
+    }
+
     @Test
     public void testGlobal0() throws Exception {
         Alignment<NucleotideSequence> alignment = Aligner.alignGlobalLinear(
@@ -331,87 +355,89 @@ public class AlignerTest {
         }
     }
 
-//    @Test
-//    public void testLocalRandomNucleotide1() {
-//        AlignmentScoring<NucleotideSequence>[] scorings = new AlignmentScoring[]{
-//                LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
-//                AffineGapAlignmentScoring.getNucleotideBLASTScoring()
-//        };
-//        for (AlignmentScoring sc : scorings)
-//            testLocalRandomCheckAlignedSequencesNucleotide(sc);
-//    }
+    @Test
+    public void testLocalRandomNucleotide1() {
+        AlignmentScoring<NucleotideSequence>[] scorings = new AlignmentScoring[]{
+                LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
+                AffineGapAlignmentScoring.getNucleotideBLASTScoring()
+        };
+        for (AlignmentScoring sc : scorings)
+            testLocalRandomCheckAlignedSequencesNucleotide(sc);
+    }
 
-//    public void testLocalRandomCheckAlignedSequencesNucleotide(AlignmentScoring<NucleotideSequence> sc) {
-//        int its = TestUtil.its(100, 3000);
-//        RandomGenerator rdi = new Well19937c();
-//
-//        GenericNucleotideMutationModel model = new GenericNucleotideMutationModel(
-//                SubstitutionModels.getUniformNucleotideSubstitutionModel(.05),
-//                .05, .05);
-//
-//        for (int i = 0; i < its; ++i) {
-//            NucleotideSequence sequence = randomSequence(sc.getAlphabet(), rdi, 100, 300);
-//
-//            int length = rdi.nextInt(20, 40);
-//            int from = rdi.nextInt(0, sequence.size() - length - 1);
-//
-//            NucleotideSequence subsequence = sequence.getSubSequence(from, from + length);
-//
-//            int[] mut = Mutations.generateMutations(subsequence, model);
-//
-//            subsequence = Mutations.mutate(subsequence, mut);
-//
-//            LocalAlignment r = LocalAligner.align(sc, sequence, subsequence);
-//
-//            Assert.assertEquals(Mutations.mutate(sequence.getSubSequence(r.getSequence1Range()), r.getMutations()),
-//                    subsequence.getSubSequence(r.getSequence2Range()));
-//
-//            r = LocalAligner.align(sc, subsequence, sequence);
-//
-//            Assert.assertEquals(Mutations.mutate(subsequence.getSubSequence(r.getSequence1Range()), r.getMutations()),
-//                    sequence.getSubSequence(r.getSequence2Range()));
-//        }
-//    }
-//
-//    @Test
-//    public void testLocalRandomCheckNucleotideSCoring() {
-//        LinearGapAlignmentScoring sc = LinearGapAlignmentScoring.getNucleotideBLASTScoring();
-//
-//        int its = TestUtil.its(100, 5000);
-//        RandomDataImpl rdi = new RandomDataImpl(new Well19937c());
-//
-//        GenericNucleotideMutationModel model = new GenericNucleotideMutationModel(
-//                SubstitutionModels.getUniformNucleotideSubstitutionModel(.05),
-//                .05, .05);
-//
-//        for (int i = 0; i < its; ++i) {
-//            NucleotideSequence sequence = randomSequence(NucleotideAlphabet.INSTANCE, rdi, 100, 300);
-//
-//            int length = rdi.nextInt(20, 40);
-//            int from = rdi.nextInt(0, sequence.size() - length - 1);
-//
-//            NucleotideSequence subsequence = sequence.getSubSequence(from, from + length);
-//
-//            int[] mut = Mutations.generateMutations(subsequence, model);
-//            float mutScore = Mutations.calculateScore(sc, subsequence.size(), mut);
-//
-//            subsequence = Mutations.mutate(subsequence, mut);
-//
-//            LocalAlignment r = LocalAligner.align(sc, sequence, subsequence);
-//
-//            Assert.assertEquals(Mutations.mutate(sequence.getSubSequence(r.getSequence1Range()), r.getMutations()),
-//                    subsequence.getSubSequence(r.getSequence2Range()));
-//
-//            Assert.assertTrue(mutScore <= Mutations.calculateScore(sc, r.getSequence1Range().length(), r.getMutations()));
-//
-//            r = LocalAligner.align(sc, subsequence, sequence);
-//
-//            Assert.assertEquals(Mutations.mutate(subsequence.getSubSequence(r.getSequence1Range()), r.getMutations()),
-//                    sequence.getSubSequence(r.getSequence2Range()));
-//
-//            Assert.assertTrue(mutScore <= Mutations.calculateScore(sc, r.getSequence1Range().length(), r.getMutations()));
-//        }
-//    }
+    public void testLocalRandomCheckAlignedSequencesNucleotide(AlignmentScoring<NucleotideSequence> sc) {
+        int its = TestUtil.its(100, 3000);
+        Well19937c rand = new Well19937c();
+        RandomDataGenerator rdi = new RandomDataGenerator(rand);
+
+        GenericNucleotideMutationModel model = new GenericNucleotideMutationModel(
+                SubstitutionModels.getUniformNucleotideSubstitutionModel(.05),
+                .05, .05);
+
+        for (int i = 0; i < its; ++i) {
+            NucleotideSequence sequence = randomSequence(sc.getAlphabet(), rand, 100, 300);
+
+            int length = rdi.nextInt(20, 40);
+            int from = rdi.nextInt(0, sequence.size() - length - 1);
+
+            NucleotideSequence subsequence = sequence.getSubSequence(from, from + length);
+
+            Mutations<NucleotideSequence> mut = MutationsGenerator.generateMutations(subsequence, model);
+
+            subsequence = mut.mutate(subsequence);
+
+            Alignment<NucleotideSequence> r = Aligner.alignLocal(sc, sequence, subsequence);
+
+            Assert.assertEquals(r.getLocalMutations().mutate(sequence.getSubSequence(r.getSequence1Range())),
+                    subsequence.getSubSequence(r.getSequence2Range()));
+
+            r = Aligner.alignLocal(sc, subsequence, sequence);
+
+            Assert.assertEquals(r.getLocalMutations().mutate(subsequence.getSubSequence(r.getSequence1Range())),
+                    sequence.getSubSequence(r.getSequence2Range()));
+        }
+    }
+
+    @Test
+    public void testLocalRandomCheckNucleotideSCoring() {
+        LinearGapAlignmentScoring sc = LinearGapAlignmentScoring.getNucleotideBLASTScoring();
+
+        int its = TestUtil.its(100, 5000);
+        Well19937c rand = new Well19937c();
+        RandomDataGenerator rdi = new RandomDataGenerator(rand);
+
+        GenericNucleotideMutationModel model = new GenericNucleotideMutationModel(
+                SubstitutionModels.getUniformNucleotideSubstitutionModel(.05),
+                .05, .05);
+
+        for (int i = 0; i < its; ++i) {
+            NucleotideSequence sequence = randomSequence(NucleotideSequence.ALPHABET, rand, 100, 300);
+
+            int length = rdi.nextInt(20, 40);
+            int from = rdi.nextInt(0, sequence.size() - length - 1);
+
+            NucleotideSequence subsequence = sequence.getSubSequence(from, from + length);
+
+            Mutations<NucleotideSequence> mut = MutationsGenerator.generateMutations(subsequence, model);
+            float mutScore = AlignmentUtils.calculateScore(sc, subsequence.size(), mut);
+
+            subsequence = mut.mutate(subsequence);
+
+            Alignment<NucleotideSequence> r = Aligner.alignLocal(sc, sequence, subsequence);
+
+            Assert.assertEquals(r.getLocalMutations().mutate(sequence.getSubSequence(r.getSequence1Range())),
+                    subsequence.getSubSequence(r.getSequence2Range()));
+
+            Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getLocalMutations()));
+
+            r = Aligner.alignLocal(sc, subsequence, sequence);
+
+            Assert.assertEquals(r.getLocalMutations().mutate(subsequence.getSubSequence(r.getSequence1Range())),
+                    sequence.getSubSequence(r.getSequence2Range()));
+
+            Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getLocalMutations()));
+        }
+    }
 
 //    if (alphabet.getAlphabetName().equals("nucleotide")) {
 //        // Indel shift

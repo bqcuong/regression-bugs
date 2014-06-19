@@ -8,6 +8,22 @@ public final class Aligner {
     private Aligner() {
     }
 
+    public static <S extends Sequence<S>> Alignment<S> alignOnlySubstitutions(S from, S to) {
+        if (from.getAlphabet() != to.getAlphabet())
+            throw new IllegalArgumentException();
+        if (from.size() != to.size())
+            throw new IllegalArgumentException("Size of 'from' and 'to' sequences must be the same.");
+        MutationsBuilder<S> builder = new MutationsBuilder<S>(from.getAlphabet());
+        int score = 0;
+        for (int i = 0; i < from.size(); ++i)
+            if (from.codeAt(i) != to.codeAt(i)) {
+                builder.appendSubstitution(i, from.codeAt(i), to.codeAt(i));
+                --score;
+            } else ++score;
+        Range range = new Range(0, from.size());
+        return new Alignment<>(from, builder.createAndDestroy(), range, range, score);
+    }
+
     /**
      * Performs global alignment
      *
