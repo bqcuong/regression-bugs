@@ -46,12 +46,12 @@ public final class MutationsBuilder<S extends Sequence<S>> {
     public MutationsBuilder<S> ensureCapacity(int capacity) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
-        if (mutations == null && capacity > 0) {
-            mutations = new int[capacity];
-            return this;
+        if (capacity > 0) {
+            if (mutations == null)
+                mutations = new int[capacity];
+            else if (capacity > mutations.length)
+                mutations = Arrays.copyOf(mutations, capacity);
         }
-        if (capacity > mutations.length)
-            mutations = Arrays.copyOf(mutations, capacity);
         return this;
     }
 

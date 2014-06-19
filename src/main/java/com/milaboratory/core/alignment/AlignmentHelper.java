@@ -16,7 +16,7 @@ public class AlignmentHelper {
         this.seq1Position = seq1Position;
         this.seq2Position = seq2Position;
         this.match = match;
-        this.offset = Math.max(("" + seq2Position[0]).length(), ("" + seq1Position[0]).length());
+        this.offset = Math.max(("" + a(seq2Position[0])).length(), ("" + a(seq1Position[0])).length());
     }
 
     public double identity() {
@@ -36,10 +36,10 @@ public class AlignmentHelper {
     }
 
     public String getLine1() {
-        String startPosition = String.valueOf(seq1Position[0]);
+        String startPosition = String.valueOf(a(seq1Position[0]));
         int spaces = offset - startPosition.length();
         return spaces(spaces) + startPosition + " " + seq1String +
-                " " + seq1Position[seq1Position.length - 1];
+                " " + a(seq1Position[seq1Position.length - 1]);
     }
 
     public String getLine2() {
@@ -51,10 +51,10 @@ public class AlignmentHelper {
     }
 
     public String getLine3() {
-        String startPosition = String.valueOf(seq2Position[0]);
+        String startPosition = String.valueOf(a(seq2Position[0]));
         int spaces = offset - startPosition.length();
         return spaces(spaces) + startPosition + " " + seq2String +
-                " " + seq2Position[seq2Position.length - 1];
+                " " + a(seq2Position[seq2Position.length - 1]);
     }
 
     @Override
@@ -62,10 +62,15 @@ public class AlignmentHelper {
         return getLine1() + "\n" + getLine2() + "\n" + getLine3();
     }
 
-
     private static String spaces(int n) {
         char[] c = new char[n];
         Arrays.fill(c, ' ');
         return String.valueOf(c);
+    }
+
+    private static int a(int f) {
+        if (f < 0)
+            return ~f;
+        return f;
     }
 }

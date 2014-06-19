@@ -39,12 +39,12 @@ public final class ArraySequenceBuilder<S extends AbstractArraySequence> impleme
     public SequenceBuilder<S> ensureCapacity(int capacity) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
-        if (data == null && capacity > 0) {
-            data = new byte[capacity];
-            return this;
+        if (capacity > 0) {
+            if (data == null)
+                data = new byte[capacity];
+            else if (capacity > data.length)
+                data = Arrays.copyOf(data, capacity);
         }
-        if (capacity > data.length)
-            data = Arrays.copyOf(data, capacity);
         return this;
     }
 

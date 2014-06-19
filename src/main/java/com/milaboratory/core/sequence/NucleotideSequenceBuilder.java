@@ -47,12 +47,12 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     public SequenceBuilder<NucleotideSequence> ensureCapacity(int capacity) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
-        if (storage == null && capacity > 0) {
-            storage = new Bit2Array(capacity);
-            return this;
+        if (capacity > 0) {
+            if (storage == null)
+                storage = new Bit2Array(capacity);
+            else if (capacity > storage.size())
+                storage = storage.extend(capacity);
         }
-        if (capacity > storage.size())
-            storage = storage.extend(capacity);
         return this;
     }
 

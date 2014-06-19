@@ -38,11 +38,19 @@ public final class Mutations<S extends Sequence> {
         return mutations[position];
     }
 
+    public int[] getAllMutations() {
+        return mutations.clone();
+    }
+
+    public boolean isEmpty() {
+        return mutations.length == 0;
+    }
+
     public boolean isCompatibleWith(S sequence) {
         return MutationsUtil.isCompatibleWithSequence(sequence, mutations);
     }
 
-    public S mutate(S sequence, int[] mutations) {
+    public S mutate(S sequence) {
         int length = sequence.size();
         for (int i : mutations)
             switch (i & MUTATION_TYPE_MASK) {
@@ -368,14 +376,22 @@ public final class Mutations<S extends Sequence> {
     }
 
     public int minPosition() {
+        if (isEmpty())
+            return -1;
+
         return getPosition(mutations[0]);
     }
 
     public int maxPosition() {
+        if (isEmpty())
+            return -1;
+
         return getPosition(mutations[mutations.length - 1]);
     }
 
     public Range getAffectedRange() {
+        if (isEmpty())
+            return null;
         return new Range(minPosition(), maxPosition());
     }
 
