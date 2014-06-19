@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,4 +59,9 @@ public final class Alphabets {
             jgen.writeString(value.getAlphabetName());
         }
     }
+
+    public static Collection<Alphabet> getAll(){
+        return Collections.unmodifiableCollection(alphabets.values());
+    }
+
 }

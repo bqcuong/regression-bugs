@@ -32,7 +32,7 @@ public abstract class IncompleteAlphabet<IS extends IncompleteSequence, S extend
     private IncompleteAlphabet(Alphabet<S> alphabet) {
         super(alphabet.getAlphabetName() + "_incomplete");
         this.alphabet = alphabet;
-        this.unknownLetterCode = (byte) (alphabet.size() + 1);
+        this.unknownLetterCode = (byte) alphabet.size();
     }
 
     @Override
@@ -48,7 +48,7 @@ public abstract class IncompleteAlphabet<IS extends IncompleteSequence, S extend
 
     @Override
     public int size() {
-        return unknownLetterCode;
+        return unknownLetterCode + 1;
     }
 
     public byte getUnknownLetterCode() {

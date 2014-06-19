@@ -2,6 +2,8 @@ package com.milaboratory.core;
 
 import org.junit.Test;
 
+import java.util.regex.Pattern;
+
 import static org.junit.Assert.*;
 
 public class RangeTest {
