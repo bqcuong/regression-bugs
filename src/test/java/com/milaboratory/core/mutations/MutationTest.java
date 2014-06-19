@@ -16,11 +16,11 @@ public class MutationTest {
     public void test1() throws Exception {
         String m = "SA2TDC3";
         Assert.assertEquals(m,
-                Mutation.encode(Mutation.decode(m, NucleotideAlphabet.INSTANCE), NucleotideAlphabet.INSTANCE));
+                Mutation.encode(Mutation.decode(m, NucleotideSequence.ALPHABET), NucleotideSequence.ALPHABET));
 
         m = "SA2TD*3I12A";
         Assert.assertEquals(m,
-                Mutation.encode(Mutation.decode(m, AminoAcidAlphabet.INSTANCE), AminoAcidAlphabet.INSTANCE));
+                Mutation.encode(Mutation.decode(m, AminoAcidSequence.ALPHABET), AminoAcidSequence.ALPHABET));
 
         m = "SA2TD*3I12.";
         Assert.assertEquals(m,

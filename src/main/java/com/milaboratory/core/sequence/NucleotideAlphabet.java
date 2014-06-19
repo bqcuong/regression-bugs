@@ -34,7 +34,7 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> {
     public static final byte G = 0x01;
     public static final byte C = 0x02;
     public static final byte T = 0x03;
-    public final static NucleotideAlphabet INSTANCE = new NucleotideAlphabet();
+    final static NucleotideAlphabet INSTANCE = new NucleotideAlphabet();
     private static char[] chars = {'A', 'G', 'C', 'T'};
 
     private NucleotideAlphabet() {

@@ -7,7 +7,7 @@ package com.milaboratory.core.sequence;
 public abstract class IncompleteAlphabet<IS extends IncompleteSequence, S extends Sequence>
         extends AbstractArrayAlphabet<IS> {
 
-    public static final IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence>
+    static final IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence>
             INCOMPLETE_NUCLEOTIDE_ALPHABET =
             new IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence>(NucleotideAlphabet.INSTANCE) {
                 @Override
@@ -16,7 +16,7 @@ public abstract class IncompleteAlphabet<IS extends IncompleteSequence, S extend
                 }
             };
 
-    public static final IncompleteAlphabet<IncompleteAminoAcidSequence, AminoAcidSequence>
+    static final IncompleteAlphabet<IncompleteAminoAcidSequence, AminoAcidSequence>
             INCOMPLETE_AMINO_ACID_ALPHABET =
             new IncompleteAlphabet<IncompleteAminoAcidSequence, AminoAcidSequence>(AminoAcidAlphabet.INSTANCE) {
                 @Override

@@ -5,10 +5,10 @@ import com.milaboratory.util.BitArray;
 import java.util.Arrays;
 
 public class AlignmentHelper {
-    final String seq1String, seq2String;
-    final int[] seq1Position, seq2Position;
-    final BitArray match;
-    final int offset;
+    protected final String seq1String, seq2String;
+    protected final int[] seq1Position, seq2Position;
+    protected final BitArray match;
+    protected final int offset;
 
     public AlignmentHelper(String seq1String, String seq2String, int[] seq1Position, int[] seq2Position, BitArray match) {
         this.seq1String = seq1String;
@@ -38,7 +38,8 @@ public class AlignmentHelper {
     public String getLine1() {
         String startPosition = String.valueOf(seq1Position[0]);
         int spaces = offset - startPosition.length();
-        return spaces(spaces) + startPosition + " " + seq1String;
+        return spaces(spaces) + startPosition + " " + seq1String +
+                " " + seq1Position[seq1Position.length - 1];
     }
 
     public String getLine2() {
@@ -52,7 +53,8 @@ public class AlignmentHelper {
     public String getLine3() {
         String startPosition = String.valueOf(seq2Position[0]);
         int spaces = offset - startPosition.length();
-        return spaces(spaces) + startPosition + " " + seq2String;
+        return spaces(spaces) + startPosition + " " + seq2String +
+                " " + seq2Position[seq2Position.length - 1];
     }
 
     @Override

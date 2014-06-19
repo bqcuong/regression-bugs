@@ -27,7 +27,7 @@ package com.milaboratory.core.sequence;
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  */
 public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> {
-    public static final AminoAcidAlphabet INSTANCE = new AminoAcidAlphabet();
+    static final AminoAcidAlphabet INSTANCE = new AminoAcidAlphabet();
     public static final byte Stop = 0;
     public static final byte A = 1;
     public static final byte C = 2;

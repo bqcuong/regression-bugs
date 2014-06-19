@@ -375,6 +375,10 @@ public final class Mutations<S extends Sequence> {
         return getPosition(mutations[mutations.length - 1]);
     }
 
+    public Range getAffectedRange() {
+        return new Range(minPosition(), maxPosition());
+    }
+
     @Override
     public String toString() {
         if (mutations.length == 0)
