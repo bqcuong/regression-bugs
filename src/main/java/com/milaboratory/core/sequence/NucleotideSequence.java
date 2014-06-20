@@ -49,15 +49,6 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
             data.set(i, ALPHABET.codeFromSymbol(sequence[i]));
     }
 
-    public NucleotideSequence(byte[] sequence) {
-        data = new Bit2Array(sequence.length);
-        for (int i = 0; i < sequence.length; ++i) {
-            if (sequence[i] < 0 || sequence[i] >= ALPHABET.size())
-                throw new IllegalArgumentException();
-            data.set(i, sequence[i]);
-        }
-    }
-
     public NucleotideSequence(Bit2Array data) {
         this.data = data.clone();
     }
@@ -146,5 +137,13 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
             newData.set(cord, (~data.get(reverseCord)) & 0x3);
         }
         return newData;
+    }
+
+    public static NucleotideSequence parse(byte[] buffer, int from, int length) {
+        Bit2Array data = new Bit2Array(length);
+        int pointer = from;
+        for (int i = 0; i < length; ++i)
+            data.set(i, NucleotideAlphabet.__codeFromSymbol(buffer[pointer++]));
+        return new NucleotideSequence(data, true);
     }
 }

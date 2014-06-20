@@ -238,6 +238,13 @@ public final class SequenceQuality implements Serializable {
         return newData;
     }
 
+    public static SequenceQuality createUnchecked(byte offset, byte[] data, int from, int length) {
+        byte[] res = new byte[length];
+        int pointer = from;
+        for (int i = 0; i < length; i++)
+            res[i] = (byte) (data[pointer++] - offset);
+        return new SequenceQuality(res, true);
+    }
     /**
      * Factory method for the SequenceQualityPhred object. It performs all necessary range checks if required.
      *

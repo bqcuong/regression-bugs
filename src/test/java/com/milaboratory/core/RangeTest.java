@@ -62,6 +62,17 @@ public class RangeTest {
         checkConvert(r(20, 10), 18);
     }
 
+    @Test
+    public void test23e14() throws Exception {
+        System.out.println(Integer.toBinaryString(((byte) 'A') ));
+        System.out.println(Integer.toBinaryString(((byte) 'T') ));
+        System.out.println(Integer.toBinaryString(((byte) 'G') ));
+        System.out.println(Integer.toBinaryString(((byte) 'C') ));
+        System.out.println();
+        System.out.println(Integer.toBinaryString(((byte) 'B') ));
+        //System.out.println(Integer.toBinaryString(~(((byte) 'A') | ((byte) 'T') | ((byte) 'G') | ((byte) 'C'))));
+    }
+
     private void checkConvert(Range range, int position) {
         int relativePosition = range.convertPointToRelativePosition(position);
         assertEquals(position, range.convertPointToAbsolutePosition(relativePosition));
