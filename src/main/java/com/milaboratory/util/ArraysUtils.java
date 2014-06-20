@@ -12,4 +12,14 @@ public final class ArraysUtils {
             array[array.length - i - 1] = v;
         }
     }
+
+    public static void reverse(byte[] array) {
+        int i;
+        byte v;
+        for (i = 0; i < (array.length + 1) / 2; ++i) {
+            v = array[i];
+            array[i] = array[array.length - i - 1];
+            array[array.length - i - 1] = v;
+        }
+    }
 }
