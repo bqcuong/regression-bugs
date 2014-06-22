@@ -138,12 +138,4 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
         }
         return newData;
     }
-
-    public static NucleotideSequence parse(byte[] buffer, int from, int length) {
-        Bit2Array data = new Bit2Array(length);
-        int pointer = from;
-        for (int i = 0; i < length; ++i)
-            data.set(i, NucleotideAlphabet.__codeFromSymbol(buffer[pointer++]));
-        return new NucleotideSequence(data, true);
-    }
 }

@@ -63,7 +63,7 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> {
         return -1;
     }
 
-    public static byte __codeFromSymbol(byte symbol) {
+    public static byte codeFromSymbolByte(byte symbol) {
         switch (symbol) {
             case (byte) 'a':
             case (byte) 'A':
@@ -78,7 +78,7 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> {
             case (byte) 'C':
                 return (byte) 0x02;
         }
-        throw new RuntimeException("Illegal nucleotide : " + ((char) symbol) + ".");
+        return -1;
     }
 
     public char symbolFromCode(byte code) {

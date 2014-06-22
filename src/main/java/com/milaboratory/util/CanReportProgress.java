@@ -18,13 +18,12 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.milaboratory.core.io.fastq;
+package com.milaboratory.util;
 
-public class WrongQualityFormat extends RuntimeException {
-    public WrongQualityFormat() {
-    }
+public interface CanReportProgress {
+    //From 0.0 to 1.0
+    double getProgress();
 
-    public WrongQualityFormat(String message) {
-        super(message);
-    }
+    //True if complete
+    boolean isFinished();
 }

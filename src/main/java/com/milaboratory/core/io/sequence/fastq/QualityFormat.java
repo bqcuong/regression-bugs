@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License along
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.milaboratory.core.io.fastq;
+package com.milaboratory.core.io.sequence.fastq;
 
 /**
  * A base class to store various sequencing quality formats.

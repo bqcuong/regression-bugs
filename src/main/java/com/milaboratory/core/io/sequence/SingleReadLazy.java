@@ -1,8 +1,8 @@
-package com.milaboratory.core.io;
+package com.milaboratory.core.io.sequence;
 
+import com.milaboratory.core.io.sequence.fastq.QualityFormat;
 import com.milaboratory.core.sequence.NSequenceWithQuality;
-import com.milaboratory.core.sequence.NucleotideSequence;
-import com.milaboratory.core.sequence.SequenceQuality;
+import com.milaboratory.core.sequence.UnsafeFactory;
 import com.milaboratory.util.SingleIterator;
 
 import java.nio.charset.Charset;
@@ -17,22 +17,21 @@ public abstract class SingleReadLazy implements SingleRead {
     final long id;
     final byte[] buffer;
     final int descriptionFrom;
-    final short dataOffset, qualityOffset, dataLength, descriptionLength;
+    final short sequenceOffset, qualityOffset, dataLength, descriptionLength;
     NSequenceWithQuality sequenceWithQuality;
     String description;
-
 
     public SingleReadLazy(long id,
                           byte[] buffer,
                           int descriptionFrom,
-                          short dataOffset,
+                          short sequenceOffset,
                           short qualityOffset,
                           short dataLength,
                           short descriptionLength) {
         this.id = id;
         this.buffer = buffer;
         this.descriptionFrom = descriptionFrom;
-        this.dataOffset = dataOffset;
+        this.sequenceOffset = sequenceOffset;
         this.qualityOffset = qualityOffset;
         this.dataLength = dataLength;
         this.descriptionLength = descriptionLength;
@@ -59,10 +58,8 @@ public abstract class SingleReadLazy implements SingleRead {
     }
 
     private NSequenceWithQuality createNSequenceWithQuality() {
-        SequenceQuality quality = SequenceQuality.createUnchecked(getQualityOffset(),
-                buffer, descriptionFrom + qualityOffset, dataLength);
-        NucleotideSequence sequence = NucleotideSequence.parse(buffer, descriptionFrom + dataOffset, dataLength);
-        return new NSequenceWithQuality(sequence, quality);
+        return UnsafeFactory.fastqParse(buffer, descriptionFrom + sequenceOffset,
+                descriptionFrom + qualityOffset, dataLength, getQualityOffset(), id);
     }
 
     @Override
@@ -79,11 +76,37 @@ public abstract class SingleReadLazy implements SingleRead {
 
     @Override
     public long getId() {
-        return 0;
+        return id;
     }
 
     @Override
     public Iterator<SingleRead> iterator() {
         return new SingleIterator<>((SingleRead) this);
     }
+
+    public static SingleReadLazy createSingleRead(final QualityFormat format,
+                                                  long id,
+                                                  byte[] buffer,
+                                                  int descriptionFrom,
+                                                  short dataOffset,
+                                                  short qualityOffset,
+                                                  short dataLength,
+                                                  short descriptionLength) {
+        if (format == QualityFormat.Phred33)
+            return new SingleReadLazy(id, buffer, descriptionFrom, dataOffset, qualityOffset, dataLength, descriptionLength) {
+                @Override
+                byte getQualityOffset() {
+                    return 33;
+                }
+            };
+        else if (format == QualityFormat.Phred64)
+            return new SingleReadLazy(id, buffer, descriptionFrom, dataOffset, qualityOffset, dataLength, descriptionLength) {
+                @Override
+                byte getQualityOffset() {
+                    return 64;
+                }
+            };
+        throw new IllegalArgumentException("Unknown quality format.");
+    }
+
 }

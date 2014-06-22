@@ -1,4 +1,4 @@
-package com.milaboratory.core.io;
+package com.milaboratory.core.io.sequence;
 
 import com.milaboratory.core.sequence.NSequenceWithQuality;
 
