@@ -159,6 +159,18 @@ public final class SequenceQuality implements Serializable {
      * @param offset offset
      * @return bytes encoded quality values
      */
+    public void encodeTo(QualityFormat format, byte[] buffer, int offset) {
+        byte vo = format.getOffset();
+        for (int i = 0; i < data.length; ++i)
+            buffer[offset++] = (byte) (data[i] + vo);
+    }
+
+    /**
+     * Encodes current quality line with given offset. Common values for offset are 33 and 64.
+     *
+     * @param offset offset
+     * @return bytes encoded quality values
+     */
     public byte[] encode(int offset) {
         if (offset < 0 || offset > 70)
             throw new IllegalArgumentException();

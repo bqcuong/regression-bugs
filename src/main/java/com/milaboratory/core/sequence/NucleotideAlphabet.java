@@ -36,6 +36,7 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> {
     public static final byte T = 0x03;
     final static NucleotideAlphabet INSTANCE = new NucleotideAlphabet();
     private static char[] chars = {'A', 'G', 'C', 'T'};
+    private static byte[] bytes = {'A', 'G', 'C', 'T'};
 
     private NucleotideAlphabet() {
         super("nucleotide");
@@ -79,6 +80,10 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> {
                 return (byte) 0x02;
         }
         return -1;
+    }
+
+    public static byte symbolByteFromCode(byte code) {
+        return bytes[code];
     }
 
     public char symbolFromCode(byte code) {

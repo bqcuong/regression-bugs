@@ -12,7 +12,6 @@ import java.util.Iterator;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-
 public abstract class SingleReadLazy implements SingleRead {
     final long id;
     final byte[] buffer;
@@ -21,13 +20,13 @@ public abstract class SingleReadLazy implements SingleRead {
     NSequenceWithQuality sequenceWithQuality;
     String description;
 
-    public SingleReadLazy(long id,
-                          byte[] buffer,
-                          int descriptionFrom,
-                          short sequenceOffset,
-                          short qualityOffset,
-                          short dataLength,
-                          short descriptionLength) {
+    private SingleReadLazy(long id,
+                           byte[] buffer,
+                           int descriptionFrom,
+                           short sequenceOffset,
+                           short qualityOffset,
+                           short dataLength,
+                           short descriptionLength) {
         this.id = id;
         this.buffer = buffer;
         this.descriptionFrom = descriptionFrom;
@@ -84,14 +83,14 @@ public abstract class SingleReadLazy implements SingleRead {
         return new SingleIterator<>((SingleRead) this);
     }
 
-    public static SingleReadLazy createSingleRead(final QualityFormat format,
-                                                  long id,
-                                                  byte[] buffer,
-                                                  int descriptionFrom,
-                                                  short dataOffset,
-                                                  short qualityOffset,
-                                                  short dataLength,
-                                                  short descriptionLength) {
+    public static SingleReadLazy create(final QualityFormat format,
+                                        long id,
+                                        byte[] buffer,
+                                        int descriptionFrom,
+                                        short dataOffset,
+                                        short qualityOffset,
+                                        short dataLength,
+                                        short descriptionLength) {
         if (format == QualityFormat.Phred33)
             return new SingleReadLazy(id, buffer, descriptionFrom, dataOffset, qualityOffset, dataLength, descriptionLength) {
                 @Override

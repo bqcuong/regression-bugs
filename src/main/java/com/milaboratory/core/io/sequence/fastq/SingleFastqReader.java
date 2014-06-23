@@ -1,11 +1,11 @@
 package com.milaboratory.core.io.sequence.fastq;
 
+import cc.redberry.pipe.OutputPortCloseable;
 import com.milaboratory.core.io.CompressionType;
 import com.milaboratory.core.io.sequence.*;
 import com.milaboratory.core.sequence.UnsafeFactory;
 import com.milaboratory.util.CanReportProgress;
 import com.milaboratory.util.CountingInputStream;
-import com.milaboratory.util.SmartProgressReporter;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Stanislav Poslavsky
  */
 
-public final class SingleFastqReader implements SingleReader, CanReportProgress {
+public final class SingleFastqReader implements SingleReader, CanReportProgress, OutputPortCloseable<SingleRead> {
     public static final int DEFAULT_BUFFER_SIZE = 524288;
     private static final byte DELIMITER = '\n';
     /**
@@ -240,7 +240,7 @@ public final class SingleFastqReader implements SingleReader, CanReportProgress 
 
         long id = idCounter++;
         if (lazyReads)
-            return SingleReadLazy.createSingleRead(format,
+            return SingleReadLazy.create(format,
                     id,
                     buffer,
                     descriptionBegin,

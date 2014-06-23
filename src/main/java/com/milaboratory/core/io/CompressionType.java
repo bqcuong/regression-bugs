@@ -53,7 +53,11 @@ public enum CompressionType {
     }
 
     public OutputStream createOutputStream(OutputStream os) throws IOException {
-        return createOutputStream(this, os);
+        return createOutputStream(this, os, 2048);
+    }
+
+    public OutputStream createOutputStream(OutputStream os, int buffer) throws IOException {
+        return createOutputStream(this, os, buffer);
     }
 
     private static InputStream createInputStream(CompressionType ct, InputStream is, int buffer) throws IOException {
@@ -73,12 +77,12 @@ public enum CompressionType {
         throw new NullPointerException();
     }
 
-    private static OutputStream createOutputStream(CompressionType ct, OutputStream os) throws IOException {
+    private static OutputStream createOutputStream(CompressionType ct, OutputStream os, int buffer) throws IOException {
         switch (ct) {
             case None:
                 return os;
             case GZIP:
-                return new GZIPOutputStream(os, 2048);
+                return new GZIPOutputStream(os, buffer);
             case BZIP2:
                 CompressorStreamFactory factory = new CompressorStreamFactory();
                 try {

@@ -40,6 +40,10 @@ public class SequenceWithQuality<S extends Sequence<S>> {
         return new SequenceWithQuality<>(sequence.getSubSequence(range), quality.getRange(range));
     }
 
+    public int size() {
+        return sequence.size();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

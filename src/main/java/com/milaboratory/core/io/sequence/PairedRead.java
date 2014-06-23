@@ -4,9 +4,8 @@ package com.milaboratory.core.io.sequence;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-
-public final class PairedRead extends MultipleSequenceRead {
-    public PairedRead(SingleRead[] data) {
+public final class PairedRead extends MultiRead {
+    public PairedRead(SingleRead... data) {
         super(data);
         if (data.length != 2)
             throw new IllegalArgumentException();

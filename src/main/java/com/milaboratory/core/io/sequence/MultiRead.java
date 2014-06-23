@@ -9,10 +9,10 @@ import java.util.Iterator;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public class MultipleSequenceRead implements SequenceRead {
+public class MultiRead implements SequenceRead {
     final SingleRead[] data;
 
-    public MultipleSequenceRead(SingleRead[] data) {
+    public MultiRead(SingleRead[] data) {
         if (data.length == 0)
             throw new IllegalArgumentException("Empty data.");
         long id = data[0].getId();
@@ -47,7 +47,7 @@ public class MultipleSequenceRead implements SequenceRead {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MultipleSequenceRead that = (MultipleSequenceRead) o;
+        MultiRead that = (MultiRead) o;
 
         return Arrays.equals(data, that.data);
     }
