@@ -38,6 +38,10 @@ public final class SingleFastqWriter implements AutoCloseable {
         this(new FileOutputStream(fileName), qualityFormat, ct, DEFAULT_BUFFER_SIZE);
     }
 
+    public SingleFastqWriter(OutputStream outputStream, QualityFormat qualityFormat, CompressionType ct) throws IOException {
+        this(outputStream, qualityFormat, ct, DEFAULT_BUFFER_SIZE);
+    }
+
     public SingleFastqWriter(OutputStream outputStream, QualityFormat qualityFormat, CompressionType ct, int bufferSize) throws IOException {
         this.outputStream = ct.createOutputStream(outputStream, bufferSize / 2);
         this.qualityFormat = qualityFormat;
