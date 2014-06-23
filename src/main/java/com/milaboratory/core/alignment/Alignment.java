@@ -45,7 +45,7 @@ public final class Alignment<S extends Sequence<S>> {
 
         if (!mutations.isEmpty()) {
             if (!mutations.isCompatibleWith(sequence1)
-                    || !sequence1Range.contains(mutations.getAffectedRange())
+                    || !sequence1Range.contains(mutations.getMutatedRange())
                 || sequence1Range.length() + mutations.getLengthDelta() != sequence2Range.length())
             throw new IllegalArgumentException("Not compatible arguments.");
         } else if (sequence1Range.length() != sequence2Range.length())

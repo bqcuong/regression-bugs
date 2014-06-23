@@ -48,6 +48,26 @@ public final class Mutations<S extends Sequence> {
         return mutations.length == 0;
     }
 
+    public int getPositionByIndex(int index) {
+        return getPosition(mutations[index]);
+    }
+
+    public int getFromByIndex(int index) {
+        return getFrom(mutations[index]);
+    }
+
+    public int getToByIndex(int index) {
+        return getTo(mutations[index]);
+    }
+
+    public int getRawTypeByIndex(int index) {
+        return getRawTypeCode(mutations[index]);
+    }
+
+    public MutationType getTypeByIndex(int index) {
+        return getType(mutations[index]);
+    }
+
     public boolean isCompatibleWith(S sequence) {
         return MutationsUtil.isCompatibleWithSequence(sequence, mutations);
     }
@@ -377,24 +397,24 @@ public final class Mutations<S extends Sequence> {
         return result;
     }
 
-    public int minPosition() {
+    public int firsMutationPosition() {
         if (isEmpty())
             return -1;
 
         return getPosition(mutations[0]);
     }
 
-    public int maxPosition() {
+    public int lastMutationPosition() {
         if (isEmpty())
             return -1;
 
         return getPosition(mutations[mutations.length - 1]);
     }
 
-    public Range getAffectedRange() {
+    public Range getMutatedRange() {
         if (isEmpty())
             return null;
-        return new Range(minPosition(), maxPosition());
+        return new Range(firsMutationPosition(), lastMutationPosition());
     }
 
     @Override
