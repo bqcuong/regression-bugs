@@ -108,4 +108,35 @@ public class MutationsTest {
         assertEquals("Encode/Decode", mutations, Mutations.decode(mutations.encode(), NucleotideSequence.ALPHABET));
     }
 
+    @Test
+    public void test1() throws Exception {
+        MutationsBuilder<NucleotideSequence> builder = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+        builder.appendDeletion(1, 2);
+        builder.appendDeletion(2, 1);
+        builder.appendSubstitution(7, 3, 1);
+        builder.appendInsertion(9, 2);
+        builder.appendSubstitution(10, 3, 1);
+        Mutations<NucleotideSequence> mutations = builder.createAndDestroy();
+        assertEquals(1, mutations.getPositionByIndex(0));
+        assertEquals(1, mutations.getFromByIndex(1));
+        assertEquals(3, mutations.getFromByIndex(2));
+        assertEquals(1, mutations.getToByIndex(2));
+        assertEquals(9, mutations.getPositionByIndex(3));
+        assertEquals(2, mutations.getToByIndex(3));
+        assertEquals(1, mutations.getToByIndex(4));
+        assertEquals(10, mutations.getPositionByIndex(4));
+    }
+
+    @Test
+    public void test2() throws Exception {
+        MutationsBuilder<NucleotideSequence> builder = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+        builder.appendDeletion(1, 2);
+        builder.appendDeletion(2, 1);
+        builder.appendSubstitution(7, 3, 1);
+        builder.appendInsertion(9, 2);
+        builder.appendSubstitution(10, 3, 1);
+        Mutations<NucleotideSequence> mutations = builder.createAndDestroy();
+        assertEquals(1, mutations.firsMutationPosition());
+        assertEquals(10, mutations.lastMutationPosition());
+    }
 }
