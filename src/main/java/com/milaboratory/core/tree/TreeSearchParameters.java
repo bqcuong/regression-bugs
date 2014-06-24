@@ -1,6 +1,9 @@
 package com.milaboratory.core.tree;
 
 public final class TreeSearchParameters {
+    public static final TreeSearchParameters ONE_MISMATCH = new TreeSearchParameters(1, 0, 0, 1);
+    public static final TreeSearchParameters ONE_INDEL = new TreeSearchParameters(0, 1, 1, 1);
+    public static final TreeSearchParameters ONE_MISMATCH_OR_INDEL = new TreeSearchParameters(1, 1, 1, 1);
     public static final double[] DEFAULT_PENALTY = {
             0.1, // Mismatch penalty
             0.21, // Deletion penalty
