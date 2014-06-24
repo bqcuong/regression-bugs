@@ -1,7 +1,17 @@
 package com.milaboratory.core.io.sequence;
 
-/**
- * Created by dbolotin on 23/06/14.
- */
-public interface MultiReader extends SequenceReader<MultiRead> {
+public final class MultiReader extends AbstractMultiReader<MultiRead> {
+    public MultiReader(SingleReader... readers) {
+        super(readers);
+    }
+
+    @Override
+    public MultiRead take() {
+        SingleRead[] singleReads = takeReads();
+
+        if (singleReads == null)
+            return null;
+
+        return new MultiRead(singleReads);
+    }
 }

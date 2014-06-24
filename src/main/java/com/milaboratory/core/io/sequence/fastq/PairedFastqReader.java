@@ -1,7 +1,7 @@
 package com.milaboratory.core.io.sequence.fastq;
 
 import com.milaboratory.core.io.CompressionType;
-import com.milaboratory.core.io.sequence.PairedReaderImpl;
+import com.milaboratory.core.io.sequence.PairedReader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +11,7 @@ import java.io.InputStream;
 /**
  * Created by dbolotin on 23/06/14.
  */
-public class PairedFastqReader extends PairedReaderImpl {
+public final class PairedFastqReader extends PairedReader {
     public PairedFastqReader(File file1, File file2) throws IOException {
         this(new SingleFastqReader(file1),
                 new SingleFastqReader(file2));
