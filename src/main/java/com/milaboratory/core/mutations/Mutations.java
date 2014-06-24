@@ -18,6 +18,10 @@ public final class Mutations<S extends Sequence> {
     final Alphabet<S> alphabet;
     final int[] mutations;
 
+    public Mutations(Alphabet alphabet, IntArrayList mutations) {
+        this(alphabet, mutations.toArray(), true);
+    }
+
     public Mutations(Alphabet alphabet, int... mutations) {
         if (!MutationsUtil.isSorted(mutations))
             throw new IllegalArgumentException("Not sorted according to positions.");

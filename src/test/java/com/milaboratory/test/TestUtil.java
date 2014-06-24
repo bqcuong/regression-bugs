@@ -5,6 +5,7 @@ import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
 import com.milaboratory.util.GlobalObjectMappers;
+import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.junit.Test;
 
@@ -103,6 +104,11 @@ public class TestUtil {
 
         v /= 60;
         return "" + DECIMAL_FORMAT.format(v) + "m";
+    }
+
+    public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomDataGenerator r,
+                                                           int minLength, int maxLength) {
+        return randomSequence(alphabet, r.getRandomGenerator(), minLength, maxLength);
     }
 
     public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomGenerator r,

@@ -56,10 +56,12 @@ public class AbstractAlignmentScoring<S extends Sequence<S>> implements Alignmen
         //For deserialization see ScoringMatrixIO.Deserializer
         if (subsMatrix.length == 2)
             subsMatrix = ScoringUtils.getSymmetricMatrix(subsMatrix[0], subsMatrix[1], size);
-        else
+        else {
             //Normal arguments check
             if (subsMatrix.length != size * size)
                 throw new IllegalArgumentException();
+            subsMatrix = subsMatrix.clone();
+        }
 
         this.alphabet = alphabet;
         this.subsMatrix = subsMatrix;

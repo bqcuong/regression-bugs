@@ -76,7 +76,7 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
     @Override
     public NucleotideSequence getSubSequence(Range range) {
         if (range.getLower() < 0 || range.getUpper() < 0
-                || range.getLower() >= size() || range.getUpper() > size())
+                || range.getLower() > size() || range.getUpper() > size())
             throw new IndexOutOfBoundsException();
 
         if (range.length() == 0)
