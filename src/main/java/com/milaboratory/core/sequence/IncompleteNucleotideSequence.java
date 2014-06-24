@@ -8,6 +8,7 @@ public final class IncompleteNucleotideSequence
         extends IncompleteSequence<IncompleteNucleotideSequence, NucleotideSequence> {
     public static final IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence> ALPHABET
             = IncompleteAlphabet.INCOMPLETE_NUCLEOTIDE_ALPHABET;
+    public static final byte UNKNOWN_LETTER_CODE = ALPHABET.unknownLetterCode;
 
     public IncompleteNucleotideSequence(byte[] data) {
         super(data.clone());

@@ -4,7 +4,7 @@ package com.milaboratory.core.sequence;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public abstract class IncompleteAlphabet<IS extends IncompleteSequence, S extends Sequence>
+public abstract class IncompleteAlphabet<IS extends IncompleteSequence<IS, S>, S extends Sequence<S>>
         extends AbstractArrayAlphabet<IS> {
 
     static final IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence>

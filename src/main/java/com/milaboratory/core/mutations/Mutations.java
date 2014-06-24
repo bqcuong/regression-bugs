@@ -14,7 +14,7 @@ import static com.milaboratory.core.mutations.Mutation.*;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public final class Mutations<S extends Sequence> {
+public final class Mutations<S extends Sequence<? extends S>> {
     final Alphabet<S> alphabet;
     final int[] mutations;
 

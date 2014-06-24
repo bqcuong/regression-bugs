@@ -8,7 +8,7 @@ import java.util.Arrays;
 
 import static com.milaboratory.core.mutations.Mutation.*;
 
-public final class MutationsBuilder<S extends Sequence<S>> {
+public final class MutationsBuilder<S extends Sequence<? extends S>> {
     private final Alphabet<S> alphabet;
     private final boolean reversed;
     private int[] mutations = null;
