@@ -38,7 +38,7 @@ public class KAlignerTest extends AlignmentTest {
 
         for (int i = its(100000, 1000000); i >= 0; --i) {
             KAlignmentResult result = aligner.align(target);
-            for (int mut : result.getBestHit().getAlignment().getLocalMutations().getAllMutations())
+            for (int mut : result.getBestHit().getAlignment().getRelativeMutations().getAllMutations())
                 Assert.assertFalse(isInDel(mut));
         }
     }
@@ -459,7 +459,7 @@ public class KAlignerTest extends AlignmentTest {
                 NucleotideSequence seq = result.getTarget();
 
                 Assert.assertEquals(seq.getSubSequence(la.getSequence2Range()),
-                        la.getLocalMutations().mutate(ref.getSubSequence(la.getSequence1Range())));
+                        la.getRelativeMutations().mutate(ref.getSubSequence(la.getSequence1Range())));
             }
         }
 
@@ -516,7 +516,7 @@ public class KAlignerTest extends AlignmentTest {
             result = aligner.align(randomSequence);
             result.calculateAllAlignments();
             for (KAlignmentHit res : result.hits)
-                if (res.getAlignment().getLocalMutations().size() < 4)
+                if (res.getAlignment().getRelativeMutations().size() < 4)
                     randomHits++;
         }
 

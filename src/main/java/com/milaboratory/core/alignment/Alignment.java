@@ -68,20 +68,20 @@ public final class Alignment<S extends Sequence<S>> {
     }
 
     /**
-     * Returns mutations in global {@code sequence1} coordinates.
+     * Returns mutations in absolute (global) {@code sequence1} coordinates.
      *
-     * @return mutations in global {@code sequence1} coordinates
+     * @return mutations in absolute (global) {@code sequence1} coordinates
      */
-    public Mutations<S> getGlobalMutations() {
+    public Mutations<S> getAbsoluteMutations() {
         return mutations;
     }
 
     /**
-     * Returns mutations in local to {@code sequence1range} coordinates.
+     * Returns mutations in local coordinates, relative to {@code sequence1range}.
      *
-     * @return mutations in local to {@code sequence1range} coordinates
+     * @return mutations in local coordinates, relative to {@code sequence1range}
      */
-    public Mutations<S> getLocalMutations() {
+    public Mutations<S> getRelativeMutations() {
         return mutations.move(-sequence1Range.getLower());
     }
 
