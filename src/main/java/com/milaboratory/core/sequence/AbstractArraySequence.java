@@ -6,7 +6,7 @@ import java.util.Arrays;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-abstract class AbstractArraySequence<S extends AbstractArraySequence> extends Sequence<S> {
+abstract class AbstractArraySequence<S extends AbstractArraySequence<S>> extends Sequence<S> {
     protected final byte[] data;
 
     protected AbstractArraySequence(String sequence) {

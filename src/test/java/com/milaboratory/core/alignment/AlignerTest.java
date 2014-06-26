@@ -14,7 +14,6 @@ import com.milaboratory.test.TestUtil;
 import gnu.trove.iterator.TIntIterator;
 import gnu.trove.set.hash.TIntHashSet;
 import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,7 +34,7 @@ public class AlignerTest {
 
         final Alignment muts = Aligner.alignOnlySubstitutions(seq1, seq2);
 
-        assertEquals(seq2, muts.getGlobalMutations().mutate(seq1));
+        assertEquals(seq2, muts.getAbsoluteMutations().mutate(seq1));
     }
 
     @Test
@@ -45,7 +44,7 @@ public class AlignerTest {
 
         final Alignment muts = Aligner.alignOnlySubstitutions(seq1, seq2);
 
-        assertEquals(seq2, muts.getGlobalMutations().mutate(seq1));
+        assertEquals(seq2, muts.getAbsoluteMutations().mutate(seq1));
     }
 
     @Test
@@ -75,7 +74,7 @@ public class AlignerTest {
         Alignment<NucleotideSequence> a = alignGlobal(sc,
                 seq1, seq2);
 
-        assertEquals(seq2, a.getGlobalMutations().mutate(seq1));
+        assertEquals(seq2, a.getAbsoluteMutations().mutate(seq1));
     }
 
     @Test
@@ -84,7 +83,7 @@ public class AlignerTest {
                 seq2 = new AminoAcidSequence("ASSSPRGQETQRY");
 
         Alignment a = alignGlobal(LinearGapAlignmentScoring.getAminoAcidBLASTScoring(BLASTMatrix.BLOSUM62), seq1, seq2);
-        assertEquals(seq2, a.getGlobalMutations().mutate(seq1));
+        assertEquals(seq2, a.getAbsoluteMutations().mutate(seq1));
     }
 
     @Test
@@ -94,7 +93,7 @@ public class AlignerTest {
 
         Alignment a = alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
                 seq1, seq2);
-        assertEquals(seq2, a.getGlobalMutations().mutate(seq1));
+        assertEquals(seq2, a.getAbsoluteMutations().mutate(seq1));
     }
 
     @Test
@@ -104,7 +103,7 @@ public class AlignerTest {
         NucleotideSequence s = new NucleotideSequence("GACATAC");
         Alignment<NucleotideSequence> a = alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
                 seq1, seq2);
-        Mutations<NucleotideSequence> muts = a.getGlobalMutations();
+        Mutations<NucleotideSequence> muts = a.getAbsoluteMutations();
         assertEquals(seq2.concatenate(s), muts.mutate(seq1.concatenate(s)));
         assertEquals(s.concatenate(seq2), muts.move(s.size()).mutate(s.concatenate(seq1)));
     }
@@ -116,7 +115,7 @@ public class AlignerTest {
 
         Alignment<NucleotideSequence> a = alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
                 seq1, seq2);
-        Mutations<NucleotideSequence> muts = a.getGlobalMutations();
+        Mutations<NucleotideSequence> muts = a.getAbsoluteMutations();
 
         int[] v = {-1, -1, -1, -1, 0, 1, 2, 3, 4, 6, -8, 7};
         for (int i = 0; i < seq1.size(); ++i)
@@ -129,7 +128,7 @@ public class AlignerTest {
                 seq2 = new NucleotideSequence("CGTGGAGATTATGTTAGA");
         Alignment<NucleotideSequence> a = alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
                 seq1, seq2);
-        Mutations<NucleotideSequence> muts = a.getGlobalMutations();
+        Mutations<NucleotideSequence> muts = a.getAbsoluteMutations();
 
         assertEquals(1, muts.extractMutationsForRange(17, 18).size());
     }
@@ -141,7 +140,7 @@ public class AlignerTest {
 
         Alignment<NucleotideSequence> a = alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
                 seq1, seq2);
-        Mutations<NucleotideSequence> muts = a.getGlobalMutations();
+        Mutations<NucleotideSequence> muts = a.getAbsoluteMutations();
 
         assertEquals(seq2.getSubSequence(
                         sAbs(muts.convertPosition(2)),
@@ -191,8 +190,8 @@ public class AlignerTest {
                     seq2 = randomSequence(alphabet, rdi, 30, 40),
                     seq3 = randomSequence(alphabet, rdi, 30, 40);
 
-            Mutations<S> m1 = alignGlobal(sc, seq1, seq2).getGlobalMutations(),
-                    m2 = alignGlobal(sc, seq2, seq3).getGlobalMutations();
+            Mutations<S> m1 = alignGlobal(sc, seq1, seq2).getAbsoluteMutations(),
+                    m2 = alignGlobal(sc, seq2, seq3).getAbsoluteMutations();
 
             if (!(sc instanceof AffineGapAlignmentScoring)) {
                 assertTrue(MutationsUtil.check(m1));
@@ -327,7 +326,7 @@ public class AlignerTest {
             NucleotideSequence needle = sq1.getSubSequence(from, from + length);
             Alignment<NucleotideSequence> r = Aligner.alignLocal(sc, sq1, needle);
             Assert.assertEquals(from, r.getSequence1Range().getFrom());
-            assertTrue(r.getGlobalMutations().isEmpty());
+            assertTrue(r.getAbsoluteMutations().isEmpty());
         }
     }
 
@@ -351,7 +350,7 @@ public class AlignerTest {
             Alignment r = Aligner.alignLocal(sc, sq1, sq2);
 
             Assert.assertEquals(sq2.getSubSequence(r.getSequence2Range()),
-                    r.getLocalMutations().mutate(sq1.getSubSequence(r.getSequence1Range())));
+                    r.getRelativeMutations().mutate(sq1.getSubSequence(r.getSequence1Range())));
         }
     }
 
@@ -388,12 +387,12 @@ public class AlignerTest {
 
             Alignment<NucleotideSequence> r = Aligner.alignLocal(sc, sequence, subsequence);
 
-            Assert.assertEquals(r.getLocalMutations().mutate(sequence.getSubSequence(r.getSequence1Range())),
+            Assert.assertEquals(r.getRelativeMutations().mutate(sequence.getSubSequence(r.getSequence1Range())),
                     subsequence.getSubSequence(r.getSequence2Range()));
 
             r = Aligner.alignLocal(sc, subsequence, sequence);
 
-            Assert.assertEquals(r.getLocalMutations().mutate(subsequence.getSubSequence(r.getSequence1Range())),
+            Assert.assertEquals(r.getRelativeMutations().mutate(subsequence.getSubSequence(r.getSequence1Range())),
                     sequence.getSubSequence(r.getSequence2Range()));
         }
     }
@@ -425,17 +424,17 @@ public class AlignerTest {
 
             Alignment<NucleotideSequence> r = Aligner.alignLocal(sc, sequence, subsequence);
 
-            Assert.assertEquals(r.getLocalMutations().mutate(sequence.getSubSequence(r.getSequence1Range())),
+            Assert.assertEquals(r.getRelativeMutations().mutate(sequence.getSubSequence(r.getSequence1Range())),
                     subsequence.getSubSequence(r.getSequence2Range()));
 
-            Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getLocalMutations()));
+            Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getRelativeMutations()));
 
             r = Aligner.alignLocal(sc, subsequence, sequence);
 
-            Assert.assertEquals(r.getLocalMutations().mutate(subsequence.getSubSequence(r.getSequence1Range())),
+            Assert.assertEquals(r.getRelativeMutations().mutate(subsequence.getSubSequence(r.getSequence1Range())),
                     sequence.getSubSequence(r.getSequence2Range()));
 
-            Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getLocalMutations()));
+            Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getRelativeMutations()));
         }
     }
 

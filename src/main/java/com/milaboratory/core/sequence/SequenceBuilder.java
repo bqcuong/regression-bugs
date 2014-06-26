@@ -50,6 +50,15 @@ public interface SequenceBuilder<S extends Sequence> {
     S createAndDestroy();
 
     /**
+     * Sets letter at the specified position.
+     *
+     * @param position position {@code positin >=0 && positin < size()}
+     * @param letter letter
+     * @return this
+     */
+    SequenceBuilder<S> set(int position, byte letter);
+
+    /**
      * Appends letter.
      *
      * @param letter letter

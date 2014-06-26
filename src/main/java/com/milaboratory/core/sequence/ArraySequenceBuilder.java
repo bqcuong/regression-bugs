@@ -6,7 +6,7 @@ import java.util.Arrays;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public final class ArraySequenceBuilder<S extends AbstractArraySequence> implements SequenceBuilder<S> {
+public final class ArraySequenceBuilder<S extends AbstractArraySequence<S>> implements SequenceBuilder<S> {
     private final AbstractArrayAlphabet<S> alphabet;
     private byte[] data;
     private int size = 0;
@@ -29,8 +29,11 @@ public final class ArraySequenceBuilder<S extends AbstractArraySequence> impleme
     private void ensureInternalCapacity(int newSize) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
-        if (data == null && newSize != 0)
-            data = new byte[Math.max(newSize, 10)];
+        if (data == null)
+            if (newSize != 0)
+                data = new byte[Math.max(newSize, 10)];
+            else
+                return;
         if (data.length < newSize)
             data = Arrays.copyOf(data, Math.max(newSize, 3 * data.length / 2 + 1));
     }
@@ -65,6 +68,14 @@ public final class ArraySequenceBuilder<S extends AbstractArraySequence> impleme
     }
 
     @Override
+    public SequenceBuilder<S> set(int position, byte letter) {
+        if (position < 0 || position >= size)
+            throw new IndexOutOfBoundsException();
+        data[position] = letter;
+        return this;
+    }
+
+    @Override
     public SequenceBuilder<S> append(byte letter) {
         ensureInternalCapacity(size + 1);
         data[size++] = letter;
@@ -81,6 +92,6 @@ public final class ArraySequenceBuilder<S extends AbstractArraySequence> impleme
 
     @Override
     public SequenceBuilder<S> clone() {
-        return new ArraySequenceBuilder(data == null ? null : data.clone(), size, alphabet);
+        return new ArraySequenceBuilder<>(data == null ? null : data.clone(), size, alphabet);
     }
 }

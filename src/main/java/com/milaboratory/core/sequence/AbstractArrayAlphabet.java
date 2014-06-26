@@ -4,7 +4,7 @@ package com.milaboratory.core.sequence;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-abstract class AbstractArrayAlphabet<S extends AbstractArraySequence> extends Alphabet<S>  {
+abstract class AbstractArrayAlphabet<S extends AbstractArraySequence<S>> extends Alphabet<S>  {
     protected AbstractArrayAlphabet(String alphabetName) {
         super(alphabetName);
     }

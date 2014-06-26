@@ -22,8 +22,8 @@ public class MutationsTest {
                 seq2 = new NucleotideSequence("CATTACCA"),
                 seq3 = new NucleotideSequence("CATAGCCA");
 
-        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getGlobalMutations(),
-                m2 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq2, seq3).getGlobalMutations();
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations(),
+                m2 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq2, seq3).getAbsoluteMutations();
 
         checkMutations(m1);
         checkMutations(m2);
@@ -38,8 +38,8 @@ public class MutationsTest {
                 seq2 = new NucleotideSequence("AGTTCTTGTTTTTTCCGTAC"),
                 seq3 = new NucleotideSequence("ATCCGTAAATTACGTGCTGT");
 
-        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getGlobalMutations(),
-                m2 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq2, seq3).getGlobalMutations();
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations(),
+                m2 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq2, seq3).getAbsoluteMutations();
 
         Mutations<NucleotideSequence> m3 = m1.combineWith(m2);
 
@@ -57,8 +57,8 @@ public class MutationsTest {
                 seq2 = new NucleotideSequence("CGAACGTTAAGCACAAA"),
                 seq3 = new NucleotideSequence("CAAATGTGAGATC");
 
-        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getGlobalMutations(),
-                m2 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq2, seq3).getGlobalMutations();
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations(),
+                m2 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq2, seq3).getAbsoluteMutations();
 
         Mutations<NucleotideSequence> m3 = m1.combineWith(m2);
 
@@ -92,7 +92,7 @@ public class MutationsTest {
 //                        helper.getLine3().charAt(i));
 //        }
 
-        Mutations<NucleotideSequence> mutations = alignment.getGlobalMutations();
+        Mutations<NucleotideSequence> mutations = alignment.getAbsoluteMutations();
         checkMutations(mutations);
 
         Assert.assertEquals(-1, mutations.firstMutationWithPosition(-1));

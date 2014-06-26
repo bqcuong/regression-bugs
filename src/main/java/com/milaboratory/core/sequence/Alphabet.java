@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonSerialize(using = Alphabets.Serializer.class)
 @JsonDeserialize(using = Alphabets.Deserializer.class)
-public abstract class Alphabet<T extends Sequence> {
+public abstract class Alphabet<S extends Sequence<? extends S>> {
     private final String alphabetName;
 
     protected Alphabet(String alphabetName) {
@@ -66,7 +66,7 @@ public abstract class Alphabet<T extends Sequence> {
      *
      * @return sequence builder for corresponding sequence type
      */
-    public abstract SequenceBuilder<T> getBuilder();
+    public abstract SequenceBuilder<S> getBuilder();
 
     /**
      * Returns the human readable name of this alphabet.
@@ -79,8 +79,8 @@ public abstract class Alphabet<T extends Sequence> {
         return alphabetName;
     }
 
-    public T build(String string) {
-        SequenceBuilder<T> builder = getBuilder().ensureCapacity(string.length());
+    public S build(String string) {
+        SequenceBuilder<S> builder = getBuilder().ensureCapacity(string.length());
         for (int i = 0; i < string.length(); ++i)
             builder.append(codeFromSymbol(string.charAt(i)));
         return builder.createAndDestroy();

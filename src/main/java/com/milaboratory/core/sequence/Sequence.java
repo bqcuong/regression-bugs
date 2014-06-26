@@ -28,7 +28,7 @@ import com.milaboratory.core.Range;
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  */
-public abstract class Sequence<S extends Sequence> implements Comparable<S> {
+public abstract class Sequence<S extends Sequence<S>> implements Comparable<S> {
     public abstract byte codeAt(int position);
 
     public abstract int size();

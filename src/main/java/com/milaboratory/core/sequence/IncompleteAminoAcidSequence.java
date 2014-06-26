@@ -8,6 +8,7 @@ public final class IncompleteAminoAcidSequence
         extends IncompleteSequence<IncompleteAminoAcidSequence, AminoAcidSequence> {
     public static final IncompleteAlphabet<IncompleteAminoAcidSequence, AminoAcidSequence> ALPHABET
             = IncompleteAlphabet.INCOMPLETE_AMINO_ACID_ALPHABET;
+    public static final byte UNKNOWN_LETTER_CODE = ALPHABET.unknownLetterCode;
 
     public IncompleteAminoAcidSequence(String sequence) {
         super(sequence);

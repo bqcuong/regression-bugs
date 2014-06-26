@@ -4,7 +4,7 @@ package com.milaboratory.core.sequence;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public abstract class IncompleteSequence<IS extends IncompleteSequence, S extends Sequence>
+public abstract class IncompleteSequence<IS extends IncompleteSequence<IS, S>, S extends Sequence<S>>
         extends AbstractArraySequence<IS> {
     IncompleteSequence(byte[] data) {
         super(data);
