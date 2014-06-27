@@ -20,6 +20,11 @@
  */
 package com.milaboratory.core.sequence;
 
+import gnu.trove.map.hash.TCharObjectHashMap;
+
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Nucleotide alphabet.
  * <p/>
@@ -29,14 +34,33 @@ package com.milaboratory.core.sequence;
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  */
-public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> {
+public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> implements WithWildcards {
     public static final byte A = 0x00;
     public static final byte G = 0x01;
     public static final byte C = 0x02;
     public static final byte T = 0x03;
-    final static NucleotideAlphabet INSTANCE = new NucleotideAlphabet();
     private static char[] chars = {'A', 'G', 'C', 'T'};
     private static byte[] bytes = {'A', 'G', 'C', 'T'};
+    final static NucleotideAlphabet INSTANCE = new NucleotideAlphabet();
+    private static TCharObjectHashMap<WildcardSymbol> wildcardsMap =
+            new WildcardMapBuilder()
+                    /* Exact match letters */
+                    .addAlphabet(INSTANCE)
+                    /* Two-letter wildcard */
+                    .addWildcard('R', A, G)
+                    .addWildcard('Y', C, T)
+                    .addWildcard('S', G, C)
+                    .addWildcard('W', A, T)
+                    .addWildcard('K', G, T)
+                    .addWildcard('M', A, C)
+                    /* Three-letter wildcard */
+                    .addWildcard('B', C, G, T)
+                    .addWildcard('D', A, G, T)
+                    .addWildcard('H', A, C, T)
+                    .addWildcard('V', A, C, G)
+                    /* N */
+                    .addWildcard('N', A, T, G, C)
+                    .get();
 
     private NucleotideAlphabet() {
         super("nucleotide");
@@ -95,6 +119,16 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> {
     @Override
     public int size() {
         return 4;
+    }
+
+    @Override
+    public Collection<WildcardSymbol> getAllWildcards() {
+        return Collections.unmodifiableCollection(wildcardsMap.valueCollection());
+    }
+
+    @Override
+    public WildcardSymbol getWildcardFor(char symbol) {
+        return wildcardsMap.get(symbol);
     }
 
     @Override
