@@ -1,5 +1,7 @@
 package com.milaboratory.core.sequence;
 
+import com.milaboratory.util.HashFunctions;
+
 import java.util.Arrays;
 
 import static java.util.Arrays.binarySearch;
@@ -34,5 +36,18 @@ public final class WildcardSymbol {
 
     public boolean contains(byte code) {
         return binarySearch(codes, code) >= 0;
+    }
+
+    /**
+     * Returns uniformly distributed nucleotide corresponding to this wildcard.
+     * Note: for same seeds the result will be the same.
+     *
+     * @param seed seed
+     * @return uniformly distributed symbol corresponding to this wildcard
+     */
+    public byte getUniformlyDistributedSymbol(long seed) {
+        seed = HashFunctions.JenkinWang64shift(seed);
+        if (seed < 0) seed = -seed;
+        return codes[(int) (seed % codes.length)];
     }
 }
