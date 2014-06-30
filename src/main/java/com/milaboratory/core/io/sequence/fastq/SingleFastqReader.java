@@ -28,7 +28,6 @@ public final class SingleFastqReader implements SingleReader, CanReportProgress,
     /**
      * Used to estimate progress
      */
-    private long readBytes;
     private final boolean lazyReads;
     private final QualityFormat format;
     private final CompressionType compressionType;

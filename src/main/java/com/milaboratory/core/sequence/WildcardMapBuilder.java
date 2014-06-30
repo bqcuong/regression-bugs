@@ -2,7 +2,7 @@ package com.milaboratory.core.sequence;
 
 import gnu.trove.map.hash.TCharObjectHashMap;
 
-class WildcardMapBuilder {
+final class WildcardMapBuilder {
     final TCharObjectHashMap<WildcardSymbol> map = new TCharObjectHashMap<>();
 
     WildcardMapBuilder addWildcard(char c, byte... codes) {

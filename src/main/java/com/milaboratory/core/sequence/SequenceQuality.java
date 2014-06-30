@@ -13,6 +13,9 @@ import java.util.Arrays;
  * @author Stanislav Poslavsky
  */
 public final class SequenceQuality implements Serializable {
+    public static final byte GOOD_QUALITY_VALUE = (byte) 34;
+    public static final byte BAD_QUALITY_VALUE = (byte) 2;
+
     private static final long serialVersionUID = 1L;
     private final byte[] data;
 
