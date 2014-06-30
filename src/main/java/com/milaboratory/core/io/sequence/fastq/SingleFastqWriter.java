@@ -2,6 +2,7 @@ package com.milaboratory.core.io.sequence.fastq;
 
 import com.milaboratory.core.io.CompressionType;
 import com.milaboratory.core.io.sequence.SingleRead;
+import com.milaboratory.core.io.sequence.SingleWriter;
 import com.milaboratory.core.sequence.NucleotideAlphabet;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceQuality;
@@ -11,7 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public final class SingleFastqWriter implements AutoCloseable {
+public final class SingleFastqWriter implements AutoCloseable, SingleWriter {
     public static final int DEFAULT_BUFFER_SIZE = 131072;
     final OutputStream outputStream;
     final QualityFormat qualityFormat;
@@ -48,6 +49,7 @@ public final class SingleFastqWriter implements AutoCloseable {
         this.buffer = new byte[bufferSize];
     }
 
+    @Override
     public synchronized void write(SingleRead read) {
         int pointer = this.pointer;
 
