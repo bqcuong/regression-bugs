@@ -38,27 +38,27 @@ public final class PairedFastqReader extends PairedReader {
     public PairedFastqReader(File file1, File file2,
                              QualityFormat format, CompressionType ct) throws IOException {
         this(new SingleFastqReader(new FileInputStream(file1), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, true),
-                new SingleFastqReader(new FileInputStream(file1), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, true));
+                new SingleFastqReader(new FileInputStream(file2), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, true));
     }
 
     public PairedFastqReader(String fileName1, String fileName2,
                              QualityFormat format, CompressionType ct) throws IOException {
         this(new SingleFastqReader(new FileInputStream(fileName1), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, true),
-                new SingleFastqReader(new FileInputStream(fileName1), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, true));
+                new SingleFastqReader(new FileInputStream(fileName2), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, true));
     }
 
     public PairedFastqReader(File file1, File file2,
                              QualityFormat format, CompressionType ct,
                              boolean lazyReads) throws IOException {
         this(new SingleFastqReader(new FileInputStream(file1), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, lazyReads),
-                new SingleFastqReader(new FileInputStream(file1), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, lazyReads));
+                new SingleFastqReader(new FileInputStream(file2), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, lazyReads));
     }
 
     public PairedFastqReader(String fileName1, String fileName2,
                              QualityFormat format, CompressionType ct,
                              boolean lazyReads) throws IOException {
         this(new SingleFastqReader(new FileInputStream(fileName1), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, lazyReads),
-                new SingleFastqReader(new FileInputStream(fileName1), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, lazyReads));
+                new SingleFastqReader(new FileInputStream(fileName2), format, ct, false, SingleFastqReader.DEFAULT_BUFFER_SIZE, lazyReads));
     }
 
     public PairedFastqReader(InputStream stream1, InputStream stream2,
