@@ -19,7 +19,17 @@ public enum MutationType {
             types[mutationType.rawType >> MUTATION_TYPE_OFFSET] = mutationType;
     }
 
-    public static MutationType getType(int rawType) {
+    public static MutationType getTypeFromRaw(int rawType) {
         return types[rawType >> MUTATION_TYPE_OFFSET];
+    }
+
+    /**
+     * Returns {@link #Substitution} for 0, {@link #Deletion} for 1 and {@link #Insertion} for 2.
+     *
+     * @param type int type
+     * @return {@link #Substitution} for 0, {@link #Deletion} for 1 and {@link #Insertion} for 2.
+     */
+    public static MutationType getType(int type) {
+        return types[type + 1];
     }
 }

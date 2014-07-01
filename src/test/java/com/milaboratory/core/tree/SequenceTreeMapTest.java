@@ -3,6 +3,7 @@ package com.milaboratory.core.tree;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.sequence.*;
 import com.milaboratory.util.Bit2Array;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937a;
@@ -260,7 +261,7 @@ public class SequenceTreeMapTest {
                         new double[]{0.1, 0.1, Double.MAX_VALUE},
                         new int[]{0, 2, 0}, null);
 
-        System.out.println(neighborhoodIterator.nextNode().object);
+        //System.out.println(neighborhoodIterator.nextNode().object);
     }
 
     @Test
@@ -278,7 +279,7 @@ public class SequenceTreeMapTest {
                         new double[]{0.1, 0.1, Double.MAX_VALUE},
                         new int[]{2, 0, 0}, null);
 
-        System.out.println(neighborhoodIterator.nextNode().object);
+        //System.out.println(neighborhoodIterator.nextNode().object);
     }
 
     @Test
@@ -296,7 +297,7 @@ public class SequenceTreeMapTest {
                         new double[]{0.1, 0.1, 0.1},
                         new int[]{0, 0, 2}, null);
 
-        System.out.println(neighborhoodIterator.nextNode().object);
+        //System.out.println(neighborhoodIterator.nextNode().object);
     }
 
     /*
@@ -714,7 +715,7 @@ public class SequenceTreeMapTest {
     @Test
     public void testRandomizedTest1() throws Exception {
         for (int f = 0; f < repeats; ++f) {
-            System.out.println(f);
+            //System.out.println(f);
 
             Alphabet<NucleotideSequence> alphabet = NucleotideSequence.ALPHABET;
             SequenceCluster<NucleotideSequence>[] clusters = new SequenceCluster[300];
@@ -754,7 +755,7 @@ public class SequenceTreeMapTest {
     @Test
     public void testRandomizedTest2() throws Exception {
         for (int f = 0; f < repeats; ++f) {
-            System.out.println(f);
+            //System.out.println(f);
 
             Alphabet<NucleotideSequence> alphabet = NucleotideSequence.ALPHABET;
             SequenceCluster<NucleotideSequence>[] clusters = new SequenceCluster[300];
@@ -801,7 +802,7 @@ public class SequenceTreeMapTest {
     @Test
     public void testRandomizedTest3() throws Exception {
         for (int f = 0; f < repeats * 6; ++f) {
-            System.out.println(f);
+            //System.out.println(f);
             Alphabet<Sequence<?>> alphabet = getAlphabetSequence(f);
 
             for (byte t = 0; t < 3; ++t) {
