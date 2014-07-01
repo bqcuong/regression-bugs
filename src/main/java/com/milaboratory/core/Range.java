@@ -282,11 +282,7 @@ public final class Range implements Serializable {
 
         Range range = (Range) o;
 
-        if (lower != range.lower) return false;
-        if (reversed != range.reversed) return false;
-        if (upper != range.upper) return false;
-
-        return true;
+        return lower == range.lower && reversed == range.reversed && upper == range.upper;
     }
 
     @Override

@@ -107,9 +107,7 @@ public final class AffineGapAlignmentScoring<S extends Sequence<S>> extends Abst
         AffineGapAlignmentScoring that = (AffineGapAlignmentScoring) o;
 
         if (gapExtensionPenalty != that.gapExtensionPenalty) return false;
-        if (gapOpenPenalty != that.gapOpenPenalty) return false;
-
-        return true;
+        return gapOpenPenalty == that.gapOpenPenalty;
     }
 
     @Override
