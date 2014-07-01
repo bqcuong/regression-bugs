@@ -1,13 +1,11 @@
 package com.milaboratory.core.io.sequence.fasta;
 
 import cc.redberry.pipe.OutputPortCloseable;
+import com.milaboratory.core.io.sequence.IllegalFileFormatException;
 import com.milaboratory.core.io.sequence.SingleRead;
 import com.milaboratory.core.io.sequence.SingleReadImpl;
 import com.milaboratory.core.io.sequence.SingleReader;
-import com.milaboratory.core.sequence.NSequenceWithQuality;
-import com.milaboratory.core.sequence.NucleotideAlphabet;
-import com.milaboratory.core.sequence.NucleotideSequence;
-import com.milaboratory.core.sequence.SequenceQuality;
+import com.milaboratory.core.sequence.*;
 import com.milaboratory.util.Bit2Array;
 
 import java.io.*;
@@ -96,10 +94,12 @@ public final class FastaReader implements SingleReader, OutputPortCloseable<Sing
             nucleotide = ALPHABET.codeFromSymbol(symbol);
             if (nucleotide == -1) //wildChard
             {
-                //   System.out.println("x " + symbol);
-                if (withWildcards)
-                    nucleotide = ALPHABET.getWildcardFor(symbol).getUniformlyDistributedSymbol(id);
-                else
+                if (withWildcards) {
+                    WildcardSymbol wildcard = ALPHABET.getWildcardFor(symbol);
+                    if (wildcard == null)
+                        throw new IllegalFileFormatException("Unknown wildcard: " + symbol + ".");
+                    nucleotide = wildcard.getUniformlyDistributedSymbol(id);
+                } else
                     nucleotide = DEFAULT_WILDCARD;
                 qualityData[i] = SequenceQuality.BAD_QUALITY_VALUE;
             }
@@ -119,7 +119,7 @@ public final class FastaReader implements SingleReader, OutputPortCloseable<Sing
             if (description == null)
                 return null;
             if (description.charAt(0) != '>')
-                throw new IllegalArgumentException("Wrong FASTA format.");
+                throw new IllegalFileFormatException("Wrong FASTA format.");
         }
         StringBuilder sequence = new StringBuilder();
         String line;
