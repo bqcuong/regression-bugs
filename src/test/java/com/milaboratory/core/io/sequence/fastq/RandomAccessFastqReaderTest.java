@@ -3,7 +3,6 @@ package com.milaboratory.core.io.sequence.fastq;
 import com.milaboratory.core.io.CompressionType;
 import com.milaboratory.core.io.sequence.SingleRead;
 import com.milaboratory.core.io.util.FileIndex;
-import com.milaboratory.core.sequence.NSequenceWithQuality;
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -37,13 +36,9 @@ public class RandomAccessFastqReaderTest {
         RandomAccessFastqReader rreader = new RandomAccessFastqReader(index, sample);
         SingleRead read;
         while ((read = reader.take()) != null) {
-            NSequenceWithQuality actual = read.getData();
-            NSequenceWithQuality expected = rreader.take(read.getId()).getData();
-            System.out.println(actual.getSequence());
-            System.out.println(expected.getSequence());
-            System.out.println();
-
-            Assert.assertEquals(actual, expected);
+            SingleRead actual = rreader.take(read.getId());
+            Assert.assertEquals(read.getData(), actual.getData());
+            Assert.assertEquals(read.getDescription(), actual.getDescription());
         }
     }
 }

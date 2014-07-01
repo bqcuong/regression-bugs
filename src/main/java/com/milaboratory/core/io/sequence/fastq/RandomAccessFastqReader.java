@@ -5,9 +5,7 @@ import com.milaboratory.core.io.sequence.SingleReadImpl;
 import com.milaboratory.core.io.sequence.SingleReader;
 import com.milaboratory.core.io.util.AbstractRandomAccessReader;
 import com.milaboratory.core.io.util.FileIndex;
-import com.milaboratory.core.sequence.NSequenceWithQuality;
-import com.milaboratory.core.sequence.NucleotideSequence;
-import com.milaboratory.core.sequence.SequenceQuality;
+import com.milaboratory.core.sequence.UnsafeFactory;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,7 +30,7 @@ public final class RandomAccessFastqReader
     @Override
     protected SingleRead take0() {
         try {
-            String description = file.readLine();
+            String description = file.readLine().substring(1);
             if (description == null)//EOF
                 return null;
             String seq = file.readLine();
@@ -40,8 +38,7 @@ public final class RandomAccessFastqReader
             String quality = file.readLine();
 
             return new SingleReadImpl(currentRecordNumber,
-                    new NSequenceWithQuality(new NucleotideSequence(seq),
-                            new SequenceQuality(quality, qualityFormat)),
+                    UnsafeFactory.fastqParse(seq, quality, qualityFormat.getOffset(), currentRecordNumber),
                     description);
         } catch (IOException e) {
             throw new RuntimeException(e);

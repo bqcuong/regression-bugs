@@ -9,7 +9,6 @@ import java.util.Iterator;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-
 public final class SingleReadImpl implements SingleRead {
     final long id;
     final NSequenceWithQuality sequenceWithQuality;
