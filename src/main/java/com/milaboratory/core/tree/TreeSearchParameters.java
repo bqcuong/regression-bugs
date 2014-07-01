@@ -1,19 +1,18 @@
 package com.milaboratory.core.tree;
 
 public final class TreeSearchParameters {
-    public static final TreeSearchParameters ONE_MISMATCH = new TreeSearchParameters(1, 0, 0, 1);
-    public static final TreeSearchParameters ONE_INDEL = new TreeSearchParameters(0, 1, 1, 1);
-    public static final TreeSearchParameters ONE_MISMATCH_OR_INDEL = new TreeSearchParameters(1, 1, 1, 1);
     public static final double[] DEFAULT_PENALTY = {
             0.1, // Mismatch penalty
             0.21, // Deletion penalty
             0.32}; // Insertion penalty
-
-    private static final double UNIFORM_PENALTY_VALUE = 1;
+    private static final double UNIFORM_PENALTY_VALUE = 1.;
     private static final double[] UNIFORM_PENALTY = {
             UNIFORM_PENALTY_VALUE, // Mismatch penalty
             UNIFORM_PENALTY_VALUE, // Deletion penalty
             UNIFORM_PENALTY_VALUE}; // Insertion penalty
+    public static final TreeSearchParameters ONE_MISMATCH = new TreeSearchParameters(1, 0, 0, 1);
+    public static final TreeSearchParameters ONE_INDEL = new TreeSearchParameters(0, 1, 1, 1);
+    public static final TreeSearchParameters ONE_MISMATCH_OR_INDEL = new TreeSearchParameters(1, 1, 1, 1);
 
     private final int[] maxErrors;
     private final double[] penalty;
@@ -31,7 +30,7 @@ public final class TreeSearchParameters {
 
     /**
      * Parameters to search with limited number of each mutation type.
-     *
+     * <p/>
      * <p>Ordering of search is according to {@link #DEFAULT_PENALTY}.</p>
      *
      * @param mismatches maximum number of mismatches
