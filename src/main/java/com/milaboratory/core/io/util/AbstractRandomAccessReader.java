@@ -2,7 +2,6 @@ package com.milaboratory.core.io.util;
 
 import cc.redberry.pipe.OutputPort;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -20,13 +19,9 @@ public abstract class AbstractRandomAccessReader<T> implements OutputPort<T> {
      */
     protected long currentRecordNumber;
 
-    public AbstractRandomAccessReader(FileIndex fileIndex, RandomAccessFile file) {
+    protected AbstractRandomAccessReader(FileIndex fileIndex, RandomAccessFile file) {
         this.fileIndex = fileIndex;
         this.file = file;
-    }
-
-    public AbstractRandomAccessReader(FileIndex fileIndex, String file) throws FileNotFoundException {
-        this(fileIndex, new RandomAccessFile(file, "r"));
     }
 
     public void seekToRecord(long recordNumber) throws IOException {
@@ -62,14 +57,18 @@ public abstract class AbstractRandomAccessReader<T> implements OutputPort<T> {
 
     public T take(long recordNumber) throws IOException {
         seekToRecord(recordNumber);
-        ++currentRecordNumber;
-        return take0();
+        T t = take0();
+        if (t != null)
+            ++currentRecordNumber;
+        return t;
     }
 
     @Override
     public T take() {
-        ++currentRecordNumber;
-        return take0();
+        T t = take0();
+        if (t != null)
+            ++currentRecordNumber;
+        return t;
     }
 
     protected abstract T take0();

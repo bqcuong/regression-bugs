@@ -30,7 +30,6 @@ public final class SingleFastqReader implements SingleReader, CanReportProgress,
      */
     private final boolean lazyReads;
     private final QualityFormat format;
-    private final CompressionType compressionType;
     private final CountingInputStream countingInputStream;
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private final InputStream inputStream;
@@ -38,8 +37,8 @@ public final class SingleFastqReader implements SingleReader, CanReportProgress,
     private byte[] buffer;
     private int currentBufferSize;
     private int pointer;
-    private int descriptionBegin, sequenceBegin, sequenceEnd, qualityBegin, qualityEnd;
-    private long idCounter;
+    int descriptionBegin, sequenceBegin, sequenceEnd, qualityBegin, qualityEnd;
+    long idCounter;
 
 
     /**
@@ -183,7 +182,6 @@ public final class SingleFastqReader implements SingleReader, CanReportProgress,
     public SingleFastqReader(InputStream stream, QualityFormat format, CompressionType ct,
                              boolean guessQualityFormat, int bufferSize, boolean lazyReads) throws IOException {
         this.bufferSize = bufferSize;
-        this.compressionType = ct;
         this.lazyReads = lazyReads;
         //Check for null
         if (stream == null)
@@ -222,6 +220,11 @@ public final class SingleFastqReader implements SingleReader, CanReportProgress,
     public SingleFastqReader setTotalSize(long totalSize) {
         this.totalSize = totalSize;
         return this;
+    }
+
+    public QualityFormat getQualityFormat() {
+        assert format != null;
+        return format;
     }
 
     @Override
