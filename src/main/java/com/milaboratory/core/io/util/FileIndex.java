@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
+/**
+ * Index of file that contains sequential records.
+ */
 public final class FileIndex {
     /**
      * For serialization

@@ -5,6 +5,9 @@ import gnu.trove.list.array.TLongArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * FileIndex builder.
+ */
 public final class FileIndexBuilder {
     /**
      * Step between records in file.
@@ -119,7 +122,7 @@ public final class FileIndexBuilder {
      * @return the number of the last record that is indexed by this index builder
      */
     public long lastAccessibleRecordNumber() {
-        return startingRecordNumber + step * index.size();
+        return startingRecordNumber + step * (index.size() - 1);
     }
 
     /**

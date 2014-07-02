@@ -36,7 +36,7 @@ public class SingleFastqIndexer implements SingleReader,
         SingleRead read = reader.take();
         if (read == null)
             return null;
-        indexBuilder.appendNextRecord(reader.qualityEnd - reader.descriptionBegin + 2);
+        indexBuilder.appendNextRecord(reader.recordsReader.qualityEnd - reader.recordsReader.descriptionBegin + 2);
         return read;
     }
 
