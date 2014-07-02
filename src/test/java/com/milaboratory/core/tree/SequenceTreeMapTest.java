@@ -3,7 +3,6 @@ package com.milaboratory.core.tree;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.sequence.*;
 import com.milaboratory.util.Bit2Array;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937a;
@@ -130,7 +129,7 @@ public class SequenceTreeMapTest {
 
         for (byte mode = 0; mode < 3; ++mode) {
 
-            BranchingEnumerator<Integer, NucleotideSequence> e =
+            BranchingEnumerator<NucleotideSequence, Integer> e =
                     new BranchingEnumerator<>(reference, null);
             e.setup(mode, false);
             e.reset(0, map.root);
@@ -256,7 +255,7 @@ public class SequenceTreeMapTest {
         //map.put(sequence1, 1);
         map.put(sequence2, 2);
 
-        NeighborhoodIterator<Integer, NucleotideSequence> neighborhoodIterator =
+        NeighborhoodIterator<NucleotideSequence, Integer> neighborhoodIterator =
                 map.getNeighborhoodIterator(sequence1, 1.0,
                         new double[]{0.1, 0.1, Double.MAX_VALUE},
                         new int[]{0, 2, 0}, null);
@@ -274,7 +273,7 @@ public class SequenceTreeMapTest {
         //map.put(sequence1, 1);
         map.put(sequence2, 2);
 
-        NeighborhoodIterator<Integer, NucleotideSequence> neighborhoodIterator =
+        NeighborhoodIterator<NucleotideSequence, Integer> neighborhoodIterator =
                 map.getNeighborhoodIterator(sequence1, 1.0,
                         new double[]{0.1, 0.1, Double.MAX_VALUE},
                         new int[]{2, 0, 0}, null);
@@ -292,7 +291,7 @@ public class SequenceTreeMapTest {
         //map.put(sequence1, 1);
         map.put(sequence2, 2);
 
-        NeighborhoodIterator<Integer, NucleotideSequence> neighborhoodIterator =
+        NeighborhoodIterator<NucleotideSequence, Integer> neighborhoodIterator =
                 map.getNeighborhoodIterator(sequence1, 1.0,
                         new double[]{0.1, 0.1, 0.1},
                         new int[]{0, 0, 2}, null);
@@ -311,7 +310,7 @@ public class SequenceTreeMapTest {
 
         NucleotideSequence sequence = new NucleotideSequence("attacacaattaatttacacacacaattacaca");
 
-        NeighborhoodIterator<Integer, NucleotideSequence> neighborhoodIterator =
+        NeighborhoodIterator<NucleotideSequence, Integer> neighborhoodIterator =
                 map.getNeighborhoodIterator(sequence, new TreeSearchParameters(new int[]{1, 1, 0},
                                 new double[]{0.1, 0.1, Double.MAX_VALUE}, 0.2),
                         new MutationGuide<NucleotideSequence>() {
@@ -346,7 +345,7 @@ public class SequenceTreeMapTest {
 
         NucleotideSequence sequence = new NucleotideSequence("attacacaattaataacacacacaattacaca");
 
-        NeighborhoodIterator<Integer, NucleotideSequence> neighborhoodIterator =
+        NeighborhoodIterator<NucleotideSequence, Integer> neighborhoodIterator =
                 map.getNeighborhoodIterator(sequence, 0.2,
                         new double[]{0.1, 0.1, Double.MAX_VALUE},
                         new int[]{1, 1, 0}, new MutationGuide<NucleotideSequence>() {
@@ -381,7 +380,7 @@ public class SequenceTreeMapTest {
 
         NucleotideSequence sequence = new NucleotideSequence("attacacaattaatacacacacaattacaca");
 
-        NeighborhoodIterator<Integer, NucleotideSequence> neighborhoodIterator =
+        NeighborhoodIterator<NucleotideSequence, Integer> neighborhoodIterator =
                 map.getNeighborhoodIterator(sequence, 0.2,
                         new double[]{0.1, 0.1, 0.1},
                         new int[]{1, 1, 1}, new MutationGuide<NucleotideSequence>() {
@@ -425,7 +424,7 @@ public class SequenceTreeMapTest {
             }
         };
 
-        NeighborhoodIterator<Integer, IncompleteAminoAcidSequence> ni = map.getNeighborhoodIterator(new IncompleteAminoAcidSequence("AASFD"), 1, 1, 1, 1, guide);
+        NeighborhoodIterator<IncompleteAminoAcidSequence, Integer> ni = map.getNeighborhoodIterator(new IncompleteAminoAcidSequence("AASFD"), 1, 1, 1, 1, guide);
 
         while ((i = ni.next()) != null) {
             set.add(i);
@@ -641,7 +640,7 @@ public class SequenceTreeMapTest {
         }
 
         for (int i = 0; i < clusters.length; ++i) {
-            NeighborhoodIterator<Integer, S> neighborhoodIterator =
+            NeighborhoodIterator<S, Integer> neighborhoodIterator =
                     sequenceTreeMap.getNeighborhoodIterator(clusters[i].sequence, 1.0,
                             new double[]{0.1, 0.1, 0.1},
                             errors, null);
@@ -729,7 +728,7 @@ public class SequenceTreeMapTest {
             }
 
             for (int i = 0; i < clusters.length; ++i) {
-                NeighborhoodIterator<Integer, NucleotideSequence> neighborhoodIterator =
+                NeighborhoodIterator<NucleotideSequence, Integer> neighborhoodIterator =
                         sequenceTreeMap.getNeighborhoodIterator(clusters[i].sequence, 1.0,
                                 new double[]{0.1, 0.1, Double.MAX_VALUE},
                                 new int[]{2, 2, 0}, null);
@@ -803,7 +802,7 @@ public class SequenceTreeMapTest {
     public void testRandomizedTest3() throws Exception {
         for (int f = 0; f < repeats * 6; ++f) {
             //System.out.println(f);
-            Alphabet<Sequence<?>> alphabet = getAlphabetSequence(f);
+            Alphabet alphabet = getAlphabetSequence(f);
 
             for (byte t = 0; t < 3; ++t) {
                 final Sequence seqRight = randomSequence(alphabet, 50, 100),
@@ -812,7 +811,7 @@ public class SequenceTreeMapTest {
                         goodSequence = cat(seqLeft, spacer, seqRight);
 
 
-                SequenceTreeMap<Sequence<?>, Sequence> map = new SequenceTreeMap<>(alphabet);
+                SequenceTreeMap map = new SequenceTreeMap(alphabet);
 
                 int[] mut = new int[3];
                 mut[t] = 3;
@@ -846,10 +845,10 @@ public class SequenceTreeMapTest {
                 SequenceTreeMap.Node<Sequence> n;
 
                 //Left run
-                NeighborhoodIterator<Sequence, Sequence<?>> neighborhoodIterator =
+                NeighborhoodIterator neighborhoodIterator =
                         map.getNeighborhoodIterator(goodSequence, 1.3,
                                 new double[]{0.1, 0.1, 0.1},
-                                mut, new MutationGuide<Sequence<?>>() {
+                                mut, new MutationGuide() {
                                     @Override
                                     public boolean allowMutation(Sequence ref, int position, byte type, byte code) {
                                         return position < seqLeft.size() + 100;
@@ -871,7 +870,7 @@ public class SequenceTreeMapTest {
                 neighborhoodIterator =
                         map.getNeighborhoodIterator(goodSequence, 1.3,
                                 new double[]{0.1, 0.1, 0.1},
-                                mut, new MutationGuide<Sequence<?>>() {
+                                mut, new MutationGuide() {
                                     @Override
                                     public boolean allowMutation(Sequence ref, int position, byte type, byte code) {
                                         return position > seqLeft.size() + 100;

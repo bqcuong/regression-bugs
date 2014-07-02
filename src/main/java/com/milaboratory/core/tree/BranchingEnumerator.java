@@ -5,7 +5,7 @@ import com.milaboratory.core.sequence.Sequence;
 /**
  * Created by dbolotin on 25/06/14.
  */
-final class BranchingEnumerator<O, S extends Sequence<? extends S>> {
+final class BranchingEnumerator<S extends Sequence<S>, O> {
     //reference sequence
     final S reference;
     final MutationGuide guide;

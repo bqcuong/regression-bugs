@@ -81,7 +81,7 @@ public final class Clustering {
                 nextLayer.clear();
                 for (Cluster<T> previousCluster : previousLayer) {
 
-                    NeighborhoodIterator<T[], S> iterator = tree
+                    NeighborhoodIterator<S, T[]> iterator = tree
                             .getNeighborhoodIterator(sequenceExtractor
                                     .getSequence(previousCluster.head), params, null);
                     processedNodes.clear();

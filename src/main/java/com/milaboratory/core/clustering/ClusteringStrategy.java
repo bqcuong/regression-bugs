@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 public interface ClusteringStrategy<T, S extends Sequence<S>> extends Comparator<T> {
     boolean canAddToCluster(Cluster<T> cluster, T minorObject,
-                            NeighborhoodIterator<T[], S> iterator);
+                            NeighborhoodIterator<S, T[]> iterator);
 
     TreeSearchParameters getSearchParameters();
 

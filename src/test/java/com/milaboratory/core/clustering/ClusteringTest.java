@@ -298,7 +298,7 @@ public class ClusteringTest {
         @Override
         public boolean canAddToCluster(Cluster<TestObject> cluster,
                                        TestObject minorObject,
-                                       NeighborhoodIterator<TestObject[], NucleotideSequence> iterator) {
+                                       NeighborhoodIterator<NucleotideSequence, TestObject[]> iterator) {
             return true;
         }
 
@@ -324,7 +324,7 @@ public class ClusteringTest {
         }
 
         @Override
-        public boolean canAddToCluster(Cluster<TestObject> cluster, TestObject minorObject, NeighborhoodIterator<TestObject[], NucleotideSequence> iterator) {
+        public boolean canAddToCluster(Cluster<TestObject> cluster, TestObject minorObject, NeighborhoodIterator<NucleotideSequence, TestObject[]> iterator) {
             return cluster.head.color == minorObject.color;
         }
 

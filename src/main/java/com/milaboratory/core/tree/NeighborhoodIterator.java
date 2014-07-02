@@ -10,7 +10,7 @@ import java.util.Iterator;
 /**
  * Created by dbolotin on 25/06/14.
  */
-public final class NeighborhoodIterator<O, S extends Sequence<? extends S>> {
+public final class NeighborhoodIterator<S extends Sequence<S>, O> {
     //Reference sequence
     final S reference;
 
@@ -22,7 +22,7 @@ public final class NeighborhoodIterator<O, S extends Sequence<? extends S>> {
     //Runtime data
     int branchingSequenceIndex = 0, lastEnumerator;
     SequenceTreeMap.Node<O> root;
-    BranchingEnumerator<O, S>[] branchingEnumerators = new BranchingEnumerator[1];
+    BranchingEnumerator<S, O>[] branchingEnumerators = new BranchingEnumerator[1];
 
     /**
      * Constrictor for root NeighborhoodIterator iterator.
@@ -164,7 +164,7 @@ public final class NeighborhoodIterator<O, S extends Sequence<? extends S>> {
                 .ensureCapacity(lastEnumerator + 1));
 
         for (int i = 0; i <= lastEnumerator; ++i) {
-            BranchingEnumerator<O, S> currentBE = branchingEnumerators[i];
+            BranchingEnumerator<S, O> currentBE = branchingEnumerators[i];
             int position = currentBE.getPosition();
             switch (getCurrentBranchingSequence()[i]) {
                 case 0:
@@ -257,11 +257,11 @@ public final class NeighborhoodIterator<O, S extends Sequence<? extends S>> {
         };
     }
 
-    private static final class NeighbourhoodIteratorWrapper<O, S extends Sequence<? extends S>> implements java.util.Iterator<O> {
-        final NeighborhoodIterator<O, S> iterator;
+    private static final class NeighbourhoodIteratorWrapper<O, S extends Sequence<S>> implements java.util.Iterator<O> {
+        final NeighborhoodIterator<S, O> iterator;
         O next;
 
-        private NeighbourhoodIteratorWrapper(NeighborhoodIterator<O, S> iterator) {
+        private NeighbourhoodIteratorWrapper(NeighborhoodIterator<S, O> iterator) {
             this.iterator = iterator;
         }
 

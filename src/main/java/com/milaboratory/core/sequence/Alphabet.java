@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonSerialize(using = Alphabets.Serializer.class)
 @JsonDeserialize(using = Alphabets.Deserializer.class)
-public abstract class Alphabet<S extends Sequence<? extends S>> {
+public abstract class Alphabet<S extends Sequence<S>> {
     private final String alphabetName;
 
     protected Alphabet(String alphabetName) {

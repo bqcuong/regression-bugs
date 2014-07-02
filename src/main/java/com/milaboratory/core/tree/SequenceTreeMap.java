@@ -19,7 +19,7 @@ import java.util.Map;
  * @param <S> - key type (must be a sequence)
  * @param <O> - value type
  */
-public class SequenceTreeMap<S extends Sequence<? extends S>, O> {
+public class SequenceTreeMap<S extends Sequence<S>, O> {
     public final Alphabet<S> alphabet;
     public final Node<O> root;
 
@@ -144,25 +144,25 @@ public class SequenceTreeMap<S extends Sequence<? extends S>, O> {
         };
     }
 
-    public NeighborhoodIterator<O, S> getNeighborhoodIterator(S reference, int mismatches, int deletions, int insertions,
+    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, int mismatches, int deletions, int insertions,
                                                               int totalErrors) {
         return getNeighborhoodIterator(reference,
                 new TreeSearchParameters(mismatches, deletions, insertions, totalErrors));
     }
 
-    public NeighborhoodIterator<O, S> getNeighborhoodIterator(S reference, int mismatches, int deletions, int insertions,
+    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, int mismatches, int deletions, int insertions,
                                                               int totalErrors, MutationGuide<S> guide) {
         return getNeighborhoodIterator(reference,
                 new TreeSearchParameters(mismatches, deletions, insertions, totalErrors),
                 guide);
     }
 
-    public NeighborhoodIterator<O, S> getNeighborhoodIterator(S reference, int mismatches, int deletions, int insertions) {
+    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, int mismatches, int deletions, int insertions) {
         return getNeighborhoodIterator(reference,
                 new TreeSearchParameters(mismatches, deletions, insertions));
     }
 
-    public NeighborhoodIterator<O, S> getNeighborhoodIterator(S reference, double maxPenalty,
+    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, double maxPenalty,
                                                               double[] penalties, int[] maxErrors,
                                                               MutationGuide<S> guide) {
         return getNeighborhoodIterator(reference,
@@ -170,11 +170,11 @@ public class SequenceTreeMap<S extends Sequence<? extends S>, O> {
                 guide);
     }
 
-    public NeighborhoodIterator<O, S> getNeighborhoodIterator(S reference, TreeSearchParameters paramenters) {
+    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, TreeSearchParameters paramenters) {
         return getNeighborhoodIterator(reference, paramenters, null);
     }
 
-    public NeighborhoodIterator<O, S> getNeighborhoodIterator(S reference, TreeSearchParameters paramenters,
+    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, TreeSearchParameters paramenters,
                                                               MutationGuide<S> guide) {
         return new NeighborhoodIterator<>(reference, paramenters, guide, root);
     }

@@ -107,17 +107,17 @@ public class TestUtil {
         return "" + DECIMAL_FORMAT.format(v) + "m";
     }
 
-    public static <S extends Sequence<? extends S>> S randomSequence(Alphabet<S> alphabet,
+    public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet,
                                                            int minLength, int maxLength) {
         return randomSequence(alphabet, RandomUtil.getThreadLocalRandom(), minLength, maxLength);
     }
 
-    public static <S extends Sequence<? extends S>> S randomSequence(Alphabet<S> alphabet, RandomDataGenerator r,
+    public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomDataGenerator r,
                                                            int minLength, int maxLength) {
         return randomSequence(alphabet, r.getRandomGenerator(), minLength, maxLength);
     }
 
-    public static <S extends Sequence<? extends S>> S randomSequence(Alphabet<S> alphabet, RandomGenerator r,
+    public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomGenerator r,
                                                            int minLength, int maxLength) {
         int length = minLength == maxLength ?
                 minLength : minLength + r.nextInt(maxLength - minLength + 1);
