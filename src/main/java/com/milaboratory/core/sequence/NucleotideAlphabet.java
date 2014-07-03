@@ -26,21 +26,46 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Nucleotide alphabet.
- * <p/>
- * <table> <tr><td>0</td><td>A</td></tr> <tr><td>1</td><td>G</td></tr> <tr><td>2</td><td>C</td></tr>
- * <tr><td>3</td><td>T</td></tr> </table>
+ * An alphabet for nucleotide sequences. This alphabet defines the following mapping:
+ * <br>0 - 'A', 1 - 'G', 2 - 'C', 3 - 'T'.
+ * <p>
+ * This class is a singleton, and the access provided by
+ * {@link com.milaboratory.core.sequence.NucleotideSequence#ALPHABET}
+ * or {@link #INSTANCE}.
+ * </p>
+ * <p>
+ * Nucleotide alphabet contains wildcards as specified in e.g. FASTA format: 'R' for 'A' or 'G',
+ * 'Y' for 'C' or 'T' etc.
+ * </p>
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
+ * @see com.milaboratory.core.sequence.WithWildcards
+ * @see com.milaboratory.core.sequence.Alphabet
+ * @see com.milaboratory.core.sequence.NucleotideSequence
  */
 public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> implements WithWildcards {
+    /**
+     * Adenine byte
+     */
     public static final byte A = 0x00;
+    /**
+     * Guanine byte
+     */
     public static final byte G = 0x01;
+    /**
+     * Cytosine byte
+     */
     public static final byte C = 0x02;
+    /**
+     * Thymine byte
+     */
     public static final byte T = 0x03;
     private static char[] chars = {'A', 'G', 'C', 'T'};
     private static byte[] bytes = {'A', 'G', 'C', 'T'};
+    /**
+     * Singleton instance.
+     */
     final static NucleotideAlphabet INSTANCE = new NucleotideAlphabet();
     private static TCharObjectHashMap<WildcardSymbol> wildcardsMap =
             new WildcardMapBuilder()
@@ -66,10 +91,17 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> imple
         super("nucleotide");
     }
 
-    public static byte getComplement(byte code) {
-        return (code ^= 3);
+    /**
+     * Returns a complement nucleotide.
+     *
+     * @param nucleotide byte value of nucleotide
+     * @return complement nucleotide to the specified one
+     */
+    public static byte getComplement(byte nucleotide) {
+        return (byte) (nucleotide ^ 3);
     }
 
+    @Override
     public byte codeFromSymbol(char symbol) {
         switch (symbol) {
             case 'a':
@@ -88,6 +120,13 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> imple
         return -1;
     }
 
+    /**
+     * Returns a byte-code for UTF-8 nucleotide symbol(i.e. {@code symbol} is a character that is
+     * casted to byte, but not a real nucleotide byte-code).
+     *
+     * @param symbol letter
+     * @return byte-code for nucleotide letter or -1 if this letter does not represent any nucleotide.
+     */
     public static byte codeFromSymbolByte(byte symbol) {
         switch (symbol) {
             case (byte) 'a':
@@ -106,13 +145,27 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> imple
         return -1;
     }
 
+    /**
+     * Returns UTF-8 character corresponding to specified byte-code.
+     *
+     * @param code byte-code of nucleotide
+     * @return UTF-8 character corresponding to specified byte-code
+     */
     public static byte symbolByteFromCode(byte code) {
+        if (code < 0 || code >= chars.length)
+            throw new IllegalArgumentException("Illegal byte-code of nucleotide.");
         return bytes[code];
     }
 
+    /**
+     * Returns a letter corresponding to specified byte-code.
+     *
+     * @param code byte-code of nucleotide
+     * @return letter corresponding to specified byte-code
+     */
     public char symbolFromCode(byte code) {
         if (code < 0 || code >= chars.length)
-            throw new RuntimeException("Wrong code.");
+            throw new IllegalArgumentException("Illegal byte-code of nucleotide.");
         return chars[code];
     }
 

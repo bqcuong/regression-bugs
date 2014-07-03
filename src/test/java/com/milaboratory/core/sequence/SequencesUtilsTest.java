@@ -2,7 +2,7 @@ package com.milaboratory.core.sequence;
 
 import org.junit.Test;
 
-import static com.milaboratory.core.sequence.SequencesUtils.cat;
+import static com.milaboratory.core.sequence.SequencesUtils.concatenate;
 import static org.junit.Assert.assertEquals;
 
 public class SequencesUtilsTest {
@@ -14,7 +14,7 @@ public class SequencesUtilsTest {
                 seq2 = new NucleotideSequence(seq2s),
                 catAssert = new NucleotideSequence(seq1s + seq2s);
 
-        assertEquals(catAssert, cat(seq1, seq2));
-        assertEquals(catAssert.hashCode(), cat(seq1, seq2).hashCode()); //Just in case
+        assertEquals(catAssert, concatenate(seq1, seq2));
+        assertEquals(catAssert.hashCode(), concatenate(seq1, seq2).hashCode()); //Just in case
     }
 }

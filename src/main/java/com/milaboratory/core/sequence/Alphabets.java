@@ -14,12 +14,20 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Container of all defined alphabets.
+ */
 public final class Alphabets {
     private final static Map<String, Alphabet> alphabets = new HashMap<>();
 
     private Alphabets() {
     }
 
+    /**
+     * Register a new alphabet
+     *
+     * @param alphabet alphabet
+     */
     public static void register(Alphabet alphabet) {
         if (alphabets.put(alphabet.getAlphabetName(), alphabet) != null)
             throw new IllegalStateException();
@@ -32,6 +40,12 @@ public final class Alphabets {
         register(IncompleteAlphabet.INCOMPLETE_AMINO_ACID_ALPHABET);
     }
 
+    /**
+     * Returns instance of {@code Alphabet} from its string name.
+     *
+     * @param name string name of alphabet
+     * @return instance of {@code Alphabet} from its string name
+     */
     public static Alphabet getByName(String name) {
         return alphabets.get(name);
     }
@@ -60,7 +74,12 @@ public final class Alphabets {
         }
     }
 
-    public static Collection<Alphabet> getAll(){
+    /**
+     * Returns unmodifiable collection of all registered alphabets.
+     *
+     * @return unmodifiable collection of all registered alphabets
+     */
+    public static Collection<Alphabet> getAll() {
         return Collections.unmodifiableCollection(alphabets.values());
     }
 

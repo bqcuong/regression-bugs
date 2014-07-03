@@ -6,7 +6,7 @@ import java.util.Arrays;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public final class ArraySequenceBuilder<S extends AbstractArraySequence<S>> implements SequenceBuilder<S> {
+final class ArraySequenceBuilder<S extends AbstractArraySequence<S>> implements SequenceBuilder<S> {
     private final AbstractArrayAlphabet<S> alphabet;
     private byte[] data;
     private int size = 0;
@@ -55,7 +55,7 @@ public final class ArraySequenceBuilder<S extends AbstractArraySequence<S>> impl
     public S createAndDestroy() {
         S seq;
 
-        if(data == null)
+        if (data == null)
             return alphabet.createUnsafe(new byte[0]);
 
         if (data.length == size)

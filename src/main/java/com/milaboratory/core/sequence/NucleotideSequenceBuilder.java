@@ -23,12 +23,18 @@ package com.milaboratory.core.sequence;
 import com.milaboratory.util.Bit2Array;
 
 /**
- * Creates {@link NucleotideSequence}.
+ * {@code SequenceBuilder} for nucleotide sequences.
+ *
+ * @see com.milaboratory.core.sequence.NucleotideSequence
+ * @see com.milaboratory.core.sequence.SequenceBuilder
  */
 public final class NucleotideSequenceBuilder implements SequenceBuilder<NucleotideSequence> {
     private Bit2Array storage;
     private int size = 0;
 
+    /**
+     * Creates {@code SequenceBuilder} with empty initial buffer.
+     */
     public NucleotideSequenceBuilder() {
         this.storage = null;
     }
@@ -80,7 +86,7 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     @Override
-    public SequenceBuilder<NucleotideSequence> set(int position, byte letter) {
+    public NucleotideSequenceBuilder set(int position, byte letter) {
         if (position < 0 || position >= size)
             throw new IndexOutOfBoundsException();
         storage.set(position, letter);
@@ -88,14 +94,14 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     @Override
-    public SequenceBuilder<NucleotideSequence> append(byte letter) {
+    public NucleotideSequenceBuilder append(byte letter) {
         ensureInternalCapacity(size + 1);
         storage.set(size++, letter);
         return this;
     }
 
     @Override
-    public SequenceBuilder<NucleotideSequence> append(NucleotideSequence sequence) {
+    public NucleotideSequenceBuilder append(NucleotideSequence sequence) {
         ensureInternalCapacity(size + sequence.size());
         storage.copyFrom(sequence.data, 0, size, sequence.size());
         size += sequence.size();
@@ -103,7 +109,7 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     @Override
-    public SequenceBuilder<NucleotideSequence> clone() {
+    public NucleotideSequenceBuilder clone() {
         return new NucleotideSequenceBuilder(storage == null ? null : storage.clone(), size);
     }
 }

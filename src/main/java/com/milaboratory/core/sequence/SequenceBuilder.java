@@ -25,6 +25,7 @@ package com.milaboratory.core.sequence;
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
+ * @see com.milaboratory.core.sequence.Sequence
  */
 public interface SequenceBuilder<S extends Sequence> {
     /**
@@ -53,7 +54,7 @@ public interface SequenceBuilder<S extends Sequence> {
      * Sets letter at the specified position.
      *
      * @param position position {@code positin >=0 && positin < size()}
-     * @param letter letter
+     * @param letter   letter
      * @return this
      */
     SequenceBuilder<S> set(int position, byte letter);

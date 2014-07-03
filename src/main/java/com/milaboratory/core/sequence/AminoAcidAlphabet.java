@@ -21,10 +21,18 @@
 package com.milaboratory.core.sequence;
 
 /**
- * AA alphabet with additional symbols.<br/> "~" - non full codon. 2 or 1 nucleotides.<br/> "-" - no nucleotides
+ * Amino acid alphabet with additional symbols.<br/> "~" - non full codon. 2 or 1 nucleotides.<br/> "-" - no nucleotides
+ * <p>
+ * This class is a singleton, and the access provided by
+ * {@link com.milaboratory.core.sequence.AminoAcidSequence#ALPHABET}
+ * or {@link #INSTANCE}.
+ * </p>
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
+ * @see com.milaboratory.core.sequence.Alphabet
+ * @see com.milaboratory.core.sequence.AminoAcidSequence
+ * @see com.milaboratory.core.sequence.Sequence
  */
 public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> {
     static final AminoAcidAlphabet INSTANCE = new AminoAcidAlphabet();

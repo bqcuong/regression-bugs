@@ -20,22 +20,40 @@
  */
 package com.milaboratory.core.sequence;
 
-import java.util.Arrays;
-
 /**
- * Main implementation of amino acid sequence.
+ * Representation of amino acid sequences. Methods for translating nucleotide to amino acid and vice versa are
+ * placed in {@link com.milaboratory.core.sequence.Translator}
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
+ * @see com.milaboratory.core.sequence.Sequence
+ * @see com.milaboratory.core.sequence.AminoAcidAlphabet
+ * @see com.milaboratory.core.sequence.Translator
  */
 public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequence> {
+    /**
+     * Empty sequence
+     */
     public static final AminoAcidSequence EMPTY = new AminoAcidSequence(new byte[0], true);
+    /**
+     * Amino acid alphabet
+     */
     public static final AminoAcidAlphabet ALPHABET = AminoAcidAlphabet.INSTANCE;
 
+    /**
+     * Creates sequence with specified data.
+     *
+     * @param data byte array of codons
+     */
     public AminoAcidSequence(byte[] data) {
         super(data.clone());
     }
 
+    /**
+     * Creates amino acid sequence from its string representation (case insensitive).
+     *
+     * @param sequence string representation of amino acid sequence (case insensitive)
+     */
     public AminoAcidSequence(String sequence) {
         super(sequence);
     }
@@ -50,6 +68,11 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return ALPHABET;
     }
 
+    /**
+     * Returns whether this sequence contains stop codons
+     *
+     * @return whether this sequence contains stop codons
+     */
     public boolean containStops() {
         for (byte b : data)
             if (b == AminoAcidAlphabet.Stop)
@@ -57,6 +80,11 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return false;
     }
 
+    /**
+     * Returns the number of stop codons that contained in this sequence
+     *
+     * @return number of stop codons that contained in this sequence
+     */
     public int numberOfStops() {
         int count = 0;
         for (byte b : data)

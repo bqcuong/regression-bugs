@@ -10,7 +10,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static com.milaboratory.core.sequence.SequencesUtils.cat;
+import static com.milaboratory.core.sequence.SequencesUtils.concatenate;
 import static com.milaboratory.test.TestUtil.its;
 import static com.milaboratory.test.TestUtil.randomSequence;
 import static org.hamcrest.CoreMatchers.not;
@@ -808,7 +808,7 @@ public class SequenceTreeMapTest {
                 final Sequence seqRight = randomSequence(alphabet, 50, 100),
                         seqLeft = randomSequence(alphabet, 50, 100),
                         spacer = randomSequence(alphabet, 200, 200),
-                        goodSequence = cat(seqLeft, spacer, seqRight);
+                        goodSequence = concatenate(seqLeft, spacer, seqRight);
 
 
                 SequenceTreeMap map = new SequenceTreeMap(alphabet);
@@ -824,20 +824,20 @@ public class SequenceTreeMapTest {
                 for (int i = 0; i < 100; ++i) {
                     //Left Error
                     seq1 = introduceErrors(seqLeft, mut);
-                    mseq = cat(seq1, spacer, seqRight);
+                    mseq = concatenate(seq1, spacer, seqRight);
                     lErr.add(mseq);
                     map.put(mseq, mseq);
 
                     //Right Error
                     seq1 = introduceErrors(seqRight, mut);
-                    mseq = cat(seqLeft, spacer, seq1);
+                    mseq = concatenate(seqLeft, spacer, seq1);
                     rErr.add(mseq);
                     map.put(mseq, mseq);
 
                     //LR Error
                     seq1 = introduceErrors(seqLeft, mut);
                     seq2 = introduceErrors(seqRight, mut);
-                    mseq = cat(seq1, spacer, seq2);
+                    mseq = concatenate(seq1, spacer, seq2);
                     lrErr.add(mseq);
                     map.put(mseq, mseq);
                 }

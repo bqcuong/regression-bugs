@@ -24,10 +24,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * An interface for sequence letters alphabet. (Amino acid, nucleotide, etc...)
+ * Interface for sequence letters alphabet (amino acid, nucleotide, etc.). {@code Alphabet} is responsible for
+ * correspondence between char representation of elements (e.g. 'A', 'T', 'G', 'C' in case of
+ * {@link com.milaboratory.core.sequence.NucleotideAlphabet}) and their internal byte representation.
+ * <p>Implementation note: all alphabets should be singletons.</p>
  *
+ * @param <S> type of sequences that correspond to this alphabet
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
+ * @see com.milaboratory.core.sequence.Sequence
+ * @see com.milaboratory.core.sequence.SequenceBuilder
+ * @see com.milaboratory.core.sequence.NucleotideAlphabet
+ * @see com.milaboratory.core.sequence.NucleotideSequence
  */
 @JsonSerialize(using = Alphabets.Serializer.class)
 @JsonDeserialize(using = Alphabets.Deserializer.class)
@@ -47,17 +55,18 @@ public abstract class Alphabet<S extends Sequence<S>> {
     public abstract char symbolFromCode(byte code);
 
     /**
-     * Gets the number of letters in the alphabet
+     * Gets the number of letters in this alphabet
      *
-     * @return the number of letters in the alphabet
+     * @return the number of letters in this alphabet
      */
     public abstract int size();
 
     /**
-     * Gets the code corresponding to given symbol or -1 if there is no such symbol in the alphabets
+     * Gets the binary code corresponding to given symbol (case insensitive) or -1 if there
+     * is no such symbol in this alphabet
      *
      * @param symbol symbol to convert
-     * @return binary code of the symbol or -1 if there is no such symbol in the alphabet
+     * @return binary code of the symbol (case insensitive) or -1 if there is no such symbol in the alphabet
      */
     public abstract byte codeFromSymbol(char symbol);
 
@@ -79,7 +88,13 @@ public abstract class Alphabet<S extends Sequence<S>> {
         return alphabetName;
     }
 
-    public S build(String string) {
+    /**
+     * Parses string representation of sequence.
+     *
+     * @param string string representation of sequence
+     * @return sequence
+     */
+    public S parse(String string) {
         SequenceBuilder<S> builder = getBuilder().ensureCapacity(string.length());
         for (int i = 0; i < string.length(); ++i)
             builder.append(codeFromSymbol(string.charAt(i)));
@@ -87,8 +102,12 @@ public abstract class Alphabet<S extends Sequence<S>> {
     }
 
     @Override
-    public final int hashCode() { return super.hashCode(); }
+    public final int hashCode() {
+        return super.hashCode();
+    }
 
     @Override
-    public final boolean equals(Object obj) { return obj == this; }
+    public final boolean equals(Object obj) {
+        return obj == this;
+    }
 }

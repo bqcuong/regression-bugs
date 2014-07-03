@@ -21,6 +21,8 @@
 package com.milaboratory.core.sequence;
 
 /**
+ * Utility methods for sequences.
+ *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  */
@@ -81,15 +83,14 @@ public final class SequencesUtils {
 //        return new String(chars);
 //    }
 
-    public static <S extends Sequence<S>> S catN(S... sequences) {
-        for (S seq : sequences)
-            if (seq == null)
-                return null;
-
-        return cat(sequences);
-    }
-
-    public static <S extends Sequence<S>> S cat(S... sequences) {
+    /**
+     * Returns a concatenation of all specified sequences.
+     *
+     * @param sequences array of sequences
+     * @param <S>       type os sequences
+     * @return concatenation of all specified sequences
+     */
+    public static <S extends Sequence<S>> S concatenate(S... sequences) {
         if (sequences.length == 0)
             throw new IllegalArgumentException("Zero arguments");
 

@@ -9,11 +9,19 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 /**
+ * Representation of nucleotide sequence quality based on phred quality scores.
+ *
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
 public final class SequenceQuality implements Serializable {
+    /**
+     * Default value of good quality
+     */
     public static final byte GOOD_QUALITY_VALUE = (byte) 34;
+    /**
+     * Default value of bad quality
+     */
     public static final byte BAD_QUALITY_VALUE = (byte) 2;
 
     private static final long serialVersionUID = 1L;
@@ -67,7 +75,12 @@ public final class SequenceQuality implements Serializable {
     }
 
 
-    public byte[] getInnerData() {
+    /**
+     * Returns an underlying array of bytes.
+     *
+     * @return underlying array of bytes
+     */
+    public byte[] asArray() {
         return data.clone();
     }
 
@@ -295,9 +308,4 @@ public final class SequenceQuality implements Serializable {
     public static SequenceQuality create(QualityFormat format, byte[] data, boolean check) {
         return create(format, data, 0, data.length, check);
     }
-
-    public static void arraycopy(SequenceQuality src, int srcPos, byte[] dest, int destPos, int length) {
-        System.arraycopy(src.data, srcPos, dest, destPos, length);
-    }
-
 }

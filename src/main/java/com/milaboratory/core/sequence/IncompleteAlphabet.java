@@ -1,8 +1,15 @@
 package com.milaboratory.core.sequence;
 
 /**
+ * Alphabet fot incomplete sequences.
+ *
+ * @param <IS> type of incomplete sequence
+ * @param <S>  type of sequence for incomplete sequence is defined: for example, if IS is
+ *             {@code IncompleteNucleotideSequence}, then S is {@code NucleotideSequence}
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
+ * @see com.milaboratory.core.sequence.Alphabet
+ * @see com.milaboratory.core.sequence.IncompleteSequence
  */
 public abstract class IncompleteAlphabet<IS extends IncompleteSequence<IS, S>, S extends Sequence<S>>
         extends AbstractArrayAlphabet<IS> {
@@ -51,10 +58,20 @@ public abstract class IncompleteAlphabet<IS extends IncompleteSequence<IS, S>, S
         return unknownLetterCode + 1;
     }
 
+    /**
+     * Returns binary code for unknown letter.
+     *
+     * @return binary code for unknown letter.
+     */
     public byte getUnknownLetterCode() {
         return unknownLetterCode;
     }
 
+    /**
+     * Returns an alphabet for parent type of sequence.
+     *
+     * @return alphabet for parent type of sequence
+     */
     public Alphabet<S> getOrigin() {
         return alphabet;
     }

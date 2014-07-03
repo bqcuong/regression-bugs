@@ -26,29 +26,58 @@ import com.milaboratory.util.Bit2Array;
 import java.io.Serializable;
 
 /**
- * Nucleotide sequence.
+ * Representation of nucleotide sequence.
+ * <p>
+ * Implementation note: the array of data is packed into a bit array ({@link com.milaboratory.util.Bit2Array})
+ * for memory saving.
+ * </p>
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
+ * @see com.milaboratory.core.sequence.Sequence
+ * @see com.milaboratory.core.sequence.NucleotideAlphabet
  */
 public final class NucleotideSequence extends Sequence<NucleotideSequence> implements Serializable {
+    /**
+     * Empty instance
+     */
     public static final NucleotideSequence EMPTY = new NucleotideSequence("");
+    /**
+     * Nucleotide alphabet
+     */
     public static final NucleotideAlphabet ALPHABET = NucleotideAlphabet.INSTANCE;
     final Bit2Array data;
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Creates nucleotide sequence from its string representation (e.g. "ATCGG" or "atcgg"). If string contains wildcards
+     * (like "N"), then they will be replaced by "A".
+     *
+     * @param sequence string representation of sequence (case insensitive)
+     */
     public NucleotideSequence(String sequence) {
         data = new Bit2Array(sequence.length());
         for (int i = 0; i < sequence.length(); ++i)
             data.set(i, ALPHABET.codeFromSymbol(sequence.charAt(i)));
     }
 
+    /**
+     * Creates nucleotide sequence from char array of nucleotides (e.g. ['A','T','C','G','G']). If sequence contains
+     * wildcards (like "N"), then they will be replaced by "A".
+     *
+     * @param sequence char array of nucleotides
+     */
     public NucleotideSequence(char[] sequence) {
         data = new Bit2Array(sequence.length);
         for (int i = 0; i < sequence.length; ++i)
             data.set(i, ALPHABET.codeFromSymbol(sequence[i]));
     }
 
+    /**
+     * Creates nucleotide sequence from specified {@code Bit2Array} (will be copied in constructor).
+     *
+     * @param data Bit2Array
+     */
     public NucleotideSequence(Bit2Array data) {
         this.data = data.clone();
     }
@@ -99,6 +128,11 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
         return new NucleotideSequence(transformToRC(data, 0, data.size()), true);
     }
 
+    /**
+     * Returns a copy of inner data container.
+     *
+     * @return a copy of inner data container
+     */
     public Bit2Array getInnerData() {
         return data.clone();
     }
@@ -122,6 +156,14 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
         return data.equals(((NucleotideSequence) o).data);
     }
 
+    /**
+     * Creates nucleotide sequence from specified byte array.
+     *
+     * @param sequence byte array
+     * @param offset   offset in {@code sequence}
+     * @param length   length of resulting seqeunce
+     * @return nucleotide sequence
+     */
     public static NucleotideSequence fromSequence(byte[] sequence, int offset, int length) {
         Bit2Array storage = new Bit2Array(length);
         for (int i = 0; i < length; ++i)
