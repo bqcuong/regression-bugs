@@ -220,6 +220,14 @@ public final class Range implements Serializable {
             return absolutePosition - lower;
     }
 
+    public Range getRelativeRangeOf(Range range){
+        int from = convertBoundaryToRelativePosition(range.getFrom()),
+        to  = convertBoundaryToRelativePosition(range.getTo());
+        if (from == -1 || to == -1)
+            return null;
+        return new Range(from, to);
+    }
+
     public int[] convertBoundariesToRelativePosition(int... absolutePositions) {
         int[] result = new int[absolutePositions.length];
 

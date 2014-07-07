@@ -79,14 +79,11 @@ public class FastaReaderTest {
                     //next line for sequence
                     seq[j] = seqExp[j] = '\n';
                     --qPointer;
-                } else if (j % 5 == 0) {//wildcard
+                } else if (withWildcards && j % 5 == 0) {//wildcard
                     WildcardSymbol wildcard = wildcards[rnd.nextInt(wildcards.length)];
                     if (NucleotideSequence.ALPHABET.codeFromSymbol(wildcard.getSymbol()) == -1) {
                         seq[j] = wildcard.getSymbol();
-                        if (withWildcards)
-                            seqExp[j] = NucleotideSequence.ALPHABET.symbolFromCode(wildcard.getUniformlyDistributedSymbol(id));
-                        else
-                            seqExp[j] = NucleotideSequence.ALPHABET.symbolFromCode(FastaReader.DEFAULT_WILDCARD);
+                        seqExp[j] = NucleotideSequence.ALPHABET.symbolFromCode(wildcard.getUniformlyDistributedSymbol(id));
                         qualityData[j + qPointer] = SequenceQuality.BAD_QUALITY_VALUE;
                     }
                 }

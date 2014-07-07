@@ -22,7 +22,7 @@ public final class SequenceQuality implements Serializable {
     /**
      * Default value of bad quality
      */
-    public static final byte BAD_QUALITY_VALUE = (byte) 2;
+    public static final byte BAD_QUALITY_VALUE = (byte) 0;
 
     private static final long serialVersionUID = 1L;
     private final byte[] data;

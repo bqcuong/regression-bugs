@@ -7,6 +7,8 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well1024a;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,12 +40,14 @@ public class RandomAccessFastqReaderTest {
     public void test2() throws Exception {
         File sample = new File(SingleFastqReaderTest.class.getClassLoader().getResource("sequences/sample_r1.fastq").toURI());
         SingleFastqReader reader = new SingleFastqReader(sample);
-
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         for (int step = 1; step < 5; ++step) {
             SingleFastqIndexer indexer = new SingleFastqIndexer(reader, step);
             while (indexer.take() != null)
                 indexer.take();
             FileIndex index = indexer.createIndex();
+            index.write(outputStream);
+            index = FileIndex.read(new ByteArrayInputStream(outputStream.toByteArray()));
 
             reader = new SingleFastqReader(sample);
             RandomAccessFastqReader rreader = new RandomAccessFastqReader(index, sample, false);
@@ -78,7 +82,6 @@ public class RandomAccessFastqReaderTest {
     @Test
     public void test4() throws Exception {
         File sample = new File(SingleFastqReaderTest.class.getClassLoader().getResource("sequences/sample_r1.fastq").toURI());
-        RandomGenerator rnd = new Well1024a();
         for (int step = 1; step < 5; ++step) {
             SingleRead[] reads = allReads(sample);
             FileIndex index = buildeIndex(sample, step);

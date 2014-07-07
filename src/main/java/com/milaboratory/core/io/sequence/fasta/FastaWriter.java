@@ -14,7 +14,6 @@ public final class FastaWriter implements AutoCloseable, SingleWriter {
     final int maxLength;
     final OutputStream outputStream;
 
-
     /**
      * Creates the writer
      *

@@ -49,4 +49,9 @@ public class SingleFastqIndexer implements SingleReader,
         indexBuilder.putMetadata("format", reader.getQualityFormat().toString());
         return indexBuilder.createAndDestroy();
     }
+
+    public SingleFastqIndexer readToEnd() {
+        while (take() != null) ;
+        return this;
+    }
 }

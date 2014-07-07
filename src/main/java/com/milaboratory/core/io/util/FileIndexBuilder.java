@@ -103,7 +103,7 @@ public final class FileIndexBuilder {
      * @param recordSize size of record measured in bytes
      * @return this
      */
-    public FileIndexBuilder appendNextRecord(int recordSize) {
+    public FileIndexBuilder appendNextRecord(long recordSize) {
         checkIfDestroyed();
         if (recordSize < 0)
             throw new IllegalArgumentException("Size cannot be negative.");
@@ -131,6 +131,7 @@ public final class FileIndexBuilder {
      * @return {@code FileIndex} assembled by this builder
      */
     public FileIndex createAndDestroy() {
+        checkIfDestroyed();
         destroyed = true;
         return new FileIndex(step, metadata, index, startingRecordNumber, lastAccessibleRecordNumber());
     }

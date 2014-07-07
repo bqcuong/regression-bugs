@@ -5,7 +5,10 @@ import com.milaboratory.core.io.sequence.IllegalFileFormatException;
 import com.milaboratory.core.io.sequence.SingleRead;
 import com.milaboratory.core.io.sequence.SingleReadImpl;
 import com.milaboratory.core.io.sequence.SingleReader;
-import com.milaboratory.core.sequence.*;
+import com.milaboratory.core.sequence.NSequenceWithQuality;
+import com.milaboratory.core.sequence.NucleotideSequence;
+import com.milaboratory.core.sequence.SequenceQuality;
+import com.milaboratory.core.sequence.WildcardSymbol;
 import com.milaboratory.util.Bit2Array;
 
 import java.io.*;
@@ -21,7 +24,6 @@ import static com.milaboratory.core.sequence.NucleotideSequence.ALPHABET;
  * @author Stanislav Poslavsky
  */
 public final class FastaReader implements SingleReader, OutputPortCloseable<SingleRead> {
-    static final byte DEFAULT_WILDCARD = NucleotideAlphabet.A;
     private final AtomicBoolean closed = new AtomicBoolean(false);
     //lets read line by line
     private BufferedReader reader;
@@ -98,9 +100,9 @@ public final class FastaReader implements SingleReader, OutputPortCloseable<Sing
                     WildcardSymbol wildcard = ALPHABET.getWildcardFor(symbol);
                     if (wildcard == null)
                         throw new IllegalFileFormatException("Unknown wildcard: " + symbol + ".");
-                    nucleotide = wildcard.getUniformlyDistributedSymbol(id);
+                    nucleotide = wildcard.getUniformlyDistributedSymbol(id ^ i);
                 } else
-                    nucleotide = DEFAULT_WILDCARD;
+                    throw new RuntimeException("Unknown letter: " + symbol);
                 qualityData[i] = SequenceQuality.BAD_QUALITY_VALUE;
             }
             sequenceData.set(i, nucleotide);

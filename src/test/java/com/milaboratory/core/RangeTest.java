@@ -2,8 +2,6 @@ package com.milaboratory.core;
 
 import org.junit.Test;
 
-import java.util.regex.Pattern;
-
 import static org.junit.Assert.*;
 
 public class RangeTest {
@@ -79,5 +77,13 @@ public class RangeTest {
 
         relativePosition = range.convertBoundaryToRelativePosition(position);
         assertEquals(position, range.convertBoundaryToAbsolutePosition(relativePosition));
+    }
+
+    @Test
+    public void testRelativeRange() throws Exception {
+        assertEquals(r(20,40), r(0, 100).getRelativeRangeOf(r(20, 40)));
+        assertEquals(r(20,40), r(50, 150).getRelativeRangeOf(r(70, 90)));
+        assertEquals(r(80,90), r(100, 0).getRelativeRangeOf(r(20, 10)));
+        assertEquals(r(90,80), r(100, 0).getRelativeRangeOf(r(10, 20)));
     }
 }
