@@ -22,46 +22,43 @@ public final class RandomAccessFastqReader
     /**
      * Creates reader of specified FASTQ file with specified index.
      *
-     * @param fileIndex file index
      * @param file      FASTQ file
+     * @param fileIndex file index
      */
-    public RandomAccessFastqReader(String fileIndex, String file)
+    public RandomAccessFastqReader(String file, String fileIndex)
             throws IOException {
-        this(FileIndex.read(fileIndex), new RandomAccessFile(file, "r"), true);
+        this(new RandomAccessFile(file, "r"), FileIndex.read(fileIndex), true);
     }
 
     /**
      * Creates reader of specified FASTQ file with specified index.
-     *
+     *  @param file      FASTQ file
      * @param fileIndex file index
-     * @param file      FASTQ file
      * @param lazyReads create reads data on demand
      */
-    public RandomAccessFastqReader(String fileIndex, String file, boolean lazyReads)
+    public RandomAccessFastqReader(String file, String fileIndex, boolean lazyReads)
             throws IOException {
-        this(FileIndex.read(fileIndex), new RandomAccessFile(file, "r"), lazyReads);
+        this(new RandomAccessFile(file, "r"), FileIndex.read(fileIndex), lazyReads);
     }
 
     /**
      * Creates reader of specified FASTQ file with specified index.
-     *
+     *  @param file      FASTQ file
      * @param fileIndex file index
-     * @param file      FASTQ file
      * @param lazyReads create reads data on demand
      */
-    public RandomAccessFastqReader(FileIndex fileIndex, File file, boolean lazyReads)
+    public RandomAccessFastqReader(File file, FileIndex fileIndex, boolean lazyReads)
             throws FileNotFoundException {
-        this(fileIndex, new RandomAccessFile(file, "r"), lazyReads);
+        this(new RandomAccessFile(file, "r"), fileIndex, lazyReads);
     }
 
     /**
      * Creates reader of specified FASTQ file with specified index.
-     *
+     *  @param file      FASTQ file
      * @param fileIndex file index
-     * @param file      FASTQ file
      * @param lazyReads create reads data on demand
      */
-    public RandomAccessFastqReader(FileIndex fileIndex, RandomAccessFile file, boolean lazyReads) {
+    public RandomAccessFastqReader(RandomAccessFile file, FileIndex fileIndex, boolean lazyReads) {
         super(fileIndex, file);
         this.qualityFormat = QualityFormat.fromName(fileIndex.getMetadata("format"));
         this.recordsReader = new FastqRecordsReader(lazyReads, file, SingleFastqReader.DEFAULT_BUFFER_SIZE, false);

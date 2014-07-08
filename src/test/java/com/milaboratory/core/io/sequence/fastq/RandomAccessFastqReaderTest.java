@@ -26,7 +26,7 @@ public class RandomAccessFastqReaderTest {
         FileIndex index = indexer.createIndex();
 
         reader = new SingleFastqReader(sample);
-        RandomAccessFastqReader rreader = new RandomAccessFastqReader(index, sample, false);
+        RandomAccessFastqReader rreader = new RandomAccessFastqReader(sample, index, false);
         SingleRead read;
         while ((read = reader.take()) != null) {
             SingleRead actual = rreader.take(read.getId());
@@ -50,7 +50,7 @@ public class RandomAccessFastqReaderTest {
             index = FileIndex.read(new ByteArrayInputStream(outputStream.toByteArray()));
 
             reader = new SingleFastqReader(sample);
-            RandomAccessFastqReader rreader = new RandomAccessFastqReader(index, sample, false);
+            RandomAccessFastqReader rreader = new RandomAccessFastqReader(sample, index, false);
             SingleRead read;
             while ((read = reader.take()) != null) {
                 SingleRead actual = rreader.take(read.getId());
@@ -68,7 +68,7 @@ public class RandomAccessFastqReaderTest {
         for (int step = 1; step < 5; ++step) {
             SingleRead[] reads = allReads(sample);
             FileIndex index = buildeIndex(sample, step);
-            RandomAccessFastqReader rreader = new RandomAccessFastqReader(index, sample, true);
+            RandomAccessFastqReader rreader = new RandomAccessFastqReader(sample, index, true);
             for (int i = 0; i < 100; ++i) {
                 int p = rnd.nextInt(reads.length);
                 SingleRead actual = rreader.take(p);
@@ -85,7 +85,7 @@ public class RandomAccessFastqReaderTest {
         for (int step = 1; step < 5; ++step) {
             SingleRead[] reads = allReads(sample);
             FileIndex index = buildeIndex(sample, step);
-            RandomAccessFastqReader rreader = new RandomAccessFastqReader(index, sample, true);
+            RandomAccessFastqReader rreader = new RandomAccessFastqReader(sample, index, true);
             SingleRead actual = rreader.take(reads.length + 1);
             Assert.assertTrue(actual == null);
             actual = rreader.take(reads.length);

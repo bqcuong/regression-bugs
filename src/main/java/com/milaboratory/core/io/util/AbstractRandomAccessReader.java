@@ -30,6 +30,15 @@ public abstract class AbstractRandomAccessReader<T> implements OutputPort<T> {
     }
 
     /**
+     * Returns the number of record that will be returned on {@link #take()}
+     *
+     * @return the number of record that will be returned on {@link #take()}
+     */
+    public long getCurrentRecordNumber() {
+        return currentRecordNumber;
+    }
+
+    /**
      * Sets the file-pointer offset, measured from the beginning of this
      * file, at which the next record occurs.
      *

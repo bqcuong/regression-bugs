@@ -6,7 +6,8 @@ import com.milaboratory.util.CanReportProgress;
 /**
  * Created by dbolotin on 23/06/14.
  */
-public abstract class AbstractMultiReader<R extends SequenceRead> implements CanReportProgress, SequenceReader<R>, OutputPortCloseable<R> {
+public abstract class AbstractMultiReader<R extends SequenceRead>
+        implements CanReportProgress, SequenceReader<R>, OutputPortCloseable<R> {
     private final SingleReader[] readers;
     private final CanReportProgress[] progressReporters;
 
