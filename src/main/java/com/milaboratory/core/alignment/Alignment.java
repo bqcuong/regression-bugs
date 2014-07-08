@@ -46,8 +46,8 @@ public final class Alignment<S extends Sequence<S>> {
         if (!mutations.isEmpty()) {
             if (!mutations.isCompatibleWith(sequence1)
                     || !sequence1Range.contains(mutations.getMutatedRange())
-                || sequence1Range.length() + mutations.getLengthDelta() != sequence2Range.length())
-            throw new IllegalArgumentException("Not compatible arguments.");
+                    || sequence1Range.length() + mutations.getLengthDelta() != sequence2Range.length())
+                throw new IllegalArgumentException("Not compatible arguments.");
         } else if (sequence1Range.length() != sequence2Range.length())
             throw new IllegalArgumentException("Not compatible arguments.");
 
@@ -101,6 +101,10 @@ public final class Alignment<S extends Sequence<S>> {
      */
     public Range getSequence2Range() {
         return sequence2Range;
+    }
+
+    public int convertPosition(int position) {
+        return mutations.convertPosition(position) + sequence2Range.getFrom() - sequence1Range.getFrom();
     }
 
     public float getScore() {
