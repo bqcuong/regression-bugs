@@ -83,7 +83,9 @@ public class FastaReaderTest {
                     WildcardSymbol wildcard = wildcards[rnd.nextInt(wildcards.length)];
                     if (NucleotideSequence.ALPHABET.codeFromSymbol(wildcard.getSymbol()) == -1) {
                         seq[j] = wildcard.getSymbol();
-                        seqExp[j] = NucleotideSequence.ALPHABET.symbolFromCode(wildcard.getUniformlyDistributedSymbol(id));
+                        seqExp[j] = NucleotideSequence.ALPHABET.symbolFromCode(
+                                wildcard.getUniformlyDistributedSymbol(
+                                        id ^ (j + qPointer)));//as used in FastaReader#getSequenceWithQuality(..)
                         qualityData[j + qPointer] = SequenceQuality.BAD_QUALITY_VALUE;
                     }
                 }
