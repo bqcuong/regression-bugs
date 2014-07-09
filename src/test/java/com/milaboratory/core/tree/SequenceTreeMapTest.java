@@ -498,7 +498,7 @@ public class SequenceTreeMapTest {
                 builder.set(position,
                         (byte) ((sequence.codeAt(position) + 1 + random.nextInt(sequence.getAlphabet().size() - 1)) %
                                 sequence.getAlphabet().size()));
-                return builder.createAndDestroy();
+                return (Sequence) builder.createAndDestroy();
 
             case 1: //Deletion
                 builder = sequence.getAlphabet().getBuilder().ensureCapacity(sequence.size() - 1);
@@ -508,7 +508,7 @@ public class SequenceTreeMapTest {
                 ++i;
                 for (; i < sequence.size(); ++i)
                     builder.append(sequence.codeAt(i));
-                return builder.createAndDestroy();
+                return (Sequence) builder.createAndDestroy();
 
             case 2: //Insertion
                 builder = sequence.getAlphabet().getBuilder().ensureCapacity(sequence.size() + 1);
@@ -518,7 +518,7 @@ public class SequenceTreeMapTest {
                 builder.append((byte) random.nextInt(sequence.getAlphabet().size()));
                 for (; i < sequence.size(); ++i)
                     builder.append(sequence.codeAt(i));
-                return builder.createAndDestroy();
+                return (Sequence) builder.createAndDestroy();
 
             default:
                 throw new IllegalArgumentException();

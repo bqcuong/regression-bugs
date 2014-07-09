@@ -12,7 +12,7 @@ import com.milaboratory.core.Range;
  * @see com.milaboratory.core.sequence.SequenceQuality
  * @see com.milaboratory.core.sequence.NSequenceWithQuality
  */
-public class SequenceWithQuality<S extends Sequence<S>> {
+public class SequenceWithQuality<S extends Sequence<S>> {//implements Seq<? extends SequenceWithQuality<S>>
     final S sequence;
     final SequenceQuality quality;
 
@@ -57,8 +57,9 @@ public class SequenceWithQuality<S extends Sequence<S>> {
      * @return subsequence with its quality starting at {@code from} (inclusively) and ending at {@code to}
      * (exclusively
      */
-    public SequenceWithQuality<S> getRange(int from, int to) {
-        return getRange(new Range(from, to));
+//    @Override
+    public SequenceWithQuality<S> getSubSequence(int from, int to) {
+        return getSubSequence(new Range(from, to));
     }
 
     /**
@@ -69,8 +70,9 @@ public class SequenceWithQuality<S extends Sequence<S>> {
      * @return subsequence with its quality with starting (inclusive) and ending (exclusive) points defined by
      * {@code range}.
      */
-    public SequenceWithQuality<S> getRange(Range range) {
-        return new SequenceWithQuality<>(sequence.getSubSequence(range), quality.getRange(range));
+//    @Override
+    public SequenceWithQuality<S> getSubSequence(Range range) {
+        return new SequenceWithQuality<>(sequence.getSubSequence(range), quality.getSubSequence(range));
     }
 
     /**
@@ -78,6 +80,7 @@ public class SequenceWithQuality<S extends Sequence<S>> {
      *
      * @return size of this sequence and quality
      */
+//    @Override
     public int size() {
         return sequence.size();
     }

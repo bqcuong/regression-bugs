@@ -102,8 +102,23 @@ public final class Alignment<S extends Sequence<S>> {
         return sequence2Range;
     }
 
+    /**
+     * Converts specified position from sequence1 coordinates to sequence2 coordinates. If position out of aligned
+     * range of sequence1 range, returns -1. If letter at specified position in sequence1 is removed in sequence2, than
+     * returns {@code -2 - p}, where {@code p} is a position of previous letter in sequence2.
+     *
+     * @param position position in sequence1
+     * @return position in coordinates of sequence2, or -1 if specified position is out of aligned range of sequence1, or if
+     * letter at specified position in sequence1 is removed in sequence2  --- {@code -2 - p} where {@code p} is a
+     * position of previous letter in sequence2
+     */
     public int convertPosition(int position) {
-        return mutations.convertPosition(position) + sequence2Range.getFrom() - sequence1Range.getFrom();
+        if (!sequence1Range.containsBoundary(position))
+            return -1;
+        int p = mutations.convertPosition(position);
+        if (p < 0)
+            return -2 - (~p + sequence2Range.getFrom() - sequence1Range.getFrom());
+        return p + sequence2Range.getFrom() - sequence1Range.getFrom();
     }
 
     public float getScore() {

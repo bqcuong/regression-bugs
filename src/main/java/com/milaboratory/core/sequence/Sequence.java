@@ -36,7 +36,7 @@ import com.milaboratory.core.Range;
  * @see com.milaboratory.core.sequence.NucleotideSequence
  * @see com.milaboratory.core.sequence.AminoAcidSequence
  */
-public abstract class Sequence<S extends Sequence<S>> implements Comparable<S> {
+public abstract class Sequence<S extends Sequence<S>> implements Comparable<S>, Seq<S> {
     /**
      * Returns element at specified position.
      *
@@ -50,6 +50,7 @@ public abstract class Sequence<S extends Sequence<S>> implements Comparable<S> {
      *
      * @return size of this sequence
      */
+    @Override
     public abstract int size();
 
     /**
@@ -58,6 +59,11 @@ public abstract class Sequence<S extends Sequence<S>> implements Comparable<S> {
      * @return alphabet corresponding to this type of sequence
      */
     public abstract Alphabet<S> getAlphabet();
+
+    @Override
+    public SequenceBuilder<S> getSequenceBuilder() {
+        return getAlphabet().getBuilder();
+    }
 
     /**
      * Returns a subsequence of this starting at {@code from} (inclusive) and ending at {@code to} (exclusive).
@@ -68,6 +74,7 @@ public abstract class Sequence<S extends Sequence<S>> implements Comparable<S> {
      * @throws java.lang.IndexOutOfBoundsException if {@code from} or {@code to} is out of this sequence range
      * @throws java.lang.IllegalArgumentException  if {@code from >= to}
      */
+    @Override
     public abstract S getSubSequence(int from, int to);
 
     /**
@@ -77,6 +84,7 @@ public abstract class Sequence<S extends Sequence<S>> implements Comparable<S> {
      * @return subsequence of this bounded by specified {@code range}.
      * @throws java.lang.IndexOutOfBoundsException if {@code from} orj {@code to} is out of this sequence range
      */
+    @Override
     public S getSubSequence(Range range) {
         if (range.isReverse())
             throw new IllegalArgumentException("Reverse range not supported.");
@@ -106,7 +114,7 @@ public abstract class Sequence<S extends Sequence<S>> implements Comparable<S> {
     }
 
     /**
-     * Returns a concatenation of this and {@code other} sequences (so this will be followed by {@code other}
+     * Returns a concatenation of this and {@code other} sequence (so this will be followed by {@code other}
      * in the result).
      *
      * @param other other sequence
@@ -117,6 +125,25 @@ public abstract class Sequence<S extends Sequence<S>> implements Comparable<S> {
         return getAlphabet().getBuilder().
                 ensureCapacity(other.size() + size())
                 .append((S) this).append(other).createAndDestroy();
+    }
+
+    /**
+     * Returns a concatenation of this and {@code other} sequences (so this will be followed by {@code other}
+     * in the result).
+     *
+     * @param other other sequences
+     * @return concatenation of this and {@code other} sequences
+     */
+    public S concatenate(S... other) {
+        if (other.length == 0)
+            return (S) this;
+        int size = size();
+        for (S o : other)
+            size += o.size();
+        SequenceBuilder<S> builder = getAlphabet().getBuilder().ensureCapacity(size).append((S) this);
+        for (S o : other)
+            builder.append(o);
+        return builder.createAndDestroy();
     }
 
     @Override

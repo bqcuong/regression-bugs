@@ -37,7 +37,8 @@ import java.io.Serializable;
  * @see com.milaboratory.core.sequence.Sequence
  * @see com.milaboratory.core.sequence.NucleotideAlphabet
  */
-public final class NucleotideSequence extends Sequence<NucleotideSequence> implements Serializable {
+public final class NucleotideSequence extends Sequence<NucleotideSequence> implements Serializable,
+        NSeq<NucleotideSequence> {
     /**
      * Empty instance
      */
@@ -124,6 +125,7 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
      *
      * @return reverse complement sequence
      */
+    @Override
     public NucleotideSequence getReverseComplement() {
         return new NucleotideSequence(transformToRC(data, 0, data.size()), true);
     }

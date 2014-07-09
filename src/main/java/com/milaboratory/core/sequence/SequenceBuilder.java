@@ -27,7 +27,7 @@ package com.milaboratory.core.sequence;
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  * @see com.milaboratory.core.sequence.Sequence
  */
-public interface SequenceBuilder<S extends Sequence> {
+public interface SequenceBuilder<S extends Seq<S>> {
     /**
      * Size of sequence being created.
      *

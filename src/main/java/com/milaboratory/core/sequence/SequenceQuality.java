@@ -14,7 +14,7 @@ import java.util.Arrays;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public final class SequenceQuality implements Serializable {
+public final class SequenceQuality implements Serializable, Seq<SequenceQuality> {
     /**
      * Default value of good quality
      */
@@ -25,7 +25,7 @@ public final class SequenceQuality implements Serializable {
     public static final byte BAD_QUALITY_VALUE = (byte) 0;
 
     private static final long serialVersionUID = 1L;
-    private final byte[] data;
+    final byte[] data;
 
     /**
      * Creates a phred sequence quality from a Sanger formatted quality string (33 based).
@@ -143,8 +143,9 @@ public final class SequenceQuality implements Serializable {
      * @param to   exclusive
      * @return substring of current quality scores line
      */
-    public SequenceQuality getRange(int from, int to) {
-        return getRange(new Range(from, to));
+    @Override
+    public SequenceQuality getSubSequence(int from, int to) {
+        return getSubSequence(new Range(from, to));
     }
 
     /**
@@ -153,7 +154,8 @@ public final class SequenceQuality implements Serializable {
      * @param range range
      * @return substring of current quality scores line
      */
-    public SequenceQuality getRange(Range range) {
+    @Override
+    public SequenceQuality getSubSequence(Range range) {
         byte[] rdata = Arrays.copyOfRange(data, range.getLower(), range.getUpper());
         if (range.isReverse())
             ArraysUtils.reverse(rdata);
@@ -165,8 +167,29 @@ public final class SequenceQuality implements Serializable {
      *
      * @return size of quality array
      */
+    @Override
     public int size() {
         return data.length;
+    }
+
+    @Override
+    public SequenceBuilder<SequenceQuality> getSequenceBuilder() {
+        return new SequenceQualityBuilder();
+    }
+
+    public SequenceQuality concatenate(SequenceQuality... other) {
+        if (other.length == 0)
+            return this;
+        int size = size();
+        for (SequenceQuality sequenceQuality : other)
+            size += sequenceQuality.size();
+        byte[] r = Arrays.copyOf(data, size);
+        size = size();
+        for (SequenceQuality sq : other) {
+            System.arraycopy(sq.data, 0, r, size, sq.size());
+            size += sq.size();
+        }
+        return new SequenceQuality(r, true);
     }
 
     /**
