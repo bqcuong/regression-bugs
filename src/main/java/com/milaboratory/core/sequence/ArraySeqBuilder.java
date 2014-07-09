@@ -2,10 +2,7 @@ package com.milaboratory.core.sequence;
 
 import java.util.Arrays;
 
-/**
- * Created by poslavsky on 09/07/14.
- */
-public abstract class ArraySeqBuilder<S extends Seq<S>> implements SequenceBuilder<S> {
+public abstract class ArraySeqBuilder<S extends Seq<S>> implements SeqBuilder<S> {
     byte[] data;
     int size = 0;
 
@@ -35,7 +32,7 @@ public abstract class ArraySeqBuilder<S extends Seq<S>> implements SequenceBuild
     }
 
     @Override
-    public SequenceBuilder<S> ensureCapacity(int capacity) {
+    public SeqBuilder<S> ensureCapacity(int capacity) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
         if (capacity > 0) {
@@ -83,10 +80,10 @@ public abstract class ArraySeqBuilder<S extends Seq<S>> implements SequenceBuild
     }
 
     @Override
-    public SequenceBuilder<S> append(S sequence) {
-        ensureInternalCapacity(size + sequence.size());
-        System.arraycopy(getUnsafe(sequence), 0, data, size, sequence.size());
-        size += sequence.size();
+    public SequenceBuilder<S> append(S seq) {
+        ensureInternalCapacity(size + seq.size());
+        System.arraycopy(getUnsafe(seq), 0, data, size, seq.size());
+        size += seq.size();
         return this;
     }
 

@@ -20,8 +20,6 @@
  */
 package com.milaboratory.core.sequence;
 
-import com.milaboratory.core.Range;
-
 /**
  * Parent class for all types of sequences. Each element of sequence (e.g. nucleotide, or amino acid)
  * encoded in byte, so {@code Sequence} is a simple container of ordered bytes; the correspondence between byte codes
@@ -36,7 +34,7 @@ import com.milaboratory.core.Range;
  * @see com.milaboratory.core.sequence.NucleotideSequence
  * @see com.milaboratory.core.sequence.AminoAcidSequence
  */
-public abstract class Sequence<S extends Sequence<S>> implements Comparable<S>, Seq<S> {
+public abstract class Sequence<S extends Sequence<S>> extends Seq<S> implements Comparable<S> {
     /**
      * Returns element at specified position.
      *
@@ -46,50 +44,11 @@ public abstract class Sequence<S extends Sequence<S>> implements Comparable<S>, 
     public abstract byte codeAt(int position);
 
     /**
-     * Returns size of this sequence
-     *
-     * @return size of this sequence
-     */
-    @Override
-    public abstract int size();
-
-    /**
      * Returns the alphabet corresponding to this type of sequence.
      *
      * @return alphabet corresponding to this type of sequence
      */
     public abstract Alphabet<S> getAlphabet();
-
-    @Override
-    public SequenceBuilder<S> getSequenceBuilder() {
-        return getAlphabet().getBuilder();
-    }
-
-    /**
-     * Returns a subsequence of this starting at {@code from} (inclusive) and ending at {@code to} (exclusive).
-     *
-     * @param from starting point of subsequence (inclusive)
-     * @param to   ending point of subsequence (exclusive)
-     * @return subsequence of this starting at {@code from} (inclusive) and ending at {@code to} (exclusive)
-     * @throws java.lang.IndexOutOfBoundsException if {@code from} or {@code to} is out of this sequence range
-     * @throws java.lang.IllegalArgumentException  if {@code from >= to}
-     */
-    @Override
-    public abstract S getSubSequence(int from, int to);
-
-    /**
-     * Returns a subsequence of this bounded by specified {@code range}.
-     *
-     * @param range a range that defines starting (inclusive) and ending (exclusive) points of subsequence
-     * @return subsequence of this bounded by specified {@code range}.
-     * @throws java.lang.IndexOutOfBoundsException if {@code from} orj {@code to} is out of this sequence range
-     */
-    @Override
-    public S getSubSequence(Range range) {
-        if (range.isReverse())
-            throw new IllegalArgumentException("Reverse range not supported.");
-        return getSubSequence(range.getFrom(), range.getTo());
-    }
 
     /**
      * Returns an array of bytes that encodes this sequence.
@@ -113,37 +72,9 @@ public abstract class Sequence<S extends Sequence<S>> implements Comparable<S>, 
         return getAlphabet().symbolFromCode(codeAt(position));
     }
 
-    /**
-     * Returns a concatenation of this and {@code other} sequence (so this will be followed by {@code other}
-     * in the result).
-     *
-     * @param other other sequence
-     * @return concatenation of this and {@code other} sequences
-     */
-    public S concatenate(S other) {
-        assert other.getAlphabet() == this.getAlphabet();
-        return getAlphabet().getBuilder().
-                ensureCapacity(other.size() + size())
-                .append((S) this).append(other).createAndDestroy();
-    }
-
-    /**
-     * Returns a concatenation of this and {@code other} sequences (so this will be followed by {@code other}
-     * in the result).
-     *
-     * @param other other sequences
-     * @return concatenation of this and {@code other} sequences
-     */
-    public S concatenate(S... other) {
-        if (other.length == 0)
-            return (S) this;
-        int size = size();
-        for (S o : other)
-            size += o.size();
-        SequenceBuilder<S> builder = getAlphabet().getBuilder().ensureCapacity(size).append((S) this);
-        for (S o : other)
-            builder.append(o);
-        return builder.createAndDestroy();
+    @Override
+    public SequenceBuilder<S> getBuilder() {
+        return getAlphabet().getBuilder();
     }
 
     @Override

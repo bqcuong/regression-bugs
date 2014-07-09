@@ -44,9 +44,9 @@ public class NSequenceWithQualityBuilder implements SequenceBuilder<NSequenceWit
     }
 
     @Override
-    public SequenceBuilder<NSequenceWithQuality> append(NSequenceWithQuality sequence) {
-        sBuilder.append(sequence.sequence);
-        qBuilder.append(sequence.quality);
+    public SequenceBuilder<NSequenceWithQuality> append(NSequenceWithQuality seq) {
+        sBuilder.append(seq.sequence);
+        qBuilder.append(seq.quality);
         return this;
     }
 

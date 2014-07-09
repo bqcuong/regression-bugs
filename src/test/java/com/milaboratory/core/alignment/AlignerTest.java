@@ -142,15 +142,15 @@ public class AlignerTest {
                 seq1, seq2);
         Mutations<NucleotideSequence> muts = a.getAbsoluteMutations();
 
-        assertEquals(seq2.getSubSequence(
+        assertEquals(seq2.getRange(
                         sAbs(muts.convertPosition(2)),
                         sAbs(muts.convertPosition(10))),
-                muts.extractMutationsForRange(2, 10).mutate(seq1.getSubSequence(2, 10)));
+                muts.extractMutationsForRange(2, 10).mutate(seq1.getRange(2, 10)));
 
-        assertEquals(seq2.getSubSequence(
+        assertEquals(seq2.getRange(
                         sAbs(muts.convertPosition(2)),
                         sAbs(muts.convertPosition(11))),
-                muts.extractMutationsForRange(2, 11).mutate(seq1.getSubSequence(2, 11)));
+                muts.extractMutationsForRange(2, 11).mutate(seq1.getRange(2, 11)));
     }
 
     public int sAbs(int value) {
@@ -240,10 +240,10 @@ public class AlignerTest {
                     if (to2 < from2)
                         to2 = from2;
 
-                    assertEquals(seq2.getSubSequence(
+                    assertEquals(seq2.getRange(
                                     from2,
                                     to2),
-                            m1.extractMutationsForRange(from, to).mutate(seq1.getSubSequence(from, to))
+                            m1.extractMutationsForRange(from, to).mutate(seq1.getRange(from, to))
                     );
                     break;
                 }
@@ -323,7 +323,7 @@ public class AlignerTest {
                     rdi, 100, 300);
             int length = generator.nextInt(10, 30);
             int from = generator.nextInt(0, sq1.size() - length - 1);
-            NucleotideSequence needle = sq1.getSubSequence(from, from + length);
+            NucleotideSequence needle = sq1.getRange(from, from + length);
             Alignment<NucleotideSequence> r = Aligner.alignLocal(sc, sq1, needle);
             Assert.assertEquals(from, r.getSequence1Range().getFrom());
             assertTrue(r.getAbsoluteMutations().isEmpty());
@@ -349,8 +349,8 @@ public class AlignerTest {
 
             Alignment r = Aligner.alignLocal(sc, sq1, sq2);
 
-            Assert.assertEquals(sq2.getSubSequence(r.getSequence2Range()),
-                    r.getRelativeMutations().mutate(sq1.getSubSequence(r.getSequence1Range())));
+            Assert.assertEquals(sq2.getRange(r.getSequence2Range()),
+                    r.getRelativeMutations().mutate(sq1.getRange(r.getSequence1Range())));
         }
     }
 
@@ -379,7 +379,7 @@ public class AlignerTest {
             int length = rdi.nextInt(20, 40);
             int from = rdi.nextInt(0, sequence.size() - length - 1);
 
-            NucleotideSequence subsequence = sequence.getSubSequence(from, from + length);
+            NucleotideSequence subsequence = sequence.getRange(from, from + length);
 
             Mutations<NucleotideSequence> mut = MutationsGenerator.generateMutations(subsequence, model);
 
@@ -387,13 +387,13 @@ public class AlignerTest {
 
             Alignment<NucleotideSequence> r = Aligner.alignLocal(sc, sequence, subsequence);
 
-            Assert.assertEquals(r.getRelativeMutations().mutate(sequence.getSubSequence(r.getSequence1Range())),
-                    subsequence.getSubSequence(r.getSequence2Range()));
+            Assert.assertEquals(r.getRelativeMutations().mutate(sequence.getRange(r.getSequence1Range())),
+                    subsequence.getRange(r.getSequence2Range()));
 
             r = Aligner.alignLocal(sc, subsequence, sequence);
 
-            Assert.assertEquals(r.getRelativeMutations().mutate(subsequence.getSubSequence(r.getSequence1Range())),
-                    sequence.getSubSequence(r.getSequence2Range()));
+            Assert.assertEquals(r.getRelativeMutations().mutate(subsequence.getRange(r.getSequence1Range())),
+                    sequence.getRange(r.getSequence2Range()));
         }
     }
 
@@ -415,7 +415,7 @@ public class AlignerTest {
             int length = rdi.nextInt(20, 40);
             int from = rdi.nextInt(0, sequence.size() - length - 1);
 
-            NucleotideSequence subsequence = sequence.getSubSequence(from, from + length);
+            NucleotideSequence subsequence = sequence.getRange(from, from + length);
 
             Mutations<NucleotideSequence> mut = MutationsGenerator.generateMutations(subsequence, model);
             float mutScore = AlignmentUtils.calculateScore(sc, subsequence.size(), mut);
@@ -424,15 +424,15 @@ public class AlignerTest {
 
             Alignment<NucleotideSequence> r = Aligner.alignLocal(sc, sequence, subsequence);
 
-            Assert.assertEquals(r.getRelativeMutations().mutate(sequence.getSubSequence(r.getSequence1Range())),
-                    subsequence.getSubSequence(r.getSequence2Range()));
+            Assert.assertEquals(r.getRelativeMutations().mutate(sequence.getRange(r.getSequence1Range())),
+                    subsequence.getRange(r.getSequence2Range()));
 
             Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getRelativeMutations()));
 
             r = Aligner.alignLocal(sc, subsequence, sequence);
 
-            Assert.assertEquals(r.getRelativeMutations().mutate(subsequence.getSubSequence(r.getSequence1Range())),
-                    sequence.getSubSequence(r.getSequence2Range()));
+            Assert.assertEquals(r.getRelativeMutations().mutate(subsequence.getRange(r.getSequence1Range())),
+                    sequence.getRange(r.getSequence2Range()));
 
             Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getRelativeMutations()));
         }

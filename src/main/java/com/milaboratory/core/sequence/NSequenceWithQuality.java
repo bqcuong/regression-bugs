@@ -33,17 +33,17 @@ public final class NSequenceWithQuality extends SequenceWithQuality<NucleotideSe
     }
 
     @Override
-    public NSequenceWithQuality getSubSequence(int from, int to) {
-        return new NSequenceWithQuality(sequence.getSubSequence(from, to), quality.getSubSequence(from, to));
+    public NSequenceWithQuality getRange(int from, int to) {
+        return new NSequenceWithQuality(sequence.getRange(from, to), quality.getRange(from, to));
     }
 
     @Override
-    public NSequenceWithQuality getSubSequence(Range range) {
-        return new NSequenceWithQuality(sequence.getSubSequence(range), quality.getSubSequence(range));
+    public NSequenceWithQuality getRange(Range range) {
+        return new NSequenceWithQuality(sequence.getRange(range), quality.getRange(range));
     }
 
     @Override
-    public NSequenceWithQualityBuilder getSequenceBuilder() {
+    public NSequenceWithQualityBuilder getBuilder() {
         return new NSequenceWithQualityBuilder();
     }
 }

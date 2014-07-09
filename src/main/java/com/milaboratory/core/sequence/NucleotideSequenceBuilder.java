@@ -101,10 +101,10 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     @Override
-    public NucleotideSequenceBuilder append(NucleotideSequence sequence) {
-        ensureInternalCapacity(size + sequence.size());
-        storage.copyFrom(sequence.data, 0, size, sequence.size());
-        size += sequence.size();
+    public NucleotideSequenceBuilder append(NucleotideSequence seq) {
+        ensureInternalCapacity(size + seq.size());
+        storage.copyFrom(seq.data, 0, size, seq.size());
+        size += seq.size();
         return this;
     }
 

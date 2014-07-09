@@ -31,13 +31,13 @@ public class NucleotideSequencesTest {
     public void test1() {
         NucleotideSequence sequence = new NucleotideSequence("ATTAGACATAGACA");
         assertEquals(sequence.toString(), "ATTAGACATAGACA");
-        NucleotideSequence subSequence = sequence.getSubSequence(0, sequence.size());
+        NucleotideSequence subSequence = sequence.getRange(0, sequence.size());
         assertEquals(subSequence.toString(), "ATTAGACATAGACA");
         assertEquals(subSequence.hashCode(), sequence.hashCode());
         assertEquals(subSequence, sequence);
 
         NucleotideSequence sequence1 = new NucleotideSequence("AGACATAGACA");
-        NucleotideSequence subSequence1 = sequence.getSubSequence(3, sequence.size());
+        NucleotideSequence subSequence1 = sequence.getRange(3, sequence.size());
 
         assertEquals(subSequence1.hashCode(), sequence1.hashCode());
         assertEquals(subSequence1, sequence1);

@@ -191,7 +191,7 @@ public class KAlignerTest extends AlignmentTest {
                     }
                 }
 
-                NucleotideSequence subSeq = ref.getSubSequence(trimLeft, ref.size() - trimRight);
+                NucleotideSequence subSeq = ref.getRange(trimLeft, ref.size() - trimRight);
                 NucleotideSequence left = addLeft ? randomSequence(NucleotideSequence.ALPHABET, rdi, 10, 30) : EMPTY;
                 NucleotideSequence right = addRight ? randomSequence(NucleotideSequence.ALPHABET, rdi, 10, 30) : EMPTY;
 
@@ -349,7 +349,7 @@ public class KAlignerTest extends AlignmentTest {
                                 }
                             }
 
-                            NucleotideSequence subSeq = ref.getSubSequence(trimLeft, ref.size() - trimRight);
+                            NucleotideSequence subSeq = ref.getRange(trimLeft, ref.size() - trimRight);
                             NucleotideSequence left = addLeft ? randomSequence(NucleotideSequence.ALPHABET, rdi, 10, 30) : EMPTY;
                             NucleotideSequence right = addRight ? randomSequence(NucleotideSequence.ALPHABET, rdi, 10, 30) : EMPTY;
 
@@ -458,8 +458,8 @@ public class KAlignerTest extends AlignmentTest {
                 NucleotideSequence ref = aligner.getReference(hit.getId());
                 NucleotideSequence seq = result.getTarget();
 
-                Assert.assertEquals(seq.getSubSequence(la.getSequence2Range()),
-                        la.getRelativeMutations().mutate(ref.getSubSequence(la.getSequence1Range())));
+                Assert.assertEquals(seq.getRange(la.getSequence2Range()),
+                        la.getRelativeMutations().mutate(ref.getRange(la.getSequence1Range())));
             }
         }
 
@@ -492,9 +492,9 @@ public class KAlignerTest extends AlignmentTest {
             boolean left = (rdi.nextInt(0, 1) == 0);
             NucleotideSequence target;
             if (left)
-                target = seq.getSubSequence(seq.size() - subSize, seq.size()).concatenate(randomSequence(NucleotideSequence.ALPHABET, rdi, 40, 70));
+                target = seq.getRange(seq.size() - subSize, seq.size()).concatenate(randomSequence(NucleotideSequence.ALPHABET, rdi, 40, 70));
             else
-                target = randomSequence(NucleotideSequence.ALPHABET, rdi, 40, 70).concatenate(seq.getSubSequence(0, subSize));
+                target = randomSequence(NucleotideSequence.ALPHABET, rdi, 40, 70).concatenate(seq.getRange(0, subSize));
 
             Mutations<NucleotideSequence> mmutations = generateMutations(target, model);
             int[] muts = mmutations.getAllMutations();
@@ -574,9 +574,9 @@ public class KAlignerTest extends AlignmentTest {
             boolean left = (rdi.nextInt(0, 1) == 0);
             NucleotideSequence target;
             if (left)
-                target = ref.getSubSequence(ref.size() - subSize, ref.size());//.concatenate(randomSequence(NucleotideSequence.ALPHABET, rdi, 40, 70));
+                target = ref.getRange(ref.size() - subSize, ref.size());//.concatenate(randomSequence(NucleotideSequence.ALPHABET, rdi, 40, 70));
             else
-                target = ref.getSubSequence(0, subSize);
+                target = ref.getRange(0, subSize);
 
             Mutations<NucleotideSequence> nucleotideSequenceMutations = generateMutations(target, model);
             int[] muts = nucleotideSequenceMutations.getAllMutations();
@@ -604,7 +604,7 @@ public class KAlignerTest extends AlignmentTest {
                 if (res.getId() == id && res.getAlignment().getScore() >= actualScore)
                     ++found;
                 else if (res.getId() == id && res.getAlignment().getScore() < actualScore
-                        && !orig.equals(target.getSubSequence(la.getSequence2Range()))) {
+                        && !orig.equals(target.getRange(la.getSequence2Range()))) {
                     //System.out.println(actualScore);
                     //System.out.println(res.getAlignmentScore());
                     //

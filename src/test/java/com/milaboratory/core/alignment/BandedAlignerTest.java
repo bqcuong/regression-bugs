@@ -1,12 +1,10 @@
 package com.milaboratory.core.alignment;
 
-import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.IntArrayList;
 import junit.framework.Assert;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.Well19937c;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static com.milaboratory.test.TestUtil.its;
@@ -84,7 +82,7 @@ public class BandedAlignerTest extends AlignmentTest {
                     random.nextInt(0, Math.min(seq1.size(), seq2.size()) - 1),
                     -10);
             int[] mut = r.mutations;
-            assertEquals(seq2.getSubSequence(0, r.sequence2Stop + 1), mutate(seq1.getSubSequence(0, r.sequence1Stop + 1), mut));
+            assertEquals(seq2.getRange(0, r.sequence2Stop + 1), mutate(seq1.getRange(0, r.sequence1Stop + 1), mut));
         }
     }
 
@@ -101,8 +99,8 @@ public class BandedAlignerTest extends AlignmentTest {
                     random.nextInt(0, Math.min(seq1.size(), seq2.size()) - 1),
                     -10);
             int[] mut = move(r.mutations, -r.sequence1Stop);
-            assertEquals(seq2.getSubSequence(r.sequence2Stop, seq2.size()),
-                    mutate(seq1.getSubSequence(r.sequence1Stop, seq1.size()), mut));
+            assertEquals(seq2.getRange(r.sequence2Stop, seq2.size()),
+                    mutate(seq1.getRange(r.sequence1Stop, seq1.size()), mut));
         }
     }
 
@@ -111,7 +109,7 @@ public class BandedAlignerTest extends AlignmentTest {
         NucleotideSequence seq1 = new NucleotideSequence("ATTAGACA");
         NucleotideSequence seq2 = new NucleotideSequence("ATTACGC");
         BandedSemiLocalResult r = BandedAligner.alignSemiLocalLeft(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2, 0, -10);
-        assertEquals(seq2.getSubSequence(0, r.sequence2Stop + 1), mutate(seq1.getSubSequence(0, r.sequence1Stop + 1), r.mutations));
+        assertEquals(seq2.getRange(0, r.sequence2Stop + 1), mutate(seq1.getRange(0, r.sequence1Stop + 1), r.mutations));
         assertEquals(3, r.sequence1Stop);
         assertEquals(3, r.sequence2Stop);
 
@@ -119,7 +117,7 @@ public class BandedAlignerTest extends AlignmentTest {
         seq2 = new NucleotideSequence("ATTGACGC");
         r = BandedAligner.alignSemiLocalLeft(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2, 1, -10);
         //Mutations.printAlignment(seq1.getSubSequence(0, r.sequence1Stop + 1), r.mutations);
-        assertEquals(seq2.getSubSequence(0, r.sequence2Stop + 1), mutate(seq1.getSubSequence(0, r.sequence1Stop + 1), r.mutations));
+        assertEquals(seq2.getRange(0, r.sequence2Stop + 1), mutate(seq1.getRange(0, r.sequence1Stop + 1), r.mutations));
         assertEquals(6, r.sequence1Stop);
         assertEquals(5, r.sequence2Stop);
 
@@ -127,7 +125,7 @@ public class BandedAlignerTest extends AlignmentTest {
         seq2 = new NucleotideSequence("ATTAGACATTAGACA");
         r = BandedAligner.alignSemiLocalLeft(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2, 1, -10);
         //Mutations.printAlignment(seq1.getSubSequence(0, r.sequence1Stop + 1), r.mutations);
-        assertEquals(seq2.getSubSequence(0, r.sequence2Stop + 1), mutate(seq1.getSubSequence(0, r.sequence1Stop + 1), r.mutations));
+        assertEquals(seq2.getRange(0, r.sequence2Stop + 1), mutate(seq1.getRange(0, r.sequence1Stop + 1), r.mutations));
         assertEquals(6, r.sequence1Stop);
         assertEquals(7, r.sequence2Stop);
     }
@@ -138,8 +136,8 @@ public class BandedAlignerTest extends AlignmentTest {
         NucleotideSequence seq2 = new NucleotideSequence("GACA");
         BandedSemiLocalResult r = BandedAligner.alignSemiLocalRight(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2, 0, -10);
         //Mutations.printAlignment(seq1.getSubSequence(r.sequence1Stop, seq1.size()), r.mutations);
-        assertEquals(seq2.getSubSequence(r.sequence2Stop, seq2.size()),
-                mutate(seq1.getSubSequence(r.sequence1Stop, seq1.size()), move(r.mutations, -r.sequence1Stop)));
+        assertEquals(seq2.getRange(r.sequence2Stop, seq2.size()),
+                mutate(seq1.getRange(r.sequence1Stop, seq1.size()), move(r.mutations, -r.sequence1Stop)));
         assertEquals(4, r.sequence1Stop);
         assertEquals(0, r.sequence2Stop);
 
@@ -147,8 +145,8 @@ public class BandedAlignerTest extends AlignmentTest {
         seq2 = new NucleotideSequence("GCGAATAGACA");
         r = BandedAligner.alignSemiLocalRight(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2, 0, -10);
         //Mutations.printAlignment(seq1.getSubSequence(r.sequence1Stop, seq1.size()), Mutations.move(r.mutations, -r.sequence1Stop));
-        assertEquals(seq2.getSubSequence(r.sequence2Stop, seq2.size()),
-                mutate(seq1.getSubSequence(r.sequence1Stop, seq1.size()), move(r.mutations, -r.sequence1Stop)));
+        assertEquals(seq2.getRange(r.sequence2Stop, seq2.size()),
+                mutate(seq1.getRange(r.sequence1Stop, seq1.size()), move(r.mutations, -r.sequence1Stop)));
         assertEquals(7, r.sequence1Stop);
         assertEquals(3, r.sequence2Stop);
     }
@@ -162,7 +160,7 @@ public class BandedAlignerTest extends AlignmentTest {
                 seq1, seq2, 0, seq1.size(), 0, 0, seq2.size(), 0, 1, mutations);
         assertEquals(seq1.size() - 1, la.sequence1Stop);
         assertEquals(seq2.size() - 1, la.sequence2Stop);
-        assertEquals(seq2.getSubSequence(0, la.sequence2Stop + 1), mutate(seq1.getSubSequence(0, la.sequence1Stop + 1), mutations.toArray()));
+        assertEquals(seq2.getRange(0, la.sequence2Stop + 1), mutate(seq1.getRange(0, la.sequence1Stop + 1), mutations.toArray()));
     }
 
     @Test
@@ -175,7 +173,7 @@ public class BandedAlignerTest extends AlignmentTest {
         assertEquals(seq1.size() - 1, la.sequence1Stop);
         assertEquals(seq2.size() - 2, la.sequence2Stop);
         //printAlignment(seq1.getSubSequence(0, la.sequence1Stop + 1), mutations.toArray());
-        assertEquals(seq2.getSubSequence(0, la.sequence2Stop + 1), mutate(seq1.getSubSequence(0, la.sequence1Stop + 1), mutations.toArray()));
+        assertEquals(seq2.getRange(0, la.sequence2Stop + 1), mutate(seq1.getRange(0, la.sequence1Stop + 1), mutations.toArray()));
     }
 
     @Test
@@ -188,7 +186,7 @@ public class BandedAlignerTest extends AlignmentTest {
         assertEquals(seq1.size() - 1, la.sequence1Stop);
         assertEquals(seq2.size() - 1, la.sequence2Stop);
         //printAlignment(seq1.getSubSequence(0, la.sequence1Stop + 1), mutations.toArray());
-        assertEquals(seq2.getSubSequence(0, la.sequence2Stop + 1), mutate(seq1.getSubSequence(0, la.sequence1Stop + 1), mutations.toArray()));
+        assertEquals(seq2.getRange(0, la.sequence2Stop + 1), mutate(seq1.getRange(0, la.sequence1Stop + 1), mutations.toArray()));
     }
 
     @Test
@@ -219,7 +217,7 @@ public class BandedAlignerTest extends AlignmentTest {
 
             int[] mut = mutations.toArray();
             mut = move(mut, -offset1);
-            assertEquals(seq2.getSubSequence(offset2, la.sequence2Stop + 1), mutate(seq1.getSubSequence(offset1, la.sequence1Stop + 1), mut));
+            assertEquals(seq2.getRange(offset2, la.sequence2Stop + 1), mutate(seq1.getRange(offset1, la.sequence1Stop + 1), mut));
         }
     }
 
@@ -234,7 +232,7 @@ public class BandedAlignerTest extends AlignmentTest {
         assertEquals(0, la.sequence2Stop);
         int[] mut = mutations.toArray();
         mut = move(mut, -la.sequence1Stop);
-        assertEquals(seq2.getSubSequence(la.sequence2Stop, seq2.size()), mutate(seq1.getSubSequence(la.sequence1Stop, seq1.size()), mut));
+        assertEquals(seq2.getRange(la.sequence2Stop, seq2.size()), mutate(seq1.getRange(la.sequence1Stop, seq1.size()), mut));
     }
 
     @Test
@@ -249,7 +247,7 @@ public class BandedAlignerTest extends AlignmentTest {
         int[] mut = mutations.toArray();
         mut = move(mut, -la.sequence1Stop);
         //printAlignment(seq1.getSubSequence(la.sequence1Stop, seq1.size()), mut);
-        assertEquals(seq2.getSubSequence(la.sequence2Stop, seq2.size()), mutate(seq1.getSubSequence(la.sequence1Stop, seq1.size()), mut));
+        assertEquals(seq2.getRange(la.sequence2Stop, seq2.size()), mutate(seq1.getRange(la.sequence1Stop, seq1.size()), mut));
     }
 
     @Test
@@ -264,7 +262,7 @@ public class BandedAlignerTest extends AlignmentTest {
         int[] mut = mutations.toArray();
         mut = move(mut, -la.sequence1Stop);
         //printAlignment(seq1.getSubSequence(la.sequence1Stop, seq1.size()), mut);
-        assertEquals(seq2.getSubSequence(la.sequence2Stop, seq2.size()), mutate(seq1.getSubSequence(la.sequence1Stop, seq1.size()), mut));
+        assertEquals(seq2.getRange(la.sequence2Stop, seq2.size()), mutate(seq1.getRange(la.sequence1Stop, seq1.size()), mut));
     }
 
     @Test
@@ -294,7 +292,7 @@ public class BandedAlignerTest extends AlignmentTest {
 
             int[] mut = mutations.toArray();
             mut = move(mut, -la.sequence1Stop);
-            assertEquals(seq2.getSubSequence(la.sequence2Stop, offset2 + length2), mutate(seq1.getSubSequence(la.sequence1Stop, offset1 + length1), mut));
+            assertEquals(seq2.getRange(la.sequence2Stop, offset2 + length2), mutate(seq1.getRange(la.sequence1Stop, offset1 + length1), mut));
         }
     }
 }

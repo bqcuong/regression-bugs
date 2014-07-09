@@ -27,29 +27,7 @@ package com.milaboratory.core.sequence;
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  * @see com.milaboratory.core.sequence.Sequence
  */
-public interface SequenceBuilder<S extends Seq<S>> {
-    /**
-     * Size of sequence being created.
-     *
-     * @return size
-     */
-    int size();
-
-    /**
-     * Ensures capacity of this builder.
-     *
-     * @param capacity capacity
-     * @return this
-     */
-    SequenceBuilder<S> ensureCapacity(int capacity);
-
-    /**
-     * Creates the sequence and destroys this builder.
-     *
-     * @return created sequence
-     */
-    S createAndDestroy();
-
+public interface SequenceBuilder<S extends Seq<S>> extends SeqBuilder<S> {
     /**
      * Sets letter at the specified position.
      *
@@ -66,19 +44,4 @@ public interface SequenceBuilder<S extends Seq<S>> {
      * @return this
      */
     SequenceBuilder<S> append(byte letter);
-
-    /**
-     * Appends sequence.
-     *
-     * @param sequence sequence
-     * @return this
-     */
-    SequenceBuilder<S> append(S sequence);
-
-    /**
-     * Returns a deep copy of this builder
-     *
-     * @return a deep copy of this builder
-     */
-    SequenceBuilder<S> clone();
 }
