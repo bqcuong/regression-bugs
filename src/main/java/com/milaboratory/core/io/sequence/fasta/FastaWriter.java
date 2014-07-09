@@ -1,7 +1,7 @@
 package com.milaboratory.core.io.sequence.fasta;
 
 import com.milaboratory.core.io.sequence.SingleRead;
-import com.milaboratory.core.io.sequence.SingleWriter;
+import com.milaboratory.core.io.sequence.SingleSequenceWriter;
 
 import java.io.*;
 
@@ -9,7 +9,7 @@ import java.io.*;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public final class FastaWriter implements AutoCloseable, SingleWriter {
+public final class FastaWriter implements SingleSequenceWriter {
     public static final int DEFAULT_MAX_LENGTH = 75;
     final int maxLength;
     final OutputStream outputStream;
@@ -65,7 +65,20 @@ public final class FastaWriter implements AutoCloseable, SingleWriter {
     }
 
     @Override
-    public void close() throws Exception {
-        outputStream.close();
+    public void flush() {
+        try {
+            outputStream.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

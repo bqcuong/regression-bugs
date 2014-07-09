@@ -3,7 +3,6 @@ package com.milaboratory.core.io.sequence.fastq;
 import cc.redberry.pipe.CUtils;
 import com.milaboratory.core.io.CompressionType;
 import com.milaboratory.core.io.sequence.SingleRead;
-import org.hamcrest.core.Is;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;

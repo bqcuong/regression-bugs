@@ -2,7 +2,7 @@ package com.milaboratory.core.io.sequence.fastq;
 
 import com.milaboratory.core.io.CompressionType;
 import com.milaboratory.core.io.sequence.SingleRead;
-import com.milaboratory.core.io.sequence.SingleWriter;
+import com.milaboratory.core.io.sequence.SingleSequenceWriter;
 import com.milaboratory.core.sequence.NucleotideAlphabet;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceQuality;
@@ -12,7 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public final class SingleFastqWriter implements AutoCloseable, SingleWriter {
+public final class SingleFastqWriter implements SingleSequenceWriter {
     public static final int DEFAULT_BUFFER_SIZE = 131072;
     final OutputStream outputStream;
     final QualityFormat qualityFormat;
@@ -92,6 +92,7 @@ public final class SingleFastqWriter implements AutoCloseable, SingleWriter {
             flush();
     }
 
+    @Override
     public void flush() {
         try {
             outputStream.write(buffer, 0, pointer);
@@ -102,8 +103,12 @@ public final class SingleFastqWriter implements AutoCloseable, SingleWriter {
     }
 
     @Override
-    public void close() throws IOException {
-        flush();
-        outputStream.close();
+    public void close() {
+        try {
+            flush();
+            outputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
