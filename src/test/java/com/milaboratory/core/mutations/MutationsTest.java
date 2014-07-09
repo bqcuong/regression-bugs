@@ -84,10 +84,10 @@ public class MutationsTest {
 //
 //        int p;
 //        for (int i = helper.size() - 1; i >= 0; --i) {
-//            if ((p = helper.convertPositionToSeq1(i)) > 0)
+//            if ((p = helper.getSequence1PositionAt(i)) > 0)
 //                assertEquals(NucleotideSequence.ALPHABET.symbolFromCode(seq1.codeAt(p)),
 //                        helper.getLine1().charAt(i));
-//            if ((p = helper.convertPositionToSeq2(i)) > 0)
+//            if ((p = helper.getSequence2PositionAt(i)) > 0)
 //                assertEquals(NucleotideSequence.ALPHABET.symbolFromCode(seq2.codeAt(p)),
 //                        helper.getLine3().charAt(i));
 //        }
@@ -118,12 +118,12 @@ public class MutationsTest {
         builder.appendSubstitution(10, 3, 1);
         Mutations<NucleotideSequence> mutations = builder.createAndDestroy();
         assertEquals(1, mutations.getPositionByIndex(0));
-        assertEquals(1, mutations.getFromByIndex(1));
-        assertEquals(3, mutations.getFromByIndex(2));
-        assertEquals(1, mutations.getToByIndex(2));
+        assertEquals(1, mutations.getFromAsCodeByIndex(1));
+        assertEquals(3, mutations.getFromAsCodeByIndex(2));
+        assertEquals(1, mutations.getToAsCodeByIndex(2));
         assertEquals(9, mutations.getPositionByIndex(3));
-        assertEquals(2, mutations.getToByIndex(3));
-        assertEquals(1, mutations.getToByIndex(4));
+        assertEquals(2, mutations.getToAsCodeByIndex(3));
+        assertEquals(1, mutations.getToAsCodeByIndex(4));
         assertEquals(10, mutations.getPositionByIndex(4));
     }
 

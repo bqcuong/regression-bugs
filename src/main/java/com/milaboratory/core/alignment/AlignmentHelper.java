@@ -27,11 +27,11 @@ public class AlignmentHelper {
         return match.size();
     }
 
-    public int convertPositionToSeq1(int i) {
+    public int getSequence1PositionAt(int i) {
         return seq1Position[i];
     }
 
-    public int convertPositionToSeq2(int i) {
+    public int getSequence2PositionAt(int i) {
         return seq2Position[i];
     }
 
@@ -39,6 +39,13 @@ public class AlignmentHelper {
         String startPosition = String.valueOf(a(seq1Position[0]));
         int spaces = offset - startPosition.length();
         return spaces(spaces) + startPosition + " " + seq1String +
+                " " + a(seq1Position[seq1Position.length - 1]);
+    }
+
+    public String getLine1Compact() {
+        String startPosition = String.valueOf(a(seq1Position[0]));
+        int spaces = offset - startPosition.length();
+        return spaces(spaces) + startPosition + " " + toCompact(seq1String) +
                 " " + a(seq1Position[seq1Position.length - 1]);
     }
 
@@ -57,9 +64,28 @@ public class AlignmentHelper {
                 " " + a(seq2Position[seq2Position.length - 1]);
     }
 
+    public String getLine3Compact() {
+        String startPosition = String.valueOf(a(seq2Position[0]));
+        int spaces = offset - startPosition.length();
+        return spaces(spaces) + startPosition + " " + toCompact(seq2String) +
+                " " + a(seq2Position[seq2Position.length - 1]);
+    }
+
+    private String toCompact(String seqString) {
+        char[] chars = seqString.toCharArray();
+        for (int i = 0; i < match.size(); ++i)
+            if (!match.get(i))
+                chars[i] = Character.toLowerCase(chars[i]);
+        return new String(chars);
+    }
+
     @Override
     public String toString() {
         return getLine1() + "\n" + getLine2() + "\n" + getLine3();
+    }
+
+    public String toCompactString() {
+        return getLine1Compact() + "\n" + getLine3Compact();
     }
 
     private static String spaces(int n) {

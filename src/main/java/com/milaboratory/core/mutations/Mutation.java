@@ -55,12 +55,12 @@ public final class Mutation {
         return code >>> POSITION_OFFSET;
     }
 
-    public static int getFrom(int code) {
-        return (code >> FROM_OFFSET) & LETTER_MASK;
+    public static byte getFrom(int code) {
+        return (byte) ((code >> FROM_OFFSET) & LETTER_MASK);
     }
 
-    public static int getTo(int code) {
-        return code & LETTER_MASK;
+    public static byte getTo(int code) {
+        return (byte) (code & LETTER_MASK);
     }
 
     /**

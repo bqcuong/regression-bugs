@@ -1,7 +1,6 @@
 package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
-import com.milaboratory.core.mutations.Mutation;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
@@ -157,52 +156,47 @@ public final class Alignment<S extends Sequence<S>> {
      */
     public AlignmentHelper getAlignmentHelper() {
         int pointer1 = getSequence1Range().getFrom();
+        int pointer1To = getSequence1Range().getTo();
         int pointer2 = getSequence2Range().getFrom();
         int mutPointer = 0;
         int mut;
         final Alphabet<S> alphabet = sequence1.getAlphabet();
 
         List<Boolean> matches = new ArrayList<>();
+
         IntArrayList pos1 = new IntArrayList(sequence1.size() + mutations.size()),
                 pos2 = new IntArrayList(sequence1.size() + mutations.size());
+
         StringBuilder sb1 = new StringBuilder(),
                 sb2 = new StringBuilder();
 
-        while (pointer1 < sequence1.size() || mutPointer < mutations.size()) {
-            if (mutPointer < mutations.size() && ((mut = mutations.getMutation(mutPointer)) >>> POSITION_OFFSET) <= pointer1)
-                switch (mut & MUTATION_TYPE_MASK) {
+        while (pointer1 < pointer1To || mutPointer < mutations.size()) {
+            if (mutPointer < mutations.size() && mutations.getPositionByIndex(mutPointer) <= pointer1) {
+                // If current position contains mutation
+                switch (mutations.getRawTypeByIndex(mutPointer)) {
                     case RAW_MUTATION_TYPE_SUBSTITUTION:
-                        if (((mut >> FROM_OFFSET) & LETTER_MASK) != sequence1.codeAt(pointer1))
-                            throw new IllegalArgumentException("Mutation = " + Mutation.toString(sequence1.getAlphabet(), mut) +
-                                    " but seq[" + pointer1 + "]=" + sequence1.charFromCodeAt(pointer1));
                         pos1.add(pointer1);
                         pos2.add(pointer2++);
                         sb1.append(sequence1.charFromCodeAt(pointer1++));
-                        sb2.append(alphabet.symbolFromCode((byte) (mut & LETTER_MASK)));
-                        matches.add(false);
-                        ++mutPointer;
+                        sb2.append(mutations.getToAsSymbolByIndex(mutPointer));
                         break;
                     case RAW_MUTATION_TYPE_DELETION:
-                        if (((mut >> FROM_OFFSET) & LETTER_MASK) != sequence1.codeAt(pointer1))
-                            throw new IllegalArgumentException("Mutation = " + Mutation.toString(alphabet, mut) +
-                                    " but seq[" + pointer1 + "]=" + sequence1.charFromCodeAt(pointer1));
                         pos1.add(pointer1);
                         pos2.add(-1 - pointer2);
                         sb1.append(sequence1.charFromCodeAt(pointer1++));
                         sb2.append("-");
-                        matches.add(false);
-                        ++mutPointer;
                         break;
                     case RAW_MUTATION_TYPE_INSERTION:
                         pos1.add(-1 - pointer1);
                         pos2.add(pointer2++);
                         sb1.append("-");
-                        sb2.append(alphabet.symbolFromCode((byte) (mut & LETTER_MASK)));
-                        matches.add(false);
-                        ++mutPointer;
+                        sb2.append(mutations.getToAsSymbolByIndex(mutPointer));
                         break;
                 }
-            else {
+                matches.add(false);
+                ++mutPointer;
+            } else {
+                // If current position is not affected by mutations
                 pos1.add(pointer1);
                 pos2.add(pointer2++);
                 sb1.append(sequence1.charFromCodeAt(pointer1));
@@ -211,7 +205,13 @@ public final class Alignment<S extends Sequence<S>> {
             }
         }
 
-        return new AlignmentHelper(sb1.toString(), sb2.toString(), pos1.toArray(), pos2.toArray(),
+        return new AlignmentHelper(sb1.toString(), sb2.toString(),
+                pos1.toArray(), pos2.toArray(),
                 new BitArray(matches));
+    }
+
+    @Override
+    public String toString() {
+        return getAlignmentHelper().toCompactString();
     }
 }

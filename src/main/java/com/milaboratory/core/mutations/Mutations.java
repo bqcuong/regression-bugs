@@ -56,12 +56,20 @@ public final class Mutations<S extends Sequence<S>> {
         return getPosition(mutations[index]);
     }
 
-    public int getFromByIndex(int index) {
+    public byte getFromAsCodeByIndex(int index) {
         return getFrom(mutations[index]);
     }
 
-    public int getToByIndex(int index) {
+    public byte getToAsCodeByIndex(int index) {
         return getTo(mutations[index]);
+    }
+
+    public char getFromAsSymbolByIndex(int index) {
+        return alphabet.symbolFromCode(getFromAsCodeByIndex(index));
+    }
+
+    public char getToAsSymbolByIndex(int index) {
+        return alphabet.symbolFromCode(getToAsCodeByIndex(index));
     }
 
     public int getRawTypeByIndex(int index) {
@@ -123,9 +131,9 @@ public final class Mutations<S extends Sequence<S>> {
     }
 
     /**
-     * Converts position from coordinates in seq1 to coordinates in seq2 using this alignment (mutations). <p/> <p>If letter
-     * in provided position is marked as deleted (deletion) in this mutations, this method will return {@code (- 1 -
-     * imagePosition)}, where {@code imagePosition} is a position of letter right after that place where target
+     * Converts position from coordinates in seq1 to coordinates in seq2 using this alignment (mutations). <p/> <p>If
+     * letter in provided position is marked as deleted (deletion) in this mutations, this method will return {@code (-
+     * 1 - imagePosition)}, where {@code imagePosition} is a position of letter right after that place where target
      * nucleotide was removed according to this alignment.</p>
      *
      * @param initialPosition position in seq1

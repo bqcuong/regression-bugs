@@ -33,4 +33,22 @@ public class AlignmentTest {
         Assert.assertEquals(3, alignment.convertPosition(6));
         Assert.assertEquals(0, alignment.convertPosition(2));
     }
+
+    @Test
+    public void test2() throws Exception {
+        NucleotideSequence sequence1 = new NucleotideSequence("TACCGCCATGACCA");
+        NucleotideSequence sequence2 = new NucleotideSequence("CCTCATCTCTT");
+        Alignment<NucleotideSequence> alignment = Aligner.alignLocal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
+                sequence1, sequence2);
+
+        AlignmentHelper helper = alignment.getAlignmentHelper();
+
+        Assert.assertEquals(alignment.getSequence1Range().getFrom(), helper.getSequence1PositionAt(0));
+        Assert.assertEquals(alignment.getSequence1Range().getTo() - 1,
+                helper.getSequence1PositionAt(helper.size() - 1));
+
+        Assert.assertEquals(alignment.getSequence2Range().getFrom(), helper.getSequence2PositionAt(0));
+        Assert.assertEquals(alignment.getSequence2Range().getTo() - 1,
+                helper.getSequence2PositionAt(helper.size() - 1));
+    }
 }
