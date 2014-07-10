@@ -104,9 +104,9 @@ public class KMapperTest extends AlignmentTest {
             boolean left = (rdi.nextInt(0, 1) == 0);
             NucleotideSequence target;
             if (left)
-                target = seq.getSubSequence(seq.size() - subSize, seq.size()).concatenate(randomSequence(NucleotideSequence.ALPHABET, rdi, 20, 30));
+                target = seq.getRange(seq.size() - subSize, seq.size()).concatenate(randomSequence(NucleotideSequence.ALPHABET, rdi, 20, 30));
             else
-                target = randomSequence(NucleotideSequence.ALPHABET, rdi, 20, 30).concatenate(seq.getSubSequence(0, subSize));
+                target = randomSequence(NucleotideSequence.ALPHABET, rdi, 20, 30).concatenate(seq.getRange(0, subSize));
 
             int[] muts = generateMutations(target, model).getAllMutations();
             target = mutate(target, muts);

@@ -34,7 +34,7 @@ abstract class AbstractArraySequence<S extends AbstractArraySequence<S>> extends
     }
 
     @Override
-    public S getSubSequence(int from, int to) {
+    public S getRange(int from, int to) {
         return getAlphabet().createUnsafe(Arrays.copyOfRange(data, from, to));
     }
 

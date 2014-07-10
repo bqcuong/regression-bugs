@@ -136,7 +136,7 @@ public final class KAlignmentHit {
                         refFrom = seqFrom - previousOffset;
                         refLength = currentSeedPosition - currentOffset - refFrom;
 
-                        assert target.getSubSequence(seqFrom - kValue, seqFrom).equals(reference.getSubSequence(refFrom - kValue, refFrom));
+                        assert target.getRange(seqFrom - kValue, seqFrom).equals(reference.getRange(refFrom - kValue, refFrom));
 
                         if (refLength < 0 || seqLength < 0) {
                             seqFrom -= kValue;

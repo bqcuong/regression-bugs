@@ -14,7 +14,7 @@ import java.util.Arrays;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public final class SequenceQuality implements Serializable, Seq<SequenceQuality> {
+public final class SequenceQuality extends AbstractSeq<SequenceQuality> implements Serializable {
     /**
      * Default value of good quality
      */
@@ -144,8 +144,8 @@ public final class SequenceQuality implements Serializable, Seq<SequenceQuality>
      * @return substring of current quality scores line
      */
     @Override
-    public SequenceQuality getSubSequence(int from, int to) {
-        return getSubSequence(new Range(from, to));
+    public SequenceQuality getRange(int from, int to) {
+        return getRange(new Range(from, to));
     }
 
     /**
@@ -155,7 +155,7 @@ public final class SequenceQuality implements Serializable, Seq<SequenceQuality>
      * @return substring of current quality scores line
      */
     @Override
-    public SequenceQuality getSubSequence(Range range) {
+    public SequenceQuality getRange(Range range) {
         byte[] rdata = Arrays.copyOfRange(data, range.getLower(), range.getUpper());
         if (range.isReverse())
             ArraysUtils.reverse(rdata);
@@ -173,7 +173,7 @@ public final class SequenceQuality implements Serializable, Seq<SequenceQuality>
     }
 
     @Override
-    public SequenceBuilder<SequenceQuality> getSequenceBuilder() {
+    public SequenceQualityBuilder getBuilder() {
         return new SequenceQualityBuilder();
     }
 

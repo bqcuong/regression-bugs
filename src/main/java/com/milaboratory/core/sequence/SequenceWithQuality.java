@@ -72,7 +72,7 @@ public class SequenceWithQuality<S extends Sequence<S>> {//implements Seq<? exte
      */
 //    @Override
     public SequenceWithQuality<S> getSubSequence(Range range) {
-        return new SequenceWithQuality<>(sequence.getSubSequence(range), quality.getSubSequence(range));
+        return new SequenceWithQuality<>(sequence.getRange(range), quality.getRange(range));
     }
 
     /**

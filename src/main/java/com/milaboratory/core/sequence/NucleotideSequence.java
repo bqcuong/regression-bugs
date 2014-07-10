@@ -99,12 +99,12 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
     }
 
     @Override
-    public NucleotideSequence getSubSequence(int from, int to) {
-        return getSubSequence(new Range(from, to));
+    public NucleotideSequence getRange(int from, int to) {
+        return getRange(new Range(from, to));
     }
 
     @Override
-    public NucleotideSequence getSubSequence(Range range) {
+    public NucleotideSequence getRange(Range range) {
         if (range.getLower() < 0 || range.getUpper() < 0
                 || range.getLower() > size() || range.getUpper() > size())
             throw new IndexOutOfBoundsException();
