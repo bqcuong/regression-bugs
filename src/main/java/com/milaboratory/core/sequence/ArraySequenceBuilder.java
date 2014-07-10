@@ -4,7 +4,7 @@ package com.milaboratory.core.sequence;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-final class ArraySequenceBuilder<S extends AbstractArraySequence<S>> extends ArraySeqBuilder<S> {
+final class ArraySequenceBuilder<S extends AbstractArraySequence<S>> extends ArraySeqBuilder<S> implements SequenceBuilder<S> {
     private final AbstractArrayAlphabet<S> alphabet;
 
     ArraySequenceBuilder(AbstractArrayAlphabet<S> alphabet) {
@@ -27,7 +27,34 @@ final class ArraySequenceBuilder<S extends AbstractArraySequence<S>> extends Arr
     }
 
     @Override
-    public SequenceBuilder<S> clone() {
+    public ArraySequenceBuilder<S> set(int position, byte letter) {
+        if (position < 0 || position >= size)
+            throw new IndexOutOfBoundsException();
+        data[position] = letter;
+        return this;
+    }
+
+    @Override
+    public ArraySequenceBuilder<S> append(byte letter) {
+        ensureInternalCapacity(size + 1);
+        data[size++] = letter;
+        return this;
+    }
+
+    @Override
+    public ArraySequenceBuilder<S> append(S seq) {
+        super.append(seq);
+        return this;
+    }
+
+    @Override
+    public ArraySequenceBuilder<S> clone() {
         return new ArraySequenceBuilder<>(data == null ? null : data.clone(), size, alphabet);
+    }
+
+    @Override
+    public ArraySequenceBuilder<S> ensureCapacity(int capacity) {
+        super.ensureCapacity(capacity);
+        return this;
     }
 }

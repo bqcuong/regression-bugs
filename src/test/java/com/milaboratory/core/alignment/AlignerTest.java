@@ -340,14 +340,14 @@ public class AlignerTest {
             testLocalRandomCheckAlignedSequences(sc);
     }
 
-    public void testLocalRandomCheckAlignedSequences(AlignmentScoring sc) {
+    public <S extends Sequence<S>> void testLocalRandomCheckAlignedSequences(AlignmentScoring<S> sc) {
         int its = TestUtil.its(100, 3000);
         Well19937c rdi = new Well19937c();
         for (int i = 0; i < its; ++i) {
-            Sequence sq1 = randomSequence(sc.getAlphabet(), rdi, 100, 300),
+            S sq1 = randomSequence(sc.getAlphabet(), rdi, 100, 300),
                     sq2 = randomSequence(sc.getAlphabet(), rdi, 100, 300);
 
-            Alignment r = Aligner.alignLocal(sc, sq1, sq2);
+            Alignment<S> r = Aligner.alignLocal(sc, sq1, sq2);
 
             Assert.assertEquals(sq2.getRange(r.getSequence2Range()),
                     r.getRelativeMutations().mutate(sq1.getRange(r.getSequence1Range())));

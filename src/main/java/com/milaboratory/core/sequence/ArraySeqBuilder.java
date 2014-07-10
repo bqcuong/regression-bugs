@@ -2,7 +2,7 @@ package com.milaboratory.core.sequence;
 
 import java.util.Arrays;
 
-public abstract class ArraySeqBuilder<S extends Seq<S>> implements SeqBuilder<S> {
+public abstract class ArraySeqBuilder<S extends AbstractSeq<S>> implements SeqBuilder<S> {
     byte[] data;
     int size = 0;
 
@@ -19,7 +19,7 @@ public abstract class ArraySeqBuilder<S extends Seq<S>> implements SeqBuilder<S>
         return size;
     }
 
-    private void ensureInternalCapacity(int newSize) {
+    protected void ensureInternalCapacity(int newSize) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
         if (data == null)
@@ -65,27 +65,13 @@ public abstract class ArraySeqBuilder<S extends Seq<S>> implements SeqBuilder<S>
     }
 
     @Override
-    public SequenceBuilder<S> set(int position, byte letter) {
-        if (position < 0 || position >= size)
-            throw new IndexOutOfBoundsException();
-        data[position] = letter;
-        return this;
-    }
-
-    @Override
-    public SequenceBuilder<S> append(byte letter) {
-        ensureInternalCapacity(size + 1);
-        data[size++] = letter;
-        return this;
-    }
-
-    @Override
-    public SequenceBuilder<S> append(S seq) {
+    public ArraySeqBuilder<S> append(S seq) {
         ensureInternalCapacity(size + seq.size());
         System.arraycopy(getUnsafe(seq), 0, data, size, seq.size());
         size += seq.size();
         return this;
     }
 
-    public abstract SequenceBuilder<S> clone();
+    @Override
+    public abstract ArraySeqBuilder<S> clone();
 }

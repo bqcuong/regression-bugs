@@ -46,4 +46,11 @@ public final class NSequenceWithQuality extends SequenceWithQuality<NucleotideSe
     public NSequenceWithQualityBuilder getBuilder() {
         return new NSequenceWithQualityBuilder();
     }
+
+    @Override
+    public NSequenceWithQuality concatenate(NSequenceWithQuality other) {
+        return getBuilder()
+                .ensureCapacity(other.size() + size())
+                .append(this).append(other).createAndDestroy();
+    }
 }

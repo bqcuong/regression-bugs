@@ -27,7 +27,7 @@ package com.milaboratory.core.sequence;
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  * @see com.milaboratory.core.sequence.Sequence
  */
-public interface SequenceBuilder<S extends Seq<S>> extends SeqBuilder<S> {
+public interface SequenceBuilder<S extends AbstractSeq<S>> extends SeqBuilder<S> {
     /**
      * Sets letter at the specified position.
      *
@@ -44,4 +44,13 @@ public interface SequenceBuilder<S extends Seq<S>> extends SeqBuilder<S> {
      * @return this
      */
     SequenceBuilder<S> append(byte letter);
+
+    @Override
+    SequenceBuilder<S> append(S seq);
+
+    @Override
+    SequenceBuilder<S> ensureCapacity(int capacity);
+
+    @Override
+    SequenceBuilder<S> clone();
 }

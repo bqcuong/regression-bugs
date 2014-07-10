@@ -6,7 +6,7 @@ package com.milaboratory.core.sequence;
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Poslavsky Stanislav (stvlpos@mail.ru)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
- * @see com.milaboratory.core.sequence.Seq
+ * @see AbstractSeq
  */
 public interface SeqBuilder<S extends Seq<S>> {
     /**
@@ -22,7 +22,7 @@ public interface SeqBuilder<S extends Seq<S>> {
      * @param capacity capacity
      * @return this
      */
-    SequenceBuilder<S> ensureCapacity(int capacity);
+    SeqBuilder<S> ensureCapacity(int capacity);
 
     /**
      * Creates the sequence and destroys this builder.
@@ -37,12 +37,12 @@ public interface SeqBuilder<S extends Seq<S>> {
      * @param seq seq
      * @return this
      */
-    SequenceBuilder<S> append(S seq);
+    SeqBuilder<S> append(S seq);
 
     /**
      * Returns a deep copy of this builder
      *
      * @return a deep copy of this builder
      */
-    SequenceBuilder<S> clone();
+    SeqBuilder<S> clone();
 }

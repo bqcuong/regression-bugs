@@ -34,7 +34,7 @@ package com.milaboratory.core.sequence;
  * @see com.milaboratory.core.sequence.NucleotideSequence
  * @see com.milaboratory.core.sequence.AminoAcidSequence
  */
-public abstract class Sequence<S extends Sequence<S>> extends Seq<S> implements Comparable<S> {
+public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> implements Comparable<S> {
     /**
      * Returns element at specified position.
      *

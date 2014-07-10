@@ -14,7 +14,7 @@ import java.util.Arrays;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public final class SequenceQuality extends Seq<SequenceQuality> implements Serializable {
+public final class SequenceQuality extends AbstractSeq<SequenceQuality> implements Serializable {
     /**
      * Default value of good quality
      */
@@ -173,7 +173,7 @@ public final class SequenceQuality extends Seq<SequenceQuality> implements Seria
     }
 
     @Override
-    public SequenceBuilder<SequenceQuality> getBuilder() {
+    public SequenceQualityBuilder getBuilder() {
         return new SequenceQualityBuilder();
     }
 

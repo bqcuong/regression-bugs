@@ -3,7 +3,7 @@ package com.milaboratory.core.sequence;
 /**
  * Created by poslavsky on 10/07/14.
  */
-public class NSequenceWithQualityBuilder implements SequenceBuilder<NSequenceWithQuality> {
+public class NSequenceWithQualityBuilder implements SeqBuilder<NSequenceWithQuality> {
     final NucleotideSequenceBuilder sBuilder;
     final SequenceQualityBuilder qBuilder;
 
@@ -22,7 +22,7 @@ public class NSequenceWithQualityBuilder implements SequenceBuilder<NSequenceWit
     }
 
     @Override
-    public SequenceBuilder<NSequenceWithQuality> ensureCapacity(int capacity) {
+    public NSequenceWithQualityBuilder ensureCapacity(int capacity) {
         sBuilder.ensureCapacity(capacity);
         qBuilder.ensureCapacity(capacity);
         return this;
@@ -34,24 +34,14 @@ public class NSequenceWithQualityBuilder implements SequenceBuilder<NSequenceWit
     }
 
     @Override
-    public SequenceBuilder<NSequenceWithQuality> set(int position, byte letter) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public SequenceBuilder<NSequenceWithQuality> append(byte letter) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public SequenceBuilder<NSequenceWithQuality> append(NSequenceWithQuality seq) {
+    public NSequenceWithQualityBuilder append(NSequenceWithQuality seq) {
         sBuilder.append(seq.sequence);
         qBuilder.append(seq.quality);
         return this;
     }
 
     @Override
-    public SequenceBuilder<NSequenceWithQuality> clone() {
+    public NSequenceWithQualityBuilder clone() {
         return new NSequenceWithQualityBuilder(sBuilder.clone(), qBuilder.clone());
     }
 }
