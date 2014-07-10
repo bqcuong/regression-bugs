@@ -16,12 +16,14 @@ import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class TestUtil {
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
 
     public static boolean lt() {
-        return System.getProperty("longTests") != null;
+        return Objects.equals(System.getProperty("longTests"), "") ||
+                Objects.equals(System.getProperty("longTests"), "true");
     }
 
     @Test
