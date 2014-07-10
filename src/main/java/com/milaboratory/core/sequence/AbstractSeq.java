@@ -2,7 +2,7 @@ package com.milaboratory.core.sequence;
 
 import com.milaboratory.core.Range;
 
-abstract class AbstractSeq<S extends AbstractSeq<S>> implements Seq<S> {
+public abstract class AbstractSeq<S extends AbstractSeq<S>> implements Seq<S> {
     @Override
     public S getRange(Range range) {
         if (range.isReverse())
