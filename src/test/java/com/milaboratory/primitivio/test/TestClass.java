@@ -4,7 +4,7 @@ import com.milaboratory.primitivio.annotations.CustomSerializer;
 import com.milaboratory.primitivio.annotations.CustomSerializers;
 import com.milaboratory.primitivio.annotations.SerializableBy;
 
-@SerializableBy(TestSerializer.class)
+@SerializableBy(TestSerializer1.class)
 @CustomSerializers({
         @CustomSerializer(id = 1, type = TestSubClass2.class)
 })

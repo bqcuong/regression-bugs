@@ -4,7 +4,7 @@ import com.milaboratory.primitivio.PrimitivI;
 import com.milaboratory.primitivio.PrimitivO;
 import com.milaboratory.primitivio.Serializer;
 
-public class TestSerializer implements Serializer<TestClass> {
+public class TestSerializer1 implements Serializer<TestClass> {
     @Override
     public void write(PrimitivO output, TestClass object) {
         if (object.getClass() == TestClass.class)
