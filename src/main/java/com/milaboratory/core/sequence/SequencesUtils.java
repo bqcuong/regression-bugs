@@ -90,7 +90,7 @@ public final class SequencesUtils {
      * @param <S>       type os sequences
      * @return concatenation of all specified sequences
      */
-    public static <S extends Sequence<S>> S concatenate(S... sequences) {
+    public static <S extends Seq<S>> S concatenate(S... sequences) {
         if (sequences.length == 0)
             throw new IllegalArgumentException("Zero arguments");
 
@@ -101,7 +101,7 @@ public final class SequencesUtils {
         for (S s : sequences)
             size += s.size();
 
-        SequenceBuilder<S> builder = sequences[0].getAlphabet().getBuilder().ensureCapacity(size);
+        SeqBuilder<S> builder = sequences[0].getBuilder().ensureCapacity(size);
 
         for (S s : sequences)
             builder.append(s);

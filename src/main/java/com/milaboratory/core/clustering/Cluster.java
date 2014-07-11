@@ -1,5 +1,7 @@
 package com.milaboratory.core.clustering;
 
+import gnu.trove.procedure.TObjectProcedure;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +27,10 @@ public final class Cluster<T> {
         this.parent = parent;
     }
 
+    public T getHead() {
+        return head;
+    }
+
     public void add(Cluster<T> t) {
         if (children == null)
             children = new ArrayList<>();
@@ -39,6 +45,15 @@ public final class Cluster<T> {
             for (Cluster<T> child : children)
                 r += child.totalCount();
         return r;
+    }
+
+    public void processAllChildren(TObjectProcedure<Cluster<T>> procedure) {
+        if (children == null)
+            return;
+        for (Cluster<T> child : children) {
+            procedure.execute(child);
+            child.processAllChildren(procedure);
+        }
     }
 
     void sort(final Comparator<Cluster<T>> comparator) {

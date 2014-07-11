@@ -453,7 +453,7 @@ public class BandedAligner {
      * @param seq2       second sequence
      * @return object which contains positions at which alignment terminated and array of mutations
      */
-    public static BandedSemiLocalResult alignSemiLocalLeft(SemiLocalBandedAlignerParameters parameters, NucleotideSequence seq1, NucleotideSequence seq2) {
+    public static BandedSemiLocalResult alignSemiLocalLeft(BandedAlignerParameters parameters, NucleotideSequence seq1, NucleotideSequence seq2) {
         try {
             return alignSemiLocalLeft(parameters.getScoring(), seq1, seq2, 0, seq1.size(), 0, seq2.size(), parameters.getWidth(), parameters.getStopPenalty(),
                     null, AlignmentCache.get());
@@ -606,7 +606,7 @@ public class BandedAligner {
      * @param seq2        second sequence
      * @return object which contains positions at which alignment terminated and array of mutations
      */
-    public static BandedSemiLocalResult alignSemiLocalRight(SemiLocalBandedAlignerParameters paramenters,
+    public static BandedSemiLocalResult alignSemiLocalRight(BandedAlignerParameters paramenters,
                                                             NucleotideSequence seq1, NucleotideSequence seq2) {
         try {
             return alignSemiLocalRight(paramenters.getScoring(), seq1, seq2, 0, seq1.size(), 0, seq2.size(), paramenters.getWidth(),

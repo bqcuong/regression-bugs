@@ -6,15 +6,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
         getterVisibility = JsonAutoDetect.Visibility.NONE)
-public final class SemiLocalBandedAlignerParameters {
+public final class BandedAlignerParameters {
     LinearGapAlignmentScoring scoring;
     int width;
     int stopPenalty;
 
     @JsonCreator
-    public SemiLocalBandedAlignerParameters(@JsonProperty("scoring") LinearGapAlignmentScoring scoring,
-                                            @JsonProperty("width") int width,
-                                            @JsonProperty("stopPenalty") int stopPenalty) {
+    public BandedAlignerParameters(@JsonProperty("scoring") LinearGapAlignmentScoring scoring,
+                                   @JsonProperty("width") int width,
+                                   @JsonProperty("stopPenalty") int stopPenalty) {
         this.scoring = scoring;
         this.width = width;
         this.stopPenalty = stopPenalty;
@@ -30,7 +30,7 @@ public final class SemiLocalBandedAlignerParameters {
     /**
      * Sets scoring used for alignment.
      */
-    public SemiLocalBandedAlignerParameters setScoring(LinearGapAlignmentScoring scoring) {
+    public BandedAlignerParameters setScoring(LinearGapAlignmentScoring scoring) {
         this.scoring = scoring;
         return this;
     }
@@ -45,7 +45,7 @@ public final class SemiLocalBandedAlignerParameters {
     /**
      * Sets width of banded alignment matrix. This value is connected to max allowed number of indels.
      */
-    public SemiLocalBandedAlignerParameters setWidth(int width) {
+    public BandedAlignerParameters setWidth(int width) {
         this.width = width;
         return this;
     }
@@ -60,13 +60,13 @@ public final class SemiLocalBandedAlignerParameters {
     /**
      * Sets alignment score value in banded alignment matrix at which alignment terminates.
      */
-    public SemiLocalBandedAlignerParameters setStopPenalty(int stopPenalty) {
+    public BandedAlignerParameters setStopPenalty(int stopPenalty) {
         this.stopPenalty = stopPenalty;
         return this;
     }
 
-    public SemiLocalBandedAlignerParameters clone() {
-        return new SemiLocalBandedAlignerParameters(scoring, width, stopPenalty);
+    public BandedAlignerParameters clone() {
+        return new BandedAlignerParameters(scoring, width, stopPenalty);
     }
 
     @Override
@@ -74,7 +74,7 @@ public final class SemiLocalBandedAlignerParameters {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SemiLocalBandedAlignerParameters that = (SemiLocalBandedAlignerParameters) o;
+        BandedAlignerParameters that = (BandedAlignerParameters) o;
 
         if (stopPenalty != that.stopPenalty) return false;
         if (width != that.width) return false;
