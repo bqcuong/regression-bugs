@@ -139,8 +139,8 @@ public class KAlignerTest extends AlignmentTest {
                 p.clone().setFloatingLeftBound(true).setFloatingRightBound(true)};
 
         RandomDataGenerator rdi = new RandomDataGenerator(new Well19937c(127368647891L));
-        int baseSize = its(500, 2000);
-        int total = its(10000, 30000);
+        int baseSize = its(400, 2000);
+        int total = its(3000, 30000);
         int i, id;
 
         NucleotideMutationModel mutationModel = MutationModels.getEmpiricalNucleotideMutationModel().multiplyProbabilities(2.0);
@@ -282,8 +282,8 @@ public class KAlignerTest extends AlignmentTest {
                 p.clone().setFloatingLeftBound(true).setFloatingRightBound(true)};
 
         RandomDataGenerator rdi = new RandomDataGenerator(new Well19937c(127368647891L));
-        final int baseSize = its(500, 2000);
-        final int total = its(10000, 30000);
+        final int baseSize = its(400, 2000);
+        final int total = its(3000, 30000);
         final int threadCount = 20;
         int i, id;
 
