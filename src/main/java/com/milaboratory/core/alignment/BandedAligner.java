@@ -415,8 +415,7 @@ public class BandedAligner {
     /**
      * Alignment which identifies what is the highly similar part of the both sequences.
      *
-     * <p>Alignment is done in the way that beginning of second sequence is aligned to beginning of first
-     * sequence.</p>
+     * <p>Alignment is done in the way that beginning of second sequence is aligned to beginning of first sequence.</p>
      *
      * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
      *
@@ -441,8 +440,7 @@ public class BandedAligner {
     /**
      * Alignment which identifies what is the highly similar part of the both sequences.
      *
-     * <p>Alignment is done in the way that beginning of second sequence is aligned to beginning of first
-     * sequence.</p>
+     * <p>Alignment is done in the way that beginning of second sequence is aligned to beginning of first sequence.</p>
      *
      * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
      *
@@ -462,6 +460,34 @@ public class BandedAligner {
         }
     }
 
+    /**
+     * Alignment which identifies what is the highly similar part of the both sequences.
+     *
+     * <p>Alignment is done in the way that beginning of second sequence is aligned to beginning of first sequence.</p>
+     *
+     * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
+     *
+     * <p>In other words, only left part of second sequence is to be aligned</p>
+     *
+     * @param scoring     scoring system
+     * @param seq1        first sequence
+     * @param seq2        second sequence
+     * @param offset1     offset in first sequence
+     * @param length1     length of first sequence's part to be aligned
+     * @param offset2     offset in second sequence
+     * @param length2     length of second sequence's part to be aligned@param width
+     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
+     * @return object which contains positions at which alignment terminated and array of mutations
+     */
+    public static BandedSemiLocalResult alignSemiLocalLeft(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                           int offset1, int length1, int offset2, int length2,
+                                                           int width, int stopPenalty) {
+        try {
+            return alignSemiLocalLeft(scoring, seq1, seq2, offset1, length1, offset2, length2, width, stopPenalty, null, AlignmentCache.get());
+        } finally {
+            AlignmentCache.release();
+        }
+    }
 
     /**
      * Alignment which identifies what is the highly similar part of the both sequences.
@@ -619,9 +645,36 @@ public class BandedAligner {
     /**
      * Alignment which identifies what is the highly similar part of the both sequences.
      *
-     * <p>Alignment is done in the way that end of second sequence is aligned to end of first sequence.</p>
-     * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p> <p>In other
-     * words, only right part of second sequence is to be aligned.</p>
+     * <p>Alignment is done in the way that end of second sequence is aligned to end of first sequence.</p> <p>Alignment
+     * terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p> <p>In other words, only
+     * right part of second sequence is to be aligned.</p>
+     *
+     * @param scoring     scoring system
+     * @param seq1        first sequence
+     * @param seq2        second sequence
+     * @param offset1     offset in first sequence
+     * @param length1     length of first sequence's part to be aligned
+     * @param offset2     offset in second sequence
+     * @param length2     length of second sequence's part to be aligned@param width
+     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
+     * @return object which contains positions at which alignment terminated and array of mutations
+     */
+    public static BandedSemiLocalResult alignSemiLocalRight(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                            int offset1, int length1, int offset2, int length2,
+                                                            int width, int stopPenalty) {
+        try {
+            return alignSemiLocalRight(scoring, seq1, seq2, offset1, length1, offset2, length2, width, stopPenalty, null, AlignmentCache.get());
+        } finally {
+            AlignmentCache.release();
+        }
+    }
+
+    /**
+     * Alignment which identifies what is the highly similar part of the both sequences.
+     *
+     * <p>Alignment is done in the way that end of second sequence is aligned to end of first sequence.</p> <p>Alignment
+     * terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p> <p>In other words, only
+     * right part of second sequence is to be aligned.</p>
      *
      * @param scoring     scoring system
      * @param seq1        first sequence
