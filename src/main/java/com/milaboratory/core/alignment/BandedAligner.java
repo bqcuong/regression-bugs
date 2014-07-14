@@ -1,67 +1,13 @@
 package com.milaboratory.core.alignment;
 
+import com.milaboratory.core.Range;
+import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.NucleotideSequence;
-import com.milaboratory.util.IntArrayList;
 
-import static com.milaboratory.core.mutations.Mutation.*;
-
-/**
- * BandedAligner - class, static methods of which perform banded alignments, i.e. alignments where sequences to be
- * aligned are highly similar and number of mutations is very low.
- *
- * <p>It reduces the time complexity of alignment to roughly linear time by being semi-greedy, as it disallows the
- * possibility of a high scoring alignment that wanders significantly off the main diagonal (which means that it works
- * only for highly similar sequences)</p>
- */
-public class BandedAligner {
-
+public final class BandedAligner {
     /**
      * Classical Banded Alignment
-     *
-     * <p>Both sequences must be highly similar</p> <p>Align 2 sequence completely (i.e. while first sequence will be
-     * aligned against whole second sequence)</p>
-     *
-     * @param scoring scoring system
-     * @param seq1    first sequence
-     * @param seq2    second sequence
-     * @param width   width of matrix. In other terms max allowed number of indels
-     * @return array of mutations
-     */
-    public static int[] align(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2, int width) {
-        return align(scoring, seq1, seq2, 0, seq1.size(), 0, seq2.size(), width);
-    }
-
-    /**
-     * Classical Banded Alignment
-     *
-     * <p>Both sequences must be highly similar</p> <p>Align 2 sequence completely (i.e. while first sequence will be
-     * aligned against whole second sequence)</p>
-     *
-     * @param scoring scoring system
-     * @param seq1    first sequence
-     * @param seq2    second sequence
-     * @param offset1 offset in first sequence
-     * @param length1 length of first sequence's part to be aligned
-     * @param offset2 offset in second sequence
-     * @param length2 length of second sequence's part to be aligned
-     * @param width   width of banded alignment matrix. In other terms max allowed number of indels
-     * @return
-     */
-    public static int[] align(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                              int offset1, int length1, int offset2, int length2,
-                              int width) {
-        IntArrayList mutations = new IntArrayList();
-        try {
-            align(scoring, seq1, seq2, offset1, length1, offset2, length2, width, mutations, AlignmentCache.get());
-        } finally {
-            AlignmentCache.release();
-        }
-        return mutations.toArray();
-    }
-
-    /**
-     * Classical Banded Alignment
-     *
+     * <p/>
      * <p>Both sequences must be highly similar</p> <p>Align 2 sequence completely (i.e. while first sequence will be
      * aligned against whole second sequence)</p>
      *
@@ -77,9 +23,9 @@ public class BandedAligner {
      * @param cachedArray cached (created once) array to be used in {@link BandedMatrix}, which is compact alignment
      *                    scoring matrix
      */
-    public static void align(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                             int offset1, int length1, int offset2, int length2,
-                             int width, IntArrayList mutations, CachedIntArray cachedArray) {
+    public static float align0(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                               int offset1, int length1, int offset2, int length2,
+                               int width, MutationsBuilder<NucleotideSequence> mutations, CachedIntArray cachedArray) {
 
         int size1 = length1 + 1,
                 size2 = length2 + 1;
@@ -119,59 +65,30 @@ public class BandedAligner {
                             scoring.getScore(c1 = seq1.codeAt(offset1 + i),
                                     c2 = seq2.codeAt(offset2 + j))) {
                 if (c1 != c2)
-                    mutations.add(createSubstitution(offset1 + i, c1, c2));
+                    mutations.appendSubstitution(offset1 + i, c1, c2);
                 --i;
                 --j;
             } else if (i >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i, j + 1) + scoring.getGapPenalty()) {
-                mutations.add(createDeletion(offset1 + i, seq1.codeAt(offset1 + i)));
+                mutations.appendDeletion(offset1 + i, seq1.codeAt(offset1 + i));
                 --i;
             } else if (j >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i + 1, j) + scoring.getGapPenalty()) {
-                mutations.add(createInsertion(offset1 + i + 1, seq2.codeAt(offset2 + j)));
+                mutations.appendInsertion(offset1 + i + 1, seq2.codeAt(offset2 + j));
                 --j;
             } else
                 throw new RuntimeException();
         }
 
-        mutations.reverse(to, mutations.size());
+        mutations.reverseRange(to, mutations.size());
+        return matrix.get(length1, length2);
     }
 
     /**
      * Semi-semi-global alignment with artificially added letters.
-     *
-     * <p>Alignment where second sequence is aligned to the right part of first sequence.</p> <p>Whole second sequence
-     * must be highly similar to the first sequence</p>
-     *
-     * @param scoring           scoring system
-     * @param seq1              first sequence
-     * @param seq2              second sequence
-     * @param offset1           offset in first sequence
-     * @param length1           length of first sequence's part to be aligned including artificially added letters
-     * @param addedNucleotides1 number of artificially added letters to the first sequence
-     * @param offset2           offset in second sequence
-     * @param length2           length of second sequence's part to be aligned including artificially added letters
-     * @param addedNucleotides2 number of artificially added letters to the second sequence
-     * @param width             width of banded alignment matrix. In other terms max allowed number of indels
-     * @param mutations         mutations array where all mutations will be kept
-     * @return result of alignment which consists of mutations array at positions in both sequences where alignment has
-     * been terminated
-     */
-    public static BandedSemiLocalResult alignRightAdded(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                        int offset1, int length1, int addedNucleotides1, int offset2, int length2, int addedNucleotides2,
-                                                        int width, IntArrayList mutations) {
-        try {
-            return alignRightAdded(scoring, seq1, seq2, offset1, length1, addedNucleotides1, offset2, length2, addedNucleotides2, width, mutations, AlignmentCache.get());
-        } finally {
-            AlignmentCache.release();
-        }
-    }
-
-    /**
-     * Semi-semi-global alignment with artificially added letters.
-     *
+     * <p/>
      * <p>Alignment where second sequence is aligned to the right part of first sequence.</p> <p>Whole second sequence
      * must be highly similar to the first sequence</p>
      *
@@ -189,9 +106,9 @@ public class BandedAligner {
      * @param cachedArray       cached (created once) array to be used in {@link BandedMatrix}, which is compact
      *                          alignment scoring matrix
      */
-    public static BandedSemiLocalResult alignRightAdded(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                        int offset1, int length1, int addedNucleotides1, int offset2, int length2, int addedNucleotides2,
-                                                        int width, IntArrayList mutations, CachedIntArray cachedArray) {
+    public static BandedSemiLocalResult alignRightAdded0(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                         int offset1, int length1, int addedNucleotides1, int offset2, int length2, int addedNucleotides2,
+                                                         int width, MutationsBuilder<NucleotideSequence> mutations, CachedIntArray cachedArray) {
 
         int size1 = length1 + 1,
                 size2 = length2 + 1;
@@ -251,60 +168,28 @@ public class BandedAligner {
                             scoring.getScore(c1 = seq1.codeAt(offset1 + i),
                                     c2 = seq2.codeAt(offset2 + j))) {
                 if (c1 != c2)
-                    mutations.add(createSubstitution(offset1 + i, c1, c2));
+                    mutations.appendSubstitution(offset1 + i, c1, c2);
                 --i;
                 --j;
             } else if (i >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i, j + 1) + scoring.getGapPenalty()) {
-                mutations.add(createDeletion(offset1 + i, seq1.codeAt(offset1 + i)));
+                mutations.appendDeletion(offset1 + i, seq1.codeAt(offset1 + i));
                 --i;
             } else if (j >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i + 1, j) + scoring.getGapPenalty()) {
-                mutations.add(createInsertion(offset1 + i + 1, seq2.codeAt(offset2 + j)));
+                mutations.appendInsertion(offset1 + i + 1, seq2.codeAt(offset2 + j));
                 --j;
             } else
                 throw new RuntimeException();
         }
 
-        mutations.reverse(to, mutations.size());
+        mutations.reverseRange(to, mutations.size());
 
-        return new BandedSemiLocalResult(offset1 + maxI - 1, offset2 + maxJ - 1, null, maxScore);
-        //return new LocalAlignment(new Range(offset1, offset1 + maxI), new Range(offset2, offset2 + maxJ), null);
+        return new BandedSemiLocalResult(offset1 + maxI - 1, offset2 + maxJ - 1, maxScore);
     }
 
-    /**
-     * Semi-semi-global alignment with artificially added letters.
-     *
-     * <p>Alignment where second sequence is aligned to the left part of first sequence.</p>
-     *
-     * <p>Second sequence must be highly similar to the first sequence, except last {@code width} letters, which are to
-     * be checked whether they can improve alignment or not.</p>
-     *
-     * @param scoring           scoring system
-     * @param seq1              first sequence
-     * @param seq2              second sequence
-     * @param offset1           offset in first sequence
-     * @param length1           length of first sequence's part to be aligned including artificially added letters
-     * @param addedNucleotides1 number of artificially added letters to the first sequence
-     * @param offset2           offset in second sequence
-     * @param length2           length of second sequence's part to be aligned including artificially added letters
-     * @param addedNucleotides2 number of artificially added letters to the second sequence
-     * @param width             width of banded alignment matrix. In other terms max allowed number of indels
-     * @param mutations         mutations array where all mutations will be kept
-     * @return result of alignment which consists of mutations array at positions in both sequences where alignment has
-     * been terminated
-     */
-    public static BandedSemiLocalResult alignLeftAdded(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                       int offset1, int length1, int addedNucleotides1, int offset2, int length2, int addedNucleotides2,
-                                                       int width, IntArrayList mutations) {
-        try {
-            return alignLeftAdded(scoring, seq1, seq2, offset1, length1, addedNucleotides1, offset2, length2, addedNucleotides2, width, mutations, AlignmentCache.get());
-        } finally {
-            AlignmentCache.release();
-        }
-    }
 
     /**
      * Semi-semi-global alignment with artificially added letters.
@@ -328,9 +213,9 @@ public class BandedAligner {
      * @param cachedArray       cached (created once) array to be used in {@link BandedMatrix}, which is compact
      *                          alignment scoring matrix
      */
-    public static BandedSemiLocalResult alignLeftAdded(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                       int offset1, int length1, int addedNucleotides1, int offset2, int length2, int addedNucleotides2,
-                                                       int width, IntArrayList mutations, CachedIntArray cachedArray) {
+    public static BandedSemiLocalResult alignLeftAdded0(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                        int offset1, int length1, int addedNucleotides1, int offset2, int length2, int addedNucleotides2,
+                                                        int width, MutationsBuilder<NucleotideSequence> mutations, CachedIntArray cachedArray) {
         int size1 = length1 + 1,
                 size2 = length2 + 1;
 
@@ -380,7 +265,6 @@ public class BandedAligner {
                 maxJ = j;
             }
 
-        to = mutations.size();
         i = maxI - 1;
         j = maxJ - 1;
         byte c1, c2;
@@ -390,113 +274,35 @@ public class BandedAligner {
                             scoring.getScore(c1 = seq1.codeAt(offset1 + length1 - 1 - i),
                                     c2 = seq2.codeAt(offset2 + length2 - 1 - j))) {
                 if (c1 != c2)
-                    mutations.add(createSubstitution(offset1 + length1 - 1 - i, c1, c2));
+                    mutations.appendSubstitution(offset1 + length1 - 1 - i, c1, c2);
                 --i;
                 --j;
             } else if (i >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i, j + 1) + scoring.getGapPenalty()) {
-                mutations.add(createDeletion(offset1 + length1 - 1 - i, seq1.codeAt(offset1 + length1 - 1 - i)));
+                mutations.appendDeletion(offset1 + length1 - 1 - i, seq1.codeAt(offset1 + length1 - 1 - i));
                 --i;
             } else if (j >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i + 1, j) + scoring.getGapPenalty()) {
-                mutations.add(createInsertion(offset1 + length1 - 1 - i, seq2.codeAt(offset2 + length2 - 1 - j)));
+                mutations.appendInsertion(offset1 + length1 - 1 - i, seq2.codeAt(offset2 + length2 - 1 - j));
                 --j;
             } else
                 throw new RuntimeException();
         }
 
-        return new BandedSemiLocalResult(offset1 + length1 - maxI, offset2 + length2 - maxJ, null, maxScore);
+        return new BandedSemiLocalResult(offset1 + length1 - maxI, offset2 + length2 - maxJ, maxScore);
     }
 
-    //TODO: Meaning of width in right and left (optimization)
 
     /**
      * Alignment which identifies what is the highly similar part of the both sequences.
-     *
-     * <p>Alignment is done in the way that beginning of second sequence is aligned to beginning of first sequence.</p>
-     *
-     * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
-     *
-     * <p>In other words, only left part of second sequence is to be aligned</p>
-     *
-     * @param scoring     scoring system
-     * @param seq1        first sequence
-     * @param seq2        second sequence
-     * @param width       width of banded alignment matrix. In other terms max allowed number of indels
-     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
-     * @return object which contains positions at which alignment terminated and array of mutations
-     */
-    public static BandedSemiLocalResult alignSemiLocalLeft(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                           int width, int stopPenalty) {
-        try {
-            return alignSemiLocalLeft(scoring, seq1, seq2, 0, seq1.size(), 0, seq2.size(), width, stopPenalty, null, AlignmentCache.get());
-        } finally {
-            AlignmentCache.release();
-        }
-    }
-
-    /**
-     * Alignment which identifies what is the highly similar part of the both sequences.
-     *
-     * <p>Alignment is done in the way that beginning of second sequence is aligned to beginning of first sequence.</p>
-     *
-     * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
-     *
-     * <p>In other words, only left part of second sequence is to be aligned</p>
-     *
-     * @param parameters alignment paramenters
-     * @param seq1       first sequence
-     * @param seq2       second sequence
-     * @return object which contains positions at which alignment terminated and array of mutations
-     */
-    public static BandedSemiLocalResult alignSemiLocalLeft(BandedAlignerParameters parameters, NucleotideSequence seq1, NucleotideSequence seq2) {
-        try {
-            return alignSemiLocalLeft(parameters.getScoring(), seq1, seq2, 0, seq1.size(), 0, seq2.size(), parameters.getWidth(), parameters.getStopPenalty(),
-                    null, AlignmentCache.get());
-        } finally {
-            AlignmentCache.release();
-        }
-    }
-
-    /**
-     * Alignment which identifies what is the highly similar part of the both sequences.
-     *
-     * <p>Alignment is done in the way that beginning of second sequence is aligned to beginning of first sequence.</p>
-     *
-     * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
-     *
-     * <p>In other words, only left part of second sequence is to be aligned</p>
-     *
-     * @param scoring     scoring system
-     * @param seq1        first sequence
-     * @param seq2        second sequence
-     * @param offset1     offset in first sequence
-     * @param length1     length of first sequence's part to be aligned
-     * @param offset2     offset in second sequence
-     * @param length2     length of second sequence's part to be aligned@param width
-     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
-     * @return object which contains positions at which alignment terminated and array of mutations
-     */
-    public static BandedSemiLocalResult alignSemiLocalLeft(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                           int offset1, int length1, int offset2, int length2,
-                                                           int width, int stopPenalty) {
-        try {
-            return alignSemiLocalLeft(scoring, seq1, seq2, offset1, length1, offset2, length2, width, stopPenalty, null, AlignmentCache.get());
-        } finally {
-            AlignmentCache.release();
-        }
-    }
-
-    /**
-     * Alignment which identifies what is the highly similar part of the both sequences.
-     *
+     * <p/>
      * <p>Alignment is done in the way that beginning of second sequences is aligned to beginning of first
      * sequence.</p>
-     *
+     * <p/>
      * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
-     *
+     * <p/>
      * <p>In other words, only left part of second sequence is to be aligned</p>
      *
      * @param scoring     scoring system
@@ -512,9 +318,10 @@ public class BandedAligner {
      *                    scoring matrix
      * @return object which contains positions at which alignment terminated and array of mutations
      */
-    public static BandedSemiLocalResult alignSemiLocalLeft(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                           int offset1, int length1, int offset2, int length2,
-                                                           int width, int stopPenalty, IntArrayList mutations, CachedIntArray cachedArray) {
+    public static BandedSemiLocalResult alignSemiLocalLeft0(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                            int offset1, int length1, int offset2, int length2,
+                                                            int width, int stopPenalty, MutationsBuilder<NucleotideSequence> mutations,
+                                                            CachedIntArray cachedArray) {
 
         int size1 = length1 + 1,
                 size2 = length2 + 1;
@@ -558,9 +365,8 @@ public class BandedAligner {
                 break;
         }
 
-        IntArrayList list = mutations == null ? new IntArrayList() : mutations;
 
-        int fromL = list.size();
+        int fromL = mutations.size();
 
         i = iStop - 1;
         j = jStop - 1;
@@ -571,107 +377,31 @@ public class BandedAligner {
                             scoring.getScore(c1 = seq1.codeAt(offset1 + i),
                                     c2 = seq2.codeAt(offset2 + j))) {
                 if (c1 != c2)
-                    list.add(createSubstitution(offset1 + i, c1, c2));
+                    mutations.appendSubstitution(offset1 + i, c1, c2);
                 --i;
                 --j;
             } else if (i >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i, j + 1) + scoring.getGapPenalty()) {
-                list.add(createDeletion(offset1 + i, seq1.codeAt(offset1 + i)));
+                mutations.appendDeletion(offset1 + i, seq1.codeAt(offset1 + i));
                 --i;
             } else if (j >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i + 1, j) + scoring.getGapPenalty()) {
-                list.add(createInsertion(offset1 + i + 1, seq2.codeAt(offset2 + j)));
+                mutations.appendInsertion(offset1 + i + 1, seq2.codeAt(offset2 + j));
                 --j;
             } else
                 throw new RuntimeException();
         }
 
-        list.reverse(fromL, list.size());
+        mutations.reverseRange(fromL, mutations.size());
 
-        return new BandedSemiLocalResult(offset1 + iStop - 1, offset2 + jStop - 1, mutations == null ? list.toArray() : null, max);
+        return new BandedSemiLocalResult(offset1 + iStop - 1, offset2 + jStop - 1, max);
     }
 
     /**
      * Alignment which identifies what is the highly similar part of the both sequences.
-     *
-     * <p>Alignment is done in the way that end of second sequence is aligned to end of first sequence.</p>
-     *
-     * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
-     *
-     * <p>In other words, only right part of second sequence is to be aligned.</p>
-     *
-     * @param scoring     scoring system
-     * @param seq1        first sequence
-     * @param seq2        second sequence
-     * @param width       width of banded alignment matrix. In other terms max allowed number of indels
-     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
-     * @return object which contains positions at which alignment terminated and array of mutations
-     */
-    public static BandedSemiLocalResult alignSemiLocalRight(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                            int width, int stopPenalty) {
-        try {
-            return alignSemiLocalRight(scoring, seq1, seq2, 0, seq1.size(), 0, seq2.size(), width, stopPenalty, null, AlignmentCache.get());
-        } finally {
-            AlignmentCache.release();
-        }
-    }
-
-    /**
-     * Alignment which identifies what is the highly similar part of the both sequences.
-     *
-     * <p>Alignment is done in the way that end of second sequence is aligned to end of first sequence.</p>
-     *
-     * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
-     *
-     * <p>In other words, only right part of second sequence is to be aligned.</p>
-     *
-     * @param paramenters alignment paramenters
-     * @param seq1        first sequence
-     * @param seq2        second sequence
-     * @return object which contains positions at which alignment terminated and array of mutations
-     */
-    public static BandedSemiLocalResult alignSemiLocalRight(BandedAlignerParameters paramenters,
-                                                            NucleotideSequence seq1, NucleotideSequence seq2) {
-        try {
-            return alignSemiLocalRight(paramenters.getScoring(), seq1, seq2, 0, seq1.size(), 0, seq2.size(), paramenters.getWidth(),
-                    paramenters.getStopPenalty(), null, AlignmentCache.get());
-        } finally {
-            AlignmentCache.release();
-        }
-    }
-
-    /**
-     * Alignment which identifies what is the highly similar part of the both sequences.
-     *
-     * <p>Alignment is done in the way that end of second sequence is aligned to end of first sequence.</p> <p>Alignment
-     * terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p> <p>In other words, only
-     * right part of second sequence is to be aligned.</p>
-     *
-     * @param scoring     scoring system
-     * @param seq1        first sequence
-     * @param seq2        second sequence
-     * @param offset1     offset in first sequence
-     * @param length1     length of first sequence's part to be aligned
-     * @param offset2     offset in second sequence
-     * @param length2     length of second sequence's part to be aligned@param width
-     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
-     * @return object which contains positions at which alignment terminated and array of mutations
-     */
-    public static BandedSemiLocalResult alignSemiLocalRight(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                            int offset1, int length1, int offset2, int length2,
-                                                            int width, int stopPenalty) {
-        try {
-            return alignSemiLocalRight(scoring, seq1, seq2, offset1, length1, offset2, length2, width, stopPenalty, null, AlignmentCache.get());
-        } finally {
-            AlignmentCache.release();
-        }
-    }
-
-    /**
-     * Alignment which identifies what is the highly similar part of the both sequences.
-     *
+     * <p/>
      * <p>Alignment is done in the way that end of second sequence is aligned to end of first sequence.</p> <p>Alignment
      * terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p> <p>In other words, only
      * right part of second sequence is to be aligned.</p>
@@ -689,9 +419,10 @@ public class BandedAligner {
      *                    scoring matrix
      * @return object which contains positions at which alignment terminated and array of mutations
      */
-    public static BandedSemiLocalResult alignSemiLocalRight(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
-                                                            int offset1, int length1, int offset2, int length2,
-                                                            int width, int stopPenalty, IntArrayList mutations, CachedIntArray cachedArray) {
+    public static BandedSemiLocalResult alignSemiLocalRight0(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                             int offset1, int length1, int offset2, int length2,
+                                                             int width, int stopPenalty, MutationsBuilder<NucleotideSequence> mutations,
+                                                             CachedIntArray cachedArray) {
         int size1 = length1 + 1,
                 size2 = length2 + 1;
 
@@ -735,8 +466,6 @@ public class BandedAligner {
                 break;
         }
 
-        IntArrayList list = mutations == null ? new IntArrayList() : mutations;
-
         i = iStop - 1;
         j = jStop - 1;
         byte c1, c2;
@@ -746,23 +475,255 @@ public class BandedAligner {
                             scoring.getScore(c1 = seq1.codeAt(offset1 + length1 - 1 - i),
                                     c2 = seq2.codeAt(offset2 + length2 - 1 - j))) {
                 if (c1 != c2)
-                    list.add(createSubstitution(offset1 + length1 - 1 - i, c1, c2));
+                    mutations.appendSubstitution(offset1 + length1 - 1 - i, c1, c2);
                 --i;
                 --j;
             } else if (i >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i, j + 1) + scoring.getGapPenalty()) {
-                list.add(createDeletion(offset1 + length1 - 1 - i, seq1.codeAt(offset1 + length1 - 1 - i)));
+                mutations.appendDeletion(offset1 + length1 - 1 - i, seq1.codeAt(offset1 + length1 - 1 - i));
                 --i;
             } else if (j >= 0 &&
                     matrix.get(i + 1, j + 1) ==
                             matrix.get(i + 1, j) + scoring.getGapPenalty()) {
-                list.add(createInsertion(offset1 + length1 - 1 - i, seq2.codeAt(offset2 + length2 - 1 - j)));
+                mutations.appendInsertion(offset1 + length1 - 1 - i, seq2.codeAt(offset2 + length2 - 1 - j));
                 --j;
             } else
                 throw new RuntimeException();
         }
 
-        return new BandedSemiLocalResult(offset1 + length1 - iStop, offset2 + length2 - jStop, mutations == null ? list.toArray() : null, max);
+        return new BandedSemiLocalResult(offset1 + length1 - iStop, offset2 + length2 - jStop, max);
+    }
+
+
+    /**
+     * Classical Banded Alignment
+     * <p/>
+     * <p>Both sequences must be highly similar</p> <p>Align 2 sequence completely (i.e. while first sequence will be
+     * aligned against whole second sequence)</p>
+     *
+     * @param scoring scoring system
+     * @param seq1    first sequence
+     * @param seq2    second sequence
+     * @param width   width of banded alignment matrix. In other terms max allowed number of indels
+     */
+    public static Alignment<NucleotideSequence> align(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                      int width) {
+        return align(scoring, seq1, seq2, 0, seq1.size(), 0, seq2.size(), width);
+    }
+
+    /**
+     * Classical Banded Alignment
+     * <p/>
+     * <p>Both sequences must be highly similar</p> <p>Align 2 sequence completely (i.e. while first sequence will be
+     * aligned against whole second sequence)</p>
+     *
+     * @param scoring scoring system
+     * @param seq1    first sequence
+     * @param seq2    second sequence
+     * @param offset1 offset in first sequence
+     * @param length1 length of first sequence's part to be aligned
+     * @param offset2 offset in second sequence
+     * @param length2 length of second sequence's part to be aligned
+     * @param width   width of banded alignment matrix. In other terms max allowed number of indels
+     */
+    public static Alignment<NucleotideSequence> align(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                      int offset1, int length1, int offset2, int length2, int width) {
+        try {
+            MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+            float score = align0(scoring, seq1, seq2, offset1, length1, offset2, length2, width,
+                    mutations, AlignmentCache.get());
+            return new Alignment<>(seq1, mutations.createAndDestroy(),
+                    new Range(offset1, offset1 + length1), new Range(offset2, offset2 + length2), score);
+        } finally {
+            AlignmentCache.release();
+        }
+    }
+
+    /**
+     * Semi-semi-global alignment with artificially added letters.
+     *
+     * <p>Alignment where second sequence is aligned to the left part of first sequence.</p>
+     *
+     * <p>Whole second sequence must be highly similar to the first sequence, except last {@code width} letters, which
+     * are to be checked whether they can improve alignment or not.</p>
+     *
+     * @param scoring           scoring system
+     * @param seq1              first sequence
+     * @param seq2              second sequence
+     * @param offset1           offset in first sequence
+     * @param length1           length of first sequence's part to be aligned
+     * @param addedNucleotides1 number of artificially added letters to the first sequence
+     * @param offset2           offset in second sequence
+     * @param length2           length of second sequence's part to be aligned
+     * @param addedNucleotides2 number of artificially added letters to the second sequence
+     * @param width             width of banded alignment matrix. In other terms max allowed number of indels
+     */
+    public static Alignment<NucleotideSequence> alignLeftAdded(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                               int offset1, int length1, int addedNucleotides1, int offset2, int length2, int addedNucleotides2,
+                                                               int width) {
+        try {
+            MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+            BandedSemiLocalResult result = alignLeftAdded0(scoring, seq1, seq2,
+                    offset1, length1, addedNucleotides1, offset2, length2, addedNucleotides2,
+                    width, mutations, AlignmentCache.get());
+            return new Alignment<>(seq1, mutations.createAndDestroy(),
+                    new Range(result.sequence1Stop, offset1 + length1), new Range(result.sequence2Stop, offset2 + length2),
+                    result.score);
+        } finally {
+            AlignmentCache.release();
+        }
+    }
+
+    /**
+     * Semi-semi-global alignment with artificially added letters.
+     * <p/>
+     * <p>Alignment where second sequence is aligned to the right part of first sequence.</p> <p>Whole second sequence
+     * must be highly similar to the first sequence</p>
+     *
+     * @param scoring           scoring system
+     * @param seq1              first sequence
+     * @param seq2              second sequence
+     * @param offset1           offset in first sequence
+     * @param length1           length of first sequence's part to be aligned including artificially added letters
+     * @param addedNucleotides1 number of artificially added letters to the first sequence
+     * @param offset2           offset in second sequence
+     * @param length2           length of second sequence's part to be aligned including artificially added letters
+     * @param addedNucleotides2 number of artificially added letters to the second sequence
+     * @param width             width of banded alignment matrix. In other terms max allowed number of indels
+     */
+    public static Alignment<NucleotideSequence> alignRightAdded(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                                int offset1, int length1, int addedNucleotides1, int offset2, int length2, int addedNucleotides2,
+                                                                int width) {
+        try {
+            MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+            BandedSemiLocalResult result = alignRightAdded0(scoring, seq1, seq2,
+                    offset1, length1, addedNucleotides1, offset2, length2, addedNucleotides2,
+                    width, mutations, AlignmentCache.get());
+            return new Alignment<>(seq1, mutations.createAndDestroy(),
+                    new Range(offset1, result.sequence1Stop + 1), new Range(offset2, result.sequence2Stop + 1),
+                    result.score);
+        } finally {
+            AlignmentCache.release();
+        }
+    }
+
+    /**
+     * Alignment which identifies what is the highly similar part of the both sequences.
+     * <p/>
+     * <p>Alignment is done in the way that beginning of second sequences is aligned to beginning of first
+     * sequence.</p>
+     * <p/>
+     * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
+     * <p/>
+     * <p>In other words, only left part of second sequence is to be aligned</p>
+     *
+     * @param scoring     scoring system
+     * @param seq1        first sequence
+     * @param seq2        second sequence
+     * @param offset1     offset in first sequence
+     * @param length1     length of first sequence's part to be aligned
+     * @param offset2     offset in second sequence
+     * @param length2     length of second sequence's part to be aligned@param width
+     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
+     * @return object which contains positions at which alignment terminated and array of mutations
+     */
+    public static Alignment<NucleotideSequence> alignSemiLocalLeft(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                                   int offset1, int length1, int offset2, int length2,
+                                                                   int width, int stopPenalty) {
+        try {
+            int minLength = Math.min(length1, length2) + width + 1;
+            length1 = Math.min(length1, minLength);
+            length2 = Math.min(length2, minLength);
+            MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+            BandedSemiLocalResult result = alignSemiLocalLeft0(scoring, seq1, seq2,
+                    offset1, length1, offset2, length2, width, stopPenalty, mutations, AlignmentCache.get());
+            return new Alignment<>(seq1, mutations.createAndDestroy(),
+                    new Range(offset1, result.sequence1Stop + 1), new Range(offset2, result.sequence2Stop + 1),
+                    result.score);
+        } finally {
+            AlignmentCache.release();
+        }
+    }
+
+    /**
+     * Alignment which identifies what is the highly similar part of the both sequences.
+     * <p/>
+     * <p>Alignment is done in the way that beginning of second sequences is aligned to beginning of first
+     * sequence.</p>
+     * <p/>
+     * <p>Alignment terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p>
+     * <p/>
+     * <p>In other words, only left part of second sequence is to be aligned</p>
+     *
+     * @param scoring     scoring system
+     * @param seq1        first sequence
+     * @param seq2        second sequence
+     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
+     * @return object which contains positions at which alignment terminated and array of mutations
+     */
+    public static Alignment<NucleotideSequence> alignSemiLocalLeft(LinearGapAlignmentScoring scoring,
+                                                                   NucleotideSequence seq1, NucleotideSequence seq2,
+                                                                   int width, int stopPenalty) {
+        return alignSemiLocalLeft(scoring, seq1, seq2, 0, seq1.size(), 0, seq2.size(), width, stopPenalty);
+    }
+
+    /**
+     * Alignment which identifies what is the highly similar part of the both sequences.
+     * <p/>
+     * <p>Alignment is done in the way that end of second sequence is aligned to end of first sequence.</p> <p>Alignment
+     * terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p> <p>In other words, only
+     * right part of second sequence is to be aligned.</p>
+     *
+     * @param scoring     scoring system
+     * @param seq1        first sequence
+     * @param seq2        second sequence
+     * @param offset1     offset in first sequence
+     * @param length1     length of first sequence's part to be aligned
+     * @param offset2     offset in second sequence
+     * @param length2     length of second sequence's part to be aligned@param width
+     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
+     * @return object which contains positions at which alignment terminated and array of mutations
+     */
+    public static Alignment<NucleotideSequence> alignSemiLocalRight(LinearGapAlignmentScoring scoring, NucleotideSequence seq1, NucleotideSequence seq2,
+                                                                    int offset1, int length1, int offset2, int length2,
+                                                                    int width, int stopPenalty) {
+        try {
+            int minLength = Math.min(length1, length2) + width + 1;
+            int l1 = Math.min(length1, minLength);
+            int l2 = Math.min(length2, minLength);
+            offset1 = offset1 + length1 - l1;
+            offset2 = offset2 + length2 - l2;
+            length1 = l1;
+            length2 = l2;
+            MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+            BandedSemiLocalResult result = alignSemiLocalRight0(scoring, seq1, seq2,
+                    offset1, length1, offset2, length2, width,
+                    stopPenalty, mutations, AlignmentCache.get());
+            return new Alignment<>(seq1, mutations.createAndDestroy(),
+                    new Range(result.sequence1Stop, offset1 + length1), new Range(result.sequence2Stop, offset2 + length2),
+                    result.score);
+        } finally {
+            AlignmentCache.release();
+        }
+    }
+
+    /**
+     * Alignment which identifies what is the highly similar part of the both sequences.
+     * <p/>
+     * <p>Alignment is done in the way that end of second sequence is aligned to end of first sequence.</p> <p>Alignment
+     * terminates when score in banded alignment matrix reaches {@code stopPenalty} value.</p> <p>In other words, only
+     * right part of second sequence is to be aligned.</p>
+     *
+     * @param scoring     scoring system
+     * @param seq1        first sequence
+     * @param seq2        second sequence
+     * @param stopPenalty alignment score value in banded alignment matrix at which alignment terminates
+     * @return object which contains positions at which alignment terminated and array of mutations
+     */
+    public static Alignment<NucleotideSequence> alignSemiLocalRight(LinearGapAlignmentScoring scoring,
+                                                                    NucleotideSequence seq1, NucleotideSequence seq2,
+                                                                    int width, int stopPenalty) {
+        return alignSemiLocalRight(scoring, seq1, seq2, 0, seq1.size(), 0, seq2.size(), width, stopPenalty);
     }
 }

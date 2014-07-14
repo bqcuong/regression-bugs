@@ -56,8 +56,6 @@ public final class MutationsBuilder<S extends Sequence<S>> {
     }
 
     public Mutations<S> createAndDestroy() {
-        Mutations<S> muts;
-
         final int[] m;
 
         if (mutations == null)
@@ -73,20 +71,17 @@ public final class MutationsBuilder<S extends Sequence<S>> {
         if (reversed)
             ArraysUtils.reverse(m);
 
-        return new Mutations<>(alphabet, m,
-                true);
+        if (m.length > 1)
+            for (int i = 1; i < m.length; ++i)
+                if (getPosition(m[i - 1]) > getPosition(m[i]))
+                    throw new IllegalArgumentException("Mutations must be appended in descending/ascending order (position)" +
+                            "depending on the value of reverse flag.");
+
+        return new Mutations<>(alphabet, m, true);
     }
 
     public MutationsBuilder<S> append(int mutation) {
         ensureInternalCapacity(size + 1);
-
-        if (size > 0 &&
-                (reversed ?
-                        getPosition(mutations[size - 1]) < getPosition(mutation) :
-                        getPosition(mutations[size - 1]) > getPosition(mutation)))
-            throw new IllegalArgumentException("Mutations must be appended in descending/ascending order (position)" +
-                    "depending on the value of reverse flag.");
-
         mutations[size++] = mutation;
         return this;
     }
@@ -101,6 +96,11 @@ public final class MutationsBuilder<S extends Sequence<S>> {
 
     public MutationsBuilder<S> appendInsertion(int position, int to) {
         return append(createInsertion(position, to));
+    }
+
+    public MutationsBuilder<S> reverseRange(int from, int to) {
+        ArraysUtils.reverse(mutations, from, to);
+        return this;
     }
 
     public MutationsBuilder<S> clone() {

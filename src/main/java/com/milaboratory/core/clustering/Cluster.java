@@ -31,6 +31,13 @@ public final class Cluster<T> {
         return head;
     }
 
+    public Cluster<T> getRoot() {
+        Cluster<T> current = parent;
+        while (current.parent != null)
+            current = current.parent;
+        return current;
+    }
+
     public void add(Cluster<T> t) {
         if (children == null)
             children = new ArrayList<>();

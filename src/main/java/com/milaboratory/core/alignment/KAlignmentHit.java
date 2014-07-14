@@ -2,6 +2,7 @@ package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
 import com.milaboratory.core.mutations.Mutations;
+import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.IntArrayList;
 
@@ -55,7 +56,7 @@ public final class KAlignmentHit {
                     target = result.target;
             int targetFrom = result.targetFrom, targetTo = result.targetTo;
 
-            IntArrayList mutations = new IntArrayList();
+            MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
 
             int maxIndels = parameters.getMaxAdjacentIndels();
             int kValue = parameters.getMapperKValue();
@@ -110,14 +111,14 @@ public final class KAlignmentHit {
             }
 
             if (parameters.isFloatingLeftBound()) {
-                br = BandedAligner.alignSemiLocalRight(parameters.getScoring(), reference, target,
+                br = BandedAligner.alignSemiLocalRight0(parameters.getScoring(), reference, target,
                         refFrom, refLength, seqFrom, seqLength,
                         maxIndels, parameters.getAlignmentStopPenalty(), mutations, array);
 
                 gRefFrom = br.sequence1Stop;
                 gSeqFrom = br.sequence2Stop;
             } else {
-                br = BandedAligner.alignLeftAdded(parameters.getScoring(), reference, target,
+                br = BandedAligner.alignLeftAdded0(parameters.getScoring(), reference, target,
                         refFrom, refLength, refAdded, seqFrom, seqLength, seqAdded,
                         maxIndels, mutations, array);
 
@@ -146,7 +147,7 @@ public final class KAlignmentHit {
                         }
 
                         if (refLength > 0 || seqLength > 0)
-                            BandedAligner.align(parameters.getScoring(), reference, target,
+                            BandedAligner.align0(parameters.getScoring(), reference, target,
                                     refFrom, refLength, seqFrom, seqLength, parameters.getMaxAdjacentIndels(), mutations, array);
 
                         gSeqTo = currentSeedPosition + kValue;
@@ -185,13 +186,13 @@ public final class KAlignmentHit {
             }
 
             if (parameters.isFloatingRightBound()) {
-                br = BandedAligner.alignSemiLocalLeft(parameters.getScoring(), reference, target,
+                br = BandedAligner.alignSemiLocalLeft0(parameters.getScoring(), reference, target,
                         refFrom, refLength, seqFrom, seqLength,
                         maxIndels, parameters.getAlignmentStopPenalty(), mutations, array);
                 gRefTo = br.sequence1Stop + 1;
                 gSeqTo = br.sequence2Stop + 1;
             } else {
-                br = BandedAligner.alignRightAdded(parameters.getScoring(), reference, target,
+                br = BandedAligner.alignRightAdded0(parameters.getScoring(), reference, target,
                         refFrom, refLength, refAdded, seqFrom, seqLength, seqAdded,
                         maxIndels, mutations, array);
                 gRefTo = br.sequence1Stop + 1;
@@ -224,7 +225,7 @@ public final class KAlignmentHit {
             //        gSeqTo = seqFrom + seqLength;
             //    }
 
-            Mutations<NucleotideSequence> muts = new Mutations<>(NucleotideSequence.ALPHABET, mutations);
+            Mutations<NucleotideSequence> muts = mutations.createAndDestroy();
             alignment = new Alignment<>(
                     reference, muts, new Range(gRefFrom, gRefTo), new Range(gSeqFrom, gSeqTo),
                     AlignmentUtils.calculateScore(parameters.getScoring(), gRefTo - gRefFrom, muts));
