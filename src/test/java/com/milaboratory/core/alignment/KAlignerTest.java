@@ -435,7 +435,7 @@ public class KAlignerTest extends AlignmentTest {
             Assert.assertEquals(0.0, 1.0 * incorrect.get() / total, 0.001);
             Assert.assertEquals(0.0, 1.0 * miss.get() / total, 0.001);
             Assert.assertEquals(0.0, 1.0 * scoreError.get() / total, 0.001);
-            Assert.assertEquals(0.0, 1.0 * random.get() / total / baseSize, 1.5E-6);
+            Assert.assertEquals(0.0, 1.0 * random.get() / total / baseSize, 5E-6);
         }
     }
 
