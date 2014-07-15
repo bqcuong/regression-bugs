@@ -43,4 +43,18 @@ public class TreeSearchParametersTest {
         String str = "{\"maxSubstitutions\":1,\"maxDeletions\":1,\"substitutionPenalty\":0.2,\"maxPenalty\":0.7}";
         TreeSearchParameters deser = GlobalObjectMappers.PRETTY.readValue(str, TreeSearchParameters.class);
     }
+
+    @Test
+    public void test6() throws Exception {
+        String str = "\"oneMismatch\"";
+        TreeSearchParameters deser = GlobalObjectMappers.PRETTY.readValue(str, TreeSearchParameters.class);
+        TreeSearchParameters params = TreeSearchParameters.ONE_MISMATCH;
+        assertEquals(params, deser);
+    }
+
+    @Test
+    public void test7() throws Exception {
+        String str = GlobalObjectMappers.PRETTY.writeValueAsString(TreeSearchParameters.ONE_MISMATCH);
+        assertEquals("\"oneMismatch\"", str);
+    }
 }

@@ -6,9 +6,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 @JsonSerialize(using = TreeSearchParameters.Serializer.class)
 @JsonDeserialize(using = TreeSearchParameters.Deserializer.class)
@@ -141,10 +143,34 @@ public final class TreeSearchParameters {
         return result;
     }
 
+    private static final HashMap<String, TreeSearchParameters> parametersByName;
+    private static final HashMap<TreeSearchParameters, String> nameByParameters;
+
+    private static void addKnown(String name, TreeSearchParameters params) {
+        parametersByName.put(name.toLowerCase(), params);
+        nameByParameters.put(params, name);
+    }
+
+    static {
+        parametersByName = new HashMap<>();
+        nameByParameters = new HashMap<>();
+        addKnown("oneMismatch", ONE_MISMATCH);
+        addKnown("oneIndel", ONE_INDEL);
+        addKnown("oneMismatchOrIndel", ONE_MISMATCH_OR_INDEL);
+    }
+
     public static final class Deserializer extends JsonDeserializer<TreeSearchParameters> {
         @Override
         public TreeSearchParameters deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             JsonNode node = jp.readValueAsTree(), tmp;
+
+            if (node instanceof TextNode) {
+                TreeSearchParameters params = parametersByName.get(node.textValue().toLowerCase());
+                if (params == null)
+                    throw new IllegalArgumentException("Unknown parameter set: " + node.textValue());
+                return params;
+            }
+
             int[] maxErrors = new int[3];
 
             if ((tmp = node.get("maxSubstitutions")) != null)
@@ -206,24 +232,29 @@ public final class TreeSearchParameters {
     public static final class Serializer extends JsonSerializer<TreeSearchParameters> {
         @Override
         public void serialize(TreeSearchParameters value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-            jgen.writeStartObject();
+            String knownName = nameByParameters.get(value);
+            if (knownName != null)
+                jgen.writeString(knownName);
+            else {
+                jgen.writeStartObject();
 
-            if (value.maxErrors[0] != 0)
-                jgen.writeObjectField("maxSubstitutions", value.maxErrors[0]);
-            if (value.maxErrors[1] != 0)
-                jgen.writeObjectField("maxDeletions", value.maxErrors[1]);
-            if (value.maxErrors[2] != 0)
-                jgen.writeObjectField("maxInsertions", value.maxErrors[2]);
+                if (value.maxErrors[0] != 0)
+                    jgen.writeObjectField("maxSubstitutions", value.maxErrors[0]);
+                if (value.maxErrors[1] != 0)
+                    jgen.writeObjectField("maxDeletions", value.maxErrors[1]);
+                if (value.maxErrors[2] != 0)
+                    jgen.writeObjectField("maxInsertions", value.maxErrors[2]);
 
-            if (Arrays.equals(value.penalty, UNIFORM_PENALTY))
-                jgen.writeObjectField("totalMutations", (int) value.maxPenalty);
-            else if (!Arrays.equals(value.penalty, DEFAULT_PENALTY)) {
-                jgen.writeObjectField("substitutionPenalty", value.penalty[0]);
-                jgen.writeObjectField("deletionPenalty", value.penalty[1]);
-                jgen.writeObjectField("insertionPenalty", value.penalty[2]);
-                jgen.writeObjectField("maxPenalty", value.maxPenalty);
+                if (Arrays.equals(value.penalty, UNIFORM_PENALTY))
+                    jgen.writeObjectField("totalMutations", (int) value.maxPenalty);
+                else if (!Arrays.equals(value.penalty, DEFAULT_PENALTY)) {
+                    jgen.writeObjectField("substitutionPenalty", value.penalty[0]);
+                    jgen.writeObjectField("deletionPenalty", value.penalty[1]);
+                    jgen.writeObjectField("insertionPenalty", value.penalty[2]);
+                    jgen.writeObjectField("maxPenalty", value.maxPenalty);
+                }
+                jgen.writeEndObject();
             }
-            jgen.writeEndObject();
         }
     }
 }
