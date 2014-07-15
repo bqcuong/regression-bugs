@@ -239,10 +239,10 @@ public class ClusteringTest {
 
     @Test
     public void testRandom1() throws Exception {
-        int out = TestUtil.its(10, 30);
+        int out = TestUtil.its(3, 30);
         Well19937a rand = new Well19937a();
         for (int x = 0; x < out; ++x) {
-            int N = TestUtil.its(50, 300);
+            int N = TestUtil.its(40, 300);
             Cluster<TestObject>[] clusters = new Cluster[N];
             Well19937a rand1 = new Well19937a(rand.nextLong());
 
@@ -259,7 +259,7 @@ public class ClusteringTest {
 
     @Test
     public void testRandom2WithColor() {
-        int out = TestUtil.its(10, 30);
+        int out = TestUtil.its(3, 30);
         Well19937a rand = new Well19937a();
         int colors = 3;
         for (int x = 0; x < out; ++x) {

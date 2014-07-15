@@ -26,4 +26,15 @@ public class ArraysUtilsTest {
         ArraysUtils.reverse(a);
         assertArrayEquals(b, a);
     }
+
+    @Test
+    public void test3() throws Exception {
+        int[] a = {3, 6, 2, 1, 6, 7};
+        int[] b = a.clone();
+        int[] r = {3, 6, 6, 1, 2, 7};
+        ArraysUtils.reverse(a, 2, 5);
+        assertArrayEquals(r, a);
+        ArraysUtils.reverse(a, 2, 5);
+        assertArrayEquals(b, a);
+    }
 }

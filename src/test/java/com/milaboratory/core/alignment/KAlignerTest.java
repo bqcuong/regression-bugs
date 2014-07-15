@@ -139,8 +139,8 @@ public class KAlignerTest extends AlignmentTest {
                 p.clone().setFloatingLeftBound(true).setFloatingRightBound(true)};
 
         RandomDataGenerator rdi = new RandomDataGenerator(new Well19937c(127368647891L));
-        int baseSize = its(500, 2000);
-        int total = its(10000, 30000);
+        int baseSize = its(400, 2000);
+        int total = its(3000, 30000);
         int i, id;
 
         NucleotideMutationModel mutationModel = MutationModels.getEmpiricalNucleotideMutationModel().multiplyProbabilities(2.0);
@@ -268,7 +268,7 @@ public class KAlignerTest extends AlignmentTest {
             Assert.assertEquals(0.0, 1.0 * incorrect / total, 0.001);
             Assert.assertEquals(0.0, 1.0 * miss / total, 0.001);
             Assert.assertEquals(0.0, 1.0 * scoreError / total, 0.001);
-            Assert.assertEquals(0.0, 1.0 * random / total / baseSize, 1.5E-6);
+            Assert.assertEquals(0.0, 1.0 * random / total / baseSize, 5E-6);
         }
     }
 
@@ -282,8 +282,8 @@ public class KAlignerTest extends AlignmentTest {
                 p.clone().setFloatingLeftBound(true).setFloatingRightBound(true)};
 
         RandomDataGenerator rdi = new RandomDataGenerator(new Well19937c(127368647891L));
-        final int baseSize = its(500, 2000);
-        final int total = its(10000, 30000);
+        final int baseSize = its(400, 2000);
+        final int total = its(3000, 30000);
         final int threadCount = 20;
         int i, id;
 
@@ -435,7 +435,7 @@ public class KAlignerTest extends AlignmentTest {
             Assert.assertEquals(0.0, 1.0 * incorrect.get() / total, 0.001);
             Assert.assertEquals(0.0, 1.0 * miss.get() / total, 0.001);
             Assert.assertEquals(0.0, 1.0 * scoreError.get() / total, 0.001);
-            Assert.assertEquals(0.0, 1.0 * random.get() / total / baseSize, 1.5E-6);
+            Assert.assertEquals(0.0, 1.0 * random.get() / total / baseSize, 5E-6);
         }
     }
 
