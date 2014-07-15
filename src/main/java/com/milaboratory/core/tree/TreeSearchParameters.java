@@ -1,5 +1,17 @@
 package com.milaboratory.core.tree;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+@JsonSerialize(using = TreeSearchParameters.Serializer.class)
+@JsonDeserialize(using = TreeSearchParameters.Deserializer.class)
 public final class TreeSearchParameters {
     public static final double[] DEFAULT_PENALTY = {
             0.1, // Mismatch penalty
@@ -29,9 +41,8 @@ public final class TreeSearchParameters {
     }
 
     /**
-     * Parameters to search with limited number of each mutation type.
-     * <p/>
-     * <p>Ordering of search is according to {@link #DEFAULT_PENALTY}.</p>
+     * Parameters to search with limited number of each mutation type. <p/> <p>Ordering of search is according to {@link
+     * #DEFAULT_PENALTY}.</p>
      *
      * @param mismatches maximum number of mismatches
      * @param deletions  maximum number of deletions
@@ -44,8 +55,8 @@ public final class TreeSearchParameters {
     }
 
     public TreeSearchParameters(int mismatches, int deletions, int insertions,
-                                int totalErrors) {
-        this(new int[]{mismatches, deletions, insertions}, UNIFORM_PENALTY, UNIFORM_PENALTY_VALUE * totalErrors);
+                                int totalMutations) {
+        this(new int[]{mismatches, deletions, insertions}, UNIFORM_PENALTY, UNIFORM_PENALTY_VALUE * totalMutations);
     }
 
     public TreeSearchParameters(int maxSubstitutions, int maxDeletions, int maxInsertions,
@@ -103,5 +114,116 @@ public final class TreeSearchParameters {
 
     byte[][] getDifferencesCombination() {
         return differencesCombination;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TreeSearchParameters)) return false;
+
+        TreeSearchParameters that = (TreeSearchParameters) o;
+
+        if (Double.compare(that.maxPenalty, maxPenalty) != 0) return false;
+        if (!Arrays.equals(maxErrors, that.maxErrors)) return false;
+        if (!Arrays.equals(penalty, that.penalty)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = Arrays.hashCode(maxErrors);
+        result = 31 * result + Arrays.hashCode(penalty);
+        temp = Double.doubleToLongBits(maxPenalty);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    public static final class Deserializer extends JsonDeserializer<TreeSearchParameters> {
+        @Override
+        public TreeSearchParameters deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            JsonNode node = jp.readValueAsTree(), tmp;
+            int[] maxErrors = new int[3];
+
+            if ((tmp = node.get("maxSubstitutions")) != null)
+                maxErrors[0] = tmp.asInt();
+            if ((tmp = node.get("maxDeletions")) != null)
+                maxErrors[1] = tmp.asInt();
+            if ((tmp = node.get("maxInsertions")) != null)
+                maxErrors[2] = tmp.asInt();
+
+            JsonNode maxPenaltyNode = node.get("maxPenalty");
+            if (maxPenaltyNode == null) {
+                JsonNode totalMutationsNode = node.get("totalMutations");
+                if (totalMutationsNode == null)
+                    if (node.get("substitutionPenalty") != null || node.get("deletionPenalty") != null ||
+                            node.get("insertionPenalty") != null)
+                        throw new IllegalArgumentException("Cannot set totalErrors and penalty related field simultaneously.");
+                    else
+                        return new TreeSearchParameters(maxErrors[0], maxErrors[1], maxErrors[2]);
+                else if (node.get("substitutionPenalty") != null || node.get("deletionPenalty") != null ||
+                        node.get("insertionPenalty") != null)
+                    throw new IllegalArgumentException("maxPenaltyNode is absent.");
+                else
+                    return new TreeSearchParameters(maxErrors[0], maxErrors[1], maxErrors[2], totalMutationsNode.asInt());
+            } else {
+                double maxPenalty = maxPenaltyNode.asDouble();
+
+                double[] penalty = new double[3];
+
+                if ((tmp = node.get("substitutionPenalty")) != null)
+                    penalty[0] = tmp.asDouble();
+                else if (maxErrors[0] != 0)
+                    throw new IllegalArgumentException("substitutionPenalty is absent.");
+
+                if ((tmp = node.get("deletionPenalty")) != null)
+                    penalty[1] = tmp.asDouble();
+                else if (maxErrors[1] != 0)
+                    throw new IllegalArgumentException("deletionPenalty is absent.");
+
+                if ((tmp = node.get("insertionPenalty")) != null)
+                    penalty[2] = tmp.asDouble();
+                else if (maxErrors[2] != 0)
+                    throw new IllegalArgumentException("insertionPenalty is absent.");
+
+                return new TreeSearchParameters(maxErrors, penalty, maxPenalty);
+            }
+        }
+
+        @Override
+        public TreeSearchParameters getEmptyValue() {
+            return null;
+        }
+
+        @Override
+        public TreeSearchParameters getNullValue() {
+            return null;
+        }
+    }
+
+    public static final class Serializer extends JsonSerializer<TreeSearchParameters> {
+        @Override
+        public void serialize(TreeSearchParameters value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+            jgen.writeStartObject();
+
+            if (value.maxErrors[0] != 0)
+                jgen.writeObjectField("maxSubstitutions", value.maxErrors[0]);
+            if (value.maxErrors[1] != 0)
+                jgen.writeObjectField("maxDeletions", value.maxErrors[1]);
+            if (value.maxErrors[2] != 0)
+                jgen.writeObjectField("maxInsertions", value.maxErrors[2]);
+
+            if (Arrays.equals(value.penalty, UNIFORM_PENALTY))
+                jgen.writeObjectField("totalMutations", (int) value.maxPenalty);
+            else if (!Arrays.equals(value.penalty, DEFAULT_PENALTY)) {
+                jgen.writeObjectField("substitutionPenalty", value.penalty[0]);
+                jgen.writeObjectField("deletionPenalty", value.penalty[1]);
+                jgen.writeObjectField("insertionPenalty", value.penalty[2]);
+                jgen.writeObjectField("maxPenalty", value.maxPenalty);
+            }
+            jgen.writeEndObject();
+        }
     }
 }
