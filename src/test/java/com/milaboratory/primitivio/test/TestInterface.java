@@ -1,7 +1,7 @@
 package com.milaboratory.primitivio.test;
 
-import com.milaboratory.primitivio.annotations.SerializableBy;
+import com.milaboratory.primitivio.annotations.Serializable;
 
-@SerializableBy(TestSerializer2.class)
+@Serializable(by = TestSerializer2.class)
 public interface TestInterface {
 }

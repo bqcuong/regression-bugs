@@ -1,41 +1,109 @@
 package com.milaboratory.primitivio;
 
 import com.milaboratory.primitivio.annotations.CustomSerializer;
-import com.milaboratory.primitivio.annotations.CustomSerializers;
-import com.milaboratory.primitivio.annotations.SerializableBy;
-import gnu.trove.map.custom_hash.TObjectByteCustomHashMap;
-import gnu.trove.map.hash.TByteObjectHashMap;
+import com.milaboratory.primitivio.annotations.Serializable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+
+import static com.milaboratory.primitivio.Util.findSerializableParent;
 
 public class SerializationManager {
-    final HashMap<Class<?>, TypeSerializationHelper> registeredHelpers = new HashMap<>();
+    final HashMap<Class<?>, Serializer> registeredHelpers = new HashMap<>();
 
-    TypeSerializationHelper getHelper(Class<?> type) {
-        return getHelper(type, false);
-    }
+    public <T> Serializer<? extends T> getSerializer(Class<T> type) {
+        Serializer serializer = registeredHelpers.get(type);
 
-    TypeSerializationHelper getHelper(Class<?> type, boolean assertNew) {
-        TypeSerializationHelper helper;
-        if ((helper = registeredHelpers.get(type)) == null)
-            registeredHelpers.put(type, helper = createForType(type));
-        else if (assertNew)
-            throw new IllegalStateException();
-        return helper;
-    }
-
-    private TypeSerializationHelper createForType(Class<?> type) {
-        SerializableBy serializableByAnnotation = type.getAnnotation(SerializableBy.class);
-        if (serializableByAnnotation != null) {
-            CustomSerializers cssAnnotation = type.getAnnotation(CustomSerializers.class);
-            if (cssAnnotation != null)
-                return createForTypeWithCustomSerializers(cssAnnotation, serializableByAnnotation);
+        if (serializer == null) {
+            Class<?> parent = findSerializableParent(type, true, false);
+            serializer = registeredHelpers.get(parent);
+            if (serializer != null)
+                registeredHelpers.put(type, serializer);
         }
-        return null;
+
+        if (serializer != null)
+            return serializer;
+
+        return createAndRegisterSerializer(type);
     }
 
+    private Serializer createAndRegisterSerializer(Class<?> type) {
+        Class<?> root = findRoot(type);
+
+        if (root == null)
+            throw new RuntimeException("" + type + " is not serializable.");
+
+        Serializer serializer = createSerializer0(root, false);
+        registeredHelpers.put(root, serializer);
+
+        if (type != root)
+            registeredHelpers.put(type, serializer);
+
+        if (serializer instanceof CustomSerializerImpl)
+            for (Class<?> subType : ((CustomSerializerImpl) serializer).infoByClass.keySet())
+                registeredHelpers.put(subType, serializer);
+
+        return serializer;
+    }
+
+    private Serializer createSerializer0(Class<?> type, boolean nested) {
+        Serializable annotation = type.getAnnotation(Serializable.class);
+
+        if (annotation == null)
+            throw new IllegalArgumentException("" + type + " is not serializable.");
+
+        try {
+            Serializer defaultSerializer =
+                    annotation.by() == Serializer.class ?
+                            null :
+                            annotation.by().newInstance();
+
+            CustomSerializer[] css = annotation.custom();
+            if (css.length > 0) {
+                if (nested)
+                    throw new RuntimeException("Nested custom serializers in " + type + ".");
+
+                HashMap<Class<?>, CustomSerializerImpl.TypeInfo> infoByClass = new HashMap<>();
+
+                // Adding default serializer
+                if (defaultSerializer != null)
+                    infoByClass.put(type, new CustomSerializerImpl.TypeInfo((byte) 0, defaultSerializer));
+
+                // Adding custom serializers
+                for (CustomSerializer cs : css)
+                    infoByClass.put(cs.type(), new CustomSerializerImpl.TypeInfo(cs.id(), createSerializer0(cs.type(), true)));
+
+                return new CustomSerializerImpl(infoByClass);
+            } else {
+                if (defaultSerializer == null)
+                    throw new RuntimeException("No serializer for " + type);
+                return defaultSerializer;
+            }
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static Class<?> findRoot(Class<?> type) {
+        List<Class<?>> serializableClasses = getAllSerializableInTree(type);
+
+        if (serializableClasses.isEmpty())
+            return null;
+
+        Class<?> realRoot = findRealRoot(serializableClasses.get(0)), tmp;
+
+        for (int i = 1; i < serializableClasses.size(); i++) {
+            tmp = findRealRoot(serializableClasses.get(i));
+            if (!Objects.equals(tmp, realRoot))
+                throw new IllegalArgumentException("Conflict between " + realRoot + " and " + tmp + " through " + serializableClasses.get(i));
+        }
+
+        return realRoot;
+    }
+
+    /* Utility methods for root calculation */
 
     private static List<Class<?>> getAllSerializableInTree(Class<?> type) {
         List<Class<?>> list = new ArrayList<>();
@@ -44,95 +112,22 @@ public class SerializationManager {
     }
 
     private static void addAllSerializableInTree(Class<?> type, List<Class<?>> list) {
-        if (type.getAnnotation(SerializableBy.class) != null)
+        if (type.getAnnotation(Serializable.class) != null)
             list.add(type);
 
         Class<?> superclass = type.getSuperclass();
         if (superclass != null)
             addAllSerializableInTree(superclass, list);
 
-        for (Class<?> cInterface : type.getInterfaces()) {
+        for (Class<?> cInterface : type.getInterfaces())
             addAllSerializableInTree(cInterface, list);
-        }
     }
 
-    static Class<?> findRoot(Class<?> type) {
-        List<Class<?>> all = getAllSerializableInTree(type);
-
-        if (all.isEmpty())
-            return null;
-
-        Class<?> realRoot = findRoot(all.get(0), true);
-        
-
-        Class<?> tmp = findRoot(type, true);
+    private static Class<?> findRealRoot(Class<?> type) {
+        Class<?> tmp = findSerializableParent(type, false, true);
         if (tmp != null)
             return tmp;
-        tmp = findRoot(type, true);
-    }
-
-    static Class<?> findRealRoot(Class<?> type) {
-        Class<?> tmp = findRoot(type, true);
-        if (tmp != null)
-            return tmp;
-        tmp = findRoot(type, false);
+        tmp = findSerializableParent(type, false, false);
         return tmp;
-    }
-
-    static Class<?> findRoot(Class<?> type, boolean withCustomSerializers) {
-        Class<?> root = null, tmp;
-
-        if (type.getAnnotation(SerializableBy.class) != null &&
-                (!withCustomSerializers || type.getAnnotation(CustomSerializers.class) != null))
-            root = type;
-
-        Class<?> superclass = type.getSuperclass();
-
-        if (superclass != null) {
-            tmp = findRoot(superclass, withCustomSerializers);
-            if (tmp != null) {
-                if (root == null)
-                    root = tmp;
-                else
-                    throw new RuntimeException("Custom serializers conflict between: " + root + " and " + tmp + ".");
-            }
-        }
-
-        for (Class<?> cInterface : type.getInterfaces()) {
-            tmp = findRoot(cInterface, withCustomSerializers);
-            if (tmp != null) {
-                if (root == null || root == tmp)
-                    root = tmp;
-                else
-                    throw new RuntimeException("Custom serializers conflict:" + root + " and " + tmp + ".");
-            }
-        }
-
-        return root;
-    }
-
-    private TypeSerializationHelper createForTypeWithCustomSerializers(CustomSerializers cssAnnotation,
-                                                                       SerializableBy serializableByAnnotation) {
-        CustomSerializer[] css = cssAnnotation.value();
-        TByteObjectHashMap<Serializer> serializersById = new TByteObjectHashMap<>();
-        TObjectByteCustomHashMap<Class> idByClass = new TObjectByteCustomHashMap<>();
-
-        try {
-            serializersById.put((byte) 0, serializableByAnnotation.value().newInstance());
-
-            for (CustomSerializer cs : css) {
-                serializersById.put(cs.id(), createForType(cs.type()).getSerializer());
-                idByClass.put(cs.type(), cs.id());
-            }
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
-
-        return new TypeSerializationHelper(new PCustomSerializer(idByClass, serializersById), true);
-    }
-
-    private static final class SearchResult {
-        Class<?> withCustomSerializers;
-        Class<?> withSerializer;
     }
 }
