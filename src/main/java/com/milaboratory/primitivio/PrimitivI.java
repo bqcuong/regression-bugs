@@ -1,83 +1,219 @@
 package com.milaboratory.primitivio;
 
 import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
-/**
- * Created by dbolotin on 11/07/14.
- */
-public class PrimitivI implements DataInput {
+public final class PrimitivI implements DataInput {
+    final DataInput input;
+    final SerializersManager manager;
+    final ArrayList<Object> references = new ArrayList<>();
+    int knownReferencesCount = 0;
+    int depth = 0;
+
+    public PrimitivI(InputStream input) {
+        this(new DataInputStream(input),
+                new SerializersManager());
+    }
+
+    public PrimitivI(DataInput input) {
+        this(input, new SerializersManager());
+    }
+
+    public PrimitivI(DataInput input, SerializersManager manager) {
+        this.input = input;
+        this.manager = manager;
+    }
+
+    public void putKnownReference(Object ref) {
+        if (references.size() != knownReferencesCount)
+            throw new IllegalStateException();
+        references.add(ref);
+        ++knownReferencesCount;
+    }
+
+    public void readReference(Object ref) {
+        int id = readVarInt();
+        if (id != references.size())
+            throw new RuntimeException("wrong reference id.");
+        references.add(ref);
+    }
+
+    private void reset() {
+        for (int i = references.size() - 1; i >= knownReferencesCount; --i)
+            references.remove(i);
+    }
+
+    public <T> T readObject(Class<T> type) {
+        Serializer serializer = manager.getSerializer(type);
+        if (serializer.isReference()) {
+            int id = readVarInt();
+            if (id == PrimitivO.NULL_ID) {
+                return null;
+            } else if (id == PrimitivO.NEW_OBJECT_ID) {
+                boolean readReferenceAfter = !serializer.handlesReference();
+
+                ++depth;
+                try {
+                    T obj = (T) serializer.read(this);
+
+                    if (readReferenceAfter)
+                        readReference(obj);
+
+                    return obj;
+                } finally {
+                    --depth;
+                    if (depth == 0)
+                        reset();
+                }
+            } else {
+                return (T) references.get(id - PrimitivO.ID_OFFSET);
+            }
+        }
+        return null;
+    }
+
+    public int readVarInt() {
+        int value = 0, tmp;
+        int shift = 0;
+        do {
+            tmp = readByte();
+            value |= (tmp & 0x7F) << (shift);
+            shift += 7;
+        } while ((tmp & 0x80) != 0);
+        return value;
+    }
+
     @Override
     public void readFully(byte[] b) {
-
+        try {
+            input.readFully(b);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void readFully(byte[] b, int off, int len) {
-
+        try {
+            input.readFully(b, off, len);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public int skipBytes(int n) {
-        return 0;
+        try {
+            return input.skipBytes(n);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean readBoolean() {
-        return false;
+        try {
+            return input.readBoolean();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public byte readByte() {
-        return 0;
+        try {
+            return input.readByte();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public int readUnsignedByte() {
-        return 0;
+        try {
+            return input.readUnsignedByte();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public short readShort() {
-        return 0;
+        try {
+            return input.readShort();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public int readUnsignedShort() {
-        return 0;
+        try {
+            return input.readUnsignedShort();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public char readChar() {
-        return 0;
+        try {
+            return input.readChar();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public int readInt() {
-        return 0;
+        try {
+            return input.readInt();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public long readLong() {
-        return 0;
+        try {
+            return input.readLong();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public float readFloat() {
-        return 0;
+        try {
+            return input.readFloat();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public double readDouble() {
-        return 0;
+        try {
+            return input.readDouble();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public String readLine() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public String readUTF() {
-        return null;
+        try {
+            return input.readUTF();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

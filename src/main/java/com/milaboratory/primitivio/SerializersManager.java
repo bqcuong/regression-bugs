@@ -10,10 +10,10 @@ import java.util.Objects;
 
 import static com.milaboratory.primitivio.Util.findSerializableParent;
 
-public class SerializationManager {
+public final class SerializersManager {
     final HashMap<Class<?>, Serializer> registeredHelpers = new HashMap<>();
 
-    public <T> Serializer<? extends T> getSerializer(Class<T> type) {
+    public <T> Serializer<? super T> getSerializer(Class<T> type) {
         Serializer serializer = registeredHelpers.get(type);
 
         if (serializer == null) {

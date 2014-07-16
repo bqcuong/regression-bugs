@@ -13,4 +13,14 @@ public class TestSerializer2 implements Serializer<TestInterface> {
     public TestInterface read(PrimitivI input) {
         return null;
     }
+
+    @Override
+    public boolean isReference() {
+        return false;
+    }
+
+    @Override
+    public boolean handlesReference() {
+        return false;
+    }
 }

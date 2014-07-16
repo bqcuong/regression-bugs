@@ -34,13 +34,20 @@ public final class CustomSerializerImpl implements Serializer {
         // Writing type id
         output.writeByte(info.id);
         // Writing content using corresponding sub-serializer
-        info.serializer.write(output, object);
+        Serializer serializer = info.serializer;
+        serializer.write(output, object);
+        if (!serializer.handlesReference())
+            output.writeReference(object);
     }
 
     @Override
     public Object read(PrimitivI input) {
         byte id = input.readByte();
-        return infoById.get(id).serializer.read(input);
+        Serializer serializer = infoById.get(id).serializer;
+        Object obj = serializer.read(input);
+        if (!serializer.handlesReference())
+            input.readReference(obj);
+        return obj;
     }
 
     public static class TypeInfo {
@@ -51,5 +58,15 @@ public final class CustomSerializerImpl implements Serializer {
             this.id = id;
             this.serializer = serializer;
         }
+    }
+
+    @Override
+    public boolean isReference() {
+        return true;
+    }
+
+    @Override
+    public boolean handlesReference() {
+        return true;
     }
 }
