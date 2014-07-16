@@ -71,8 +71,16 @@ public final class PrimitivI implements DataInput {
             } else {
                 return (T) references.get(id - PrimitivO.ID_OFFSET);
             }
+        } else {
+            ++depth;
+            try {
+                return (T) serializer.read(this);
+            } finally {
+                --depth;
+                if (depth == 0)
+                    reset();
+            }
         }
-        return null;
     }
 
     public int readVarInt() {

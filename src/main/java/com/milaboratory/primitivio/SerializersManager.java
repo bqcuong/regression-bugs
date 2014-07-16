@@ -11,6 +11,7 @@ import java.util.Objects;
 import static com.milaboratory.primitivio.Util.findSerializableParent;
 
 public final class SerializersManager {
+    final DefaultSerializersProvider defaultSerializersProvider = new DefaultSerializersProviderImpl();
     final HashMap<Class<?>, Serializer> registeredHelpers = new HashMap<>();
 
     public <T> Serializer<? super T> getSerializer(Class<T> type) {
@@ -26,16 +27,23 @@ public final class SerializersManager {
         if (serializer != null)
             return serializer;
 
+
         return createAndRegisterSerializer(type);
     }
 
     private Serializer createAndRegisterSerializer(Class<?> type) {
         Class<?> root = findRoot(type);
 
-        if (root == null)
-            throw new RuntimeException("" + type + " is not serializable.");
+        Serializer serializer;
+        if (root == null) {
+            serializer = defaultSerializersProvider.createSerializer(type, this);
+            if (serializer == null)
+                throw new RuntimeException("" + type + " is not serializable.");
+            else
+                root = type;
+        } else
+            serializer = createSerializer0(root, false);
 
-        Serializer serializer = createSerializer0(root, false);
         registeredHelpers.put(root, serializer);
 
         if (type != root)

@@ -46,7 +46,7 @@ public final class PrimitivO implements DataOutput {
         if (currentReferences != null && currentReferences.size() != knownReferences.size())
             throw new IllegalStateException();
         // Assigning this reference next available id (0 assigned to null)
-        knownReferences.put(object, knownReferences.size() + 1);
+        knownReferences.put(object, knownReferences.size());
     }
 
     private void reset() {
@@ -55,7 +55,7 @@ public final class PrimitivO implements DataOutput {
                 currentReferences = null;
             else
                 for (Object ref : addedReferences)
-                    currentReferences.remove(addedReferences);
+                    currentReferences.remove(ref);
             //Resetting list of references added in this serialization round
             addedReferences.clear();
         }
@@ -89,7 +89,7 @@ public final class PrimitivO implements DataOutput {
             if (serializer.isReference()) {
                 int id = currentReferences.get(object);
                 if (id != Integer.MIN_VALUE) {
-                    writeId(id);
+                    writeObjectReference(id);
                     return;
                 } else {
                     // Write just new object header to tell the reader that this object has no id yet
@@ -119,7 +119,7 @@ public final class PrimitivO implements DataOutput {
         writeByte(NEW_OBJECT_ID);
     }
 
-    private void writeId(int value) {
+    private void writeObjectReference(int value) {
         writeVarInt(value + ID_OFFSET);
     }
 
