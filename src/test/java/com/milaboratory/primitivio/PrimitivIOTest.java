@@ -1,6 +1,7 @@
 package com.milaboratory.primitivio;
 
 import com.milaboratory.primitivio.test.TestClass1;
+import com.milaboratory.primitivio.test.TestJsonClass1;
 import com.milaboratory.primitivio.test.TestSubClass1;
 import com.milaboratory.primitivio.test.TestSubClass2;
 import com.milaboratory.test.TestUtil;
@@ -203,5 +204,24 @@ public class PrimitivIOTest {
             Assert.assertArrayEquals(bytes, pi.readObject(byte[].class));
             Assert.assertArrayEquals(ints, pi.readObject(int[].class));
         }
+    }
+
+    @Test
+    public void testJsonSerializer1() throws Exception {
+        RandomGenerator rg = new Well19937c();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        PrimitivO po = new PrimitivO(bos);
+        TestJsonClass1[] objs = new TestJsonClass1[100];
+        for (int i = 0; i < objs.length; i++)
+            objs[i] = new TestJsonClass1(rg.nextInt(), "Rand" + rg.nextInt());
+
+        int cc = 10;
+        for (int i = 0; i < cc; ++i)
+            po.writeObject(objs);
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        PrimitivI pi = new PrimitivI(bis);
+        for (int i = 0; i < cc; ++i)
+            Assert.assertArrayEquals(objs, pi.readObject(TestJsonClass1[].class));
     }
 }

@@ -68,6 +68,12 @@ public final class SerializersManager {
                         null :
                         instantiate(annotation.by());
 
+        if (annotation.asJson()) {
+            if (defaultSerializer != null)
+                throw new RuntimeException("'asJson' and 'by' parameters are not compatible.");
+            defaultSerializer = new JSONSerializer(type);
+        }
+
         CustomSerializer[] css = annotation.custom();
         if (css.length > 0) {
             if (nested)
