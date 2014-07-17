@@ -8,7 +8,12 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
         if (type.isArray()) {
             Class<?> componentType = type.getComponentType();
             if (componentType.isPrimitive()) {
-                return null;
+                if (componentType == Integer.TYPE)
+                    return new IntArraySerializer();
+                else if (componentType == Byte.TYPE)
+                    return new ByteArraySerializer();
+                else
+                    return null;
             } else {
                 return new ArraySerializer(manager.getSerializer(componentType) == null ? null : componentType);
             }
@@ -29,6 +34,58 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
         @Override
         public Integer read(PrimitivI input) {
             return input.readInt();
+        }
+
+        @Override
+        public boolean isReference() {
+            return false;
+        }
+
+        @Override
+        public boolean handlesReference() {
+            return false;
+        }
+    }
+
+    private static class IntArraySerializer implements Serializer<int[]> {
+        @Override
+        public void write(PrimitivO output, int[] object) {
+            output.writeVarInt(object.length);
+            for (int i : object)
+                output.writeInt(i);
+        }
+
+        @Override
+        public int[] read(PrimitivI input) {
+            int[] object = new int[input.readVarInt()];
+            for (int i = 0; i < object.length; i++)
+                object[i] = input.readInt();
+            return object;
+        }
+
+        @Override
+        public boolean isReference() {
+            return false;
+        }
+
+        @Override
+        public boolean handlesReference() {
+            return false;
+        }
+    }
+
+    private static class ByteArraySerializer implements Serializer<byte[]> {
+        @Override
+        public void write(PrimitivO output, byte[] object) {
+            output.writeVarInt(object.length);
+            output.write(object);
+        }
+
+        @Override
+        public byte[] read(PrimitivI input) {
+            byte[] object = new byte[input.readVarInt()];
+            input.readFully(object);
+            return object;
         }
 
         @Override

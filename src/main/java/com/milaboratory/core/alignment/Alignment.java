@@ -1,9 +1,11 @@
 package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
+import com.milaboratory.core.io.binary.AlignmentSerializer;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
+import com.milaboratory.primitivio.annotations.Serializable;
 import com.milaboratory.util.BitArray;
 import com.milaboratory.util.IntArrayList;
 
@@ -16,6 +18,7 @@ import static com.milaboratory.core.mutations.Mutation.*;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
+@Serializable(by = AlignmentSerializer.class)
 public final class Alignment<S extends Sequence<S>> {
     /**
      * Initial sequence. (upper sequence in alignment; sequence1)
@@ -228,5 +231,31 @@ public final class Alignment<S extends Sequence<S>> {
     @Override
     public String toString() {
         return getAlignmentHelper().toCompactString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Alignment alignment = (Alignment) o;
+
+        if (Float.compare(alignment.score, score) != 0) return false;
+        if (!mutations.equals(alignment.mutations)) return false;
+        if (!sequence1.equals(alignment.sequence1)) return false;
+        if (!sequence1Range.equals(alignment.sequence1Range)) return false;
+        if (!sequence2Range.equals(alignment.sequence2Range)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sequence1.hashCode();
+        result = 31 * result + mutations.hashCode();
+        result = 31 * result + sequence1Range.hashCode();
+        result = 31 * result + sequence2Range.hashCode();
+        result = 31 * result + (score != +0.0f ? Float.floatToIntBits(score) : 0);
+        return result;
     }
 }

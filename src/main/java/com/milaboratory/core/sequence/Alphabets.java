@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import gnu.trove.impl.Constants;
+import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -18,7 +20,9 @@ import java.util.Map;
  * Container of all defined alphabets.
  */
 public final class Alphabets {
-    private final static Map<String, Alphabet> alphabets = new HashMap<>();
+    private final static Map<String, Alphabet> alphabetsByName = new HashMap<>();
+    private final static TIntObjectHashMap<Alphabet> alphabetsById = new TIntObjectHashMap<>(Constants.DEFAULT_CAPACITY,
+            Constants.DEFAULT_LOAD_FACTOR, Byte.MIN_VALUE);
 
     private Alphabets() {
     }
@@ -29,8 +33,11 @@ public final class Alphabets {
      * @param alphabet alphabet
      */
     public static void register(Alphabet alphabet) {
-        if (alphabets.put(alphabet.getAlphabetName(), alphabet) != null)
-            throw new IllegalStateException();
+        if (alphabetsByName.put(alphabet.getAlphabetName(), alphabet) != null)
+            throw new IllegalStateException("Alphabet with this name is already registered.");
+
+        if (alphabetsById.put(alphabet.getId(), alphabet) != null)
+            throw new IllegalStateException("Alphabet with this id is already registered.");
     }
 
     static {
@@ -47,7 +54,17 @@ public final class Alphabets {
      * @return instance of {@code Alphabet} from its string name
      */
     public static Alphabet getByName(String name) {
-        return alphabets.get(name);
+        return alphabetsByName.get(name);
+    }
+
+    /**
+     * Returns instance of {@code Alphabet} from its byte id.
+     *
+     * @param id byte id of alphabet
+     * @return instance of {@code Alphabet} from its byte id
+     */
+    public static Alphabet getById(byte id) {
+        return alphabetsById.get(id);
     }
 
     public static final class Deserializer extends JsonDeserializer<Alphabet> {
@@ -80,7 +97,7 @@ public final class Alphabets {
      * @return unmodifiable collection of all registered alphabets
      */
     public static Collection<Alphabet> getAll() {
-        return Collections.unmodifiableCollection(alphabets.values());
+        return Collections.unmodifiableCollection(alphabetsByName.values());
     }
 
 }

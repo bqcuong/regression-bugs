@@ -1,6 +1,7 @@
 package com.milaboratory.core;
 
-import java.io.Serializable;
+import com.milaboratory.core.io.binary.RangeSerializer;
+import com.milaboratory.primitivio.annotations.Serializable;
 
 /**
  * This class represents a range of positions in a sequence (e.g. sub-sequence). Range can be <b>reversed</b> ({@code
@@ -8,7 +9,8 @@ import java.io.Serializable;
  *
  * <p><b>Main contract:</b> upper limit (with biggest value) is always exclusive, and lower is always inclusive.</p>
  */
-public final class Range implements Serializable {
+@Serializable(by = RangeSerializer.class)
+public final class Range {
     static final long serialVersionUID = 1L;
 
     private final int lower, upper;

@@ -181,4 +181,27 @@ public class PrimitivIOTest {
         }
     }
 
+    @Test
+    public void testDefaultSerialization1() throws Exception {
+        RandomGenerator rg = new Well19937c();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        PrimitivO po = new PrimitivO(bos);
+        byte[] bytes = new byte[100];
+        rg.nextBytes(bytes);
+        int[] ints = new int[100];
+        for (int i = 0; i < ints.length; i++)
+            ints[i] = rg.nextInt(Integer.MAX_VALUE);
+        int cc = 10;
+        for (int i = 0; i < cc; ++i) {
+            po.writeObject(bytes);
+            po.writeObject(ints);
+        }
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        PrimitivI pi = new PrimitivI(bis);
+        for (int i = 0; i < cc; ++i) {
+            Assert.assertArrayEquals(bytes, pi.readObject(byte[].class));
+            Assert.assertArrayEquals(ints, pi.readObject(int[].class));
+        }
+    }
 }

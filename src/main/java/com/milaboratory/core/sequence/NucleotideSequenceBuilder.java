@@ -86,6 +86,16 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     @Override
+    public SequenceBuilder<NucleotideSequence> append(byte[] letters) {
+        ensureInternalCapacity(size + letters.length);
+        int size = this.size;
+        for (byte letter : letters)
+            storage.set(size++, letter);
+        this.size = size;
+        return this;
+    }
+
+    @Override
     public NucleotideSequenceBuilder set(int position, byte letter) {
         if (position < 0 || position >= size)
             throw new IndexOutOfBoundsException();

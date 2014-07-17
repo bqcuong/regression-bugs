@@ -5,8 +5,8 @@ package com.milaboratory.core.sequence;
  * @author Stanislav Poslavsky
  */
 abstract class AbstractArrayAlphabet<S extends AbstractArraySequence<S>> extends Alphabet<S>  {
-    protected AbstractArrayAlphabet(String alphabetName) {
-        super(alphabetName);
+    protected AbstractArrayAlphabet(String alphabetName, byte id) {
+        super(alphabetName, id);
     }
 
     @Override

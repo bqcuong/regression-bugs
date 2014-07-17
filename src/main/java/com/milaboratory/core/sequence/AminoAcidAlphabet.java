@@ -68,7 +68,7 @@ public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequ
             '_'};
 
     private AminoAcidAlphabet() {
-        super("aminoacid");
+        super("aminoacid", (byte) 2);
     }
 
     @Override

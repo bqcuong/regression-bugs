@@ -88,7 +88,7 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> imple
                     .get();
 
     private NucleotideAlphabet() {
-        super("nucleotide");
+        super("nucleotide", (byte) 1);
     }
 
     /**

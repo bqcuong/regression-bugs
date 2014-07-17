@@ -3,6 +3,7 @@ package com.milaboratory.primitivio;
 import com.milaboratory.primitivio.annotations.CustomSerializer;
 import com.milaboratory.primitivio.annotations.Serializable;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,35 +63,48 @@ public final class SerializersManager {
         if (annotation == null)
             throw new IllegalArgumentException("" + type + " is not serializable.");
 
+        Serializer defaultSerializer =
+                annotation.by() == Serializer.class ?
+                        null :
+                        instantiate(annotation.by());
+
+        CustomSerializer[] css = annotation.custom();
+        if (css.length > 0) {
+            if (nested)
+                throw new RuntimeException("Nested custom serializers in " + type + ".");
+
+            HashMap<Class<?>, CustomSerializerImpl.TypeInfo> infoByClass = new HashMap<>();
+
+            // Adding default serializer
+            if (defaultSerializer != null)
+                infoByClass.put(type, new CustomSerializerImpl.TypeInfo((byte) 0, defaultSerializer));
+
+            // Adding custom serializers
+            for (CustomSerializer cs : css)
+                infoByClass.put(cs.type(), new CustomSerializerImpl.TypeInfo(cs.id(), createSerializer0(cs.type(), true)));
+
+            return new CustomSerializerImpl(infoByClass);
+        } else {
+            if (defaultSerializer == null)
+                throw new RuntimeException("No serializer for " + type);
+            return defaultSerializer;
+        }
+    }
+
+    static Serializer instantiate(Class<? extends Serializer> cl) {
+        boolean initialAccessibility = true;
+        Constructor<? extends Serializer> constructor = null;
         try {
-            Serializer defaultSerializer =
-                    annotation.by() == Serializer.class ?
-                            null :
-                            annotation.by().newInstance();
-
-            CustomSerializer[] css = annotation.custom();
-            if (css.length > 0) {
-                if (nested)
-                    throw new RuntimeException("Nested custom serializers in " + type + ".");
-
-                HashMap<Class<?>, CustomSerializerImpl.TypeInfo> infoByClass = new HashMap<>();
-
-                // Adding default serializer
-                if (defaultSerializer != null)
-                    infoByClass.put(type, new CustomSerializerImpl.TypeInfo((byte) 0, defaultSerializer));
-
-                // Adding custom serializers
-                for (CustomSerializer cs : css)
-                    infoByClass.put(cs.type(), new CustomSerializerImpl.TypeInfo(cs.id(), createSerializer0(cs.type(), true)));
-
-                return new CustomSerializerImpl(infoByClass);
-            } else {
-                if (defaultSerializer == null)
-                    throw new RuntimeException("No serializer for " + type);
-                return defaultSerializer;
-            }
-        } catch (InstantiationException | IllegalAccessException e) {
+            constructor = cl.getConstructor();
+            initialAccessibility = constructor.isAccessible();
+            if (!initialAccessibility)
+                constructor.setAccessible(true);
+            return cl.newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException e) {
             throw new RuntimeException(e);
+        } finally {
+            if (!initialAccessibility && constructor != null)
+                constructor.setAccessible(false);
         }
     }
 
