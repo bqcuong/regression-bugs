@@ -19,6 +19,9 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
             }
         }
 
+        if (type.isEnum())
+            return new EnumSerializer(type);
+
         if (type == Integer.class)
             return new IntegerSerializer();
 
@@ -86,6 +89,38 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
             byte[] object = new byte[input.readVarInt()];
             input.readFully(object);
             return object;
+        }
+
+        @Override
+        public boolean isReference() {
+            return false;
+        }
+
+        @Override
+        public boolean handlesReference() {
+            return false;
+        }
+    }
+
+    private static class EnumSerializer implements Serializer {
+        final Class<?> enumType;
+        final Object[] array;
+
+        private EnumSerializer(Class<?> enumType) {
+            this.enumType = enumType;
+            this.array = new Object[enumType.getEnumConstants().length];
+            System.arraycopy(enumType.getEnumConstants(), 0, array, 0, array.length);
+        }
+
+        @Override
+        public void write(PrimitivO output, Object object) {
+            Enum e = (Enum) object;
+            output.writeVarInt(e.ordinal());
+        }
+
+        @Override
+        public Object read(PrimitivI input) {
+            return array[input.readVarInt()];
         }
 
         @Override

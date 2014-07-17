@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public final class PrimitivI implements DataInput {
     final DataInput input;
     final SerializersManager manager;
-    final ArrayList<Object> references = new ArrayList<>();
+    final ArrayList<Object> references = new ArrayList<>(), putKnownAfterReset = new ArrayList<>();
     int knownReferencesCount = 0;
     int depth = 0;
 
@@ -28,10 +28,12 @@ public final class PrimitivI implements DataInput {
     }
 
     public void putKnownReference(Object ref) {
-        if (references.size() != knownReferencesCount)
-            throw new IllegalStateException();
-        references.add(ref);
-        ++knownReferencesCount;
+        if (depth > 0) {
+            putKnownAfterReset.add(ref);
+        } else {
+            references.add(ref);
+            ++knownReferencesCount;
+        }
     }
 
     public void readReference(Object ref) {
@@ -44,6 +46,11 @@ public final class PrimitivI implements DataInput {
     private void reset() {
         for (int i = references.size() - 1; i >= knownReferencesCount; --i)
             references.remove(i);
+        if (!putKnownAfterReset.isEmpty()) {
+            for (Object ref : putKnownAfterReset)
+                putKnownReference(ref);
+            putKnownAfterReset.clear();
+        }
     }
 
     public <T> T readObject(Class<T> type) {

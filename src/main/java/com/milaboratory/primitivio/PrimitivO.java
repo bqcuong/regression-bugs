@@ -17,6 +17,7 @@ public final class PrimitivO implements DataOutput {
     private static final float RELOAD_FACTOR = 0.5f;
     final DataOutput output;
     final SerializersManager manager;
+    final ArrayList<Object> putKnownAfterReset = new ArrayList<>();
     final TObjectIntCustomHashMap<Object> knownReferences = new TObjectIntCustomHashMap<>(IdentityHashingStrategy.INSTANCE,
             Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, Integer.MIN_VALUE);
     final ArrayList<Object> addedReferences = new ArrayList<>();
@@ -42,11 +43,12 @@ public final class PrimitivO implements DataOutput {
     }
 
     public void putKnownReference(Object object) {
-        // Checking that currentReferences is in initial state
-        if (currentReferences != null && currentReferences.size() != knownReferences.size())
-            throw new IllegalStateException();
-        // Assigning this reference next available id (0 assigned to null)
-        knownReferences.put(object, knownReferences.size());
+        if (depth > 0)
+            putKnownAfterReset.add(object);
+        else {
+            // Assigning this reference next available id (0 assigned to null)
+            knownReferences.put(object, knownReferences.size());
+        }
     }
 
     private void reset() {
@@ -58,6 +60,11 @@ public final class PrimitivO implements DataOutput {
                     currentReferences.remove(ref);
             //Resetting list of references added in this serialization round
             addedReferences.clear();
+        }
+        if (!putKnownAfterReset.isEmpty()) {
+            for (Object ref : putKnownAfterReset)
+                putKnownReference(ref);
+            putKnownAfterReset.clear();
         }
     }
 

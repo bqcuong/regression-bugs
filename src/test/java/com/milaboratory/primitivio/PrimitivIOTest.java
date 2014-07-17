@@ -1,9 +1,6 @@
 package com.milaboratory.primitivio;
 
-import com.milaboratory.primitivio.test.TestClass1;
-import com.milaboratory.primitivio.test.TestJsonClass1;
-import com.milaboratory.primitivio.test.TestSubClass1;
-import com.milaboratory.primitivio.test.TestSubClass2;
+import com.milaboratory.primitivio.test.*;
 import com.milaboratory.test.TestUtil;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
@@ -12,6 +9,8 @@ import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+
+import static com.milaboratory.primitivio.test.TestEnum1.*;
 
 public class PrimitivIOTest {
     @Test
@@ -204,6 +203,21 @@ public class PrimitivIOTest {
             Assert.assertArrayEquals(bytes, pi.readObject(byte[].class));
             Assert.assertArrayEquals(ints, pi.readObject(int[].class));
         }
+    }
+
+    @Test
+    public void testDefaultSerialization2() throws Exception {
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        PrimitivO po = new PrimitivO(bos);
+        TestEnum1[] vals = new TestEnum1[]{A, B, F, E, C};
+        int cc = 10;
+        for (int i = 0; i < cc; ++i) {
+            po.writeObject(vals);
+        }
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        PrimitivI pi = new PrimitivI(bis);
+        for (int i = 0; i < cc; ++i)
+            Assert.assertArrayEquals(vals, pi.readObject(TestEnum1[].class));
     }
 
     @Test
