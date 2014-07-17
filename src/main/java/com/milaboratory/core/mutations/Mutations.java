@@ -40,8 +40,8 @@ public final class Mutations<S extends Sequence<S>> {
         return mutations.length;
     }
 
-    public int getMutation(int position) {
-        return mutations[position];
+    public int getMutation(int index) {
+        return mutations[index];
     }
 
     public int[] getAllMutations() {
@@ -185,7 +185,6 @@ public final class Mutations<S extends Sequence<S>> {
         return delta;
     }
 
-
     /**
      * Returns combined mutations array ({@code this} applied before {@code other}).
      *
@@ -256,7 +255,7 @@ public final class Mutations<S extends Sequence<S>> {
     }
 
     /**
-     * Moves positions of mutations by some offset
+     * Moves positions of mutations by specified offset
      *
      * @param offset offset
      * @return relocated positions

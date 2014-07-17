@@ -15,10 +15,11 @@ public final class MutationsGenerator {
     }
 
     public static Mutations<NucleotideSequence> generateMutations(NucleotideSequence sequence,
-                                                                  NucleotideMutationModel model) {
+                                                                  NucleotideMutationModel model,
+                                                                  int from, int to) {
         MutationsBuilder<NucleotideSequence> builder = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
         int mut, previous = NON_MUTATION;
-        for (int i = 0; i < sequence.size(); ++i) {
+        for (int i = from; i < to; ++i) {
             mut = model.generateMutation(i, sequence.codeAt(i));
             if (mut != NON_MUTATION) {
                 switch (getRawTypeCode(mut)) {
@@ -44,12 +45,17 @@ public final class MutationsGenerator {
             previous = mut;
         }
 
-        mut = model.generateMutation(sequence.size(), -1);
+        mut = model.generateMutation(to, -1);
         if (getRawTypeCode(mut) == RAW_MUTATION_TYPE_INSERTION &&
                 getRawTypeCode(previous) != RAW_MUTATION_TYPE_DELETION)
             builder.append(mut);
 
         return builder.createAndDestroy();
+    }
+
+    public static Mutations<NucleotideSequence> generateMutations(NucleotideSequence sequence,
+                                                                  NucleotideMutationModel model) {
+        return generateMutations(sequence, model, 0, sequence.size());
     }
 
 }

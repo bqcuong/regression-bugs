@@ -37,7 +37,11 @@ public final class MutationsBuilder<S extends Sequence<S>> {
     private void ensureInternalCapacity(int newSize) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
-        if (mutations == null && newSize != 0)
+        if (newSize == 0) {
+            assert mutations == null;
+            return;
+        }
+        if (mutations == null)
             mutations = new int[Math.max(newSize, 10)];
         if (mutations.length < newSize)
             mutations = Arrays.copyOf(mutations, Math.max(newSize, 3 * mutations.length / 2 + 1));
@@ -78,6 +82,20 @@ public final class MutationsBuilder<S extends Sequence<S>> {
                             "depending on the value of reverse flag.");
 
         return new Mutations<>(alphabet, m, true);
+    }
+
+    public MutationsBuilder<S> append(Mutations<S> other) {
+        ensureInternalCapacity(size + other.mutations.length);
+        for (int mutation : other.mutations)
+            mutations[size++] = mutation;
+        return this;
+    }
+
+    public MutationsBuilder<S> append(int[] other) {
+        ensureInternalCapacity(size + other.length);
+        for (int mutation : other)
+            mutations[size++] = mutation;
+        return this;
     }
 
     public MutationsBuilder<S> append(int mutation) {
