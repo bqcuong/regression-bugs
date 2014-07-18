@@ -1,12 +1,9 @@
 package com.milaboratory.primitivio;
 
-import java.io.DataInput;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 
-public final class PrimitivI implements DataInput {
+public final class PrimitivI implements DataInput, AutoCloseable {
     final DataInput input;
     final SerializersManager manager;
     final ArrayList<Object> references = new ArrayList<>(), putKnownAfterReset = new ArrayList<>();
@@ -227,6 +224,16 @@ public final class PrimitivI implements DataInput {
     public String readUTF() {
         try {
             return input.readUTF();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            if (input instanceof Closeable)
+                ((Closeable) input).close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

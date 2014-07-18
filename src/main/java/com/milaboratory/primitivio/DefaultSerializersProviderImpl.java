@@ -1,6 +1,7 @@
 package com.milaboratory.primitivio;
 
 import java.lang.reflect.Array;
+import java.util.UUID;
 
 public class DefaultSerializersProviderImpl implements DefaultSerializersProvider {
     @Override
@@ -24,6 +25,9 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
 
         if (type == Integer.class)
             return new IntegerSerializer();
+
+        if (type == UUID.class)
+            return new UUIDSerializer();
 
         return null;
     }
@@ -121,6 +125,31 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
         @Override
         public Object read(PrimitivI input) {
             return array[input.readVarInt()];
+        }
+
+        @Override
+        public boolean isReference() {
+            return false;
+        }
+
+        @Override
+        public boolean handlesReference() {
+            return false;
+        }
+    }
+
+    private static class UUIDSerializer implements Serializer<UUID> {
+        @Override
+        public void write(PrimitivO output, UUID object) {
+            output.writeLong(object.getMostSignificantBits());
+            output.writeLong(object.getLeastSignificantBits());
+        }
+
+        @Override
+        public UUID read(PrimitivI input) {
+            long msb = input.readLong();
+            long lsb = input.readLong();
+            return new UUID(msb, lsb);
         }
 
         @Override

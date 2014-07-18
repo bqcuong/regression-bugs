@@ -4,13 +4,10 @@ import gnu.trove.impl.Constants;
 import gnu.trove.map.custom_hash.TObjectIntCustomHashMap;
 import gnu.trove.strategy.IdentityHashingStrategy;
 
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 
-public final class PrimitivO implements DataOutput {
+public final class PrimitivO implements DataOutput, AutoCloseable {
     static final int NULL_ID = 0;
     static final int NEW_OBJECT_ID = 1;
     static final int ID_OFFSET = 2;
@@ -48,6 +45,7 @@ public final class PrimitivO implements DataOutput {
         else {
             // Assigning this reference next available id (0 assigned to null)
             knownReferences.put(object, knownReferences.size());
+            currentReferences = null;
         }
     }
 
@@ -268,6 +266,16 @@ public final class PrimitivO implements DataOutput {
     public void writeUTF(String s) {
         try {
             output.writeUTF(s);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void close() {
+        try {
+            if (output instanceof Closeable)
+                ((Closeable) output).close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
