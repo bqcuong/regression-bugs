@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.milaboratory.primitivio.annotations.Serializable;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import java.util.HashMap;
 
 @JsonSerialize(using = TreeSearchParameters.Serializer.class)
 @JsonDeserialize(using = TreeSearchParameters.Deserializer.class)
+@Serializable(asJson = true)
 public final class TreeSearchParameters {
     public static final double[] DEFAULT_PENALTY = {
             0.1, // Mismatch penalty

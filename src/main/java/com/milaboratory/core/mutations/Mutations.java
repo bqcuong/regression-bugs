@@ -4,6 +4,7 @@ import com.milaboratory.core.Range;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
+import com.milaboratory.primitivio.annotations.Serializable;
 import com.milaboratory.util.IntArrayList;
 
 import java.util.Arrays;
@@ -14,6 +15,7 @@ import static com.milaboratory.core.mutations.Mutation.*;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
+@Serializable(by = IO.MutationsSerializer.class)
 public final class Mutations<S extends Sequence<S>> {
     final Alphabet<S> alphabet;
     final int[] mutations;

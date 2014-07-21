@@ -37,7 +37,7 @@ public abstract class IncompleteAlphabet<IS extends IncompleteSequence<IS, S>, S
     public static final char UNKNOWN_LETTER = '.';
 
     private IncompleteAlphabet(Alphabet<S> alphabet) {
-        super(alphabet.getAlphabetName() + "_incomplete");
+        super(alphabet.getAlphabetName() + "_incomplete", (byte) (alphabet.getId() + 64));
         this.alphabet = alphabet;
         this.unknownLetterCode = (byte) alphabet.size();
     }

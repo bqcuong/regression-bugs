@@ -68,6 +68,10 @@ public final class PairedFastqReader extends PairedReader {
                 new SingleFastqReader(stream2, format, ct, guessQualityFormat, bufferSize, lazyReads));
     }
 
+    public PairedFastqReader(InputStream stream1, InputStream stream2) throws IOException {
+        super(new SingleFastqReader(stream1), new SingleFastqReader(stream2));
+    }
+
     public PairedFastqReader(SingleFastqReader reader1, SingleFastqReader reader2) {
         super(reader1, reader2);
     }

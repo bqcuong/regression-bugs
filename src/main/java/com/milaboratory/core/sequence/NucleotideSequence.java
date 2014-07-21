@@ -21,24 +21,20 @@
 package com.milaboratory.core.sequence;
 
 import com.milaboratory.core.Range;
+import com.milaboratory.primitivio.annotations.Serializable;
 import com.milaboratory.util.Bit2Array;
 
-import java.io.Serializable;
-
 /**
- * Representation of nucleotide sequence.
- * <p>
- * Implementation note: the array of data is packed into a bit array ({@link com.milaboratory.util.Bit2Array})
- * for memory saving.
- * </p>
+ * Representation of nucleotide sequence. <p> Implementation note: the array of data is packed into a bit array ({@link
+ * com.milaboratory.util.Bit2Array}) for memory saving. </p>
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  * @see com.milaboratory.core.sequence.Sequence
  * @see com.milaboratory.core.sequence.NucleotideAlphabet
  */
-public final class NucleotideSequence extends Sequence<NucleotideSequence> implements Serializable,
-        NSeq<NucleotideSequence> {
+@Serializable(by = IO.NucleotideSequenceSerializer.class)
+public final class NucleotideSequence extends Sequence<NucleotideSequence> implements NSeq<NucleotideSequence> {
     /**
      * Empty instance
      */
@@ -51,8 +47,8 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
     private static final long serialVersionUID = 1L;
 
     /**
-     * Creates nucleotide sequence from its string representation (e.g. "ATCGG" or "atcgg"). If string contains wildcards
-     * (like "N"), then they will be replaced by "A".
+     * Creates nucleotide sequence from its string representation (e.g. "ATCGG" or "atcgg"). If string contains
+     * wildcards (like "N"), then they will be replaced by "A".
      *
      * @param sequence string representation of sequence (case insensitive)
      */

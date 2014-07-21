@@ -3,9 +3,9 @@ package com.milaboratory.core.sequence;
 import com.milaboratory.core.Range;
 import com.milaboratory.core.io.sequence.fastq.QualityFormat;
 import com.milaboratory.core.io.sequence.fastq.WrongQualityFormat;
+import com.milaboratory.primitivio.annotations.Serializable;
 import com.milaboratory.util.ArraysUtils;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -14,7 +14,8 @@ import java.util.Arrays;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public final class SequenceQuality extends AbstractSeq<SequenceQuality> implements Serializable {
+@Serializable(by = IO.SequenceQualitySerializer.class)
+public final class SequenceQuality extends AbstractSeq<SequenceQuality> {
     /**
      * Default value of good quality
      */

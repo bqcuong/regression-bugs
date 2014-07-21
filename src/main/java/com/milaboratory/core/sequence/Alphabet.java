@@ -22,6 +22,7 @@ package com.milaboratory.core.sequence;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.milaboratory.primitivio.annotations.Serializable;
 
 /**
  * Interface for sequence letters alphabet (amino acid, nucleotide, etc.). {@code Alphabet} is responsible for
@@ -39,11 +40,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  */
 @JsonSerialize(using = Alphabets.Serializer.class)
 @JsonDeserialize(using = Alphabets.Deserializer.class)
+@Serializable(by = IO.AlphabetSerializer.class)
 public abstract class Alphabet<S extends Sequence<S>> {
     private final String alphabetName;
+    private final byte id;
 
-    protected Alphabet(String alphabetName) {
+    protected Alphabet(String alphabetName, byte id) {
         this.alphabetName = alphabetName;
+        this.id = id;
     }
 
     /**
@@ -79,13 +83,24 @@ public abstract class Alphabet<S extends Sequence<S>> {
 
     /**
      * Returns the human readable name of this alphabet.
-     * <p/>
+     *
      * <p>This name can be then used to obtain the instance of this alphabet using {@link
      * com.milaboratory.core.sequence.Alphabets#getByName(String)} method if it is registered (see {@link
      * com.milaboratory.core.sequence.Alphabets#register(Alphabet)}).</p>
      */
     public final String getAlphabetName() {
         return alphabetName;
+    }
+
+    /**
+     * Returns byte id of this alphabet
+     *
+     * <p>This name can be then used to obtain the instance of this alphabet using {@link
+     * com.milaboratory.core.sequence.Alphabets#getById(byte)} method if it is registered (see {@link
+     * com.milaboratory.core.sequence.Alphabets#register(Alphabet)}).</p>
+     */
+    public byte getId() {
+        return id;
     }
 
     /**

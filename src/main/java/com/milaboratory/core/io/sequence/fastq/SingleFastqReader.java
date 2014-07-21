@@ -1,7 +1,7 @@
 package com.milaboratory.core.io.sequence.fastq;
 
-import cc.redberry.pipe.OutputPortCloseable;
 import com.milaboratory.core.io.CompressionType;
+import com.milaboratory.core.io.sequence.SequenceReaderCloseable;
 import com.milaboratory.core.io.sequence.SingleRead;
 import com.milaboratory.core.io.sequence.SingleReader;
 import com.milaboratory.util.CanReportProgress;
@@ -17,7 +17,7 @@ import java.io.InputStream;
  * @author Stanislav Poslavsky
  */
 
-public final class SingleFastqReader implements SingleReader, CanReportProgress, OutputPortCloseable<SingleRead> {
+public final class SingleFastqReader implements SingleReader, CanReportProgress, SequenceReaderCloseable<SingleRead> {
     public static final int DEFAULT_BUFFER_SIZE = 524288;
     /**
      * Used to estimate progress

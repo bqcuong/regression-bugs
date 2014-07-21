@@ -20,6 +20,9 @@
  */
 package com.milaboratory.core.sequence;
 
+import com.milaboratory.primitivio.annotations.CustomSerializer;
+import com.milaboratory.primitivio.annotations.Serializable;
+
 /**
  * Parent class for all types of sequences. Each element of sequence (e.g. nucleotide, or amino acid)
  * encoded in byte, so {@code Sequence} is a simple container of ordered bytes; the correspondence between byte codes
@@ -34,6 +37,9 @@ package com.milaboratory.core.sequence;
  * @see com.milaboratory.core.sequence.NucleotideSequence
  * @see com.milaboratory.core.sequence.AminoAcidSequence
  */
+@Serializable(by = IO.SequenceSerializer.class, custom = {
+        @CustomSerializer(id = 1, type = NucleotideSequence.class)
+})
 public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> implements Comparable<S> {
     /**
      * Returns element at specified position.

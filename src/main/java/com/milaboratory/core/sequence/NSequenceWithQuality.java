@@ -1,6 +1,7 @@
 package com.milaboratory.core.sequence;
 
 import com.milaboratory.core.Range;
+import com.milaboratory.primitivio.annotations.Serializable;
 
 /**
  * Container of nucleotide sequence with its quality.
@@ -9,6 +10,7 @@ import com.milaboratory.core.Range;
  * @author Stanislav Poslavsky
  * @see com.milaboratory.core.sequence.SequenceWithQuality
  */
+@Serializable(by = IO.NSequenceWithQualitySerializer.class)
 public final class NSequenceWithQuality extends SequenceWithQuality<NucleotideSequence>
         implements NSeq<NSequenceWithQuality> {
     /**
