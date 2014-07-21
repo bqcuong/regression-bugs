@@ -6,8 +6,6 @@ import org.apache.commons.math3.random.Well44497a;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
@@ -27,6 +25,18 @@ public class MutationsUtilTest {
         Assert.assertEquals(m,
                 MutationsUtil.encode(MutationsUtil.decode(m, IncompleteAminoAcidSequence.ALPHABET),
                         IncompleteAminoAcidSequence.ALPHABET));
+    }
+
+    @Test
+    public void test2() throws Exception {
+        NSequenceWithQuality seq = new NSequenceWithQuality(
+                "ATTAGACA",
+                "ACBBAACC");
+        Mutations<NucleotideSequence> mutations = Mutations.decode("DA0 I6C SA7G", NucleotideSequence.ALPHABET);
+        NSequenceWithQuality expected = new NSequenceWithQuality(
+                "TTAGACCG",
+                "CBBAABCC");
+        Assert.assertEquals(expected, MutationsUtil.mutate(seq, mutations));
     }
 
     @Test

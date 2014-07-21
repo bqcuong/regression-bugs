@@ -1,5 +1,6 @@
 package com.milaboratory.core.alignment;
 
+import com.milaboratory.core.sequence.SequenceQuality;
 import com.milaboratory.util.BitArray;
 
 import java.util.Arrays;
@@ -62,6 +63,13 @@ public class AlignmentHelper {
         int spaces = offset - startPosition.length();
         return spaces(spaces) + startPosition + " " + seq2String +
                 " " + a(seq2Position[seq2Position.length - 1]);
+    }
+
+    public String toStringWithSeq2Quality(SequenceQuality quality) {
+        char[] chars = new char[size()];
+        for (int i = 0; i < size(); ++i)
+            chars[i] = seq2Position[i] < 0 ? ' ' : (char) (33 + quality.value(seq2Position[i]));
+        return getLine1() + "\n" + getLine2() + "\n" + getLine3() + "\n" + spaces(offset + 1) + new String(chars);
     }
 
     public String getLine3Compact() {

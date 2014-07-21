@@ -3,7 +3,7 @@ package com.milaboratory.core.sequence;
 /**
  * Created by poslavsky on 09/07/14.
  */
-public final class SequenceQualityBuilder extends ArraySeqBuilder<SequenceQuality> {
+public final class SequenceQualityBuilder extends ArraySeqBuilder<SequenceQuality, SequenceQualityBuilder> {
     public SequenceQualityBuilder() {
     }
 

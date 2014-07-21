@@ -2,7 +2,7 @@ package com.milaboratory.core.sequence;
 
 import java.util.Arrays;
 
-public abstract class ArraySeqBuilder<S extends AbstractSeq<S>> implements SeqBuilder<S> {
+public abstract class ArraySeqBuilder<S extends AbstractSeq<S>, B extends ArraySeqBuilder<S, B>> implements SeqBuilder<S> {
     byte[] data;
     int size = 0;
 
@@ -32,7 +32,7 @@ public abstract class ArraySeqBuilder<S extends AbstractSeq<S>> implements SeqBu
     }
 
     @Override
-    public SeqBuilder<S> ensureCapacity(int capacity) {
+    public B ensureCapacity(int capacity) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
         if (capacity > 0) {
@@ -41,7 +41,7 @@ public abstract class ArraySeqBuilder<S extends AbstractSeq<S>> implements SeqBu
             else if (capacity > data.length)
                 data = Arrays.copyOf(data, capacity);
         }
-        return this;
+        return (B) this;
     }
 
     abstract S createUnsafe(byte[] b);
@@ -64,14 +64,20 @@ public abstract class ArraySeqBuilder<S extends AbstractSeq<S>> implements SeqBu
         return seq;
     }
 
-    @Override
-    public ArraySeqBuilder<S> append(S seq) {
-        ensureInternalCapacity(size + seq.size());
-        System.arraycopy(getUnsafe(seq), 0, data, size, seq.size());
-        size += seq.size();
-        return this;
+    public B append(byte value) {
+        ensureCapacity(size + 1);
+        data[size++] = value;
+        return (B) this;
     }
 
     @Override
-    public abstract ArraySeqBuilder<S> clone();
+    public B append(S seq) {
+        ensureInternalCapacity(size + seq.size());
+        System.arraycopy(getUnsafe(seq), 0, data, size, seq.size());
+        size += seq.size();
+        return (B) this;
+    }
+
+    @Override
+    public abstract B clone();
 }

@@ -50,7 +50,7 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     @Override
-    public SequenceBuilder<NucleotideSequence> ensureCapacity(int capacity) {
+    public NucleotideSequenceBuilder ensureCapacity(int capacity) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
         if (capacity > 0) {
@@ -86,7 +86,7 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     }
 
     @Override
-    public SequenceBuilder<NucleotideSequence> append(byte[] letters) {
+    public NucleotideSequenceBuilder append(byte[] letters) {
         ensureInternalCapacity(size + letters.length);
         int size = this.size;
         for (byte letter : letters)

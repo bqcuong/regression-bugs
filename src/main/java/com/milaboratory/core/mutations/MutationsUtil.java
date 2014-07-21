@@ -1,7 +1,6 @@
 package com.milaboratory.core.mutations;
 
-import com.milaboratory.core.sequence.Alphabet;
-import com.milaboratory.core.sequence.Sequence;
+import com.milaboratory.core.sequence.*;
 import com.milaboratory.util.IntArrayList;
 
 import java.util.Collections;
@@ -21,6 +20,54 @@ public final class MutationsUtil {
     static final Map<Alphabet, Pattern> mutationPatterns = Collections.synchronizedMap(new HashMap<Alphabet, Pattern>());
 
     private MutationsUtil() {
+    }
+
+    public static NSequenceWithQuality mutate(NSequenceWithQuality seq, Mutations<NucleotideSequence> mutations) {
+        NucleotideSequence sequence = seq.getSequence();
+        SequenceQuality quality = seq.getQuality();
+        int size = seq.size();
+        int newSize = seq.size() + mutations.getLengthDelta();
+        SequenceQualityBuilder qualityBuilder = new SequenceQualityBuilder().ensureCapacity(newSize);
+        NucleotideSequenceBuilder sequenceBuilder = new NucleotideSequenceBuilder().ensureCapacity(newSize);
+        int pointer = 0;
+        int mutPointer = 0;
+        int mut;
+        while (pointer < size || mutPointer < mutations.size()) {
+            if (mutPointer < mutations.size() && ((mut = mutations.getMutation(mutPointer)) >>> POSITION_OFFSET) <= pointer)
+                switch (mut & MUTATION_TYPE_MASK) {
+                    case RAW_MUTATION_TYPE_SUBSTITUTION:
+                        if (((mut >> FROM_OFFSET) & LETTER_MASK) != sequence.codeAt(pointer))
+                            throw new IllegalArgumentException("Mutation = " + Mutation.toString(sequence.getAlphabet(), mut) +
+                                    " but seq[" + pointer + "]=" + sequence.charFromCodeAt(pointer));
+
+                        sequenceBuilder.append((byte) (mut & LETTER_MASK));
+                        qualityBuilder.append(quality.value(pointer));
+                        ++pointer;
+                        ++mutPointer;
+                        break;
+                    case RAW_MUTATION_TYPE_DELETION:
+                        if (((mut >> FROM_OFFSET) & LETTER_MASK) != sequence.codeAt(pointer))
+                            throw new IllegalArgumentException("Mutation = " + Mutation.toString(sequence.getAlphabet(), mut) +
+                                    " but seq[" + pointer + "]=" + sequence.charFromCodeAt(pointer));
+
+                        ++pointer;
+                        ++mutPointer;
+                        break;
+                    case RAW_MUTATION_TYPE_INSERTION:
+                        sequenceBuilder.append((byte) (mut & LETTER_MASK));
+                        if (pointer == 0)
+                            qualityBuilder.append(quality.value(pointer));
+                        else
+                            qualityBuilder.append((byte) ((quality.value(pointer - 1) + quality.value(pointer)) / 2));
+                        ++mutPointer;
+                        break;
+                }
+            else {
+                qualityBuilder.append(quality.value(pointer));
+                sequenceBuilder.append(sequence.codeAt(pointer++));
+            }
+        }
+        return new NSequenceWithQuality(sequenceBuilder.createAndDestroy(), qualityBuilder.createAndDestroy());
     }
 
     /**
@@ -118,8 +165,7 @@ public final class MutationsUtil {
 
     /**
      * Encodes mutations in compact human-readable string, that can be decoded by method {@link #decode(String,
-     * com.milaboratory.core.sequence.Alphabet)}. <p/> <p>For format see
-     * {@link com.milaboratory.core.mutations.Mutation#encode(int,
+     * com.milaboratory.core.sequence.Alphabet)}. <p/> <p>For format see {@link com.milaboratory.core.mutations.Mutation#encode(int,
      * com.milaboratory.core.sequence.Alphabet)}.</p> <p/> <p>Mutations are just concatenated. The following RegExp can
      * be used for simple parsing of resulting string for nucleotide sequences: {@code ([SDI])([ATGC]?)(\d+)([ATGC]?)}
      * .</p>
@@ -135,8 +181,8 @@ public final class MutationsUtil {
     }
 
     /**
-     * Decodes mutations encoded using format described in
-     * {@link com.milaboratory.core.mutations.Mutation#encode(int, com.milaboratory.core.sequence.Alphabet)}.
+     * Decodes mutations encoded using format described in {@link com.milaboratory.core.mutations.Mutation#encode(int,
+     * com.milaboratory.core.sequence.Alphabet)}.
      *
      * @param mutations
      * @return
