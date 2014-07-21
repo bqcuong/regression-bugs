@@ -410,6 +410,17 @@ public final class Mutations<S extends Sequence<S>> {
         return result;
     }
 
+    /**
+     * Extracts sub mutations by {@code from}-{@code to} mutation indices.
+     *
+     * @param from index in current mutations object pointing to the first mutation to be extracted
+     * @param to   index in current mutations object pointing to the next after last mutation to be extracted
+     * @return sub mutations
+     */
+    public Mutations<S> getRange(int from, int to) {
+        return new Mutations<S>(alphabet, Arrays.copyOfRange(mutations, from, to));
+    }
+
     public int firsMutationPosition() {
         if (isEmpty())
             return -1;

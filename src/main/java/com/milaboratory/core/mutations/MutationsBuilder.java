@@ -85,9 +85,15 @@ public final class MutationsBuilder<S extends Sequence<S>> {
     }
 
     public MutationsBuilder<S> append(Mutations<S> other) {
-        ensureInternalCapacity(size + other.mutations.length);
-        for (int mutation : other.mutations)
-            mutations[size++] = mutation;
+        append(other, 0, other.size());
+        return this;
+    }
+
+    public MutationsBuilder<S> append(Mutations<S> other, int otherFrom, int length) {
+        ensureInternalCapacity(size + length);
+        if (length != 0)
+            System.arraycopy(other.mutations, otherFrom, mutations, size, length);
+        size += length;
         return this;
     }
 
