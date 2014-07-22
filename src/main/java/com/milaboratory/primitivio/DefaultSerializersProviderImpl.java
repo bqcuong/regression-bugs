@@ -72,7 +72,7 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
 
         @Override
         public boolean isReference() {
-            return false;
+            return true;
         }
 
         @Override
