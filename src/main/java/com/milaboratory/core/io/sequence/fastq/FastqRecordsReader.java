@@ -78,7 +78,7 @@ final class FastqRecordsReader implements AutoCloseable {
         }
         if (buffer != null) //buffer == null after initialization (in case of non lazy reads)
             System.arraycopy(buffer, pointer, newBuffer, 0, currentBufferSize - pointer);
-        int readBytes = inputStream.read(newBuffer, currentBufferSize - pointer, newBuffer.length - currentBufferSize + pointer);
+        int readBytes = inputStream.readFully(newBuffer, currentBufferSize - pointer, newBuffer.length - currentBufferSize + pointer);
         currentBufferSize = (readBytes == -1 ? 0 : readBytes) + currentBufferSize - pointer;
         pointer = 0;
         buffer = newBuffer;
@@ -196,13 +196,26 @@ final class FastqRecordsReader implements AutoCloseable {
         fillBuffer(bufferSize);
     }
 
-    private static interface InputDataWrapper {
-        int read(byte[] buffer, int off, int len) throws IOException;
+    private static abstract class InputDataWrapper {
+        abstract int read(byte[] buffer, int off, int len) throws IOException;
 
-        void close() throws IOException;
+        abstract void close() throws IOException;
+
+        int readFully(byte[] buffer, int off, int len) throws IOException {
+            int total = 0;
+            do {
+                int read = read(buffer, off, len);
+                if (read == -1)
+                    break;
+                total += read;
+                off += read;
+                len -= read;
+            } while (len != 0);
+            return total;
+        }
     }
 
-    private static InputDataWrapper create(final InputStream stream) {
+    private static final InputDataWrapper create(final InputStream stream) {
         return new InputDataWrapper() {
             @Override
             public int read(byte[] buffer, int off, int len)
@@ -217,7 +230,7 @@ final class FastqRecordsReader implements AutoCloseable {
         };
     }
 
-    private static InputDataWrapper create(final RandomAccessFile stream) {
+    private static final InputDataWrapper create(final RandomAccessFile stream) {
         return new InputDataWrapper() {
             @Override
             public int read(byte[] buffer, int off, int len)
