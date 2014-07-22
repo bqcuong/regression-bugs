@@ -24,12 +24,13 @@ public class AlignmentSerializer implements Serializer<Alignment> {
         Mutations mutations = input.readObject(Mutations.class);
         Range range1 = input.readObject(Range.class);
         Range range2 = input.readObject(Range.class);
-        return new Alignment(sequence, mutations, range1, range2, input.readFloat());
+        float score = input.readFloat();
+        return new Alignment(sequence, mutations, range1, range2, score);
     }
 
     @Override
     public boolean isReference() {
-        return false;
+        return true;
     }
 
     @Override
