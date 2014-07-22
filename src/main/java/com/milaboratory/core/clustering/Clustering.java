@@ -5,20 +5,37 @@ import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.tree.NeighborhoodIterator;
 import com.milaboratory.core.tree.SequenceTreeMap;
 import com.milaboratory.core.tree.TreeSearchParameters;
+import com.milaboratory.util.CanReportProgress;
 import com.milaboratory.util.Factory;
 
 import java.util.*;
 
 import static com.milaboratory.core.tree.SequenceTreeMap.Node;
 
-public final class Clustering {
+public final class Clustering<T, S extends Sequence<S>> implements CanReportProgress {
+    final Collection<T> inputObjects;
+    final SequenceExtractor<T, S> sequenceExtractor;
+    final ClusteringStrategy<T, S> strategy;
+    final List<Cluster<T>> clusters = new ArrayList<>();
+    int progress;
 
-    public static <T, S extends Sequence<S>> List<Cluster<T>> performClustering(Collection<T> inputObjects,
-                                                                                SequenceExtractor<T, S> sequenceExtractor,
-                                                                                ClusteringStrategy<T, S> strategy) {
-        if (inputObjects.isEmpty())
-            return Collections.EMPTY_LIST;
+    public Clustering(Collection<T> inputObjects, SequenceExtractor<T, S> sequenceExtractor, ClusteringStrategy<T, S> strategy) {
+        this.inputObjects = inputObjects;
+        this.sequenceExtractor = sequenceExtractor;
+        this.strategy = strategy;
+    }
 
+    @Override
+    public double getProgress() {
+        return (1.0 * progress) / inputObjects.size();
+    }
+
+    @Override
+    public boolean isFinished() {
+        return progress == inputObjects.size();
+    }
+
+    public List<Cluster<T>> performClustering() {
         final Comparator<Cluster<T>> clusterComparator = getComparatorOfClusters(strategy, sequenceExtractor);
         // For performance
         final TreeSearchParameters params = strategy.getSearchParameters();
@@ -53,13 +70,11 @@ public final class Clustering {
 
         final HashSet<Node<T[]>> processedNodes = new HashSet<>();
         ArrayList<Cluster<T>> previousLayer = new ArrayList<>(), nextLayer = new ArrayList<>(), tmp;
-        ArrayList<Cluster<T>> clusters = new ArrayList<>();
-        ArrayList<S> sequencesToRemove = new ArrayList<>();
 
         T[] temp;
         boolean inTree;
-        for (int i = 0; i < objects.size(); ++i) {
-            T object = objects.get(i);
+        for (progress = 0; progress < objects.size(); ++progress) {
+            T object = objects.get(progress);
 
             //checking whether object is already clusterized
             if ((temp = tree.get(sequenceExtractor.getSequence(object))) == null)
@@ -130,6 +145,12 @@ public final class Clustering {
         return clusters;
     }
 
+    public List<Cluster<T>> getClusters() {
+        if (progress != inputObjects.size())
+            throw new IllegalStateException("Not yet clustered.");
+        return clusters;
+    }
+
     static <T, S extends Sequence> Comparator<Cluster<T>>
     getComparatorOfClusters(final Comparator<T> objectComparator, final SequenceExtractor<T, S> extractor) {
         return new Comparator<Cluster<T>>() {
@@ -156,5 +177,11 @@ public final class Clustering {
         };
     }
 
+
+    public static <T, S extends Sequence<S>> List<Cluster<T>> performClustering(Collection<T> inputObjects,
+                                                                                SequenceExtractor<T, S> sequenceExtractor,
+                                                                                ClusteringStrategy<T, S> strategy) {
+        return new Clustering<T, S>(inputObjects, sequenceExtractor, strategy).performClustering();
+    }
 
 }
