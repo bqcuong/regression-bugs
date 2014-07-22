@@ -48,17 +48,18 @@ public class SingleFastqReaderTest {
     private static void assertReaderOnSampleWithGZ(String file) throws IOException, URISyntaxException {
         File sample = new File(SingleFastqReaderTest.class.getClassLoader().getResource("sequences/" + file).toURI());
         File sampleGZIP = new File(SingleFastqReaderTest.class.getClassLoader().getResource("sequences/" + file + ".gz").toURI());
-        SingleFastqReader reader = new SingleFastqReader(
+        TreeSet<SingleRead> set = new TreeSet<>(SINGLE_READ_COMPARATOR);
+
+        try (SingleFastqReader reader = new SingleFastqReader(
                 new FileInputStream(sample),
                 QualityFormat.Phred33,
                 CompressionType.None,
                 false,
                 253,
-                false);
-
-        TreeSet<SingleRead> set = new TreeSet<>(SINGLE_READ_COMPARATOR);
-        for (SingleRead read : CUtils.it(reader))
-            set.add(read);
+                false)) {
+            for (SingleRead read : CUtils.it(reader))
+                set.add(read);
+        }
 
         for (int bufferSize = 253; bufferSize < 5000; ) {
             assertSameReadContent(set, new SingleFastqReader(
@@ -101,17 +102,18 @@ public class SingleFastqReaderTest {
 
     private static void assertReaderOnSample(String file) throws IOException, URISyntaxException {
         File sample = new File(SingleFastqReaderTest.class.getClassLoader().getResource("sequences/" + file).toURI());
-        SingleFastqReader reader = new SingleFastqReader(
+        TreeSet<SingleRead> set = new TreeSet<>(SINGLE_READ_COMPARATOR);
+
+        try (SingleFastqReader reader = new SingleFastqReader(
                 new FileInputStream(sample),
                 QualityFormat.Phred64,
                 CompressionType.GZIP,
                 false,
                 253,
-                false);
-
-        TreeSet<SingleRead> set = new TreeSet<>(SINGLE_READ_COMPARATOR);
-        for (SingleRead read : CUtils.it(reader))
-            set.add(read);
+                false)) {
+            for (SingleRead read : CUtils.it(reader))
+                set.add(read);
+        }
 
         for (int bufferSize = 253; bufferSize < 5000; ) {
             assertSameReadContent(set, new SingleFastqReader(
@@ -136,10 +138,12 @@ public class SingleFastqReaderTest {
     }
 
     private static void assertSameReadContent(TreeSet<SingleRead> expected, SingleFastqReader reader) {
-        TreeSet<SingleRead> set = new TreeSet<>(SINGLE_READ_COMPARATOR);
-        for (SingleRead read : CUtils.it(reader))
-            set.add(read);
-        Assert.assertEquals(expected, set);
+        try (SingleFastqReader r = reader) {
+            TreeSet<SingleRead> set = new TreeSet<>(SINGLE_READ_COMPARATOR);
+            for (SingleRead read : CUtils.it(r))
+                set.add(read);
+            Assert.assertEquals(expected, set);
+        }
     }
 
     public static final Comparator<SingleRead> SINGLE_READ_COMPARATOR = new Comparator<SingleRead>() {

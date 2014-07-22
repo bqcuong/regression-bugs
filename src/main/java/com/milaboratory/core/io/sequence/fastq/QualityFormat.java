@@ -22,16 +22,20 @@ package com.milaboratory.core.io.sequence.fastq;
 
 /**
  * A base class to store various sequencing quality formats.
- * <p/>
+ *
  * See corresponding Wikipedia page for details: <a href="http://en.wikipedia.org/wiki/FASTQ_format">link</a>.
  */
 public enum QualityFormat {
     /**
-     * Phred quality values encoded with 33 value offset. <p>Allowed quality score values range is 0-50.</p>
+     * Phred quality values encoded with 33 value offset.
+     *
+     * <p>Allowed quality score values range is 0-50.</p>
      */
     Phred33((byte) 33, (byte) 0, (byte) 50, "phred33"),
     /**
-     * Phred quality values encoded with 64 value offset. <p>Allowed quality score values range is 0-41.</p>
+     * Phred quality values encoded with 64 value offset.
+     *
+     * <p>Allowed quality score values range is 0-41.</p>
      */
     Phred64((byte) 64, (byte) 0, (byte) 41, "phred64");
     private byte offset, minValue, maxValue;
