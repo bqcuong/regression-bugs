@@ -54,6 +54,7 @@ public final class Cluster<T> {
         return r;
     }
 
+    //do not process this cluster
     public void processAllChildren(TObjectProcedure<Cluster<T>> procedure) {
         if (children == null)
             return;
