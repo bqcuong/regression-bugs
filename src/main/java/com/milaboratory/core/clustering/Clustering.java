@@ -16,6 +16,9 @@ public final class Clustering {
     public static <T, S extends Sequence<S>> List<Cluster<T>> performClustering(Collection<T> inputObjects,
                                                                                 SequenceExtractor<T, S> sequenceExtractor,
                                                                                 ClusteringStrategy<T, S> strategy) {
+        if (inputObjects.isEmpty())
+            return Collections.EMPTY_LIST;
+
         final Comparator<Cluster<T>> clusterComparator = getComparatorOfClusters(strategy, sequenceExtractor);
         // For performance
         final TreeSearchParameters params = strategy.getSearchParameters();
