@@ -233,6 +233,11 @@ public final class Alignment<S extends Sequence<S>> {
         return getAlignmentHelper().toCompactString();
     }
 
+    public String toCompactString() {
+        return "" + sequence1Range.getFrom() + "|" + sequence1Range.getTo() + "|" + sequence1.size() +
+                "|" + sequence2Range.getFrom() + "|" + sequence2Range.getTo() + "|" + mutations.encode();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -75,9 +75,10 @@ public class SmartProgressReporter implements Runnable {
         boolean trigger;
         try {
             while (!reporter.isFinished()) {
-
-                currentProgress = reporter.getProgress();
-                currentStage = reporter.getStage();
+                synchronized (reporter) {
+                    currentProgress = reporter.getProgress();
+                    currentStage = reporter.getStage();
+                }
                 currentStamp = System.currentTimeMillis();
 
                 deltaValue = currentProgress - lastProgress;

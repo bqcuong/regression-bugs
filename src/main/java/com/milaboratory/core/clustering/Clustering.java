@@ -17,7 +17,7 @@ public final class Clustering<T, S extends Sequence<S>> implements CanReportProg
     final SequenceExtractor<T, S> sequenceExtractor;
     final ClusteringStrategy<T, S> strategy;
     final List<Cluster<T>> clusters = new ArrayList<>();
-    int progress;
+    volatile int progress;
 
     public Clustering(Collection<T> inputObjects, SequenceExtractor<T, S> sequenceExtractor, ClusteringStrategy<T, S> strategy) {
         this.inputObjects = inputObjects;
@@ -36,113 +36,118 @@ public final class Clustering<T, S extends Sequence<S>> implements CanReportProg
     }
 
     public List<Cluster<T>> performClustering() {
-        final Comparator<Cluster<T>> clusterComparator = getComparatorOfClusters(strategy, sequenceExtractor);
-        // For performance
-        final TreeSearchParameters params = strategy.getSearchParameters();
-        final int maxDepth = strategy.getMaxClusterDepth();
+        try {
+            final Comparator<Cluster<T>> clusterComparator = getComparatorOfClusters(strategy, sequenceExtractor);
+            // For performance
+            final TreeSearchParameters params = strategy.getSearchParameters();
+            final int maxDepth = strategy.getMaxClusterDepth();
 
-        final List<T> objects = new ArrayList<>(inputObjects);
-        Collections.sort(objects, getComparatorOfObjectsRegardingSequences(strategy, sequenceExtractor));
+            final List<T> objects = new ArrayList<>(inputObjects);
+            Collections.sort(objects, getComparatorOfObjectsRegardingSequences(strategy, sequenceExtractor));
 
-        @SuppressWarnings("unchecked")
-        Alphabet<S> alphabet = sequenceExtractor.getSequence(objects.get(0)).getAlphabet();
+            @SuppressWarnings("unchecked")
+            Alphabet<S> alphabet = sequenceExtractor.getSequence(objects.get(0)).getAlphabet();
 
-        final Factory<T[]> arrayFactory = new Factory<T[]>() {
-            @Override
-            public T[] create() {
-                return (T[]) new Object[1];
-            }
-        };
-
-        final SequenceTreeMap<S, T[]> tree = new SequenceTreeMap<>(alphabet);
-        for (T object : objects) {
-            T[] array = tree.createIfAbsent(sequenceExtractor.getSequence(object), arrayFactory);
-            if (array[0] == null)
-                array[0] = object;
-            else {
-                array = Arrays.copyOf(array, array.length + 1);
-                array[array.length - 1] = object;
-                tree.put(sequenceExtractor.getSequence(object), array);
-            }
-        }
-
-        Node<T[]> current;
-
-        final HashSet<Node<T[]>> processedNodes = new HashSet<>();
-        ArrayList<Cluster<T>> previousLayer = new ArrayList<>(), nextLayer = new ArrayList<>(), tmp;
-
-        T[] temp;
-        boolean inTree;
-        for (progress = 0; progress < objects.size(); ++progress) {
-            T object = objects.get(progress);
-
-            //checking whether object is already clusterized
-            if ((temp = tree.get(sequenceExtractor.getSequence(object))) == null)
-                continue;
-            inTree = false;
-            for (T t : temp)
-                if (t == object) {
-                    inTree = true;
-                    break;
+            final Factory<T[]> arrayFactory = new Factory<T[]>() {
+                @Override
+                public T[] create() {
+                    return (T[]) new Object[1];
                 }
-            if (!inTree)
-                continue;
-            //<-object in not yet clusterized
+            };
 
-            Cluster<T> tempCluster = new Cluster<>(object);
-            clusters.add(tempCluster);
-            previousLayer.clear();
-            previousLayer.add(tempCluster);
+            final SequenceTreeMap<S, T[]> tree = new SequenceTreeMap<>(alphabet);
+            for (T object : objects) {
+                T[] array = tree.createIfAbsent(sequenceExtractor.getSequence(object), arrayFactory);
+                if (array[0] == null)
+                    array[0] = object;
+                else {
+                    array = Arrays.copyOf(array, array.length + 1);
+                    array[array.length - 1] = object;
+                    tree.put(sequenceExtractor.getSequence(object), array);
+                }
+            }
 
-            for (int depth = 0; depth < maxDepth; ++depth) {
+            Node<T[]> current;
 
-                nextLayer.clear();
-                for (Cluster<T> previousCluster : previousLayer) {
+            final HashSet<Node<T[]>> processedNodes = new HashSet<>();
+            ArrayList<Cluster<T>> previousLayer = new ArrayList<>(), nextLayer = new ArrayList<>(), tmp;
 
-                    NeighborhoodIterator<S, T[]> iterator = tree
-                            .getNeighborhoodIterator(sequenceExtractor
-                                    .getSequence(previousCluster.head), params, null);
-                    processedNodes.clear();
+            T[] temp;
+            boolean inTree;
+            for (int i = 0; i < objects.size(); ++i) {
+                this.progress = i;
+                T object = objects.get(i);
 
-                    while ((current = iterator.nextNode()) != null) {
-                        if (!processedNodes.add(current))
-                            continue;
+                //checking whether object is already clusterized
+                if ((temp = tree.get(sequenceExtractor.getSequence(object))) == null)
+                    continue;
+                inTree = false;
+                for (T t : temp)
+                    if (t == object) {
+                        inTree = true;
+                        break;
+                    }
+                if (!inTree)
+                    continue;
+                //<-object in not yet clusterized
 
-                        T[] currentObjects = current.getObject();
-                        T matchedObject = null;
-                        boolean allNulls = true;
-                        for (int j = 0; j < currentObjects.length; j++) {
-                            if (currentObjects[j] == null)
+                Cluster<T> tempCluster = new Cluster<>(object);
+                clusters.add(tempCluster);
+                previousLayer.clear();
+                previousLayer.add(tempCluster);
+
+                for (int depth = 0; depth < maxDepth; ++depth) {
+
+                    nextLayer.clear();
+                    for (Cluster<T> previousCluster : previousLayer) {
+
+                        NeighborhoodIterator<S, T[]> iterator = tree
+                                .getNeighborhoodIterator(sequenceExtractor
+                                        .getSequence(previousCluster.head), params, null);
+                        processedNodes.clear();
+
+                        while ((current = iterator.nextNode()) != null) {
+                            if (!processedNodes.add(current))
                                 continue;
-                            matchedObject = currentObjects[j];
 
-                            if (strategy.compare(previousCluster.head, matchedObject) <= 0
-                                    || !strategy.canAddToCluster(previousCluster, matchedObject, iterator)) {
-                                allNulls = false;
-                                continue;
+                            T[] currentObjects = current.getObject();
+                            T matchedObject = null;
+                            boolean allNulls = true;
+                            for (int j = 0; j < currentObjects.length; j++) {
+                                if (currentObjects[j] == null)
+                                    continue;
+                                matchedObject = currentObjects[j];
+
+                                if (strategy.compare(previousCluster.head, matchedObject) <= 0
+                                        || !strategy.canAddToCluster(previousCluster, matchedObject, iterator)) {
+                                    allNulls = false;
+                                    continue;
+                                }
+
+                                nextLayer.add(tempCluster = new Cluster<>(matchedObject, previousCluster));
+                                previousCluster.add(tempCluster);
+                                currentObjects[j] = null;
                             }
-
-                            nextLayer.add(tempCluster = new Cluster<>(matchedObject, previousCluster));
-                            previousCluster.add(tempCluster);
-                            currentObjects[j] = null;
+                            assert matchedObject != null;
+                            if (allNulls)
+                                tree.remove(sequenceExtractor.getSequence(matchedObject));
                         }
-                        assert matchedObject != null;
-                        if (allNulls)
-                            tree.remove(sequenceExtractor.getSequence(matchedObject));
+
+                        if (previousCluster.children != null)
+                            Collections.sort(previousCluster.children, clusterComparator);
                     }
 
-                    if (previousCluster.children != null)
-                        Collections.sort(previousCluster.children, clusterComparator);
+                    Collections.sort(nextLayer, clusterComparator);
+                    tmp = nextLayer;
+                    nextLayer = previousLayer;
+                    previousLayer = tmp;
                 }
-
-                Collections.sort(nextLayer, clusterComparator);
-                tmp = nextLayer;
-                nextLayer = previousLayer;
-                previousLayer = tmp;
             }
-        }
 
-        return clusters;
+            return clusters;
+        } finally {
+            progress = inputObjects.size();
+        }
     }
 
     public List<Cluster<T>> getClusters() {
