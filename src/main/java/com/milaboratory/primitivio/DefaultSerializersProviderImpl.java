@@ -186,9 +186,6 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
         public Object read(PrimitivI input) {
             int length = input.readVarInt();
 
-            if (length == 0)
-                return new Object[0];
-
             if (componentType == null)
                 throw new RuntimeException("Unknown array type.");
 
