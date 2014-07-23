@@ -72,7 +72,7 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
 
         @Override
         public boolean isReference() {
-            return false;
+            return true;
         }
 
         @Override
@@ -185,9 +185,6 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
         @Override
         public Object read(PrimitivI input) {
             int length = input.readVarInt();
-
-            if (length == 0)
-                return new Object[0];
 
             if (componentType == null)
                 throw new RuntimeException("Unknown array type.");
