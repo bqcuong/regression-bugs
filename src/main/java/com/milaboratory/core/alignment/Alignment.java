@@ -235,7 +235,7 @@ public final class Alignment<S extends Sequence<S>> {
 
     public String toCompactString() {
         return "" + sequence1Range.getFrom() + "|" + sequence1Range.getTo() + "|" + sequence1.size() +
-                "|" + sequence2Range.getFrom() + "|" + sequence2Range.getTo() + "|" + mutations.encode();
+                "|" + sequence2Range.getFrom() + "|" + sequence2Range.getTo() + "|" + mutations.encode() + "|" + score;
     }
 
     @Override
