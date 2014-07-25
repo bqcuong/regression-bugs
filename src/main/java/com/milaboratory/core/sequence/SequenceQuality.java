@@ -129,6 +129,18 @@ public final class SequenceQuality extends AbstractSeq<SequenceQuality> {
     }
 
     /**
+     * Returns average sequence quality value
+     *
+     * @return average sequence quality value
+     */
+    public byte avrgValue() {
+        int sum = 0;
+        for (byte b : data)
+            sum += b;
+        return (byte) (sum / data.length);
+    }
+
+    /**
      * Gets quality values in reverse order
      *
      * @return quality values in reverse order
