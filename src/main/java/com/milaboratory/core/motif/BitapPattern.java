@@ -5,10 +5,12 @@ import com.milaboratory.core.sequence.Sequence;
 public final class BitapPattern {
     final int size;
     final long[] patternMask;
+    final long[] reversePatternMask;
 
-    BitapPattern(int size, long[] patternMask) {
+    public BitapPattern(int size, long[] patternMask, long[] reversePatternMask) {
         this.size = size;
         this.patternMask = patternMask;
+        this.reversePatternMask = reversePatternMask;
     }
 
     public int exactSearch(Sequence sequence) {
@@ -65,33 +67,33 @@ public final class BitapPattern {
         };
     }
 
-    public BitapMatcher mismatchOnlyMatcher(int mismatches, final Sequence sequence) {
-        return mismatchOnlyMatcher(mismatches, sequence, 0, sequence.size());
+    public BitapMatcher mismatchOnlyMatcherFirst(int mismatches, final Sequence sequence) {
+        return mismatchOnlyMatcherFirst(mismatches, sequence, 0, sequence.size());
     }
 
-    public BitapMatcher mismatchOnlyMatcher(int mismatches, final Sequence sequence, int from) {
-        return mismatchOnlyMatcher(mismatches, sequence, from, sequence.size());
+    public BitapMatcher mismatchOnlyMatcherFirst(int mismatches, final Sequence sequence, int from) {
+        return mismatchOnlyMatcherFirst(mismatches, sequence, from, sequence.size());
     }
 
-    public BitapMatcher mismatchOnlyMatcher(int mismatches, final Sequence sequence, int from, int to) {
+    public BitapMatcher mismatchOnlyMatcherFirst(int mismatches, final Sequence sequence, int from, int to) {
         if (sequence.getAlphabet().size() != patternMask.length)
             throw new IllegalArgumentException();
 
         return new BitapMatcherImpl(mismatches + 1, from, to) {
             @Override
             public int findNext() {
-                long matchingMask = (1L << size);
+                long matchingMask = (1L << (size - 1));
 
                 int d;
-                long tmp, oldRd1;
+                long preMismatchTmp, mismatchTmp;
 
                 for (int i = current; i < to; ++i) {
-                    oldRd1 = R[0];
-
                     long currentPatternMask = patternMask[sequence.codeAt(i)];
 
-                    R[0] |= currentPatternMask;
+                    // Exact match on the previous step == match with insertion on current step
                     R[0] <<= 1;
+                    mismatchTmp = R[0];
+                    R[0] |= currentPatternMask;
 
                     if (0 == (R[0] & matchingMask)) {
                         errors = 0;
@@ -100,14 +102,16 @@ public final class BitapPattern {
                     }
 
                     for (d = 1; d < R.length; ++d) {
-                        tmp = R[d];
-                        R[d] = (oldRd1 & (R[d] | currentPatternMask)) << 1;
-                        oldRd1 = tmp;
+                        R[d] <<= 1;
+                        preMismatchTmp = R[d];
+                        R[d] |= currentPatternMask;
+                        R[d] &= mismatchTmp;
                         if (0 == (R[d] & matchingMask)) {
                             errors = d;
                             current = i + 1;
                             return i - size + 1;
                         }
+                        mismatchTmp = preMismatchTmp;
                     }
                 }
                 current = to;
@@ -116,7 +120,15 @@ public final class BitapPattern {
         };
     }
 
-    public BitapMatcher mismatchAndIndelMatcher(int maxNumberOfErrors, final Sequence sequence, int from, int to) {
+    public BitapMatcher mismatchAndIndelMatcherLast(int maxNumberOfErrors, final Sequence sequence) {
+        return mismatchAndIndelMatcherLast(maxNumberOfErrors, sequence, 0, sequence.size());
+    }
+
+    public BitapMatcher mismatchAndIndelMatcherLast(int maxNumberOfErrors, final Sequence sequence, int from) {
+        return mismatchAndIndelMatcherLast(maxNumberOfErrors, sequence, from, sequence.size());
+    }
+
+    public BitapMatcher mismatchAndIndelMatcherLast(int maxNumberOfErrors, final Sequence sequence, int from, int to) {
         if (sequence.getAlphabet().size() != patternMask.length)
             throw new IllegalArgumentException();
 
@@ -126,31 +138,98 @@ public final class BitapPattern {
                 long matchingMask = (1L << (size - 1));
 
                 int d;
-                long tmp, oldRd1;
+                long preInsertionTmp, preMismatchTmp,
+                        insertionTmp, deletionTmp, mismatchTmp;
 
                 for (int i = current; i < to; ++i) {
-                    oldRd1 = R[0];
-
                     long currentPatternMask = patternMask[sequence.codeAt(i)];
 
-                    R[0] |= currentPatternMask;
+                    // Exact match on the previous step == match with insertion on current step
+                    insertionTmp = R[0];
                     R[0] <<= 1;
+                    mismatchTmp = R[0];
+                    R[0] |= currentPatternMask;
+                    deletionTmp = R[0];
 
                     if (0 == (R[0] & matchingMask)) {
                         errors = 0;
                         current = i + 1;
-                        return i - size + 1;
+                        return i;
                     }
 
                     for (d = 1; d < R.length; ++d) {
-                        tmp = R[d];
-                        R[d] = (R[d] << 1) | currentPatternMask & oldRd1;
-                        oldRd1 = tmp;
+                        preInsertionTmp = R[d];
+                        R[d] <<= 1;
+                        preMismatchTmp = R[d];
+                        R[d] |= currentPatternMask;
+                        R[d] &= insertionTmp & mismatchTmp & (deletionTmp << 1);
                         if (0 == (R[d] & matchingMask)) {
                             errors = d;
                             current = i + 1;
-                            return i - size + 1;
+                            return i;
                         }
+                        deletionTmp = R[d];
+                        insertionTmp = preInsertionTmp;
+                        mismatchTmp = preMismatchTmp;
+                    }
+                }
+                current = to;
+                return -1;
+            }
+        };
+    }
+
+    public BitapMatcher mismatchAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence) {
+        return mismatchAndIndelMatcherFirst(maxNumberOfErrors, sequence, 0, sequence.size());
+    }
+
+    public BitapMatcher mismatchAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence, int from) {
+        return mismatchAndIndelMatcherFirst(maxNumberOfErrors, sequence, from, sequence.size());
+    }
+
+    public BitapMatcher mismatchAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence, int from, int to) {
+        if (sequence.getAlphabet().size() != patternMask.length)
+            throw new IllegalArgumentException();
+
+        return new BitapMatcherImpl(maxNumberOfErrors + 1, to - 1, from) {
+            @Override
+            public int findNext() {
+                long matchingMask = (1L << (size - 1));
+
+                int d;
+                long preInsertionTmp, preMismatchTmp,
+                        insertionTmp, deletionTmp, mismatchTmp;
+
+                for (int i = current; i >= to; --i) {
+                    long currentPatternMask = reversePatternMask[sequence.codeAt(i)];
+
+                    // Exact match on the previous step == match with insertion on current step
+                    insertionTmp = R[0];
+                    R[0] <<= 1;
+                    mismatchTmp = R[0];
+                    R[0] |= currentPatternMask;
+                    deletionTmp = R[0];
+
+                    if (0 == (R[0] & matchingMask)) {
+                        errors = 0;
+                        current = i - 1;
+                        return i;
+                    }
+
+                    for (d = 1; d < R.length; ++d) {
+                        preInsertionTmp = R[d];
+                        R[d] <<= 1;
+                        preMismatchTmp = R[d];
+                        R[d] |= currentPatternMask;
+                        R[d] &= insertionTmp & mismatchTmp & (deletionTmp << 1);
+                        if (0 == (R[d] & matchingMask)) {
+                            errors = d;
+                            current = i - 1;
+                            return i;
+                        }
+                        deletionTmp = R[d];
+                        insertionTmp = preInsertionTmp;
+                        mismatchTmp = preMismatchTmp;
                     }
                 }
                 current = to;

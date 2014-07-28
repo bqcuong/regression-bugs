@@ -39,14 +39,18 @@ public final class Motif<S extends Sequence<S>> {
 
     public BitapPattern toBitapPattern() {
         int aSize = alphabet.size();
-        long[] patternMask = new long[aSize];
+        long[] patternMask = new long[aSize],
+                reversePatternMask = new long[aSize];
         Arrays.fill(patternMask, ~0);
+        Arrays.fill(reversePatternMask, ~0);
         int p = 0;
         for (int i = 0; i < aSize; ++i)
             for (int j = 0; j < size; ++j)
-                if (data.get(p++))
+                if (data.get(p++)) {
                     patternMask[i] &= ~(1L << j);
-        return new BitapPattern(size, patternMask);
+                    reversePatternMask[i] &= ~(1L << (size - j - 1));
+                }
+        return new BitapPattern(size, patternMask, reversePatternMask);
     }
 
     public int size() {

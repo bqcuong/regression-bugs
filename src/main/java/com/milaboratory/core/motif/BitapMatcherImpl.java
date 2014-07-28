@@ -1,7 +1,5 @@
 package com.milaboratory.core.motif;
 
-import java.util.Arrays;
-
 public abstract class BitapMatcherImpl implements BitapMatcher {
     int errors;
     final long[] R;
@@ -10,7 +8,8 @@ public abstract class BitapMatcherImpl implements BitapMatcher {
 
     public BitapMatcherImpl(int count, int from, int to) {
         this.R = new long[count];
-        Arrays.fill(R, ~1L);
+        for (int i = 0; i < count; ++i)
+            R[i] = (~0) << i;
         this.current = from;
         this.to = to;
     }
