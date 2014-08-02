@@ -23,8 +23,10 @@ public class PipeWriter<O> implements InputPort<O>, AutoCloseable {
 
     @Override
     public synchronized void put(O o) {
-        if (o == null)
+        if (o == null){
             close();
+            return;
+        }
 
         if (closed.get())
             throw new IllegalStateException("Already closed.");
