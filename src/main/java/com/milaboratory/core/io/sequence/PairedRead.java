@@ -11,11 +11,11 @@ public final class PairedRead extends MultiRead {
             throw new IllegalArgumentException();
     }
 
-    public SingleRead getLeftRead() {
+    public SingleRead getR1() {
         return data[0];
     }
 
-    public SingleRead getRightRead() {
+    public SingleRead getR2() {
         return data[1];
     }
 }

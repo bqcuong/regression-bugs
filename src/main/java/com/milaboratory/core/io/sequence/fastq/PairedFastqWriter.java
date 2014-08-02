@@ -30,8 +30,8 @@ public final class PairedFastqWriter implements PairedSequenceWriter {
 
     @Override
     public void write(PairedRead read) {
-        writers[0].write(read.getLeftRead());
-        writers[1].write(read.getRightRead());
+        writers[0].write(read.getR1());
+        writers[1].write(read.getR2());
     }
 
     @Override
