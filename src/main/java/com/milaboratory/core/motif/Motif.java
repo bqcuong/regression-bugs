@@ -13,6 +13,15 @@ public final class Motif<S extends Sequence<S>> {
     private final int size;
     final BitArray data;
 
+    public Motif(S sequence) {
+        this.alphabet = sequence.getAlphabet();
+        this.size = sequence.size();
+        int alphabetSize = alphabet.size();
+        this.data = new BitArray(alphabetSize * size);
+        for (int i = 0; i < size; ++i)
+            data.set(sequence.codeAt(i) * size + i);
+    }
+
     public Motif(Alphabet<S> alphabet, String motif) {
         this.alphabet = alphabet;
         this.size = motif.length();
@@ -38,6 +47,8 @@ public final class Motif<S extends Sequence<S>> {
     }
 
     public BitapPattern toBitapPattern() {
+        if (size >= 64)
+            throw new RuntimeException("Supports motifs with length less then 64.");
         int aSize = alphabet.size();
         long[] patternMask = new long[aSize],
                 reversePatternMask = new long[aSize];

@@ -87,6 +87,8 @@ public final class BitapPattern {
                 int d;
                 long preMismatchTmp, mismatchTmp;
 
+                boolean match = false;
+
                 for (int i = current; i < to; ++i) {
                     long currentPatternMask = patternMask[sequence.codeAt(i)];
 
@@ -97,8 +99,7 @@ public final class BitapPattern {
 
                     if (0 == (R[0] & matchingMask)) {
                         errors = 0;
-                        current = i + 1;
-                        return i - size + 1;
+                        match = true;
                     }
 
                     for (d = 1; d < R.length; ++d) {
@@ -106,12 +107,16 @@ public final class BitapPattern {
                         preMismatchTmp = R[d];
                         R[d] |= currentPatternMask;
                         R[d] &= mismatchTmp;
-                        if (0 == (R[d] & matchingMask)) {
+                        if (!match && 0 == (R[d] & matchingMask) && i >= size - 1) {
                             errors = d;
-                            current = i + 1;
-                            return i - size + 1;
+                            match = true;
                         }
                         mismatchTmp = preMismatchTmp;
+                    }
+
+                    if (match) {
+                        current = i + 1;
+                        return i - size + 1;
                     }
                 }
                 current = to;
@@ -141,6 +146,8 @@ public final class BitapPattern {
                 long preInsertionTmp, preMismatchTmp,
                         insertionTmp, deletionTmp, mismatchTmp;
 
+                boolean match = false;
+
                 for (int i = current; i < to; ++i) {
                     long currentPatternMask = patternMask[sequence.codeAt(i)];
 
@@ -153,8 +160,7 @@ public final class BitapPattern {
 
                     if (0 == (R[0] & matchingMask)) {
                         errors = 0;
-                        current = i + 1;
-                        return i;
+                        match = true;
                     }
 
                     for (d = 1; d < R.length; ++d) {
@@ -163,14 +169,18 @@ public final class BitapPattern {
                         preMismatchTmp = R[d];
                         R[d] |= currentPatternMask;
                         R[d] &= insertionTmp & mismatchTmp & (deletionTmp << 1);
-                        if (0 == (R[d] & matchingMask)) {
+                        if (!match && 0 == (R[d] & matchingMask)) {
                             errors = d;
-                            current = i + 1;
-                            return i;
+                            match = true;
                         }
                         deletionTmp = R[d];
                         insertionTmp = preInsertionTmp;
                         mismatchTmp = preMismatchTmp;
+                    }
+
+                    if (match) {
+                        current = i + 1;
+                        return i;
                     }
                 }
                 current = to;
@@ -200,6 +210,8 @@ public final class BitapPattern {
                 long preInsertionTmp, preMismatchTmp,
                         insertionTmp, deletionTmp, mismatchTmp;
 
+                boolean match = false;
+
                 for (int i = current; i >= to; --i) {
                     long currentPatternMask = reversePatternMask[sequence.codeAt(i)];
 
@@ -212,8 +224,7 @@ public final class BitapPattern {
 
                     if (0 == (R[0] & matchingMask)) {
                         errors = 0;
-                        current = i - 1;
-                        return i;
+                        match = true;
                     }
 
                     for (d = 1; d < R.length; ++d) {
@@ -222,17 +233,21 @@ public final class BitapPattern {
                         preMismatchTmp = R[d];
                         R[d] |= currentPatternMask;
                         R[d] &= insertionTmp & mismatchTmp & (deletionTmp << 1);
-                        if (0 == (R[d] & matchingMask)) {
+                        if (!match && 0 == (R[d] & matchingMask)) {
                             errors = d;
-                            current = i - 1;
-                            return i;
+                            match = true;
                         }
                         deletionTmp = R[d];
                         insertionTmp = preInsertionTmp;
                         mismatchTmp = preMismatchTmp;
                     }
+
+                    if (match) {
+                        current = i - 1;
+                        return i;
+                    }
                 }
-                current = to;
+                current = to - 1;
                 return -1;
             }
         };

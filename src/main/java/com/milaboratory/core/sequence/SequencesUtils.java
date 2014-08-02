@@ -39,19 +39,18 @@ public final class SequencesUtils {
 //        return mm;
 //    }
 //
-//    public static int mismatchCount(Sequence seq0, int seq0Offset, Sequence seq1, int seq1Offset, int length) {
-//        if (seq0.getAlphabet() != seq1.getAlphabet())
-//            throw new IllegalArgumentException("Different sequene alphabets");
-//
-//        if (seq0.size() < seq0Offset + length || seq1.size() < seq1Offset + length)
-//            throw new IllegalArgumentException();
-//
-//        int mm = 0;
-//        for (int i = 0; i < length; ++i)
-//            if (seq0.codeAt(i + seq0Offset) != seq1.codeAt(i + seq1Offset))
-//                ++mm;
-//        return mm;
-//    }
+
+    public static <S extends Sequence<S>> int mismatchCount(S seq0, int seq0Offset, S seq1, int seq1Offset, int length) {
+        if (seq0.size() < seq0Offset + length || seq1.size() < seq1Offset + length)
+            throw new IllegalArgumentException();
+
+        int mm = 0;
+        for (int i = 0; i < length; ++i)
+            if (seq0.codeAt(i + seq0Offset) != seq1.codeAt(i + seq1Offset))
+                ++mm;
+        return mm;
+    }
+
 //
 //
 //    public static int mismatchCount(Sequence seq0, Sequence seq1, int maxMismatches) {

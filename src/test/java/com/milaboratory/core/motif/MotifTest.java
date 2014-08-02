@@ -36,6 +36,7 @@ public class MotifTest {
         assertFalse(motif.matches(seq, 5));
         assertTrue(motif.matches(seq, 6));
         assertFalse(motif.matches(seq, 7));
+        assertTrue(new Motif<>(seq).matches(seq, 0));
     }
 
     @Test
