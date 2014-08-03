@@ -4,8 +4,10 @@ import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.Sequence;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by dbolotin on 25/06/14.
@@ -255,6 +257,13 @@ public final class NeighborhoodIterator<S extends Sequence<S>, O> {
                 return new NeighbourhoodIteratorWrapper<>(NeighborhoodIterator.this);
             }
         };
+    }
+
+    public List<O> toList() {
+        ArrayList<O> list = new ArrayList<>();
+        for (O o : it())
+            list.add(o);
+        return list;
     }
 
     private static final class NeighbourhoodIteratorWrapper<O, S extends Sequence<S>> implements java.util.Iterator<O> {
