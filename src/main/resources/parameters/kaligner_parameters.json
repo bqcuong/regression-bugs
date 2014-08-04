@@ -87,8 +87,8 @@
         "maxHits": 7,
         "scoring": {
             "type": "linear",
-            "subsMatrix": "simple(match=5, mismatch=-12)",
-            "gapPenalty": -9
+            "subsMatrix": "simple(match=4, mismatch=-9)",
+            "gapPenalty": -12
         }
     }
 }
