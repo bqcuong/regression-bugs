@@ -56,7 +56,7 @@ public class KAligner {
      *                    need to be loaded at first request
      */
     public KAligner(KAlignerParameters parameters, boolean lazyResults) {
-        this.mapper = KMapper.createFromParamenters(parameters);
+        this.mapper = KMapper.createFromParameters(parameters);
         this.parameters = parameters.clone();
         this.lazyResults = lazyResults;
     }

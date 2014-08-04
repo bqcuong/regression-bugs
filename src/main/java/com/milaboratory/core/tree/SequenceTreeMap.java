@@ -170,13 +170,13 @@ public class SequenceTreeMap<S extends Sequence<S>, O> {
                 guide);
     }
 
-    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, TreeSearchParameters paramenters) {
-        return getNeighborhoodIterator(reference, paramenters, null);
+    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, TreeSearchParameters parameters) {
+        return getNeighborhoodIterator(reference, parameters, null);
     }
 
-    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, TreeSearchParameters paramenters,
+    public NeighborhoodIterator<S, O> getNeighborhoodIterator(S reference, TreeSearchParameters parameters,
                                                               MutationGuide<S> guide) {
-        return new NeighborhoodIterator<>(reference, paramenters, guide, root);
+        return new NeighborhoodIterator<>(reference, parameters, guide, root);
     }
 
     public static final class Node<O> {

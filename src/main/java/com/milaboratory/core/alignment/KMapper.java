@@ -154,16 +154,16 @@ public final class KMapper {
      * Factory method to create KMapper using parametners specified in the {@link com.milaboratory.core.alignment.KAlignerParameters}
      * object.
      *
-     * @param paramenters parameters instance
+     * @param parameters parameters instance
      * @return new KMapper
      */
-    public static KMapper createFromParamenters(KAlignerParameters paramenters) {
-        return new KMapper(paramenters.getMapperKValue(), paramenters.getMapperMinSeedsDistance(),
-                paramenters.getMapperMaxSeedsDistance(), paramenters.getMapperAbsoluteMinScore(), paramenters.getMapperRelativeMinScore(),
-                paramenters.getMinAlignmentLength(), paramenters.getMapperMatchScore(), paramenters.getMapperMismatchPenalty(),
-                paramenters.getMapperOffsetShiftPenalty(),
-                paramenters.getMaxAdjacentIndels(),
-                paramenters.isFloatingLeftBound(), paramenters.isFloatingRightBound());
+    public static KMapper createFromParameters(KAlignerParameters parameters) {
+        return new KMapper(parameters.getMapperKValue(), parameters.getMapperMinSeedsDistance(),
+                parameters.getMapperMaxSeedsDistance(), parameters.getMapperAbsoluteMinScore(), parameters.getMapperRelativeMinScore(),
+                parameters.getMinAlignmentLength(), parameters.getMapperMatchScore(), parameters.getMapperMismatchPenalty(),
+                parameters.getMapperOffsetShiftPenalty(),
+                parameters.getMaxAdjacentIndels(),
+                parameters.isFloatingLeftBound(), parameters.isFloatingRightBound());
     }
 
     /**
