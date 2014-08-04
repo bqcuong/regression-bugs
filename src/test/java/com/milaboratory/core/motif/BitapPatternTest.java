@@ -38,7 +38,7 @@ public class BitapPatternTest {
 
         // Exact
         seq = new NucleotideSequence("ACTGCGATAAATTAGACAGTACGTA");
-        bitapMatcher = motif.toBitapPattern().mismatchAndIndelMatcherLast(1, seq);
+        bitapMatcher = motif.toBitapPattern().substitutionAndIndelMatcherLast(1, seq);
         boolean t = false;
         int pos;
         while ((pos = bitapMatcher.findNext()) > 0)
@@ -51,21 +51,21 @@ public class BitapPatternTest {
 
         // Deletion
         seq = new NucleotideSequence("ACTGCGATAAATAGACAGTACGTA");
-        bitapMatcher = motif.toBitapPattern().mismatchAndIndelMatcherLast(1, seq);
+        bitapMatcher = motif.toBitapPattern().substitutionAndIndelMatcherLast(1, seq);
         assertEquals(16, bitapMatcher.findNext());
         assertEquals(1, bitapMatcher.getNumberOfErrors());
         assertEquals(-1, bitapMatcher.findNext());
 
         // Insertion
         seq = new NucleotideSequence("ACTGCGATAAATTATGACAGTACGTA");
-        bitapMatcher = motif.toBitapPattern().mismatchAndIndelMatcherLast(1, seq);
+        bitapMatcher = motif.toBitapPattern().substitutionAndIndelMatcherLast(1, seq);
         assertEquals(18, bitapMatcher.findNext());
         assertEquals(1, bitapMatcher.getNumberOfErrors());
         assertEquals(-1, bitapMatcher.findNext());
 
         // Mismatch
         seq = new NucleotideSequence("ACTGCGATAAATTACACAGTACGTA");
-        bitapMatcher = motif.toBitapPattern().mismatchAndIndelMatcherLast(1, seq);
+        bitapMatcher = motif.toBitapPattern().substitutionAndIndelMatcherLast(1, seq);
         assertEquals(17, bitapMatcher.findNext());
         assertEquals(1, bitapMatcher.getNumberOfErrors());
         assertEquals(-1, bitapMatcher.findNext());
@@ -119,7 +119,7 @@ public class BitapPatternTest {
         Motif<NucleotideSequence> motif = new Motif<>(NucleotideSequence.ALPHABET,
                 "ATTRGACA");
         NucleotideSequence seq = new NucleotideSequence("ACTGCGATAAATTAGACAGTACGTA");
-        BitapMatcher matcher = motif.toBitapPattern().mismatchOnlyMatcherFirst(1, seq);
+        BitapMatcher matcher = motif.toBitapPattern().substitutionOnlyMatcherFirst(1, seq);
         Assert.assertEquals(10, matcher.findNext());
         Assert.assertEquals(0, matcher.getNumberOfErrors());
     }
@@ -129,7 +129,7 @@ public class BitapPatternTest {
         Motif<NucleotideSequence> motif = new Motif<>(NucleotideSequence.ALPHABET,
                 "ATTRGACA");
         NucleotideSequence seq = new NucleotideSequence("ACTGCGATAAATCAGACAGTACGTA");
-        BitapMatcher matcher = motif.toBitapPattern().mismatchOnlyMatcherFirst(1, seq);
+        BitapMatcher matcher = motif.toBitapPattern().substitutionOnlyMatcherFirst(1, seq);
         Assert.assertEquals(10, matcher.findNext());
         Assert.assertEquals(1, matcher.getNumberOfErrors());
     }
@@ -161,7 +161,7 @@ public class BitapPatternTest {
 
             // Not filtered
 
-            BitapMatcher bitapMatcher = bitapPattern.mismatchOnlyMatcherFirst(mms, fullSeq);
+            BitapMatcher bitapMatcher = bitapPattern.substitutionOnlyMatcherFirst(mms, fullSeq);
 
             boolean found = false;
 
@@ -207,7 +207,7 @@ public class BitapPatternTest {
 
             // Filtered
 
-            BitapMatcherFilter bitapMatcher = new BitapMatcherFilter(bitapPattern.mismatchOnlyMatcherFirst(mms, fullSeq));
+            BitapMatcherFilter bitapMatcher = new BitapMatcherFilter(bitapPattern.substitutionOnlyMatcherFirst(mms, fullSeq));
 
             boolean found = false;
 
@@ -249,7 +249,7 @@ public class BitapPatternTest {
 
             Motif<NucleotideSequence> motif = new Motif<>(seq);
             BitapPattern bitapPattern = motif.toBitapPattern();
-            BitapMatcher bitapMatcher = bitapPattern.mismatchAndIndelMatcherLast(muts, fullSeq);
+            BitapMatcher bitapMatcher = bitapPattern.substitutionAndIndelMatcherLast(muts, fullSeq);
 
             boolean found = false;
 

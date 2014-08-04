@@ -67,19 +67,35 @@ public final class BitapPattern {
         };
     }
 
-    public BitapMatcher mismatchOnlyMatcherFirst(int mismatches, final Sequence sequence) {
-        return mismatchOnlyMatcherFirst(mismatches, sequence, 0, sequence.size());
+    /**
+     * Returns a BitapMatcher preforming a fuzzy search in a whole {@code sequence}. Search allows no more then {@code
+     * substitutions} number of substitutions. Matcher will return positions of first matched letter in the motif in
+     * ascending order.
+     *
+     * @param substitutions maximal number of allowed substitutions
+     * @param sequence      target sequence
+     * @return matcher which will return positions of first matched letter in the motif in ascending order
+     */
+    public BitapMatcher substitutionOnlyMatcherFirst(int substitutions, final Sequence sequence) {
+        return substitutionOnlyMatcherFirst(substitutions, sequence, 0, sequence.size());
     }
 
-    public BitapMatcher mismatchOnlyMatcherFirst(int mismatches, final Sequence sequence, int from) {
-        return mismatchOnlyMatcherFirst(mismatches, sequence, from, sequence.size());
-    }
-
-    public BitapMatcher mismatchOnlyMatcherFirst(int mismatches, final Sequence sequence, int from, int to) {
+    /**
+     * Returns a BitapMatcher preforming a fuzzy search in a subsequence of {@code sequence}. Search range starts from
+     * {@code from} (inclusive) and ends at {@code to} (exclusive). Search allows no more then {@code substitutions}
+     * number of substitutions. Matcher will return positions of first matched letter in the motif in ascending order.
+     *
+     * @param substitutions maximal number of allowed substitutions
+     * @param sequence      target sequence
+     * @param from          left boundary of search range (inclusive)
+     * @param to            right boundary of search range (exclusive)
+     * @return matcher which will return positions of first matched letter in the motif in ascending order
+     */
+    public BitapMatcher substitutionOnlyMatcherFirst(int substitutions, final Sequence sequence, int from, int to) {
         if (sequence.getAlphabet().size() != patternMask.length)
             throw new IllegalArgumentException();
 
-        return new BitapMatcherImpl(mismatches + 1, from, to) {
+        return new BitapMatcherImpl(substitutions + 1, from, to) {
             @Override
             public int findNext() {
                 long matchingMask = (1L << (size - 1));
@@ -125,15 +141,32 @@ public final class BitapPattern {
         };
     }
 
-    public BitapMatcher mismatchAndIndelMatcherLast(int maxNumberOfErrors, final Sequence sequence) {
-        return mismatchAndIndelMatcherLast(maxNumberOfErrors, sequence, 0, sequence.size());
+    /**
+     * Returns a BitapMatcher preforming a fuzzy search in a whole {@code sequence}.  Search allows no more then {@code
+     * maxNumberOfErrors} number of substitutions/insertions/deletions. Matcher will return positions of last matched
+     * letter in the motif in ascending order.
+     *
+     * @param maxNumberOfErrors maximal number of allowed substitutions/insertions/deletions
+     * @param sequence          target sequence
+     * @return matcher which will return positions of last matched letter in the motif
+     */
+    public BitapMatcher substitutionAndIndelMatcherLast(int maxNumberOfErrors, final Sequence sequence) {
+        return substitutionAndIndelMatcherLast(maxNumberOfErrors, sequence, 0, sequence.size());
     }
 
-    public BitapMatcher mismatchAndIndelMatcherLast(int maxNumberOfErrors, final Sequence sequence, int from) {
-        return mismatchAndIndelMatcherLast(maxNumberOfErrors, sequence, from, sequence.size());
-    }
-
-    public BitapMatcher mismatchAndIndelMatcherLast(int maxNumberOfErrors, final Sequence sequence, int from, int to) {
+    /**
+     * Returns a BitapMatcher preforming a fuzzy search in a subsequence of {@code sequence}. Search range starts from
+     * {@code from} (inclusive) and ends at {@code to} (exclusive). Search allows no more then {@code maxNumberOfErrors}
+     * number of substitutions/insertions/deletions. Matcher will return positions of last matched letter in the motif
+     * in ascending order.
+     *
+     * @param maxNumberOfErrors maximal number of allowed substitutions/insertions/deletions
+     * @param sequence          target sequence
+     * @param from              left boundary of search range (inclusive)
+     * @param to                right boundary of search range (exclusive)
+     * @return matcher which will return positions of last matched letter in the motif in ascending order
+     */
+    public BitapMatcher substitutionAndIndelMatcherLast(int maxNumberOfErrors, final Sequence sequence, int from, int to) {
         if (sequence.getAlphabet().size() != patternMask.length)
             throw new IllegalArgumentException();
 
@@ -189,14 +222,31 @@ public final class BitapPattern {
         };
     }
 
+    /**
+     * Returns a BitapMatcher preforming a fuzzy search in a whole {@code sequence}. Search allows no more then {@code
+     * maxNumberOfErrors} number of substitutions/insertions/deletions. Matcher will return positions of first matched
+     * letter in the motif in descending order.
+     *
+     * @param maxNumberOfErrors maximal number of allowed substitutions/insertions/deletions
+     * @param sequence          target sequence
+     * @return matcher which will return positions of first matched letter in the motif in descending order
+     */
     public BitapMatcher mismatchAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence) {
         return mismatchAndIndelMatcherFirst(maxNumberOfErrors, sequence, 0, sequence.size());
     }
 
-    public BitapMatcher mismatchAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence, int from) {
-        return mismatchAndIndelMatcherFirst(maxNumberOfErrors, sequence, from, sequence.size());
-    }
-
+    /**
+     * Returns a BitapMatcher preforming a fuzzy search in a subsequence of {@code sequence}. Search range starts from
+     * {@code from} (inclusive) and ends at {@code to} (exclusive). Search allows no more then {@code maxNumberOfErrors}
+     * number of substitutions/insertions/deletions. Matcher will return positions of first matched letter in the motif
+     * in descending order.
+     *
+     * @param maxNumberOfErrors maximal number of allowed substitutions/insertions/deletions
+     * @param sequence          target sequence
+     * @param from              left boundary of search range (inclusive)
+     * @param to                right boundary of search range (exclusive)
+     * @return matcher which will return positions of first matched letter in the motif in descending order
+     */
     public BitapMatcher mismatchAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence, int from, int to) {
         if (sequence.getAlphabet().size() != patternMask.length)
             throw new IllegalArgumentException();
