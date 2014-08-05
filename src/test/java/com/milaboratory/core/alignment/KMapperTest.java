@@ -52,7 +52,7 @@ public class KMapperTest extends AlignmentTest {
 
     @Test
     public void test1() throws Exception {
-        KMapper aligner = KMapper.createFromParamenters(gParams);
+        KMapper aligner = KMapper.createFromParameters(gParams);
         aligner.addReference(new NucleotideSequence("ATTAGACACAATATATCTATGATCCTCTATTAGCTACGTACGGCTGATGCTAGTGTCGAT"));
         aligner.addReference(new NucleotideSequence("ACTAGCTGAGCTGTGTAGCTAGTATCTCGATATGCTACATCGTGGGTCGATTAGCTACGT"));
         aligner.addReference(new NucleotideSequence("GCTGTCGGCCTAGGCGCGATCGAACGCGCTGCGCGATGATATATCGCGATAATTCTCTGA"));
@@ -69,7 +69,7 @@ public class KMapperTest extends AlignmentTest {
 
     @Test
     public void test2() throws Exception {
-        KMapper aligner = KMapper.createFromParamenters(gParams);
+        KMapper aligner = KMapper.createFromParameters(gParams);
         aligner.addReference(new NucleotideSequence("ATTAGACACAATATATCTATGATCCTCTATTAGCTACGTACGGCTGATGCTAGTGTCGAT"));
         aligner.addReference(new NucleotideSequence("ACTAGCTGAGCTGTGTAGCTAGTATCTCGATATGCTACATCGTGGGTCGATTAGCTACGT"));
         aligner.addReference(new NucleotideSequence("GCTGTCGGCCTAGGCGCGATCGAACGCGCTGCGCGATGATATATCGCGATAATTCTCTGA"));
@@ -89,7 +89,7 @@ public class KMapperTest extends AlignmentTest {
         for (int i = 0; i < baseSize; ++i)
             ncs.add(randomSequence(NucleotideSequence.ALPHABET, rdi, 40, 60));
 
-        KMapper ka = KMapper.createFromParamenters(gParams.clone().setMapperMaxSeedsDistance(2).setMapperMinSeedsDistance(1).setMapperKValue(6));
+        KMapper ka = KMapper.createFromParameters(gParams.clone().setMapperMaxSeedsDistance(2).setMapperMinSeedsDistance(1).setMapperKValue(6));
         for (NucleotideSequence seq : ncs)
             ka.addReference(seq);
 
