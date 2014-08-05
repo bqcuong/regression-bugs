@@ -37,6 +37,9 @@ public final class Clustering<T, S extends Sequence<S>> implements CanReportProg
 
     public List<Cluster<T>> performClustering() {
         try {
+            if (inputObjects.isEmpty())
+                return clusters;
+
             final Comparator<Cluster<T>> clusterComparator = getComparatorOfClusters(strategy, sequenceExtractor);
             // For performance
             final TreeSearchParameters params = strategy.getSearchParameters();

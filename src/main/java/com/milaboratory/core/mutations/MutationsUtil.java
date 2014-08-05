@@ -145,20 +145,24 @@ public final class MutationsUtil {
         return true;
     }
 
+    static String getMutationPatternStringForAlphabet(Alphabet alphabet) {
+        StringBuilder sb = new StringBuilder();
+        StringBuilder t = new StringBuilder("([\\Q");
+        for (byte i = 0; i < alphabet.size(); ++i)
+            t.append(alphabet.symbolFromCode(i));
+        t.append("\\E])");
+        sb.append("S").append(t).append("(\\d+)").append(t);
+        sb.append("|");
+        sb.append("D").append(t).append("(\\d+)");
+        sb.append("|");
+        sb.append("I").append("(\\d+)").append(t);
+        return sb.toString();
+    }
+
     static Pattern getMutationPatternForAlphabet(Alphabet alphabet) {
         Pattern pattern = mutationPatterns.get(alphabet);
         if (pattern == null) {
-            StringBuilder sb = new StringBuilder();
-            StringBuilder t = new StringBuilder("([\\Q");
-            for (byte i = 0; i < alphabet.size(); ++i)
-                t.append(alphabet.symbolFromCode(i));
-            t.append("\\E])");
-            sb.append("S").append(t).append("(\\d+)").append(t);
-            sb.append("|");
-            sb.append("D").append(t).append("(\\d+)");
-            sb.append("|");
-            sb.append("I").append("(\\d+)").append(t);
-            mutationPatterns.put(alphabet, pattern = Pattern.compile(sb.toString()));
+            mutationPatterns.put(alphabet, pattern = Pattern.compile(getMutationPatternStringForAlphabet(alphabet)));
         }
         return pattern;
     }

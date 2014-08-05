@@ -51,6 +51,12 @@ public class MutationsUtilTest {
         }
     }
 
+    @Test
+    public void test1111() throws Exception {
+        System.out.println(MutationsUtil.getMutationPatternStringForAlphabet(NucleotideSequence.ALPHABET));
+        System.out.println(MutationsUtil.getMutationPatternStringForAlphabet(AminoAcidSequence.ALPHABET));
+    }
+
     private static int[] createRandomMutations(Alphabet alphabet, int size, RandomGenerator rnd) {
         int[] r = new int[size];
         int pos = 0;
