@@ -1,5 +1,6 @@
 package com.milaboratory.core.mutations.generator;
 
+import com.milaboratory.core.mutations.Mutation;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public final class SubstitutionModel {
         return new SubstitutionModel(newProbabilities);
     }
 
-    public int randomLetter(RandomGenerator generator, int letter) {
+    public int sample(RandomGenerator generator, int letter) {
         double value = generator.nextDouble();
         int index = Arrays.binarySearch(cdf, letter * size, (letter + 1) * size, value);
         if (index < 0)
@@ -55,6 +56,19 @@ public final class SubstitutionModel {
         index -= letter * size;
         assert index < size;
         return index;
+    }
+
+    public int sampleAsMutation(RandomGenerator generator, int position, int letter) {
+        double value = generator.nextDouble();
+        int index = Arrays.binarySearch(cdf, letter * size, (letter + 1) * size, value);
+        if (index < 0)
+            index = -index - 1;
+        index -= letter * size;
+        assert index < size;
+        if (index != letter)
+            return Mutation.createSubstitution(position, letter, index);
+        else
+            return Mutation.NON_MUTATION;
     }
 
     public double getTotalSubstitutionProbability(int letter) {

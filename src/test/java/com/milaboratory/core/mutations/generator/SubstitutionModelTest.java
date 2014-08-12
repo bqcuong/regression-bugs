@@ -18,7 +18,7 @@ public class SubstitutionModelTest {
 
             int[] result = new int[4];
             for (int i = 0; i < trials; ++i)
-                result[model.randomLetter(rg, lF)]++;
+                result[model.sample(rg, lF)]++;
 
             for (int lT = 0; lT < 4; ++lT)
                 Assert.assertEquals(trials * model.getProbability(lF, lT), result[lT], Math.sqrt(trials * model.getProbability(lF, lT)) * 3);
@@ -34,7 +34,7 @@ public class SubstitutionModelTest {
         for (int k = 0; k < TestUtil.its(20, 200); ++k) {
             int mutations = 0;
             for (int i = 0; i < trials; ++i) {
-                if (sm.randomLetter(rg, 3) != 3)
+                if (sm.sample(rg, 3) != 3)
                     ++mutations;
             }
 
