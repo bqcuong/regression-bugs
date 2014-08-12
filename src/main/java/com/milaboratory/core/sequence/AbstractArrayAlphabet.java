@@ -11,7 +11,7 @@ abstract class AbstractArrayAlphabet<S extends AbstractArraySequence<S>> extends
 
     @Override
     public SequenceBuilder<S> getBuilder() {
-        return new ArraySequenceBuilder<S>(this);
+        return new ArraySequenceBuilder<>(this);
     }
 
     abstract S createUnsafe(byte[] array);

@@ -45,11 +45,29 @@ public class NucleotideSequencesTest {
     }
 
     @Test
-    public void testConcatenate() throws Exception {
+    public void testConcatenate1() throws Exception {
         NucleotideSequence s1 = new NucleotideSequence("ATTAGACA"),
                 s2 = new NucleotideSequence("GACATATA");
 
         assertEquals(new NucleotideSequence("ATTAGACAGACATATA"), s1.concatenate(s2));
+    }
+
+    @Test
+    public void testConcatenate2() throws Exception {
+        NucleotideSequence s1 = new NucleotideSequence("ATTAGACA"),
+                s2 = new NucleotideSequence("");
+
+        assertEquals(new NucleotideSequence("ATTAGACA"), s1.concatenate(s2));
+        assertEquals(new NucleotideSequence("ATTAGACA"), s2.concatenate(s1));
+    }
+
+    @Test
+    public void testConcatenate3() throws Exception {
+        NucleotideSequence s1 = new NucleotideSequence(""),
+                s2 = new NucleotideSequence("");
+
+        assertEquals(new NucleotideSequence(""), s1.concatenate(s2));
+        assertEquals(new NucleotideSequence(""), s2.concatenate(s1));
     }
 
     @Test

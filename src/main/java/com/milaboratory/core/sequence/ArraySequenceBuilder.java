@@ -48,6 +48,8 @@ final class ArraySequenceBuilder<S extends AbstractArraySequence<S>> extends Arr
 
     @Override
     public SequenceBuilder<S> append(byte[] letters) {
+        if (letters.length == 0)
+            return this;
         ensureInternalCapacity(size + letters.length);
         System.arraycopy(letters, 0, data, size, letters.length);
         size += letters.length;

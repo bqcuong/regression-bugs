@@ -72,6 +72,9 @@ public abstract class ArraySeqBuilder<S extends AbstractSeq<S>, B extends ArrayS
 
     @Override
     public B append(S seq) {
+        if (seq.size() == 0)
+            return (B) this;
+
         ensureInternalCapacity(size + seq.size());
         System.arraycopy(getUnsafe(seq), 0, data, size, seq.size());
         size += seq.size();

@@ -65,10 +65,12 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
     private void ensureInternalCapacity(int newSize) {
         if (size == -1)
             throw new IllegalStateException("Destroyed.");
-        if (storage == null && newSize != 0)
-            storage = new Bit2Array(Math.max(newSize, 10));
-        if (storage.size() < newSize)
-            storage = storage.extend(Math.max(newSize, 3 * storage.size() / 2 + 1));
+        if (newSize > 0) {
+            if (storage == null)
+                storage = new Bit2Array(Math.max(newSize, 10));
+            if (storage.size() < newSize)
+                storage = storage.extend(Math.max(newSize, 3 * storage.size() / 2 + 1));
+        }
     }
 
     @Override
@@ -112,6 +114,8 @@ public final class NucleotideSequenceBuilder implements SequenceBuilder<Nucleoti
 
     @Override
     public NucleotideSequenceBuilder append(NucleotideSequence seq) {
+        if (seq.size() == 0)
+            return this;
         ensureInternalCapacity(size + seq.size());
         storage.copyFrom(seq.data, 0, size, seq.size());
         size += seq.size();
