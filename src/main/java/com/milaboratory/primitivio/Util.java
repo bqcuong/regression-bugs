@@ -3,8 +3,7 @@ package com.milaboratory.primitivio;
 import com.milaboratory.primitivio.annotations.Serializable;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public final class Util {
     private Util() {
@@ -89,5 +88,35 @@ public final class Util {
         while ((--size) >= 0)
             list.add(input.readObject(type));
         return list;
+    }
+
+    public static <K, V> void writeMap(Map<K, V> map, PrimitivO output) {
+        output.writeVarInt(map.size());
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            output.writeObject(entry.getKey());
+            output.writeObject(entry.getValue());
+        }
+    }
+
+    public static <K extends Enum<K>, V> EnumMap<K, V> readEnumMap(PrimitivI input, Class<K> keyClass, Class<V> valueClass) {
+        int size = input.readVarInt();
+        EnumMap<K, V> map = new EnumMap<>(keyClass);
+        for (; size > 0; --size) {
+            K key = input.readObject(keyClass);
+            V value = input.readObject(valueClass);
+            map.put(key, value);
+        }
+        return map;
+    }
+
+    public static <K, V> Map<K, V> readMap(PrimitivI input, Class<K> keyClass, Class<V> valueClass) {
+        int size = input.readVarInt();
+        Map<K, V> map = new HashMap<>(size);
+        for (; size > 0; --size) {
+            K key = input.readObject(keyClass);
+            V value = input.readObject(valueClass);
+            map.put(key, value);
+        }
+        return map;
     }
 }

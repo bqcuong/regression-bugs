@@ -2,23 +2,21 @@ package com.milaboratory.primitivio;
 
 import cc.redberry.pipe.InputPort;
 
-import java.io.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
 
-public class PipeWriter<O> implements InputPort<O>, AutoCloseable {
-    final PrimitivO output;
-    final AtomicBoolean closed = new AtomicBoolean(false);
-
+public class PipeWriter<O> extends PWriter implements InputPort<O>, AutoCloseable {
     public PipeWriter(String fileName) throws FileNotFoundException {
-        this(new BufferedOutputStream(new FileOutputStream(fileName), 32768));
+        super(fileName);
     }
 
     public PipeWriter(File file) throws FileNotFoundException {
-        this(new BufferedOutputStream(new FileOutputStream(file), 32768));
+        super(file);
     }
 
     public PipeWriter(OutputStream stream) {
-        output = new PrimitivO(stream);
+        super(stream);
     }
 
     @Override
@@ -35,10 +33,7 @@ public class PipeWriter<O> implements InputPort<O>, AutoCloseable {
     }
 
     @Override
-    public void close() {
-        if (closed.compareAndSet(false, true)) {
-            output.writeObject(null);
-            output.close();
-        }
+    protected void beforeClose() {
+        output.writeObject(null);
     }
 }
