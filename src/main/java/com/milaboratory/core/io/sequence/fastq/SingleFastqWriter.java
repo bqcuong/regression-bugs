@@ -51,8 +51,6 @@ public final class SingleFastqWriter implements SingleSequenceWriter {
 
     @Override
     public synchronized void write(SingleRead read) {
-        int pointer = this.pointer;
-
         String description = read.getDescription();
         int len = description.length();
         flushIfNeededToWrite(len + 1);
@@ -83,11 +81,9 @@ public final class SingleFastqWriter implements SingleSequenceWriter {
         pointer += len;
 
         buffer[pointer++] = '\n';
-
-        this.pointer = pointer;
     }
 
-    public void flushIfNeededToWrite(int sizeToWrite) {
+    private void flushIfNeededToWrite(int sizeToWrite) {
         if (buffer.length - pointer < sizeToWrite)
             flush();
     }
