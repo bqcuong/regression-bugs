@@ -16,7 +16,7 @@ public class IOUtil {
      *
      * <p>Based on com.google.protobuf.CodedInputStream class from Google's protobuf library.</p>
      */
-    public static int readVarint32(final InputStream is, int eofVaule) throws IOException {
+    public static int readRawVarint32(final InputStream is, int eofVaule) throws IOException {
         int result = 0;
         int shift = 0;
         for (; shift < 32; shift += 7) {
@@ -29,9 +29,8 @@ public class IOUtil {
                     throw new IOException("Malformed Varint");
 
             result |= (b & 0x7f) << shift;
-            if ((b & 0x80) == 0) {
+            if ((b & 0x80) == 0)
                 return result;
-            }
         }
         throw new IOException("Malformed Varint");
     }
@@ -41,7 +40,7 @@ public class IOUtil {
      *
      * <p>Based on com.google.protobuf.CodedInputStream class from Google's protobuf library.</p>
      */
-    public static long readRawVarint64(final InputStream is, int eofValue) throws IOException {
+    public static long readRawVarint64(final InputStream is, long eofValue) throws IOException {
         int shift = 0;
         long result = 0;
         while (shift < 64) {

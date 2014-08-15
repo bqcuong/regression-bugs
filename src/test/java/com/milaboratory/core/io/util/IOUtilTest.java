@@ -29,9 +29,9 @@ public class IOUtilTest {
             ByteArrayInputStream bis = new ByteArrayInputStream(data);
             int g;
             for (int i = 0; i < count; ++i) {
-                Assert.assertEquals(values[i], IOUtil.readVarint32(bis, -1));
+                Assert.assertEquals(values[i], IOUtil.readRawVarint32(bis, -1));
             }
-            Assert.assertEquals(-1, IOUtil.readVarint32(bis, -1));
+            Assert.assertEquals(-1, IOUtil.readRawVarint32(bis, -1));
         }
     }
 
@@ -59,9 +59,9 @@ public class IOUtilTest {
             ByteArrayInputStream bis = new ByteArrayInputStream(data);
             int g;
             for (int i = 0; i < count; ++i) {
-                Assert.assertEquals(values[i], IOUtil.decodeZigZag32(IOUtil.readVarint32(bis, -1)));
+                Assert.assertEquals(values[i], IOUtil.decodeZigZag32(IOUtil.readRawVarint32(bis, -1)));
             }
-            Assert.assertEquals(-1, IOUtil.readVarint32(bis, -1));
+            Assert.assertEquals(-1, IOUtil.readRawVarint32(bis, -1));
         }
     }
 
@@ -124,4 +124,11 @@ public class IOUtilTest {
         }
     }
 
+    @Test
+    public void test111() throws Exception {
+        System.out.println(IOUtil.encodeZigZag32(-2));
+        System.out.println(IOUtil.encodeZigZag64(-2));
+        System.out.println(IOUtil.decodeZigZag32(-1));
+        System.out.println(IOUtil.decodeZigZag64(-1));
+    }
 }
