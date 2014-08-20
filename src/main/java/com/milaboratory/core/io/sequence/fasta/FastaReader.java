@@ -1,6 +1,5 @@
 package com.milaboratory.core.io.sequence.fasta;
 
-import cc.redberry.pipe.OutputPortCloseable;
 import com.milaboratory.core.io.sequence.IllegalFileFormatException;
 import com.milaboratory.core.io.sequence.SingleRead;
 import com.milaboratory.core.io.sequence.SingleReadImpl;
@@ -10,6 +9,8 @@ import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceQuality;
 import com.milaboratory.core.sequence.WildcardSymbol;
 import com.milaboratory.util.Bit2Array;
+import com.milaboratory.util.CanReportProgress;
+import com.milaboratory.util.CountingInputStream;
 
 import java.io.*;
 import java.util.Arrays;
@@ -23,13 +24,22 @@ import static com.milaboratory.core.sequence.NucleotideSequence.ALPHABET;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public final class FastaReader implements SingleReader, OutputPortCloseable<SingleRead> {
+public final class FastaReader implements SingleReader, CanReportProgress {
     private final AtomicBoolean closed = new AtomicBoolean(false);
     //lets read line by line
     private BufferedReader reader;
     private final boolean withWildcards;
     private String bufferedLine;
     private long id;
+    private final long size;
+    private final CountingInputStream countingInputStream;
+
+    private FastaReader(InputStream inputStream, boolean withWildcards, long size) {
+        this.size = size;
+        this.countingInputStream = new CountingInputStream(inputStream);
+        this.reader = new BufferedReader(new InputStreamReader(countingInputStream));
+        this.withWildcards = withWildcards;
+    }
 
     /**
      * Creates reader from the specified input stream.
@@ -40,8 +50,7 @@ public final class FastaReader implements SingleReader, OutputPortCloseable<Sing
      *                      corresponding to this wildcard.
      */
     public FastaReader(InputStream inputStream, boolean withWildcards) {
-        this.reader = new BufferedReader(new InputStreamReader(inputStream));
-        this.withWildcards = withWildcards;
+        this(inputStream, withWildcards, 0);
     }
 
     /**
@@ -52,8 +61,9 @@ public final class FastaReader implements SingleReader, OutputPortCloseable<Sing
      *                      uniformly distributed nucleotide will be generated from the set of nucleotides
      *                      corresponding to this wildcard.
      */
-    public FastaReader(String file, boolean withWildcards) throws FileNotFoundException {
-        this(new FileInputStream(file), withWildcards);
+    public FastaReader(String file, boolean withWildcards)
+            throws FileNotFoundException {
+        this(new File(file), withWildcards);
     }
 
     /**
@@ -65,7 +75,21 @@ public final class FastaReader implements SingleReader, OutputPortCloseable<Sing
      *                      corresponding to this wildcard.
      */
     public FastaReader(File file, boolean withWildcards) throws FileNotFoundException {
-        this(new FileInputStream(file), withWildcards);
+        this(new FileInputStream(file), withWildcards, file.length());
+    }
+
+    @Override
+    public synchronized double getProgress() {
+        if (size == 0)
+            return Double.NaN;
+        return countingInputStream.getBytesRead() * 1.0 / size;
+    }
+
+    private volatile boolean isFinished = false;
+
+    @Override
+    public synchronized boolean isFinished() {
+        return isFinished;
     }
 
     @Override
@@ -76,8 +100,10 @@ public final class FastaReader implements SingleReader, OutputPortCloseable<Sing
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        if (item == null)
+        if (item == null) {
+            isFinished = true;
             return null;
+        }
 
         SingleRead read = new SingleReadImpl(id, getSequenceWithQuality(item.sequence), item.description);
         ++id;//not move upper! id is used in #getSequenceWithQuality(...)
