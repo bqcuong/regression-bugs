@@ -13,6 +13,14 @@ public final class Motif<S extends Sequence<S>> {
     private final int size;
     final BitArray data;
 
+    Motif(Alphabet<S> alphabet, int size, BitArray data) {
+        if (!dataConsistent(data, size))
+            throw new IllegalArgumentException("Inconsistent data. Some positions in motif has no possible values.");
+        this.alphabet = alphabet;
+        this.size = size;
+        this.data = data;
+    }
+
     public Motif(S sequence) {
         this.alphabet = sequence.getAlphabet();
         this.size = sequence.size();
@@ -78,6 +86,18 @@ public final class Motif<S extends Sequence<S>> {
         for (int i = 0; i < size; ++i)
             if (!allows(sequence.codeAt(from++), i))
                 return false;
+        return true;
+    }
+
+    private final static boolean dataConsistent(BitArray data, int size) {
+        int i = 0;
+        while (i * size < data.size()) {
+            if (data.get(i))
+                i = ((i / size) + 1) * size;
+            ++i;
+            if (i % size == 0)
+                return false;
+        }
         return true;
     }
 }
