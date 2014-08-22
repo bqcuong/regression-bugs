@@ -15,10 +15,16 @@ public class AminoAcidSequenceTest {
         Assert.assertEquals(new AminoAcidSequence("_*T"),
                 AminoAcidSequence.translate(false, true, new NucleotideSequence("ATTAGACA")));
 
+        Assert.assertEquals(new AminoAcidSequence("I_T"),
+                AminoAcidSequence.translate(null, true, new NucleotideSequence("ATTAGACA")));
+
         Assert.assertEquals(new AminoAcidSequence("IR"),
                 AminoAcidSequence.translate(true, true, new NucleotideSequence("ATTAGA")));
         Assert.assertEquals(new AminoAcidSequence("IR"),
                 AminoAcidSequence.translate(false, true, new NucleotideSequence("ATTAGA")));
+
+        Assert.assertEquals(new AminoAcidSequence("IR"),
+                AminoAcidSequence.translate(null, true, new NucleotideSequence("ATTAGA")));
     }
 
     @Test
@@ -32,5 +38,22 @@ public class AminoAcidSequenceTest {
                 AminoAcidSequence.translate(true, false, new NucleotideSequence("ATTAGA")));
         Assert.assertEquals(new AminoAcidSequence("IR"),
                 AminoAcidSequence.translate(false, false, new NucleotideSequence("ATTAGA")));
+    }
+
+    @Test
+    public void test3() throws Exception {
+        Assert.assertEquals(new AminoAcidSequence("_"),
+                AminoAcidSequence.translate(false, true, new NucleotideSequence("AT")));
+        Assert.assertEquals(new AminoAcidSequence("_"),
+                AminoAcidSequence.translate(true, true, new NucleotideSequence("AT")));
+        Assert.assertEquals(new AminoAcidSequence("_"),
+                AminoAcidSequence.translate(null, true, new NucleotideSequence("AT")));
+
+        Assert.assertEquals(new AminoAcidSequence(""),
+                AminoAcidSequence.translate(false, true, new NucleotideSequence("")));
+        Assert.assertEquals(new AminoAcidSequence(""),
+                AminoAcidSequence.translate(true, true, new NucleotideSequence("")));
+        Assert.assertEquals(new AminoAcidSequence(""),
+                AminoAcidSequence.translate(null, true, new NucleotideSequence("")));
     }
 }

@@ -187,6 +187,8 @@ public final class Range {
      * @return range moved using provided offset
      */
     public Range move(int offset) {
+        if (offset == 0)
+            return this;
         return new Range(lower + offset, upper + offset, reversed);
     }
 

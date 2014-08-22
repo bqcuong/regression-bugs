@@ -49,7 +49,7 @@ final class Translator {
             throw new IllegalArgumentException("Only nucleotide sequences with size multiple " +
                     "of three are supported (in-frame).");
 
-        int size = sequence.size() / 3;
+        int size = seqLength / 3;
         int triplet;
         for (int i = 0; i < size; i++) {
             triplet = (sequence.codeAt(offsetInSeq + i * 3) << 4) |

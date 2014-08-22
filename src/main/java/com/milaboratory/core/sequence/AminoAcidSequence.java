@@ -21,8 +21,8 @@
 package com.milaboratory.core.sequence;
 
 /**
- * Representation of amino acid sequences. Methods for translating nucleotide to amino acid and vice versa are
- * placed in {@link com.milaboratory.core.sequence.Translator}
+ * Representation of amino acid sequences. Methods for translating nucleotide to amino acid and vice versa are placed in
+ * {@link com.milaboratory.core.sequence.Translator}
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
@@ -111,10 +111,20 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return new AminoAcidSequence(aaData, true);
     }
 
-    public static AminoAcidSequence translate(boolean fromLeft, boolean includeIncomplete, NucleotideSequence ns) {
+    public static AminoAcidSequence translate(Boolean fromLeft, boolean includeIncomplete, NucleotideSequence ns) {
         byte[] data;
         data = new byte[(ns.size() + (includeIncomplete ? 2 : 0)) / 3];
-        if (fromLeft) {
+        if (fromLeft == null) {
+            if (!includeIncomplete)
+                throw new IllegalArgumentException("Illegal argument combination: includeIncomplete=false & fromLeft=null .");
+            int aaLength = ns.size() / 3;
+            int leftAALength = (aaLength + 1) / 2;
+            int rightAALength = aaLength - leftAALength;
+            Translator.translate(data, 0, ns, 0, leftAALength * 3);
+            Translator.translate(data, data.length - rightAALength, ns, ns.size() - rightAALength * 3, rightAALength * 3);
+            if (ns.size() % 3 != 0)
+                data[leftAALength] = AminoAcidAlphabet.IncompleteCodon;
+        } else if (fromLeft) {
             Translator.translate(data, 0, ns, 0, ns.size() / 3 * 3);
             if (includeIncomplete && ns.size() % 3 != 0)
                 data[data.length - 1] = AminoAcidAlphabet.IncompleteCodon;
