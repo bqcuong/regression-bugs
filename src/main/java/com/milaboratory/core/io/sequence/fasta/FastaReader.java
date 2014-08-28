@@ -106,8 +106,13 @@ public final class FastaReader implements SingleReader, CanReportProgress {
         }
 
         SingleRead read = new SingleReadImpl(id, getSequenceWithQuality(item.sequence), item.description);
-        ++id;//not move upper! id is used in #getSequenceWithQuality(...)
+        ++id; // don't increment before this point, because id is used in #getSequenceWithQuality(...)
         return read;
+    }
+
+    @Override
+    public synchronized long getNumberOfReads() {
+        return id;
     }
 
     private NSequenceWithQuality getSequenceWithQuality(String sequence) {

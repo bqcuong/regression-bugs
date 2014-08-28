@@ -41,6 +41,11 @@ public class SingleFastqIndexer implements SingleReader,
     }
 
     @Override
+    public long getNumberOfReads() {
+        return reader.getNumberOfReads();
+    }
+
+    @Override
     public void close() {
         reader.close();
     }

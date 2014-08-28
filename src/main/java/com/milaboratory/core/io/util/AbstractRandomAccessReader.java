@@ -39,13 +39,10 @@ public abstract class AbstractRandomAccessReader<T> implements OutputPort<T> {
     }
 
     /**
-     * Sets the file-pointer offset, measured from the beginning of this
-     * file, at which the next record occurs.
+     * Sets the file-pointer offset, measured from the beginning of this file, at which the next record occurs.
      *
-     * @param recordNumber number of record, at which to set the file
-     *                     pointer.
-     * @throws IOException if {@code pos} is less than
-     *                     {@code 0} or if an I/O error occurs.
+     * @param recordNumber number of record, at which to set the file pointer.
+     * @throws IOException if {@code pos} is less than {@code 0} or if an I/O error occurs.
      */
     public void seekToRecord(long recordNumber) throws IOException {
         if (currentRecordNumber == recordNumber)
@@ -80,12 +77,11 @@ public abstract class AbstractRandomAccessReader<T> implements OutputPort<T> {
     }
 
     /**
-     * Returns the specified record or null if {@code recordNumber} is greater than actual
-     * number of records in file.
+     * Returns the specified record or null if {@code recordNumber} is greater than actual number of records in file.
      *
      * @param recordNumber record number
-     * @return record with specified number or null if {@code recordNumber} is greater than actual
-     * number of records in file
+     * @return record with specified number or null if {@code recordNumber} is greater than actual number of records in
+     * file
      * @throws IOException if I/O occurs
      */
     public T take(long recordNumber) throws IOException {

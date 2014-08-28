@@ -65,6 +65,11 @@ public final class RandomAccessFastqReader
     }
 
     @Override
+    public long getNumberOfReads() {
+        return fileIndex.getLastRecordNumber() + 1;
+    }
+
+    @Override
     public synchronized SingleRead take() {
         if (recordsReader.closed.get())
             return null;

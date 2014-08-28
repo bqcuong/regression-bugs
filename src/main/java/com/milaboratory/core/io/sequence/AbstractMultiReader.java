@@ -1,13 +1,13 @@
 package com.milaboratory.core.io.sequence;
 
-import cc.redberry.pipe.OutputPortCloseable;
 import com.milaboratory.util.CanReportProgress;
 
 /**
  * Created by dbolotin on 23/06/14.
  */
 public abstract class AbstractMultiReader<R extends SequenceRead>
-        implements CanReportProgress, SequenceReader<R>, SequenceReaderCloseable<R> {
+        extends AbstractSequenceReader<R> implements CanReportProgress,
+        SequenceReader<R>, SequenceReaderCloseable<R> {
     private final SingleReader[] readers;
     private final CanReportProgress[] progressReporters;
 
@@ -45,6 +45,9 @@ public abstract class AbstractMultiReader<R extends SequenceRead>
         if (hasNulls)
             throw new RuntimeException("Different number of reads in single-readers.");
 
+        // Incrementing reads counter
+        addOneRead();
+
         return reads;
     }
 
@@ -53,9 +56,9 @@ public abstract class AbstractMultiReader<R extends SequenceRead>
         RuntimeException exception = null;
 
         for (SingleReader reader : readers)
-            if (reader instanceof OutputPortCloseable)
+            if (reader != null)
                 try {
-                    ((OutputPortCloseable) reader).close();
+                    reader.close();
                 } catch (RuntimeException e) {
                     exception = e;
                 }

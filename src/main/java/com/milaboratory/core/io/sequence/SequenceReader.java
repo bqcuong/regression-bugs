@@ -10,4 +10,14 @@ import cc.redberry.pipe.OutputPort;
  * @author Stanislav Poslavsky
  */
 public interface SequenceReader<S extends SequenceRead> extends OutputPort<S> {
+    /**
+     * For sequential readers returns the number of reads read till this moment, after reader is exhausted returns total
+     * number of reads. For random access readers returns total number of reads.
+     *
+     * <p>This method is thread-safe.</p>
+     *
+     * @return number of reads read till this moment for sequential readers and total number of reads for random access
+     * readers
+     */
+    long getNumberOfReads();
 }

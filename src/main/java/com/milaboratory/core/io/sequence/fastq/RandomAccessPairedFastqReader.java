@@ -40,10 +40,16 @@ public final class RandomAccessPairedFastqReader
     }
 
     public RandomAccessPairedFastqReader(RandomAccessFastqReader reader1, RandomAccessFastqReader reader2) {
-        if (reader1.getCurrentRecordNumber() != reader2.getCurrentRecordNumber())
+        if (reader1.getCurrentRecordNumber() != reader2.getCurrentRecordNumber() ||
+                reader1.getNumberOfReads() != reader2.getNumberOfReads())
             throw new IllegalArgumentException("Random access readers must have same pointers.");
         this.reader1 = reader1;
         this.reader2 = reader2;
+    }
+
+    @Override
+    public long getNumberOfReads() {
+        return reader1.getNumberOfReads();
     }
 
     public void seekToRecord(long recordNumber) throws IOException {
@@ -51,22 +57,22 @@ public final class RandomAccessPairedFastqReader
         reader2.seekToRecord(recordNumber);
     }
 
-    public PairedRead take(long recordNumber) {
+    public synchronized PairedRead take(long recordNumber) {
         SingleRead read1 = reader1.take(recordNumber);
-        if (read1 == null)
-            return null;
         SingleRead read2 = reader2.take(recordNumber);
-        assert read2 != null;
+        if (read1 == null && read2 == null)
+            return null;
+        assert read1 != null && read2 != null;
         return new PairedRead(read1, read2);
     }
 
     @Override
-    public PairedRead take() {
+    public synchronized PairedRead take() {
         SingleRead read1 = reader1.take();
-        if (read1 == null)
-            return null;
         SingleRead read2 = reader2.take();
-        assert read2 != null;
+        if (read1 == null && read2 == null)
+            return null;
+        assert read1 != null && read2 != null;
         return new PairedRead(read1, read2);
     }
 

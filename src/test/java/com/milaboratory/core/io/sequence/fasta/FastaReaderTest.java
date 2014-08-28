@@ -51,6 +51,7 @@ public class FastaReaderTest {
         }
 
         Assert.assertTrue(reader.take() == null);
+        Assert.assertEquals(readsCount, reader.getNumberOfReads());
         reader.close();
         testItem.file.delete();
     }

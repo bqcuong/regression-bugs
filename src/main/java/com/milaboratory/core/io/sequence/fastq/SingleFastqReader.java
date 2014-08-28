@@ -237,6 +237,11 @@ public final class SingleFastqReader implements SingleReader, CanReportProgress,
         return recordsReader.createRead(idCounter++, format);
     }
 
+    @Override
+    public synchronized long getNumberOfReads() {
+        return idCounter;
+    }
+
     /**
      * Closes the output port
      */
