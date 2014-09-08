@@ -133,7 +133,7 @@ public final class SequenceQuality extends AbstractSeq<SequenceQuality> {
      *
      * @return average sequence quality value
      */
-    public byte avrgValue() {
+    public byte meanValue() {
         int sum = 0;
         for (byte b : data)
             sum += b;

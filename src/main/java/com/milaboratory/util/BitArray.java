@@ -75,6 +75,13 @@ public class BitArray implements Serializable {
             clear(i);
     }
 
+    public BitArray getRange(int from, int to) {
+        BitArray ret = new BitArray(to - from);
+        for (int i = 0; i < ret.size(); ++i)
+            ret.set(i, get(i + from));
+        return ret;
+    }
+
     //TODO Equals to load values
     public void set(BitArray ba) {
         if (ba.size != this.size)

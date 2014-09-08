@@ -12,12 +12,40 @@ public class AlignmentHelper {
     protected final int offset;
 
     public AlignmentHelper(String seq1String, String seq2String, int[] seq1Position, int[] seq2Position, BitArray match) {
+        this(seq1String, seq2String, seq1Position, seq2Position, match, 0);
+    }
+
+    public AlignmentHelper(String seq1String, String seq2String, int[] seq1Position, int[] seq2Position, BitArray match, int offset) {
         this.seq1String = seq1String;
         this.seq2String = seq2String;
         this.seq1Position = seq1Position;
         this.seq2Position = seq2Position;
         this.match = match;
-        this.offset = Math.max(("" + a(seq2Position[0])).length(), ("" + a(seq1Position[0])).length());
+        this.offset = Math.max(Math.max(("" + a(seq2Position[0])).length(), ("" + a(seq1Position[0])).length()), offset);
+    }
+
+    public AlignmentHelper getRange(int from, int to) {
+        return getRange(from, to, 0);
+    }
+
+    public AlignmentHelper getRange(int from, int to, int offset) {
+        return new AlignmentHelper(seq1String.substring(from, to), seq2String.substring(from, to),
+                Arrays.copyOfRange(seq1Position, from, to), Arrays.copyOfRange(seq2Position, from, to),
+                match.getRange(from, to), offset);
+    }
+
+    public AlignmentHelper[] split(int length) {
+        return split(length, 0);
+    }
+
+    public AlignmentHelper[] split(int length, int offset) {
+        AlignmentHelper[] ret = new AlignmentHelper[(size() + length - 1) / length];
+        for (int i = 0; i < ret.length; ++i) {
+            int pointer = i * length;
+            int l = Math.min(length, size() - pointer);
+            ret[i] = getRange(pointer, pointer + l, offset);
+        }
+        return ret;
     }
 
     public double identity() {
