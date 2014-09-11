@@ -121,6 +121,9 @@ public final class SequenceQuality extends AbstractSeq<SequenceQuality> {
      * @return worst sequence quality value
      */
     public byte minValue() {
+        if(data.length == 0)
+            return 0;
+
         byte min = Byte.MAX_VALUE;
         for (byte b : data)
             if (b < min)
@@ -134,6 +137,9 @@ public final class SequenceQuality extends AbstractSeq<SequenceQuality> {
      * @return average sequence quality value
      */
     public byte meanValue() {
+        if(data.length == 0)
+            return 0;
+
         int sum = 0;
         for (byte b : data)
             sum += b;
