@@ -8,6 +8,7 @@ import com.milaboratory.util.GlobalObjectMappers;
 import com.milaboratory.util.RandomUtil;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -58,6 +59,30 @@ public class TestUtil {
             return ret;
         } else
             throw new IllegalArgumentException(serverEnv + " not exists.");
+    }
+
+    public static void assertJson(Object object) {
+        assertJson(object, object.getClass(), false);
+    }
+
+    public static void assertJson(Object object, boolean sout) {
+        assertJson(object, object.getClass(), sout);
+    }
+
+    public static void assertJson(Object object, Class clazz) {
+        assertJson(object, clazz, false);
+    }
+
+    public static void assertJson(Object object, Class clazz, boolean sout) {
+        try {
+            String str = GlobalObjectMappers.PRETTY.writeValueAsString(object);
+            if (sout)
+                System.out.println(str);
+            Object deser = GlobalObjectMappers.PRETTY.readValue(str, clazz);
+            Assert.assertEquals(object, deser);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static volatile Map<String, String> envProperties;
