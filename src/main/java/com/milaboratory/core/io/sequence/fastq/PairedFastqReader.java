@@ -72,6 +72,10 @@ public final class PairedFastqReader extends PairedReader {
         super(new SingleFastqReader(stream1), new SingleFastqReader(stream2));
     }
 
+    public PairedFastqReader(InputStream stream1, InputStream stream2, CompressionType compressionType) throws IOException {
+        super(new SingleFastqReader(stream1, compressionType), new SingleFastqReader(stream2, compressionType));
+    }
+
     public PairedFastqReader(SingleFastqReader reader1, SingleFastqReader reader2) {
         super(reader1, reader2);
     }
