@@ -13,6 +13,8 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
                     return new IntArraySerializer();
                 else if (componentType == Byte.TYPE)
                     return new ByteArraySerializer();
+                else if (componentType == Boolean.TYPE)
+                    return new BooleanArraySerializer();
                 else
                     return null;
             } else {
@@ -92,6 +94,33 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
         public byte[] read(PrimitivI input) {
             byte[] object = new byte[input.readVarInt()];
             input.readFully(object);
+            return object;
+        }
+
+        @Override
+        public boolean isReference() {
+            return false;
+        }
+
+        @Override
+        public boolean handlesReference() {
+            return false;
+        }
+    }
+
+    private static class BooleanArraySerializer implements Serializer<boolean[]> {
+        @Override
+        public void write(PrimitivO output, boolean[] object) {
+            output.writeVarInt(object.length);
+            for (int i = 0; i < object.length; ++i)
+                output.writeBoolean(object[i]);
+        }
+
+        @Override
+        public boolean[] read(PrimitivI input) {
+            boolean[] object = new boolean[input.readVarInt()];
+            for (int i = 0; i < object.length; ++i)
+                object[i] = input.readBoolean();
             return object;
         }
 
