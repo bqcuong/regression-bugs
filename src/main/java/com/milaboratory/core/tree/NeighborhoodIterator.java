@@ -1,5 +1,8 @@
 package com.milaboratory.core.tree;
 
+import com.milaboratory.core.Range;
+import com.milaboratory.core.alignment.Alignment;
+import com.milaboratory.core.alignment.LinearGapAlignmentScoring;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.Sequence;
@@ -160,9 +163,9 @@ public final class NeighborhoodIterator<S extends Sequence<S>, O> {
 
     public Mutations<S> getCurrentMutations() {
         if (lastEnumerator < 0)
-            return (Mutations)new Mutations(reference.getAlphabet());
+            return (Mutations) new Mutations(reference.getAlphabet());
 
-        MutationsBuilder<S> builder = (MutationsBuilder)(new MutationsBuilder(reference.getAlphabet())
+        MutationsBuilder<S> builder = (MutationsBuilder) (new MutationsBuilder(reference.getAlphabet())
                 .ensureCapacity(lastEnumerator + 1));
 
         for (int i = 0; i <= lastEnumerator; ++i) {
@@ -188,6 +191,22 @@ public final class NeighborhoodIterator<S extends Sequence<S>, O> {
         }
 
         return builder.createAndDestroy();
+    }
+
+    public Alignment<S> getCurrentAlignment() {
+        Mutations<S> currentMutations = getCurrentMutations();
+        return new Alignment<>(reference, currentMutations,
+                new Range(0, reference.size()),
+                new Range(0, reference.size() + currentMutations.getLengthDelta()),
+                (float) (reference.size() + getPenalty()));
+    }
+
+    public Alignment<S> getCurrentAlignment(LinearGapAlignmentScoring<S> scoring) {
+        Mutations<S> currentMutations = getCurrentMutations();
+        return new Alignment<>(reference, currentMutations,
+                new Range(0, reference.size()),
+                new Range(0, reference.size() + currentMutations.getLengthDelta()),
+                scoring);
     }
 
     public int getPosition(int i) {

@@ -43,8 +43,14 @@ public final class Alignment<S extends Sequence<S>> {
 
     public Alignment(S sequence1, Mutations<S> mutations,
                      Range sequence1Range, Range sequence2Range,
-                     float score) {
+                     LinearGapAlignmentScoring<S> scoring) {
+        this(sequence1, mutations, sequence1Range, sequence2Range,
+                AlignmentUtils.calculateScore(scoring, sequence1Range.length(), mutations));
+    }
 
+    public Alignment(S sequence1, Mutations<S> mutations,
+                     Range sequence1Range, Range sequence2Range,
+                     float score) {
         if (!mutations.isEmpty()) {
             if (!mutations.isCompatibleWith(sequence1)
                     || !sequence1Range.contains(mutations.getMutatedRange())
