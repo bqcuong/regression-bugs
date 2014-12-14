@@ -116,6 +116,16 @@ public abstract class Alphabet<S extends Sequence<S>> {
         return builder.createAndDestroy();
     }
 
+    /**
+     * Convert alphabet to a readable string.
+     *
+     * @return alphabet as a readable string
+     */
+    @Override
+    public String toString() {
+        return "Alphabet{" + alphabetName + '}';
+    }
+
     @Override
     public final int hashCode() {
         return super.hashCode();

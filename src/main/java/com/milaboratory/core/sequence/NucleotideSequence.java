@@ -47,27 +47,35 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence> imple
     private static final long serialVersionUID = 1L;
 
     /**
-     * Creates nucleotide sequence from its string representation (e.g. "ATCGG" or "atcgg"). If string contains
-     * wildcards (like "N"), then they will be replaced by "A".
+     * Creates nucleotide sequence from its string representation (e.g. "ATCGG" or "atcgg").
      *
      * @param sequence string representation of sequence (case insensitive)
+     * @throws java.lang.IllegalArgumentException if sequence contains unknown nucleotide symbol
      */
     public NucleotideSequence(String sequence) {
         data = new Bit2Array(sequence.length());
-        for (int i = 0; i < sequence.length(); ++i)
-            data.set(i, ALPHABET.codeFromSymbol(sequence.charAt(i)));
+        for (int i = 0; i < sequence.length(); ++i) {
+            byte code = ALPHABET.codeFromSymbol(sequence.charAt(i));
+            if (code == -1)
+                throw new IllegalArgumentException("Unknown nucleotide: \"" + sequence.charAt(i) + "\".");
+            data.set(i, code);
+        }
     }
 
     /**
-     * Creates nucleotide sequence from char array of nucleotides (e.g. ['A','T','C','G','G']). If sequence contains
-     * wildcards (like "N"), then they will be replaced by "A".
+     * Creates nucleotide sequence from char array of nucleotides (e.g. ['A','T','C','G','G']).
      *
      * @param sequence char array of nucleotides
+     * @throws java.lang.IllegalArgumentException if sequence contains unknown nucleotide symbol
      */
     public NucleotideSequence(char[] sequence) {
         data = new Bit2Array(sequence.length);
-        for (int i = 0; i < sequence.length; ++i)
-            data.set(i, ALPHABET.codeFromSymbol(sequence[i]));
+        for (int i = 0; i < sequence.length; ++i) {
+            byte code = ALPHABET.codeFromSymbol(sequence[i]);
+            if (code == -1)
+                throw new IllegalArgumentException("Unknown nucleotide: \"" + sequence[i] + "\".");
+            data.set(i, code);
+        }
     }
 
     /**

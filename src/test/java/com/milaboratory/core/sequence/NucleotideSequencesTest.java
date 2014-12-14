@@ -80,4 +80,14 @@ public class NucleotideSequencesTest {
         assertThat(rc, not(ns));
         assertThat(rc.hashCode(), not(ns.hashCode()));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnknownSymbol1() throws Exception {
+        new NucleotideSequence("ATTAN");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnknownSymbol2() throws Exception {
+        new NucleotideSequence(new char[]{'a', 'n', 'k'});
+    }
 }

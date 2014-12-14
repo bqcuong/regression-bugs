@@ -56,4 +56,9 @@ public class AminoAcidSequenceTest {
         Assert.assertEquals(new AminoAcidSequence(""),
                 AminoAcidSequence.translate(null, true, new NucleotideSequence("")));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testUnknownSymbol1() throws Exception {
+        new AminoAcidSequence("ATTAGACANX");
+    }
 }

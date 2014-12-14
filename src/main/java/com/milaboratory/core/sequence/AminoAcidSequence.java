@@ -43,7 +43,7 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
     /**
      * Creates sequence with specified data.
      *
-     * @param data byte array of codons
+     * @param data byte array of amino acid codes from alphabet
      */
     public AminoAcidSequence(byte[] data) {
         super(data.clone());
@@ -53,6 +53,7 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
      * Creates amino acid sequence from its string representation (case insensitive).
      *
      * @param sequence string representation of amino acid sequence (case insensitive)
+     * @throws java.lang.IllegalArgumentException if sequence contains unknown amino acid symbol
      */
     public AminoAcidSequence(String sequence) {
         super(sequence);

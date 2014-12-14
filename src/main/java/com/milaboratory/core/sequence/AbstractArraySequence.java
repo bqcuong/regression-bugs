@@ -55,7 +55,8 @@ abstract class AbstractArraySequence<S extends AbstractArraySequence<S>> extends
     protected static byte[] dataFromChars(Alphabet alphabet, char[] chars) {
         byte[] data = new byte[chars.length];
         for (int i = 0; i < chars.length; ++i)
-            data[i] = alphabet.codeFromSymbol(chars[i]);
+            if ((data[i] = alphabet.codeFromSymbol(chars[i])) == -1)
+                throw new IllegalArgumentException("Unknown symbol \"" + chars[i] + "\"");
         return data;
     }
 }

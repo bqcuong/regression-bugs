@@ -20,6 +20,9 @@
  */
 package com.milaboratory.core.sequence;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Utility methods for sequences.
  *
@@ -27,19 +30,51 @@ package com.milaboratory.core.sequence;
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  */
 public final class SequencesUtils {
-//    public static int mismatchCount(Sequence seq0, Sequence seq1) {
-//        if (seq0.getAlphabet() != seq1.getAlphabet())
-//            throw new IllegalArgumentException("Different sequene alphabets");
-//        if (seq0.size() != seq1.size())
-//            return -1;
-//        int mm = 0;
-//        for (int i = 0; i < seq0.size(); ++i)
-//            if (seq0.codeAt(i) != seq1.codeAt(i))
-//                ++mm;
-//        return mm;
-//    }
-//
+    /**
+     * Check if a sequence contains letters only from specified alphabet. So in can be converted to corresponding type
+     * of sequence.
+     *
+     * @param alphabet alphabet
+     * @param string   string to check
+     * @return {@literal true} if sequence belongs to alphabet, {@literal false} if does not
+     */
+    public static boolean belongsToAlphabet(Alphabet<?> alphabet, String string) {
+        for (int i = 0; i < string.length(); ++i)
+            if (alphabet.codeFromSymbol(string.charAt(i)) == -1)
+                return false;
+        return true;
+    }
 
+    /**
+     * Returns a set of possible alphabets for a given string.
+     *
+     * <p>Looks for alphabets registered in {@link com.milaboratory.core.sequence.Alphabets}.</p>
+     *
+     * @param string target string (sequence)
+     * @return set of possible alphabets for a given string
+     */
+    public static Set<Alphabet<?>> possibleAlphabets(String string) {
+        HashSet<Alphabet<?>> alphabets = new HashSet<>();
+        for (Alphabet alphabet : Alphabets.getAll()) {
+            if (belongsToAlphabet(alphabet, string))
+                alphabets.add(alphabet);
+        }
+        return alphabets;
+    }
+
+    /**
+     * Calculates number of mismatches (comparing position by position) between two regions of one or two different
+     * sequences.
+     *
+     * @param seq0       first sequence
+     * @param seq0Offset first letter of second region in first sequence
+     * @param seq1       second sequence (may be the same as {@code seq0}
+     * @param seq1Offset first letter of second region in second sequence
+     * @param length     length of both regions
+     * @param <S>        type of sequence
+     * @return number of mismatches
+     * @throws java.lang.IllegalArgumentException if one of regions is outside of target sequence
+     */
     public static <S extends Sequence<S>> int mismatchCount(S seq0, int seq0Offset, S seq1, int seq1Offset, int length) {
         if (seq0.size() < seq0Offset + length || seq1.size() < seq1Offset + length)
             throw new IllegalArgumentException();
@@ -51,43 +86,12 @@ public final class SequencesUtils {
         return mm;
     }
 
-//
-//
-//    public static int mismatchCount(Sequence seq0, Sequence seq1, int maxMismatches) {
-//        if (seq0.getAlphabet() != seq1.getAlphabet())
-//            throw new IllegalArgumentException("Different sequene alphabets");
-//        if (seq0.size() != seq1.size())
-//            return -1;
-//        int mm = 0;
-//        for (int i = 0; i < seq0.size(); ++i)
-//            if (seq0.codeAt(i) != seq1.codeAt(i))
-//                if (++mm > maxMismatches)
-//                    return -1;
-//        return mm;
-//    }
-//
-//    public static String highlightedMismatches(Sequence sequence, Sequence standard) {
-//        final Alphabet alphabet = standard.getAlphabet();
-//        if (alphabet != sequence.getAlphabet())
-//            throw new IllegalArgumentException();
-//        if (standard.size() != sequence.size())
-//            throw new IllegalArgumentException();
-//        char[] chars = new char[sequence.size()];
-//        byte code;
-//        for (int i = 0; i < standard.size(); ++i)
-//            if (standard.codeAt(i) != (code = sequence.codeAt(i)))
-//                chars[i] = Character.toUpperCase(alphabet.symbolFromCode(code));
-//            else
-//                chars[i] = Character.toLowerCase(alphabet.symbolFromCode(code));
-//        return new String(chars);
-//    }
-
     /**
-     * Returns a concatenation of all specified sequences.
+     * Returns a concatenation of several sequences.
      *
      * @param sequences array of sequences
-     * @param <S>       type os sequences
-     * @return concatenation of all specified sequences
+     * @param <S>       type of sequences
+     * @return concatenation of several sequences
      */
     public static <S extends Seq<S>> S concatenate(S... sequences) {
         if (sequences.length == 0)

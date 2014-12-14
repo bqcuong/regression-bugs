@@ -78,10 +78,19 @@ public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequ
 
     @Override
     public byte codeFromSymbol(char symbol) {
-        char s = Character.toUpperCase(symbol);
+        // Special case for backward compatibility
+        if (symbol == '~')
+            return IncompleteCodon;
+
+        // For case insensitive conversion
+        symbol = Character.toUpperCase(symbol);
+
+        // Normal conversion (can be optimized :) )
         for (int i = 0; i < aa.length; ++i)
-            if (aa[i] == s)
+            if (aa[i] == symbol)
                 return (byte) i;
+
+        // Unknown symbol
         return -1;
     }
 

@@ -28,7 +28,7 @@ public final class Alphabets {
     }
 
     /**
-     * Register a new alphabet
+     * Register new alphabet
      *
      * @param alphabet alphabet
      */
