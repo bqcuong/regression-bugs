@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 public class AlignmentHelper {
     protected final String seq1String, seq2String;
+    protected final String markup;
     protected final int[] seq1Position, seq2Position;
     protected final BitArray match;
     protected final int offset;
@@ -22,6 +23,13 @@ public class AlignmentHelper {
         this.seq2Position = seq2Position;
         this.match = match;
         this.offset = Math.max(Math.max(("" + a(seq2Position[0])).length(), ("" + a(seq1Position[0])).length()), offset);
+
+        char[] chars = new char[match.size()];
+        Arrays.fill(chars, ' ');
+        for (int n : match.getBits())
+            chars[n] = '|';
+
+        this.markup = new String(chars);
     }
 
     public AlignmentHelper getRange(int from, int to) {
@@ -48,10 +56,16 @@ public class AlignmentHelper {
         return ret;
     }
 
+    /**
+     * Gets the identity of alignment, i.e. ratio of matching nucleotides in the aligned region
+     */
     public double identity() {
         return match.bitCount() * 1.0 / match.size();
     }
 
+    /**
+     * Gets the size of aligned region
+     */
     public int size() {
         return match.size();
     }
@@ -64,6 +78,30 @@ public class AlignmentHelper {
         return seq2Position[i];
     }
 
+    /**
+     * Get the aligned query sequence
+     */
+    public String getSeq1String() {
+        return seq1String;
+    }
+
+    /**
+     * Get the aligned subject sequence
+     */
+    public String getSeq2String() {
+        return seq2String;
+    }
+
+    /**
+     * Get the alignment markup line
+     */
+    public String getMarkup() {
+        return markup;
+    }
+
+    /**
+     * Gets the first line of formatted alignment (query sequence)
+     */
     public String getLine1() {
         String startPosition = String.valueOf(a(seq1Position[0]));
         int spaces = offset - startPosition.length();
@@ -78,14 +116,16 @@ public class AlignmentHelper {
                 " " + a(seq1Position[seq1Position.length - 1]);
     }
 
+    /**
+     * Gets the second line of formatted alignment (alignment markup)
+     */
     public String getLine2() {
-        char[] chars = new char[match.size()];
-        Arrays.fill(chars, ' ');
-        for (int n : match.getBits())
-            chars[n] = '|';
-        return (spaces(offset + 1) + new String(chars));
+        return spaces(offset + 1) + markup;
     }
 
+    /**
+     * Gets the third line of formatted alignment (subject sequence)
+     */
     public String getLine3() {
         String startPosition = String.valueOf(a(seq2Position[0]));
         int spaces = offset - startPosition.length();
@@ -120,6 +160,9 @@ public class AlignmentHelper {
         return getLine1() + "\n" + getLine2() + "\n" + getLine3();
     }
 
+    /**
+     * Gets the alignment string in contact format (no markup line, mismatches shown by lower-case characters)
+     */
     public String toCompactString() {
         return getLine1Compact() + "\n" + getLine3Compact();
     }
