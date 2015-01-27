@@ -161,4 +161,15 @@ public final class Mutation {
         throw new IllegalArgumentException("Illegal mutation code.");
     }
 
+    public static String encodeFixed(int mutation, Alphabet alphabet) {
+        switch (mutation & MUTATION_TYPE_MASK) {
+            case RAW_MUTATION_TYPE_SUBSTITUTION:
+                return "S" + alphabet.symbolFromCode((byte) getFrom(mutation)) + Integer.toString(getPosition(mutation)) + alphabet.symbolFromCode((byte) getTo(mutation));
+            case RAW_MUTATION_TYPE_DELETION:
+                return "D" + alphabet.symbolFromCode((byte) getFrom(mutation)) + Integer.toString(getPosition(mutation)) + ".";
+            case RAW_MUTATION_TYPE_INSERTION:
+                return "I" + "." + Integer.toString(getPosition(mutation)) + alphabet.symbolFromCode((byte) getTo(mutation));
+        }
+        throw new IllegalArgumentException("Illegal mutation code.");
+    }
 }

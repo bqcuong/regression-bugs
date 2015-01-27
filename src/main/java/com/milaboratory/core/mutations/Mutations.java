@@ -474,6 +474,10 @@ public final class Mutations<S extends Sequence<S>> {
         return MutationsUtil.encode(mutations, alphabet);
     }
 
+    public String encodeFixed() {
+        return MutationsUtil.encodeFixed(mutations, alphabet);
+    }
+
     public static <S extends Sequence<S>> Mutations<S> decode(String string, Alphabet<S> alphabet) {
         return new Mutations<S>(alphabet, MutationsUtil.decode(string, alphabet), true);
     }

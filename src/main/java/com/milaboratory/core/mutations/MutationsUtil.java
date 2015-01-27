@@ -199,6 +199,17 @@ public final class MutationsUtil {
         return builder.toString();
     }
 
+    public static String encodeFixed(int[] mutations, Alphabet alphabet) {
+        StringBuilder builder = new StringBuilder();
+        for (int mut : mutations) {
+            builder.append(Mutation.encodeFixed(mut, alphabet));
+            builder.append(":");
+        }
+        if (builder.length() > 0)
+            builder.deleteCharAt(builder.length() - 1);
+        return builder.toString();
+    }
+
     /**
      * Decodes mutations encoded using format described in {@link com.milaboratory.core.mutations.Mutation#encode(int,
      * com.milaboratory.core.sequence.Alphabet)}.
