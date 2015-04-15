@@ -16,6 +16,7 @@
 package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
+import com.milaboratory.core.io.util.TestUtil;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.generator.MutationModels;
 import com.milaboratory.core.mutations.generator.NucleotideMutationModel;

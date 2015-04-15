@@ -15,6 +15,7 @@
  */
 package com.milaboratory.core.sequence;
 
+import com.milaboratory.core.io.util.TestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -75,5 +76,11 @@ public class AminoAcidSequenceTest {
     @Test(expected = IllegalArgumentException.class)
     public void testUnknownSymbol1() throws Exception {
         new AminoAcidSequence("ATTAGACANX");
+    }
+
+    @Test
+    public void test4() throws Exception {
+        AminoAcidSequence se = new AminoAcidSequence("ATTAGACAN");
+        TestUtil.assertJavaSerialization(se);
     }
 }

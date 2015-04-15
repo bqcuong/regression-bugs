@@ -31,7 +31,8 @@ import static com.milaboratory.core.mutations.Mutation.*;
  * @author Stanislav Poslavsky
  */
 @Serializable(by = IO.MutationsSerializer.class)
-public final class Mutations<S extends Sequence<S>> {
+public final class Mutations<S extends Sequence<S>>
+        implements java.io.Serializable {
     final Alphabet<S> alphabet;
     final int[] mutations;
 
