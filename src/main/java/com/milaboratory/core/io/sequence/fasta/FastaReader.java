@@ -49,7 +49,7 @@ public final class FastaReader implements SingleReader, CanReportProgress {
     private final long size;
     private final CountingInputStream countingInputStream;
 
-    private FastaReader(InputStream inputStream, boolean withWildcards, long size) {
+    public FastaReader(InputStream inputStream, boolean withWildcards, long size) {
         this.size = size;
         this.countingInputStream = new CountingInputStream(inputStream);
         this.reader = new BufferedReader(new InputStreamReader(countingInputStream));
