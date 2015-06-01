@@ -43,7 +43,7 @@ public class BatchAligner<S extends Sequence<S>> {
 
     public BatchAlignmentResult<S> align(final S sequence) {
         ArrayList<BatchAlignmentHit<S>> alignments = new ArrayList<>(references.size());
-        for (int i = 0; i < alignments.size(); i++)
+        for (int i = 0; i < references.size(); i++)
             alignments.add(alignSingle(i, sequence));
         Collections.sort(alignments, new HitComparator());
         float topScore = alignments.get(0).getAlignment().getScore();

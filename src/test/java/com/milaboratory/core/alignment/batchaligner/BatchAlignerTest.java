@@ -15,9 +15,38 @@
  */
 package com.milaboratory.core.alignment.batchaligner;
 
-/**
- * Created by dbolotin on 01/06/15.
- */
-public class BatchAlignerTest {
+import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
+import com.milaboratory.core.sequence.NucleotideSequence;
+import org.junit.Assert;
+import org.junit.Test;
 
+public class BatchAlignerTest {
+    @Test
+    public void test1() {
+        NucleotideSequence ref1 = new NucleotideSequence("ATAAGAGACACATAGGTCTGGC"),
+                ref2 = new NucleotideSequence("ATTAGAGACACATAGGTCTAGC"),
+                ref3 = new NucleotideSequence("ATGAGAGACACATAGGTCTTGC"),
+                ref4 = new NucleotideSequence("ATCAGAGACACTTAGGTCTCGC"),
+                ref5 = new NucleotideSequence("ATCAGAAATAAAAATAACTGGC");
+
+        NucleotideSequence query = new NucleotideSequence("ATCAGAGACACATAGGTCTGGC");
+
+        BatchAlignerParameters<NucleotideSequence> batchAlignerParameters = new BatchAlignerParameters<>(5,
+                0.5f, 0f, true, AffineGapAlignmentScoring.getNucleotideBLASTScoring());
+
+        BatchAligner<NucleotideSequence> batchAligner = new BatchAligner<>(batchAlignerParameters);
+
+        batchAligner.addReference(ref1);
+        batchAligner.addReference(ref2);
+        batchAligner.addReference(ref3);
+        batchAligner.addReference(ref4);
+        batchAligner.addReference(ref5);
+
+        BatchAlignmentResult alignmentResult = batchAligner.align(query);
+
+        System.out.println(alignmentResult);
+
+        Assert.assertEquals(0, ((BatchAlignmentHit) alignmentResult.hits.get(0)).id);
+        Assert.assertEquals(4, alignmentResult.hits.size());
+    }
 }
