@@ -31,4 +31,13 @@ public class BatchAlignmentResult<S extends Sequence<S>> implements AlignmentRes
     public List<BatchAlignmentHit<S>> getHits() {
         return hits;
     }
+
+    @Override
+    public String toString() {
+        String result = "Batch alignment with " + hits.size() + " hits";
+        for (BatchAlignmentHit hit : hits) {
+            result += "\n" + hit.toString();
+        }
+        return result;
+    }
 }
