@@ -98,6 +98,10 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return Translator.getAminoAcid(getTriplet(nSequence, tripletStart));
     }
 
+    public static AminoAcidSequence translate(NucleotideSequence sequence, int frame) {
+        return translate(sequence.getRange(frame, frame + (sequence.size() - frame) / 3 * 3));
+    }
+
     public static AminoAcidSequence translate(NucleotideSequence sequence) {
         if (sequence.size() % 3 != 0)
             throw new IllegalArgumentException("Only nucleotide sequences with size multiple " +
