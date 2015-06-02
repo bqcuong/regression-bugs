@@ -19,10 +19,19 @@ import com.milaboratory.core.alignment.AlignmentScoring;
 import com.milaboratory.core.sequence.Sequence;
 
 public class BatchAlignerParameters<S extends Sequence<S>> {
-    int maxHits;
-    float relativeMinScore, absoluteMinScore;
-    boolean global;
-    AlignmentScoring<S> scoring;
+    private int maxHits;
+    private float relativeMinScore, absoluteMinScore;
+    private boolean global;
+    private AlignmentScoring<S> scoring;
+
+    public BatchAlignerParameters(int maxHits, float relativeMinScore, float absoluteMinScore,
+                                  boolean global, AlignmentScoring<S> scoring) {
+        this.maxHits = maxHits;
+        this.relativeMinScore = relativeMinScore;
+        this.absoluteMinScore = absoluteMinScore;
+        this.global = global;
+        this.scoring = scoring;
+    }
 
     public boolean isGlobal() {
         return global;

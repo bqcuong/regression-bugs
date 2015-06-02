@@ -37,4 +37,9 @@ public class BatchAlignmentHit<S extends Sequence<S>> implements AlignmentHit<S>
     public Alignment<S> getAlignment() {
         return alignment;
     }
+
+    @Override
+    public String toString() {
+        return "- Hit ref#" + id + " score=" + alignment.getScore() + "\n" + alignment.toString();
+    }
 }
