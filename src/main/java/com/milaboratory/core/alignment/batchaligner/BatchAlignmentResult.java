@@ -40,4 +40,8 @@ public class BatchAlignmentResult<S extends Sequence<S>> implements AlignmentRes
         }
         return result;
     }
+
+    public boolean isEmpty() {
+        return hits.isEmpty();
+    }
 }

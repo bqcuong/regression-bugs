@@ -96,5 +96,4 @@ public final class AlignmentUtils {
 
         return sb1.toString() + "\n" + sb2.toString() + '\n';
     }
-
 }
