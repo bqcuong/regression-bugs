@@ -108,8 +108,12 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
      */
     public S parse(String string) {
         SequenceBuilder<S> builder = getBuilder().ensureCapacity(string.length());
-        for (int i = 0; i < string.length(); ++i)
-            builder.append(codeFromSymbol(string.charAt(i)));
+        for (int i = 0; i < string.length(); ++i) {
+            byte code = codeFromSymbol(string.charAt(i));
+            if (code == -1)
+                throw new IllegalArgumentException("Letter \'" + string.charAt(i) + "\' is not defined in \'" + toString() + "\'.");
+            builder.append(code);
+        }
         return builder.createAndDestroy();
     }
 
