@@ -144,6 +144,10 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence>
         return ALPHABET;
     }
 
+    public IncompleteNucleotideSequence toIncomplete() {
+        return new IncompleteNucleotideSequence(data.toByteArray());
+    }
+
     @Override
     public int hashCode() {
         int result = ALPHABET.hashCode();

@@ -89,6 +89,10 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return count;
     }
 
+    public IncompleteAminoAcidSequence toIncomplete() {
+        return new IncompleteAminoAcidSequence(data);
+    }
+
     public static int getTriplet(NucleotideSequence nSequence, int tripletStart) {
         int triplet = (nSequence.codeAt(tripletStart) << 4) | (nSequence.codeAt(tripletStart + 1) << 2) | nSequence.codeAt(tripletStart + 2);
         return triplet;
