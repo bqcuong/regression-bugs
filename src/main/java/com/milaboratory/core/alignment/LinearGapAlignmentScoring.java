@@ -17,10 +17,7 @@ package com.milaboratory.core.alignment;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.milaboratory.core.sequence.Alphabet;
-import com.milaboratory.core.sequence.AminoAcidSequence;
-import com.milaboratory.core.sequence.NucleotideSequence;
-import com.milaboratory.core.sequence.Sequence;
+import com.milaboratory.core.sequence.*;
 
 import static com.milaboratory.core.alignment.ScoringUtils.getSymmetricMatrix;
 
@@ -148,6 +145,31 @@ public final class LinearGapAlignmentScoring<S extends Sequence<S>> extends Abst
     public static LinearGapAlignmentScoring<AminoAcidSequence> getAminoAcidBLASTScoring(BLASTMatrix matrix, int gapPenalty) {
         return new LinearGapAlignmentScoring<>(AminoAcidSequence.ALPHABET,
                 matrix.getMatrix(AminoAcidSequence.ALPHABET),
+                gapPenalty);
+    }
+
+    /* Incomplete Amino acid */
+
+    /**
+     * Returns standard amino acid BLAST scoring with {@code #gapPenalty=5}
+     *
+     * @param matrix BLAST substitution matrix
+     * @return standard amino acid BLAST scoring
+     */
+    public static LinearGapAlignmentScoring<IncompleteAminoAcidSequence> getIAminoAcidBLASTScoring(BLASTMatrix matrix) {
+        return getIAminoAcidBLASTScoring(matrix, -5);
+    }
+
+    /**
+     * Returns standard amino acid BLAST scoring
+     *
+     * @param matrix     BLAST substitution matrix
+     * @param gapPenalty penalty for gap, must be < 0
+     * @return standard amino acid BLAST scoring
+     */
+    public static LinearGapAlignmentScoring<IncompleteAminoAcidSequence> getIAminoAcidBLASTScoring(BLASTMatrix matrix, int gapPenalty) {
+        return new LinearGapAlignmentScoring<>(IncompleteAminoAcidSequence.ALPHABET,
+                matrix.getMatrix(IncompleteAminoAcidSequence.ALPHABET),
                 gapPenalty);
     }
 }
