@@ -31,7 +31,7 @@ public abstract class IncompleteAlphabet<IS extends IncompleteSequence<IS, S>, S
 
     static final IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence>
             INCOMPLETE_NUCLEOTIDE_ALPHABET =
-            new IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence>(NucleotideAlphabet.INSTANCE) {
+            new IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence>(NucleotideAlphabet.INSTANCE, 'N') {
                 @Override
                 IncompleteNucleotideSequence createUnsafe(byte[] array) {
                     return new IncompleteNucleotideSequence(array, true);
@@ -40,32 +40,38 @@ public abstract class IncompleteAlphabet<IS extends IncompleteSequence<IS, S>, S
 
     static final IncompleteAlphabet<IncompleteAminoAcidSequence, AminoAcidSequence>
             INCOMPLETE_AMINO_ACID_ALPHABET =
-            new IncompleteAlphabet<IncompleteAminoAcidSequence, AminoAcidSequence>(AminoAcidAlphabet.INSTANCE) {
+            new IncompleteAlphabet<IncompleteAminoAcidSequence, AminoAcidSequence>(AminoAcidAlphabet.INSTANCE, 'X') {
                 @Override
                 IncompleteAminoAcidSequence createUnsafe(byte[] array) {
                     return new IncompleteAminoAcidSequence(array, true);
                 }
             };
 
-    final Alphabet<S> alphabet;
-    final byte unknownLetterCode;
-    public static final char UNKNOWN_LETTER = '.';
+    private final Alphabet<S> alphabet;
+    private final byte unknownLetterCode;
+    private final char unknownLetterChar;
+    /**
+     * Lower case variant of {@code unknownLetterChar}
+     */
+    private final char unknownLetterCharLower;
 
-    private IncompleteAlphabet(Alphabet<S> alphabet) {
+    private IncompleteAlphabet(Alphabet<S> alphabet, char unknownLetterChar) {
         super(alphabet.getAlphabetName() + "_incomplete", (byte) (alphabet.getId() + 64));
         this.alphabet = alphabet;
         this.unknownLetterCode = (byte) alphabet.size();
+        this.unknownLetterChar = Character.toUpperCase(unknownLetterChar);
+        this.unknownLetterCharLower = Character.toLowerCase(unknownLetterChar);
     }
 
     @Override
     public char symbolFromCode(byte code) {
-        return code == unknownLetterCode ? UNKNOWN_LETTER : alphabet.symbolFromCode(code);
+        return code == unknownLetterCode ? unknownLetterChar : alphabet.symbolFromCode(code);
     }
 
     @Override
     public byte codeFromSymbol(char symbol) {
-        byte b = alphabet.codeFromSymbol(symbol);
-        return b == -1 ? unknownLetterCode : b;
+        return (symbol == unknownLetterChar || symbol == unknownLetterCharLower) ?
+                unknownLetterCode : alphabet.codeFromSymbol(symbol);
     }
 
     @Override
@@ -80,6 +86,15 @@ public abstract class IncompleteAlphabet<IS extends IncompleteSequence<IS, S>, S
      */
     public byte getUnknownLetterCode() {
         return unknownLetterCode;
+    }
+
+    /**
+     * Returns unknown letter character (e.g. N for nucleotides, X for amino acids)
+     *
+     * @return unknown letter
+     */
+    public char getUnknownLetterChar() {
+        return unknownLetterChar;
     }
 
     /**

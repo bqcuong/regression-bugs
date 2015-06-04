@@ -34,7 +34,12 @@ public final class IncompleteNucleotideSequence
     /**
      * Binary code of unknown letter
      */
-    public static final byte UNKNOWN_LETTER_CODE = ALPHABET.unknownLetterCode;
+    public static final byte UNKNOWN_LETTER_CODE = ALPHABET.getUnknownLetterCode();
+
+    /**
+     * Unknown letter (e.g. 'N')
+     */
+    public static final char UNKNOWN_LETTER = ALPHABET.getUnknownLetterChar();
 
     /**
      * Creates incomplete nucleotide sequence from its string representation (case insensitive).

@@ -51,7 +51,7 @@ public enum BLASTMatrix implements java.io.Serializable {
                     if (iMatrix == null) {
                         try (InputStream stream = BLASTMatrix.class.getClassLoader().getResourceAsStream("matrices/" + this.name())) {
                             iMatrix = readAABlastMatrix(stream, IncompleteAminoAcidSequence.ALPHABET,
-                                    '_', '.');
+                                    '_', 'X');
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }

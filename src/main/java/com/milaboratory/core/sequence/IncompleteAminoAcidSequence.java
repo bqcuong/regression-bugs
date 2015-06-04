@@ -34,7 +34,12 @@ public final class IncompleteAminoAcidSequence
     /**
      * Binary code of unknown letter
      */
-    public static final byte UNKNOWN_LETTER_CODE = ALPHABET.unknownLetterCode;
+    public static final byte UNKNOWN_LETTER_CODE = ALPHABET.getUnknownLetterCode();
+
+    /**
+     * Unknown letter (e.g. 'X')
+     */
+    public static final char UNKNOWN_LETTER = ALPHABET.getUnknownLetterChar();
 
     /**
      * Creates incomplete amino acid sequence from its string representation (case insensitive).
