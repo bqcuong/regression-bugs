@@ -189,6 +189,14 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
             this.positionInTriplet = (byte) positionInTriplet;
         }
 
+        public int floor() {
+            return aminoAcidPosition;
+        }
+
+        public int ceil() {
+            return positionInTriplet == 0 ? aminoAcidPosition : aminoAcidPosition + 1;
+        }
+
         @Override
         public String toString() {
             return "A" + aminoAcidPosition + "+" + positionInTriplet + "n";
