@@ -48,7 +48,7 @@ public class DefaultSerializersProviderImpl implements DefaultSerializersProvide
 
         if(type == String.class)
             return new StringSerializer();
-        
+
         return null;
     }
 
