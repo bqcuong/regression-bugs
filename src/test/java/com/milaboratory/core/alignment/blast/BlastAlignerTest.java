@@ -1,6 +1,6 @@
 package com.milaboratory.core.alignment.blast;
 
-import com.milaboratory.core.sequence.IncompleteNucleotideSequence;
+import com.milaboratory.core.sequence.NucleotideSequenceWithWildcards;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,9 +18,9 @@ public class BlastAlignerTest {
 
     @Test
     public void test2() throws Exception {
-        BlastAligner<IncompleteNucleotideSequence> aligner = new BlastAligner<>(IncompleteNucleotideSequence.ALPHABET,null);
+        BlastAligner<NucleotideSequenceWithWildcards> aligner = new BlastAligner<>(NucleotideSequenceWithWildcards.ALPHABET,null);
         String query = "CTCAGAACGAACGCTGGCGGCATGCCTAACACATGCAAGTCGAACGAGAAACCAGAGCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGC";
-        IncompleteNucleotideSequence s = new IncompleteNucleotideSequence(query);
+        NucleotideSequenceWithWildcards s = new NucleotideSequenceWithWildcards(query);
         for(int i = 0;i< 100;++i){
             System.out.println(aligner.align(s).getHits().get(0).getAlignment());
         }

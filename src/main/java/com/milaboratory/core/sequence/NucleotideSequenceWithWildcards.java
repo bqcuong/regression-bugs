@@ -20,33 +20,22 @@ package com.milaboratory.core.sequence;
  *
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
- * @see com.milaboratory.core.sequence.IncompleteAlphabet
  * @see com.milaboratory.core.sequence.Sequence
- * @see com.milaboratory.core.sequence.IncompleteAlphabet
  */
-public final class IncompleteNucleotideSequence
-        extends IncompleteSequence<IncompleteNucleotideSequence, NucleotideSequence> {
+public final class NucleotideSequenceWithWildcards
+        extends AbstractSequenceWithWildcards<NucleotideSequenceWithWildcards, NucleotideSequence> {
     /**
      * Alphabet for incomplete nucleotide sequences
      */
-    public static final IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence> ALPHABET
-            = IncompleteAlphabet.INCOMPLETE_NUCLEOTIDE_ALPHABET;
-    /**
-     * Binary code of unknown letter
-     */
-    public static final byte UNKNOWN_LETTER_CODE = ALPHABET.getUnknownLetterCode();
-
-    /**
-     * Unknown letter (e.g. 'N')
-     */
-    public static final char UNKNOWN_LETTER = ALPHABET.getUnknownLetterChar();
+    public static final NucleotideAlphabetWithWildcards ALPHABET
+            = NucleotideAlphabetWithWildcards.INSTANCE;
 
     /**
      * Creates incomplete nucleotide sequence from its string representation (case insensitive).
      *
      * @param sequence string representation (case insensitive) of incomplete nucleotide sequence
      */
-    public IncompleteNucleotideSequence(String sequence) {
+    public NucleotideSequenceWithWildcards(String sequence) {
         super(sequence);
     }
 
@@ -55,17 +44,17 @@ public final class IncompleteNucleotideSequence
      *
      * @param data binary data
      */
-    public IncompleteNucleotideSequence(byte[] data) {
+    public NucleotideSequenceWithWildcards(byte[] data) {
         super(data.clone());
     }
 
-    IncompleteNucleotideSequence(byte[] data, boolean unsafe) {
+    NucleotideSequenceWithWildcards(byte[] data, boolean unsafe) {
         super(data);
         assert unsafe;
     }
 
     @Override
-    public IncompleteAlphabet<IncompleteNucleotideSequence, NucleotideSequence> getAlphabet() {
+    public NucleotideAlphabetWithWildcards getAlphabet() {
         return ALPHABET;
     }
 }

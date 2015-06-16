@@ -16,7 +16,7 @@
 package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.sequence.AminoAcidSequence;
-import com.milaboratory.core.sequence.IncompleteAminoAcidSequence;
+import com.milaboratory.core.sequence.AminoAcidSequenceWithWildcards;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class ScoringMatrixIOTest {
     @Test
     public void testReadMatrix3() throws Exception {
         try (InputStream stream = ScoringMatrixIO.class.getClassLoader().getResourceAsStream("matrices/PAM70")) {
-            int[] matrix = readAABlastMatrix(stream, IncompleteAminoAcidSequence.ALPHABET, '_', '.');
+            int[] matrix = readAABlastMatrix(stream, AminoAcidSequenceWithWildcards.ALPHABET, '_', '.');
             int sum = 0;
             for (int i : matrix)
                 sum += i;

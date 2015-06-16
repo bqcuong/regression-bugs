@@ -20,6 +20,8 @@ import gnu.trove.map.hash.TCharObjectHashMap;
 import java.util.Collection;
 import java.util.Collections;
 
+import static java.lang.Character.toUpperCase;
+
 /**
  * Amino acid alphabet with additional symbols.<br/> "~" - non full codon. 2 or 1 nucleotides.<br/> "-" - no nucleotides
  * <p>
@@ -59,6 +61,11 @@ public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequ
     public static final byte Y = 20;
     public static final byte IncompleteCodon = 21;
 
+    public static final WildcardSymbol X = new WildcardSymbol('X', (byte) 22, new byte[]{A, C, D, E, F, G, H, I, K, L, M, N, P, Q, R, S, T, V, W, Y});
+    public static final WildcardSymbol B = new WildcardSymbol('B', (byte) 23, new byte[]{N, D});
+    public static final WildcardSymbol J = new WildcardSymbol('J', (byte) 24, new byte[]{I, L});
+    public static final WildcardSymbol Z = new WildcardSymbol('Z', (byte) 25, new byte[]{E, Q});
+
     private static final char[] aa = {
             '*',
             'A', 'C', 'D', 'E', 'F',
@@ -83,7 +90,7 @@ public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequ
             return IncompleteCodon;
 
         // For case insensitive conversion
-        symbol = Character.toUpperCase(symbol);
+        symbol = toUpperCase(symbol);
 
         // Normal conversion (can be optimized :) )
         for (int i = 0; i < aa.length; ++i)
@@ -108,12 +115,7 @@ public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequ
             new WildcardMapBuilder()
                     /* Exact match letters */
                     .addAlphabet(INSTANCE)
-                    /* Two-letter wildcard */
-                    .addWildcard('B', N, D)
-                    .addWildcard('J', I, L)
-                    .addWildcard('Z', E, Q)
-                    /* X */
-                    .addWildcard('X', A, C, D, E, F, G, H, I, K, L, M, N, P, Q, R, S, T, V, W, Y)
+                    .addWildcards(X, B, J, Z)
                     .get();
 
     @Override
@@ -123,6 +125,6 @@ public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequ
 
     @Override
     public WildcardSymbol getWildcardFor(char symbol) {
-        return wildcardsMap.get(symbol);
+        return wildcardsMap.get(toUpperCase(symbol));
     }
 }

@@ -20,6 +20,8 @@ import gnu.trove.map.hash.TCharObjectHashMap;
 import java.util.Collection;
 import java.util.Collections;
 
+import static java.lang.Character.toUpperCase;
+
 /**
  * An alphabet for nucleotide sequences. This alphabet defines the following mapping:
  * <br>0 - 'A', 1 - 'G', 2 - 'C', 3 - 'T'.
@@ -56,31 +58,29 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> imple
      * Thymine byte
      */
     public static final byte T = 0x03;
+
     private static char[] chars = {'A', 'G', 'C', 'T'};
     private static byte[] bytes = {'A', 'G', 'C', 'T'};
+
+    /* N */
+    public static final WildcardSymbol N = new WildcardSymbol('N', (byte) 4, new byte[]{A, T, G, C});
+    /* Two-letter wildcard */
+    public static final WildcardSymbol R = new WildcardSymbol('R', (byte) 5, new byte[]{A, G});
+    public static final WildcardSymbol Y = new WildcardSymbol('Y', (byte) 6, new byte[]{C, T});
+    public static final WildcardSymbol S = new WildcardSymbol('S', (byte) 7, new byte[]{G, C});
+    public static final WildcardSymbol W = new WildcardSymbol('W', (byte) 8, new byte[]{A, T});
+    public static final WildcardSymbol K = new WildcardSymbol('K', (byte) 9, new byte[]{G, T});
+    public static final WildcardSymbol M = new WildcardSymbol('M', (byte) 10, new byte[]{A, C});
+    /* Three-letter wildcard */
+    public static final WildcardSymbol B = new WildcardSymbol('B', (byte) 11, new byte[]{C, G, T});
+    public static final WildcardSymbol D = new WildcardSymbol('D', (byte) 12, new byte[]{A, G, T});
+    public static final WildcardSymbol H = new WildcardSymbol('H', (byte) 13, new byte[]{A, C, T});
+    public static final WildcardSymbol V = new WildcardSymbol('V', (byte) 14, new byte[]{A, C, G});
+
     /**
      * Singleton instance.
      */
     final static NucleotideAlphabet INSTANCE = new NucleotideAlphabet();
-    private static TCharObjectHashMap<WildcardSymbol> wildcardsMap =
-            new WildcardMapBuilder()
-                    /* Exact match letters */
-                    .addAlphabet(INSTANCE)
-                    /* Two-letter wildcard */
-                    .addWildcard('R', A, G)
-                    .addWildcard('Y', C, T)
-                    .addWildcard('S', G, C)
-                    .addWildcard('W', A, T)
-                    .addWildcard('K', G, T)
-                    .addWildcard('M', A, C)
-                    /* Three-letter wildcard */
-                    .addWildcard('B', C, G, T)
-                    .addWildcard('D', A, G, T)
-                    .addWildcard('H', A, C, T)
-                    .addWildcard('V', A, C, G)
-                    /* N */
-                    .addWildcard('N', A, T, G, C)
-                    .get();
 
     private NucleotideAlphabet() {
         super("nucleotide", (byte) 1);
@@ -169,6 +169,12 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> imple
         return 4;
     }
 
+    private static TCharObjectHashMap<WildcardSymbol> wildcardsMap =
+            new WildcardMapBuilder()
+                    .addAlphabet(INSTANCE)
+                    .addWildcards(R, Y, S, W, K, M, B, D, H, V, N)
+                    .get();
+
     @Override
     public Collection<WildcardSymbol> getAllWildcards() {
         return Collections.unmodifiableCollection(wildcardsMap.valueCollection());
@@ -176,7 +182,7 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> imple
 
     @Override
     public WildcardSymbol getWildcardFor(char symbol) {
-        return wildcardsMap.get(symbol);
+        return wildcardsMap.get(toUpperCase(symbol));
     }
 
     @Override

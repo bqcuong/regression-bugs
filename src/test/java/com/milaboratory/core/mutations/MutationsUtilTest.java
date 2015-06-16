@@ -40,8 +40,8 @@ public class MutationsUtilTest {
 
         m = "SA2TD*3I12.";
         Assert.assertEquals(m,
-                MutationsUtil.encode(MutationsUtil.decode(m, IncompleteAminoAcidSequence.ALPHABET),
-                        IncompleteAminoAcidSequence.ALPHABET));
+                MutationsUtil.encode(MutationsUtil.decode(m, AminoAcidSequenceWithWildcards.ALPHABET),
+                        AminoAcidSequenceWithWildcards.ALPHABET));
     }
 
     @Test
@@ -114,8 +114,8 @@ public class MutationsUtilTest {
         String btop = "6ATCT38A-1AT3-G1AG1-G1GSCT6-C5G-2-G23".replace("S", "N");
         String qseqStr = "CTCAGAACGAACGCTGGCGGCATGCCTAACACATGCAAGTCGAACGAGAAACCAGAGCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGC".replace("S", "N");
         String sseqStr = "CTCAGATTGAACGCTGGCGGCATGCCTAACACATGCAAGTCGAACGGTAACGCGGGASTTTGCTCCTGGCGACGAGTGGCGGACGGGTGAGTAACGC".replace("S", "N");
-        IncompleteNucleotideSequence qseq = new IncompleteNucleotideSequence(qseqStr.replace("-", "")), sseq = new IncompleteNucleotideSequence(sseqStr.replace("-", ""));
-        Mutations muts = new Mutations<>(IncompleteNucleotideSequence.ALPHABET, btopDecode(btop, IncompleteNucleotideSequence.ALPHABET));
+        NucleotideSequenceWithWildcards qseq = new NucleotideSequenceWithWildcards(qseqStr.replace("-", "")), sseq = new NucleotideSequenceWithWildcards(sseqStr.replace("-", ""));
+        Mutations muts = new Mutations<>(NucleotideSequenceWithWildcards.ALPHABET, btopDecode(btop, NucleotideSequenceWithWildcards.ALPHABET));
         Assert.assertEquals(qseq, muts.mutate(sseq));
     }
 
@@ -124,8 +124,8 @@ public class MutationsUtilTest {
         String qseqStr = "CTCAGAACGAACGCTGGCGGCATGCCTAACACATGCAAGTCGAACGAGAAACCAGAGCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGC".replace("S","N");
         String sseqStr = "CTCAGATTGAACGCTGGCGGCATGCCTAACACATGCAAGTCGAACGGTAACGCGGGASTTTGCTCCTGGCGACGAGTGGCGGACGGGTGAGTAACGC".replace("S","N");
         String btop = "6ATCT38A-1AT3-G1AG1-G1GSCT6-C5G-2-G23".replace("S","N");
-        IncompleteNucleotideSequence qseq = new IncompleteNucleotideSequence(qseqStr.replace("-", "")), sseq = new IncompleteNucleotideSequence(sseqStr.replace("-", ""));
-        Mutations muts = new Mutations<>(IncompleteNucleotideSequence.ALPHABET, btopDecode(btop, IncompleteNucleotideSequence.ALPHABET));
+        NucleotideSequenceWithWildcards qseq = new NucleotideSequenceWithWildcards(qseqStr.replace("-", "")), sseq = new NucleotideSequenceWithWildcards(sseqStr.replace("-", ""));
+        Mutations muts = new Mutations<>(NucleotideSequenceWithWildcards.ALPHABET, btopDecode(btop, NucleotideSequenceWithWildcards.ALPHABET));
         Assert.assertEquals(qseq, muts.mutate(sseq));
     }
 }

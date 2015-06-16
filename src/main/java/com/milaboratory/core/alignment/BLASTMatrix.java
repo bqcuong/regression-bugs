@@ -17,7 +17,7 @@ package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.AminoAcidSequence;
-import com.milaboratory.core.sequence.IncompleteAminoAcidSequence;
+import com.milaboratory.core.sequence.AminoAcidSequenceWithWildcards;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,12 +45,12 @@ public enum BLASTMatrix implements java.io.Serializable {
                 }
             }
             return matrix;
-        } else if (alphabet == IncompleteAminoAcidSequence.ALPHABET) {
+        } else if (alphabet == AminoAcidSequenceWithWildcards.ALPHABET) {
             if (iMatrix == null) {
                 synchronized (this) {
                     if (iMatrix == null) {
                         try (InputStream stream = BLASTMatrix.class.getClassLoader().getResourceAsStream("matrices/" + this.name())) {
-                            iMatrix = readAABlastMatrix(stream, IncompleteAminoAcidSequence.ALPHABET,
+                            iMatrix = readAABlastMatrix(stream, AminoAcidSequenceWithWildcards.ALPHABET,
                                     '_', 'X');
                         } catch (IOException e) {
                             throw new RuntimeException(e);

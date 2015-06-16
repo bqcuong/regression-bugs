@@ -144,8 +144,8 @@ public final class NucleotideSequence extends Sequence<NucleotideSequence>
         return ALPHABET;
     }
 
-    public IncompleteNucleotideSequence toIncomplete() {
-        return new IncompleteNucleotideSequence(data.toByteArray());
+    public NucleotideSequenceWithWildcards toIncomplete() {
+        return new NucleotideSequenceWithWildcards(data.toByteArray());
     }
 
     @Override

@@ -156,7 +156,7 @@ public final class LinearGapAlignmentScoring<S extends Sequence<S>> extends Abst
      * @param matrix BLAST substitution matrix
      * @return standard amino acid BLAST scoring
      */
-    public static LinearGapAlignmentScoring<IncompleteAminoAcidSequence> getIAminoAcidBLASTScoring(BLASTMatrix matrix) {
+    public static LinearGapAlignmentScoring<AminoAcidSequenceWithWildcards> getIAminoAcidBLASTScoring(BLASTMatrix matrix) {
         return getIAminoAcidBLASTScoring(matrix, -5);
     }
 
@@ -167,9 +167,9 @@ public final class LinearGapAlignmentScoring<S extends Sequence<S>> extends Abst
      * @param gapPenalty penalty for gap, must be < 0
      * @return standard amino acid BLAST scoring
      */
-    public static LinearGapAlignmentScoring<IncompleteAminoAcidSequence> getIAminoAcidBLASTScoring(BLASTMatrix matrix, int gapPenalty) {
-        return new LinearGapAlignmentScoring<>(IncompleteAminoAcidSequence.ALPHABET,
-                matrix.getMatrix(IncompleteAminoAcidSequence.ALPHABET),
+    public static LinearGapAlignmentScoring<AminoAcidSequenceWithWildcards> getIAminoAcidBLASTScoring(BLASTMatrix matrix, int gapPenalty) {
+        return new LinearGapAlignmentScoring<>(AminoAcidSequenceWithWildcards.ALPHABET,
+                matrix.getMatrix(AminoAcidSequenceWithWildcards.ALPHABET),
                 gapPenalty);
     }
 }

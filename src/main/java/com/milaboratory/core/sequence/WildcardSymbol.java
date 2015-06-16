@@ -28,10 +28,12 @@ public final class WildcardSymbol {
     final char cSymbol;
     final byte bSymbol;
     final byte[] codes;
+    final byte wildcardCode;
 
-    WildcardSymbol(char cSymbol, byte... codes) {
-        this.cSymbol = cSymbol;
+    WildcardSymbol(char cSymbol, byte wildcardCode, byte[] codes) {
+        this.cSymbol = Character.toUpperCase(cSymbol);
         this.bSymbol = (byte) cSymbol;
+        this.wildcardCode = wildcardCode;
         this.codes = codes.clone();
         Arrays.sort(this.codes);
     }

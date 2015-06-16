@@ -34,7 +34,7 @@ public class WildcardSymbolTest {
             codes = new byte[count];
             for (int i = 1; i < count; ++i)
                 codes[i] = (byte) i;
-            symbol = new WildcardSymbol('a', codes);
+            symbol = new WildcardSymbol('a', (byte) 0, codes);
             unif = new int[count];
             for (int i = 0; i < tries; ++i)
                 unif[symbol.getUniformlyDistributedSymbol(i)]++;

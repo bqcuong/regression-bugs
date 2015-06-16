@@ -17,24 +17,24 @@ package com.milaboratory.core.sequence;
 
 import gnu.trove.map.hash.TCharObjectHashMap;
 
-import static java.lang.Character.toLowerCase;
-import static java.lang.Character.toUpperCase;
-
 final class WildcardMapBuilder {
     final TCharObjectHashMap<WildcardSymbol> map = new TCharObjectHashMap<>();
 
-    WildcardMapBuilder addWildcard(char c, byte... codes) {
-        char uC = toUpperCase(c);
-        WildcardSymbol wcSymbol = new WildcardSymbol(uC, codes);
-        map.put(toLowerCase(c), wcSymbol);
-        map.put(uC, wcSymbol);
+    WildcardMapBuilder addWildcard(WildcardSymbol wildcard) {
+        map.put(wildcard.cSymbol, wildcard);
+        return this;
+    }
+
+    WildcardMapBuilder addWildcards(WildcardSymbol... wildcards) {
+        for (WildcardSymbol wildcard : wildcards)
+            addWildcard(wildcard);
         return this;
     }
 
     WildcardMapBuilder addAlphabet(Alphabet alphabet) {
         for (byte i = 0; i < alphabet.size(); ++i) {
             char c = alphabet.symbolFromCode(i);
-            map.put(c, new WildcardSymbol(c, i));
+            map.put(c, new WildcardSymbol(c, i, new byte[]{i}));
         }
         return this;
     }

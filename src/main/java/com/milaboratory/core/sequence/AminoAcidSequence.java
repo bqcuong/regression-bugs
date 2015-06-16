@@ -89,8 +89,8 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return count;
     }
 
-    public IncompleteAminoAcidSequence toIncomplete() {
-        return new IncompleteAminoAcidSequence(data);
+    public AminoAcidSequenceWithWildcards toIncomplete() {
+        return new AminoAcidSequenceWithWildcards(data);
     }
 
     public static int getTriplet(NucleotideSequence nSequence, int tripletStart) {

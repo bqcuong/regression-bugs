@@ -58,8 +58,8 @@ public final class Alphabets {
     static {
         register(NucleotideAlphabet.INSTANCE);
         register(AminoAcidAlphabet.INSTANCE);
-        register(IncompleteAlphabet.INCOMPLETE_NUCLEOTIDE_ALPHABET);
-        register(IncompleteAlphabet.INCOMPLETE_AMINO_ACID_ALPHABET);
+        register(NucleotideAlphabetWithWildcards.INSTANCE);
+        register(AminoAcidAlphabetWithWildcards.INSTANCE);
     }
 
     /**

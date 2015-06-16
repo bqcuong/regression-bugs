@@ -19,43 +19,38 @@ import com.milaboratory.core.io.util.TestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 /**
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public class IncompleteSequenceTest {
+public class AbstractSequenceWithWildcardsTest {
 
     @Test
     public void test1() throws Exception {
-        Assert.assertEquals("AACCTT...AAA", new IncompleteNucleotideSequence("AACCTTxxxAAA").toString());
+        Assert.assertEquals("AACCTT...AAA", new NucleotideSequenceWithWildcards("AACCTTNNNAAA").toString());
         Assert.assertEquals("AACCTT...AAA..CC",
-                new IncompleteNucleotideSequence("AACCTTxxxAAA")
-                        .concatenate(new IncompleteNucleotideSequence("yyCC")).toString());
+                new NucleotideSequenceWithWildcards("AACCTTxxxAAA")
+                        .concatenate(new NucleotideSequenceWithWildcards("yyCC")).toString());
     }
 
     @Test
     public void test2() throws Exception {
-        Assert.assertEquals(new IncompleteNucleotideSequence("AACCTT...AAA..CC"),
-                new IncompleteNucleotideSequence("AACCTTxxxAAA")
-                        .concatenate(new IncompleteNucleotideSequence("yyCC")));
+        Assert.assertEquals(new NucleotideSequenceWithWildcards("AACCTT...AAA..CC"),
+                new NucleotideSequenceWithWildcards("AACCTTxxxAAA")
+                        .concatenate(new NucleotideSequenceWithWildcards("yyCC")));
     }
 
 
     @Test(expected = RuntimeException.class)
     public void test3() throws Exception {
-        IncompleteSequence seq = new IncompleteNucleotideSequence("AACCTT...AAA..CC");
+        AbstractSequenceWithWildcards seq = new NucleotideSequenceWithWildcards("AACCTT...AAA..CC");
         Assert.assertFalse(seq.isComplete());
         seq.convertToComplete();
     }
 
     @Test
     public void test4() throws Exception {
-        IncompleteSequence seq = new IncompleteNucleotideSequence("AACCTTAAACC");
+        AbstractSequenceWithWildcards seq = new NucleotideSequenceWithWildcards("AACCTTAAACC");
         Assert.assertTrue(seq.isComplete());
         Assert.assertEquals(new NucleotideSequence("AAccTTaAaCC"), seq.convertToComplete());
     }
@@ -63,7 +58,7 @@ public class IncompleteSequenceTest {
 
     @Test
     public void test5() throws Exception {
-        Object se = new IncompleteNucleotideSequence("AACCTT..AAACC");
+        Object se = new NucleotideSequenceWithWildcards("AACCTT..AAACC");
         TestUtil.assertJavaSerialization(se);
     }
 }

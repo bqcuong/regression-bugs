@@ -20,33 +20,21 @@ package com.milaboratory.core.sequence;
  *
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
- * @see com.milaboratory.core.sequence.IncompleteAlphabet
  * @see com.milaboratory.core.sequence.Sequence
- * @see com.milaboratory.core.sequence.IncompleteAlphabet
  */
-public final class IncompleteAminoAcidSequence
-        extends IncompleteSequence<IncompleteAminoAcidSequence, AminoAcidSequence> {
+public final class AminoAcidSequenceWithWildcards
+        extends AbstractSequenceWithWildcards<AminoAcidSequenceWithWildcards, AminoAcidSequence> {
     /**
      * Alphabet for incomplete amino acid sequences
      */
-    public static final IncompleteAlphabet<IncompleteAminoAcidSequence, AminoAcidSequence> ALPHABET
-            = IncompleteAlphabet.INCOMPLETE_AMINO_ACID_ALPHABET;
-    /**
-     * Binary code of unknown letter
-     */
-    public static final byte UNKNOWN_LETTER_CODE = ALPHABET.getUnknownLetterCode();
-
-    /**
-     * Unknown letter (e.g. 'X')
-     */
-    public static final char UNKNOWN_LETTER = ALPHABET.getUnknownLetterChar();
+    public static final AminoAcidAlphabetWithWildcards ALPHABET = AminoAcidAlphabetWithWildcards.INSTANCE;
 
     /**
      * Creates incomplete amino acid sequence from its string representation (case insensitive).
      *
      * @param sequence string representation (case insensitive) of incomplete amino acid sequence
      */
-    public IncompleteAminoAcidSequence(String sequence) {
+    public AminoAcidSequenceWithWildcards(String sequence) {
         super(sequence);
     }
 
@@ -55,17 +43,17 @@ public final class IncompleteAminoAcidSequence
      *
      * @param data binary data
      */
-    public IncompleteAminoAcidSequence(byte[] data) {
+    public AminoAcidSequenceWithWildcards(byte[] data) {
         super(data.clone());
     }
 
-    IncompleteAminoAcidSequence(byte[] data, boolean unsafe) {
+    AminoAcidSequenceWithWildcards(byte[] data, boolean unsafe) {
         super(data);
         assert unsafe;
     }
 
     @Override
-    public IncompleteAlphabet<IncompleteAminoAcidSequence, AminoAcidSequence> getAlphabet() {
+    public AminoAcidAlphabetWithWildcards getAlphabet() {
         return ALPHABET;
     }
 }
