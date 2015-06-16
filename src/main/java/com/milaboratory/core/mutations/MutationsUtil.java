@@ -222,6 +222,7 @@ public final class MutationsUtil {
         IntArrayList list = new IntArrayList();
         while (matcher.find()) {
             switch (matcher.group(0).charAt(0)) {
+                //TODO codeFromSymbolWithError ?
                 case 'S':
                     list.add(createSubstitution(Integer.parseInt(matcher.group(2)),
                             alphabet.codeFromSymbol(matcher.group(1).charAt(0)),

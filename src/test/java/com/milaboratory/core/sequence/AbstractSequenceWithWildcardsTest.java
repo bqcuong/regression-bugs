@@ -27,23 +27,21 @@ public class AbstractSequenceWithWildcardsTest {
 
     @Test
     public void test1() throws Exception {
-        Assert.assertEquals("AACCTT...AAA", new NucleotideSequenceWithWildcards("AACCTTNNNAAA").toString());
-        Assert.assertEquals("AACCTT...AAA..CC",
-                new NucleotideSequenceWithWildcards("AACCTTxxxAAA")
-                        .concatenate(new NucleotideSequenceWithWildcards("yyCC")).toString());
+        Assert.assertEquals("AACCTTNNNAAA",
+                new NucleotideSequenceWithWildcards("AACCTTnnnAAA").toString());
+        Assert.assertEquals("AACCTTNNNAAANNCC",
+                new NucleotideSequenceWithWildcards("AACCTTnnnAAA")
+                        .concatenate(new NucleotideSequenceWithWildcards("nnCC")).toString());
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test2() throws Exception {
-        Assert.assertEquals(new NucleotideSequenceWithWildcards("AACCTT...AAA..CC"),
-                new NucleotideSequenceWithWildcards("AACCTTxxxAAA")
-                        .concatenate(new NucleotideSequenceWithWildcards("yyCC")));
+        new NucleotideSequenceWithWildcards("AACC..AAACC");
     }
-
 
     @Test(expected = RuntimeException.class)
     public void test3() throws Exception {
-        AbstractSequenceWithWildcards seq = new NucleotideSequenceWithWildcards("AACCTT...AAA..CC");
+        AbstractSequenceWithWildcards seq = new NucleotideSequenceWithWildcards("AACCTTnnnAAAnnCC");
         Assert.assertFalse(seq.isComplete());
         seq.convertToComplete();
     }
@@ -58,7 +56,7 @@ public class AbstractSequenceWithWildcardsTest {
 
     @Test
     public void test5() throws Exception {
-        Object se = new NucleotideSequenceWithWildcards("AACCTT..AAACC");
+        Object se = new NucleotideSequenceWithWildcards("AACCTTnnAAACC");
         TestUtil.assertJavaSerialization(se);
     }
 }

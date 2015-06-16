@@ -56,7 +56,7 @@ abstract class AbstractAlphabetWithWildcards<IS extends AbstractSequenceWithWild
 
     @Override
     public byte codeFromSymbol(char symbol) {
-        return symbolToCode.get(symbol);
+        return symbolToCode.get(Character.toUpperCase(symbol));
     }
 
     /**

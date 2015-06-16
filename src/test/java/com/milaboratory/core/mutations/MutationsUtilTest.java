@@ -38,7 +38,7 @@ public class MutationsUtilTest {
         Assert.assertEquals(m,
                 MutationsUtil.encode(MutationsUtil.decode(m, AminoAcidSequence.ALPHABET), AminoAcidSequence.ALPHABET));
 
-        m = "SA2TD*3I12.";
+        m = "SA2TD*3I12N";
         Assert.assertEquals(m,
                 MutationsUtil.encode(MutationsUtil.decode(m, AminoAcidSequenceWithWildcards.ALPHABET),
                         AminoAcidSequenceWithWildcards.ALPHABET));
