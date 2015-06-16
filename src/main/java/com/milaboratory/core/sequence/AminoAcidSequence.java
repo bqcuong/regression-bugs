@@ -211,7 +211,6 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
 
             if (aminoAcidPosition != that.aminoAcidPosition) return false;
             return positionInTriplet == that.positionInTriplet;
-
         }
 
         @Override
