@@ -15,6 +15,11 @@
  */
 package com.milaboratory.core.sequence;
 
+import gnu.trove.map.hash.TCharObjectHashMap;
+
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Amino acid alphabet with additional symbols.<br/> "~" - non full codon. 2 or 1 nucleotides.<br/> "-" - no nucleotides
  * <p>
@@ -29,7 +34,7 @@ package com.milaboratory.core.sequence;
  * @see com.milaboratory.core.sequence.AminoAcidSequence
  * @see com.milaboratory.core.sequence.Sequence
  */
-public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> {
+public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> implements WithWildcards {
     static final AminoAcidAlphabet INSTANCE = new AminoAcidAlphabet();
     public static final byte Stop = 0;
     public static final byte A = 1;
@@ -97,5 +102,27 @@ public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequ
     @Override
     AminoAcidSequence createUnsafe(byte[] array) {
         return new AminoAcidSequence(array, true);
+    }
+
+    private static TCharObjectHashMap<WildcardSymbol> wildcardsMap =
+            new WildcardMapBuilder()
+                    /* Exact match letters */
+                    .addAlphabet(INSTANCE)
+                    /* Two-letter wildcard */
+                    .addWildcard('B', N, D)
+                    .addWildcard('J', I, L)
+                    .addWildcard('Z', E, Q)
+                    /* X */
+                    .addWildcard('X', A, C, D, E, F, G, H, I, K, L, M, N, P, Q, R, S, T, V, W, Y)
+                    .get();
+
+    @Override
+    public Collection<WildcardSymbol> getAllWildcards() {
+        return Collections.unmodifiableCollection(wildcardsMap.valueCollection());
+    }
+
+    @Override
+    public WildcardSymbol getWildcardFor(char symbol) {
+        return wildcardsMap.get(symbol);
     }
 }

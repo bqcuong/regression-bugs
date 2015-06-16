@@ -2,6 +2,7 @@ package com.milaboratory.core.alignment.blast;
 
 import com.milaboratory.core.sequence.IncompleteNucleotideSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -11,6 +12,7 @@ import java.io.PrintStream;
 /**
  * Created by poslavsky on 15/06/15.
  */
+@Ignore
 public class BlastAlignerTest {
     private static final String outfmt = "7 btop qstart qend sstart send score sseqid";
 
