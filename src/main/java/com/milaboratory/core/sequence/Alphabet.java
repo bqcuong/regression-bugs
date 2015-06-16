@@ -72,6 +72,21 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
     public abstract byte codeFromSymbol(char symbol);
 
     /**
+     * Gets the binary code corresponding to given symbol (case insensitive) or throws {@link IllegalArgumentException}
+     * if there is no such symbol in this alphabet
+     *
+     * @param symbol symbol to convert
+     * @return binary code of the symbol (case insensitive)
+     * @throws IllegalArgumentException if there is no such symbol in the alphabet
+     */
+    public final byte codeFromSymbolWithException(char symbol) {
+        byte b = codeFromSymbol(symbol);
+        if (b == -1)
+            throw new IllegalArgumentException("Unknown letter \'" + symbol + "\'");
+        return b;
+    }
+
+    /**
      * Returns a sequence builder for corresponding sequence type.
      *
      * @return sequence builder for corresponding sequence type

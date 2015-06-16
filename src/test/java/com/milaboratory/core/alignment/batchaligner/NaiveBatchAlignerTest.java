@@ -20,7 +20,7 @@ import com.milaboratory.core.sequence.NucleotideSequence;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BatchAlignerTest {
+public class NaiveBatchAlignerTest {
     @Test
     public void test1() {
         NucleotideSequence ref1 = new NucleotideSequence("ATAAGAGACACATAGGTCTGGC"),
@@ -31,22 +31,22 @@ public class BatchAlignerTest {
 
         NucleotideSequence query = new NucleotideSequence("ATCAGAGACACATAGGTCTGGC");
 
-        BatchAlignerParameters<NucleotideSequence> batchAlignerParameters = new BatchAlignerParameters<>(5,
+        NaiveBatchAlignerParameters<NucleotideSequence> batchAlignerParameters = new NaiveBatchAlignerParameters<>(5,
                 0.5f, 0f, true, AffineGapAlignmentScoring.getNucleotideBLASTScoring());
 
-        BatchAligner<NucleotideSequence> batchAligner = new BatchAligner<>(batchAlignerParameters);
+        NaiveBatchAligner<NucleotideSequence> naiveBatchAligner = new NaiveBatchAligner<>(batchAlignerParameters);
 
-        batchAligner.addReference(ref1);
-        batchAligner.addReference(ref2);
-        batchAligner.addReference(ref3);
-        batchAligner.addReference(ref4);
-        batchAligner.addReference(ref5);
+        naiveBatchAligner.addReference(ref1);
+        naiveBatchAligner.addReference(ref2);
+        naiveBatchAligner.addReference(ref3);
+        naiveBatchAligner.addReference(ref4);
+        naiveBatchAligner.addReference(ref5);
 
-        BatchAlignmentResult alignmentResult = batchAligner.align(query);
+        NaiveBatchAlignmentResult alignmentResult = naiveBatchAligner.align(query);
 
         System.out.println(alignmentResult);
 
-        Assert.assertEquals(0, ((BatchAlignmentHit) alignmentResult.hits.get(0)).id);
+        Assert.assertEquals(0, ((NaiveBatchAlignmentHit) alignmentResult.hits.get(0)).id);
         Assert.assertEquals(4, alignmentResult.hits.size());
     }
 }

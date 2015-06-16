@@ -239,4 +239,44 @@ public final class MutationsUtil {
         }
         return list.toArray();
     }
+
+    private static final Pattern btopPattern = Pattern.compile("([a-zA-Z]{2}|-[a-zA-Z]|[a-zA-Z]-|[0-9]+)");
+
+    /**
+     * Decodes btop-encoded mutations.
+     *
+     * @param alignment btop-encoded mutations
+     * @return MiLib mutations
+     */
+    public static int[] btopDecode(String alignment, Alphabet alphabet) {
+        Matcher matcher = btopPattern.matcher(alignment);
+        IntArrayList mutations = new IntArrayList();
+        int sPosition = 0;
+        while (matcher.find()) {
+            String g = matcher.group();
+            if (isPositiveInteger(g))
+                sPosition += Integer.parseInt(g);
+            else if (g.charAt(0) == '-') {
+                mutations.add(createDeletion(sPosition, alphabet.codeFromSymbolWithException(g.charAt(1))));
+                ++sPosition;
+            } else if (g.charAt(1) == '-')
+                mutations.add(createInsertion(sPosition, alphabet.codeFromSymbolWithException(g.charAt(0))));
+            else {
+                mutations.add(createSubstitution(sPosition, alphabet.codeFromSymbolWithException(g.charAt(1)), alphabet.codeFromSymbolWithException(g.charAt(0))));
+                ++sPosition;
+            }
+        }
+        return mutations.toArray();
+    }
+
+    private static boolean isPositiveInteger(String str) {
+        if (str.isEmpty())
+            return false;
+        for (int i = 0, length = str.length(); i < length; i++) {
+            char c = str.charAt(i);
+            if (c <= '/' || c >= ':')
+                return false;
+        }
+        return true;
+    }
 }

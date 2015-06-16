@@ -15,33 +15,31 @@
  */
 package com.milaboratory.core.alignment.batchaligner;
 
-import com.milaboratory.core.alignment.AlignmentResult;
+import com.milaboratory.core.alignment.Alignment;
+import com.milaboratory.core.alignment.AlignmentHit;
 import com.milaboratory.core.sequence.Sequence;
 
-import java.util.List;
+public class NaiveBatchAlignmentHit<S extends Sequence<S>> implements AlignmentHit<S> {
+    final int id;
+    final Alignment<S> alignment;
 
-public class BatchAlignmentResult<S extends Sequence<S>> implements AlignmentResult<S> {
-    final List<BatchAlignmentHit<S>> hits;
-
-    public BatchAlignmentResult(List<BatchAlignmentHit<S>> hits) {
-        this.hits = hits;
+    public NaiveBatchAlignmentHit(int id, Alignment<S> alignment) {
+        this.id = id;
+        this.alignment = alignment;
     }
 
     @Override
-    public List<BatchAlignmentHit<S>> getHits() {
-        return hits;
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public Alignment<S> getAlignment() {
+        return alignment;
     }
 
     @Override
     public String toString() {
-        String result = "Batch alignment with " + hits.size() + " hits";
-        for (BatchAlignmentHit hit : hits) {
-            result += "\n" + hit.toString();
-        }
-        return result;
-    }
-
-    public boolean isEmpty() {
-        return hits.isEmpty();
+        return "- Hit ref#" + id + " score=" + alignment.getScore() + "\n" + alignment.toString();
     }
 }

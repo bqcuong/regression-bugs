@@ -18,14 +18,14 @@ package com.milaboratory.core.alignment.batchaligner;
 import com.milaboratory.core.alignment.AlignmentScoring;
 import com.milaboratory.core.sequence.Sequence;
 
-public class BatchAlignerParameters<S extends Sequence<S>> {
+public class NaiveBatchAlignerParameters<S extends Sequence<S>> {
     private int maxHits;
     private float relativeMinScore, absoluteMinScore;
     private boolean global;
     private AlignmentScoring<S> scoring;
 
-    public BatchAlignerParameters(int maxHits, float relativeMinScore, float absoluteMinScore,
-                                  boolean global, AlignmentScoring<S> scoring) {
+    public NaiveBatchAlignerParameters(int maxHits, float relativeMinScore, float absoluteMinScore,
+                                       boolean global, AlignmentScoring<S> scoring) {
         this.maxHits = maxHits;
         this.relativeMinScore = relativeMinScore;
         this.absoluteMinScore = absoluteMinScore;

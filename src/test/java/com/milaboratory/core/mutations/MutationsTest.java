@@ -23,11 +23,6 @@ import com.milaboratory.core.sequence.NucleotideSequence;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

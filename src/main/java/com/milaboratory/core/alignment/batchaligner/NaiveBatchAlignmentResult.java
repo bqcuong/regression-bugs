@@ -15,31 +15,33 @@
  */
 package com.milaboratory.core.alignment.batchaligner;
 
-import com.milaboratory.core.alignment.Alignment;
-import com.milaboratory.core.alignment.AlignmentHit;
+import com.milaboratory.core.alignment.AlignmentResult;
 import com.milaboratory.core.sequence.Sequence;
 
-public class BatchAlignmentHit<S extends Sequence<S>> implements AlignmentHit<S> {
-    final int id;
-    final Alignment<S> alignment;
+import java.util.List;
 
-    public BatchAlignmentHit(int id, Alignment<S> alignment) {
-        this.id = id;
-        this.alignment = alignment;
+public class NaiveBatchAlignmentResult<S extends Sequence<S>> implements AlignmentResult<S> {
+    final List<NaiveBatchAlignmentHit<S>> hits;
+
+    public NaiveBatchAlignmentResult(List<NaiveBatchAlignmentHit<S>> hits) {
+        this.hits = hits;
     }
 
     @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
-    public Alignment<S> getAlignment() {
-        return alignment;
+    public List<NaiveBatchAlignmentHit<S>> getHits() {
+        return hits;
     }
 
     @Override
     public String toString() {
-        return "- Hit ref#" + id + " score=" + alignment.getScore() + "\n" + alignment.toString();
+        String result = "Batch alignment with " + hits.size() + " hits";
+        for (NaiveBatchAlignmentHit hit : hits) {
+            result += "\n" + hit.toString();
+        }
+        return result;
+    }
+
+    public boolean isEmpty() {
+        return hits.isEmpty();
     }
 }

@@ -24,11 +24,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class BatchAligner<S extends Sequence<S>> {
-    final BatchAlignerParameters<S> parameters;
+public class NaiveBatchAligner<S extends Sequence<S>> {
+    final NaiveBatchAlignerParameters<S> parameters;
     final List<S> references = new ArrayList<>();
 
-    public BatchAligner(BatchAlignerParameters<S> parameters) {
+    public NaiveBatchAligner(NaiveBatchAlignerParameters<S> parameters) {
         this.parameters = parameters;
     }
 
@@ -41,8 +41,8 @@ public class BatchAligner<S extends Sequence<S>> {
         return references.get(index);
     }
 
-    public BatchAlignmentResult<S> align(final S sequence) {
-        ArrayList<BatchAlignmentHit<S>> alignments = new ArrayList<>(references.size());
+    public NaiveBatchAlignmentResult<S> align(final S sequence) {
+        ArrayList<NaiveBatchAlignmentHit<S>> alignments = new ArrayList<>(references.size());
         for (int i = 0; i < references.size(); i++)
             alignments.add(alignSingle(i, sequence));
         Collections.sort(alignments, new HitComparator());
@@ -50,20 +50,20 @@ public class BatchAligner<S extends Sequence<S>> {
         float scoreThreshold = Math.max(topScore * parameters.getRelativeMinScore(), parameters.getAbsoluteMinScore());
         for (int i = 0; i < alignments.size(); i++)
             if (i == parameters.getMaxHits() || alignments.get(i).getAlignment().getScore() < scoreThreshold)
-                return new BatchAlignmentResult<>(new ArrayList<>(alignments.subList(0, i)));
-        return new BatchAlignmentResult<>(alignments);
+                return new NaiveBatchAlignmentResult<>(new ArrayList<>(alignments.subList(0, i)));
+        return new NaiveBatchAlignmentResult<>(alignments);
     }
 
-    BatchAlignmentHit<S> alignSingle(int referenceId, S query) {
+    NaiveBatchAlignmentHit<S> alignSingle(int referenceId, S query) {
         Alignment<S> alignment = parameters.isGlobal() ?
                 Aligner.alignGlobal(parameters.getScoring(), references.get(referenceId), query) :
                 Aligner.alignLocal(parameters.getScoring(), references.get(referenceId), query);
-        return new BatchAlignmentHit<>(referenceId, alignment);
+        return new NaiveBatchAlignmentHit<>(referenceId, alignment);
     }
 
-    private static class HitComparator implements Comparator<BatchAlignmentHit> {
+    private static class HitComparator implements Comparator<NaiveBatchAlignmentHit> {
         @Override
-        public int compare(BatchAlignmentHit o1, BatchAlignmentHit o2) {
+        public int compare(NaiveBatchAlignmentHit o1, NaiveBatchAlignmentHit o2) {
             return Float.compare(o2.getAlignment().getScore(), o1.getAlignment().getScore());
         }
     }
