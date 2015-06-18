@@ -15,7 +15,10 @@
  */
 package com.milaboratory.core.sequence;
 
-final class Translator {
+/**
+ * Defines standard genetic code.
+ */
+final class GeneticCode {
     private static byte[] code = null;
 
     static {

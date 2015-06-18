@@ -5,7 +5,7 @@ package com.milaboratory.core.sequence;
  * @author Stanislav Poslavsky
  */
 public final class NucleotideAlphabetWithWildcards extends
-        AbstractAlphabetWithWildcards<NucleotideSequenceWithWildcards, NucleotideSequence> {
+        AlphabetWithWildcards<NucleotideSequenceWithWildcards, NucleotideSequence> {
     public static final NucleotideAlphabetWithWildcards INSTANCE = new NucleotideAlphabetWithWildcards();
 
     private NucleotideAlphabetWithWildcards() {

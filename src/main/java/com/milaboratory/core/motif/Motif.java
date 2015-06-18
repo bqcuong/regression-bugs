@@ -18,7 +18,7 @@ package com.milaboratory.core.motif;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.sequence.WildcardSymbol;
-import com.milaboratory.core.sequence.WithWildcards;
+import com.milaboratory.core.sequence.DefinesWildcards;
 import com.milaboratory.util.BitArray;
 
 import java.util.Arrays;
@@ -50,8 +50,8 @@ public final class Motif<S extends Sequence<S>> implements java.io.Serializable 
         this.size = motif.length();
         int alphabetSize = alphabet.size();
         this.data = new BitArray(alphabetSize * size);
-        if (alphabet instanceof WithWildcards) {
-            WithWildcards wildcardAlphabet = (WithWildcards) alphabet;
+        if (alphabet instanceof DefinesWildcards) {
+            DefinesWildcards wildcardAlphabet = (DefinesWildcards) alphabet;
             for (int i = 0; i < size; ++i) {
                 final WildcardSymbol wildcard = wildcardAlphabet.getWildcardFor(motif.charAt(i));
                 if (wildcard == null)

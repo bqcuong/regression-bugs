@@ -17,13 +17,13 @@ package com.milaboratory.core.sequence;
 
 /**
  * Representation of amino acid sequences. Methods for translating nucleotide to amino acid and vice versa are placed
- * in {@link com.milaboratory.core.sequence.Translator}
+ * in {@link GeneticCode}
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
  * @see com.milaboratory.core.sequence.Sequence
  * @see com.milaboratory.core.sequence.AminoAcidAlphabet
- * @see com.milaboratory.core.sequence.Translator
+ * @see GeneticCode
  */
 public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequence> {
     /**
@@ -114,7 +114,7 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
      * @return byte-code of encoded amino acid
      */
     public static byte getAminoAcid(NucleotideSequence nSequence, int tripletStart) {
-        return Translator.getAminoAcid(getTriplet(nSequence, tripletStart));
+        return GeneticCode.getAminoAcid(getTriplet(nSequence, tripletStart));
     }
 
     /**
@@ -140,7 +140,7 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
             throw new IllegalArgumentException("Only nucleotide sequences with size multiple " +
                     "of three are supported (in-frame).");
         byte[] aaData = new byte[sequence.size() / 3];
-        Translator.translate(aaData, 0, sequence, 0, sequence.size());
+        GeneticCode.translate(aaData, 0, sequence, 0, sequence.size());
         return new AminoAcidSequence(aaData, true);
     }
 
@@ -230,18 +230,18 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
             int aaLength = ns.size() / 3;
             int leftAALength = (aaLength + 1) / 2;
             int rightAALength = aaLength - leftAALength;
-            Translator.translate(data, 0, ns, 0, leftAALength * 3);
-            Translator.translate(data, data.length - rightAALength, ns, ns.size() - rightAALength * 3, rightAALength * 3);
+            GeneticCode.translate(data, 0, ns, 0, leftAALength * 3);
+            GeneticCode.translate(data, data.length - rightAALength, ns, ns.size() - rightAALength * 3, rightAALength * 3);
             if (ns.size() % 3 != 0)
                 data[leftAALength] = AminoAcidAlphabet.IncompleteCodon;
         } else if (fromLeft) {
-            Translator.translate(data, 0, ns, 0, ns.size() / 3 * 3);
+            GeneticCode.translate(data, 0, ns, 0, ns.size() / 3 * 3);
             if (includeIncomplete && ns.size() % 3 != 0)
                 data[data.length - 1] = AminoAcidAlphabet.IncompleteCodon;
         } else {
             if (includeIncomplete && ns.size() % 3 != 0)
                 data[0] = AminoAcidAlphabet.IncompleteCodon;
-            Translator.translate(data,
+            GeneticCode.translate(data,
                     (includeIncomplete && ns.size() % 3 != 0) ? 1 : 0, ns, ns.size() % 3, ns.size() / 3 * 3);
         }
         return new AminoAcidSequence(data, true);

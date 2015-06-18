@@ -48,15 +48,6 @@ public final class WildcardSymbol {
     }
 
     /**
-     * Returns a wildcard binary code.
-     *
-     * @return wildcard binary code
-     */
-    public byte getByteSymbol() {
-        return bSymbol;
-    }
-
-    /**
      * Returns a number of letters corresponding to this wildcard. For example, for nucleotide wildcard 'R' the
      * corresponding nucleotides are 'A' and 'G', so size is 2.
      *
@@ -84,6 +75,28 @@ public final class WildcardSymbol {
      */
     public boolean contains(byte code) {
         return binarySearch(codes, code) >= 0;
+    }
+
+    /**
+     * Returns {@literal true} if set of symbols represented by this wildcard intersects with set of symbols
+     * represented by {@code otherWildcard}.
+     *
+     * @param otherWildcard other wildcard
+     * @return {@literal true} if set of symbols represented by this wildcard intersects with set of symbols represented
+     * by {@code otherWildcard}
+     */
+    public boolean intersectsWith(WildcardSymbol otherWildcard) {
+        byte[] a = this.codes, b = otherWildcard.codes;
+        int bPointer = 0, aPointer = 0;
+        while (aPointer < a.length && bPointer < b.length)
+            if (a[aPointer] == b[bPointer]) {
+                return true;
+            } else if (a[aPointer] < b[bPointer])
+                aPointer++;
+            else if (a[aPointer] > b[bPointer]) {
+                bPointer++;
+            }
+        return false;
     }
 
     /**

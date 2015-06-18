@@ -31,11 +31,11 @@ import static java.lang.Character.toUpperCase;
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
- * @see com.milaboratory.core.sequence.WithWildcards
+ * @see DefinesWildcards
  * @see com.milaboratory.core.sequence.Alphabet
  * @see com.milaboratory.core.sequence.NucleotideSequence
  */
-public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> implements WithWildcards {
+public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> implements DefinesWildcards {
     /**
      * Adenine byte representation
      */

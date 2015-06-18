@@ -30,7 +30,7 @@ abstract class AbstractSequenceWithWildcards<IS extends AbstractSequenceWithWild
     }
 
     @Override
-    public abstract AbstractAlphabetWithWildcards<IS, S> getAlphabet();
+    public abstract AlphabetWithWildcards<IS, S> getAlphabet();
 
     public final boolean isComplete() {
         for (byte c : data)

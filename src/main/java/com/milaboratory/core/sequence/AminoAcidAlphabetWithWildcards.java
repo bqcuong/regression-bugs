@@ -5,7 +5,7 @@ package com.milaboratory.core.sequence;
  * @author Stanislav Poslavsky
  */
 public final class AminoAcidAlphabetWithWildcards extends
-        AbstractAlphabetWithWildcards<AminoAcidSequenceWithWildcards, AminoAcidSequence> {
+        AlphabetWithWildcards<AminoAcidSequenceWithWildcards, AminoAcidSequence> {
     public static final AminoAcidAlphabetWithWildcards INSTANCE = new AminoAcidAlphabetWithWildcards();
 
     private AminoAcidAlphabetWithWildcards() {

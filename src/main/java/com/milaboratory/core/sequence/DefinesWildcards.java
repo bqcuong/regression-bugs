@@ -23,7 +23,7 @@ import java.util.Collection;
  * @see com.milaboratory.core.sequence.NucleotideAlphabet
  * @see com.milaboratory.core.sequence.WildcardSymbol
  */
-public interface WithWildcards {
+public interface DefinesWildcards {
     /**
      * Returns a collection of all wildcards defined for this.
      *
@@ -38,4 +38,11 @@ public interface WithWildcards {
      * @return wildcard object for specified letter
      */
     WildcardSymbol getWildcardFor(char symbol);
+
+    /**
+     * Returns alphabet which includes all wildcards defined in this alphabets as normal letters.
+     *
+     * @return alphabet which includes all wildcards defined in this alphabets as normal letters
+     */
+    Alphabet getAlphabetWithWildcard();
 }

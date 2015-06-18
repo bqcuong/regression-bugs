@@ -23,7 +23,7 @@ import org.junit.Test;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public class AbstractSequenceWithWildcardsTest {
+public class AbstractSequenceDefinesWildcardsTest {
 
     @Test
     public void test1() throws Exception {

@@ -19,10 +19,11 @@ import com.milaboratory.util.Bit2Array;
 import com.milaboratory.util.HashFunctions;
 
 /**
+ * Don't use this class.
+ *
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-
 public final class UnsafeFactory {
     private UnsafeFactory() {
     }

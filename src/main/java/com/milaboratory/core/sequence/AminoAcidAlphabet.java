@@ -36,7 +36,7 @@ import static java.lang.Character.toUpperCase;
  * @see com.milaboratory.core.sequence.AminoAcidSequence
  * @see com.milaboratory.core.sequence.Sequence
  */
-public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> implements WithWildcards {
+public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> implements DefinesWildcards {
     static final AminoAcidAlphabet INSTANCE = new AminoAcidAlphabet();
     /**
      * Stop codon byte representation

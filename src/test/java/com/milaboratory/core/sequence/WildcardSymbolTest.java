@@ -43,4 +43,11 @@ public class WildcardSymbolTest {
                 Assert.assertTrue(actual < (1. + precision) * expected && actual > (1. - precision) * expected);
         }
     }
+
+    @Test
+    public void testIntersection() throws Exception {
+        Assert.assertTrue(NucleotideAlphabet.S.intersectsWith(NucleotideAlphabet.Y));
+        Assert.assertFalse(NucleotideAlphabet.S.intersectsWith(NucleotideAlphabet.W));
+        Assert.assertTrue(NucleotideAlphabet.S.intersectsWith(NucleotideAlphabet.INSTANCE.getWildcardFor('C')));
+    }
 }
