@@ -142,15 +142,27 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
         return "Alphabet{" + alphabetName + '}';
     }
 
+    /**
+     * Returns address in memory. All Alphabet implementations must be singletons.
+     */
     @Override
     public final int hashCode() {
         return super.hashCode();
     }
 
+    /**
+     * Checks that in is the same object (this points to the same address as {@code obj})
+     * All Alphabet implementations must be singletons.
+     *
+     * @param obj alphabet to check for equality with
+     * @return {@literal true} if alphabets are the same
+     */
     @Override
     public final boolean equals(Object obj) {
         return obj == this;
     }
+
+    /* Internal methods for Java Serialization */
 
     protected Object writeReplace() throws ObjectStreamException {
         return new AlphabetSerialization(id);

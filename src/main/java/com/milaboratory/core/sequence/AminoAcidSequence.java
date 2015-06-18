@@ -16,8 +16,8 @@
 package com.milaboratory.core.sequence;
 
 /**
- * Representation of amino acid sequences. Methods for translating nucleotide to amino acid and vice versa are placed in
- * {@link com.milaboratory.core.sequence.Translator}
+ * Representation of amino acid sequences. Methods for translating nucleotide to amino acid and vice versa are placed
+ * in {@link com.milaboratory.core.sequence.Translator}
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
@@ -93,19 +93,48 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return new AminoAcidSequenceWithWildcards(data);
     }
 
+    /**
+     * Extracts {@literal int} representation of triplet starting from specified position (see implementation for
+     * details).
+     *
+     * @param nSequence    nucleotide sequence
+     * @param tripletStart position of first nucleotide of triplet
+     * @return {@literal int} representation of triplet
+     */
     public static int getTriplet(NucleotideSequence nSequence, int tripletStart) {
         int triplet = (nSequence.codeAt(tripletStart) << 4) | (nSequence.codeAt(tripletStart + 1) << 2) | nSequence.codeAt(tripletStart + 2);
         return triplet;
     }
 
+    /**
+     * Returns amino acid encoded by triplet starting from specified position (in terms of standard genetic code)
+     *
+     * @param nSequence    nucleotide sequence
+     * @param tripletStart position of first nucleotide of triplet
+     * @return byte-code of encoded amino acid
+     */
     public static byte getAminoAcid(NucleotideSequence nSequence, int tripletStart) {
         return Translator.getAminoAcid(getTriplet(nSequence, tripletStart));
     }
 
+    /**
+     * Translate sequence in one of frames (-1, -2, -3 frames are not implemented, use {@link
+     * NucleotideSequence#getReverseComplement()}) discarding all incomplete codons on both boundaries.
+     *
+     * @param sequence nucleotide sequence to translate
+     * @param frame    frame (1, 2 or 3)
+     * @return translated amino acid sequence
+     */
     public static AminoAcidSequence translate(NucleotideSequence sequence, int frame) {
         return translate(sequence.getRange(frame, frame + (sequence.size() - frame) / 3 * 3));
     }
 
+    /**
+     * Translates sequence having length divisible by 3, starting from first nucleotide.
+     *
+     * @param sequence nucleotide sequence
+     * @return translated amino acid sequence
+     */
     public static AminoAcidSequence translate(NucleotideSequence sequence) {
         if (sequence.size() % 3 != 0)
             throw new IllegalArgumentException("Only nucleotide sequences with size multiple " +
@@ -115,6 +144,15 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return new AminoAcidSequence(aaData, true);
     }
 
+    /**
+     * Use one of specialized method instead:
+     *
+     * <ul>
+     * <li>{@link #convertPositionFromLeft(int, int)}</li>
+     * <li>{@link #convertPositionFromRight(int, int)}</li>
+     * <li>{@link #convertPositionFromCenter(int, int)}</li>
+     * </ul>
+     */
     public static AminoAcidSequencePosition convertPosition(int ntPosition, Boolean fromLeft, boolean includeIncomplete, int ntSequenceLength) {
         int aaSequenceSize = (ntSequenceLength + 2) / 3;
         if (fromLeft == null) {
@@ -138,18 +176,51 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         }
     }
 
-    public static AminoAcidSequencePosition convertFromRight(int ntPosition, int ntSequenceLength) {
+    /**
+     * Converts position from nucleotide to amino acid sequence if it was translated using
+     * {@link #translateFromRight(NucleotideSequence)}.
+     *
+     * @param ntPosition       position in nucleotide sequence
+     * @param ntSequenceLength length of nucleotide sequence
+     * @return position in amino acid sequence
+     */
+    public static AminoAcidSequencePosition convertPositionFromRight(int ntPosition, int ntSequenceLength) {
         return convertPosition(ntPosition, false, true, ntSequenceLength);
     }
 
-    public static AminoAcidSequencePosition convertFromLeft(int ntPosition, int ntSequenceLength) {
+    /**
+     * Converts position from nucleotide to amino acid sequence if it was translated using
+     * {@link #translateFromLeft(NucleotideSequence)}.
+     *
+     * @param ntPosition       position in nucleotide sequence
+     * @param ntSequenceLength length of nucleotide sequence
+     * @return position in amino acid sequence
+     */
+    public static AminoAcidSequencePosition convertPositionFromLeft(int ntPosition, int ntSequenceLength) {
         return convertPosition(ntPosition, true, true, ntSequenceLength);
     }
 
-    public static AminoAcidSequencePosition convertFromCenter(int ntPosition, int ntSequenceLength) {
+    /**
+     * Converts position from nucleotide to amino acid sequence if it was translated using
+     * {@link #translateFromCenter(NucleotideSequence)}.
+     *
+     * @param ntPosition       position in nucleotide sequence
+     * @param ntSequenceLength length of nucleotide sequence
+     * @return position in amino acid sequence
+     */
+    public static AminoAcidSequencePosition convertPositionFromCenter(int ntPosition, int ntSequenceLength) {
         return convertPosition(ntPosition, null, true, ntSequenceLength);
     }
 
+    /**
+     * Use one of specialized method instead:
+     *
+     * <ul>
+     * <li>{@link #translateFromLeft(NucleotideSequence)}</li>
+     * <li>{@link #translateFromRight(NucleotideSequence)}</li>
+     * <li>{@link #translateFromCenter(NucleotideSequence)}</li>
+     * </ul>
+     */
     public static AminoAcidSequence translate(Boolean fromLeft, boolean includeIncomplete, NucleotideSequence ns) {
         byte[] data;
         data = new byte[(ns.size() + (includeIncomplete ? 2 : 0)) / 3];
@@ -176,20 +247,84 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return new AminoAcidSequence(data, true);
     }
 
+    /**
+     * Translates sequence from the right side, so the last (3rd) nucleotide of last triplet matches last nucleotide of
+     * the sequence. Incomplete codon added at the first position of resulting amino acid sequence if initial
+     * nucleotide
+     * sequence length is not divisible by 3.
+     *
+     * <pre>
+     *
+     * Example for sequence: ATGTCACA
+     *
+     *  AT GTC ACA
+     *  _   V   T
+     * </pre>
+     *
+     * @param ns nucleotide sequence to translate
+     * @return result of translation (see description)
+     */
     public static AminoAcidSequence translateFromRight(NucleotideSequence ns) {
         return translate(false, true, ns);
     }
 
+    /**
+     * Translates sequence from the left side, so the first nucleotide of the first triplet matches first nucleotide of
+     * the sequence. Incomplete codon added at the last position of resulting amino acid sequence if initial nucleotide
+     * sequence length is not divisible by 3.
+     *
+     * <pre>
+     *
+     * Example for sequence: ATTAGACA
+     *
+     *  ATT AGA CA
+     *   I   R   _
+     * </pre>
+     *
+     * @param ns nucleotide sequence to translate
+     * @return result of translation (see description)
+     */
     public static AminoAcidSequence translateFromLeft(NucleotideSequence ns) {
         return translate(true, true, ns);
     }
 
+    /**
+     * Translates sequence from both sides, so the first nucleotide of the first triplet matches first nucleotide of
+     * the sequence, and last (3rd) nucleotide of last triplet matches last nucleotide of the sequence. Incomplete
+     * codon added in the middle of resulting amino acid sequence if initial nucleotide sequence length is not
+     * divisible by 3. This method is useful for CDR3 translation? as it preserves original aa sequences of germline
+     * V/J
+     * genes in case of out-of-frame assemblies.
+     *
+     * <pre>
+     *
+     * Example for sequence: ATTAGACA
+     *
+     *  ATT AG  ACA
+     *   I   _   T
+     * </pre>
+     *
+     * @param ns nucleotide sequence to translate
+     * @return result of translation (see description)
+     */
     public static AminoAcidSequence translateFromCenter(NucleotideSequence ns) {
         return translate(null, true, ns);
     }
 
+    /**
+     * This class represents mapping of nucleotide sequence position onto translated amino acid sequence.
+     *
+     * Use value of {@link #aminoAcidPosition} field, of use {@link #floor()} or {@link #ceil()} methods to get integer
+     * value.
+     */
     public static final class AminoAcidSequencePosition {
+        /**
+         * Position of amino acid in aa sequence
+         */
         public final int aminoAcidPosition;
+        /**
+         * Position of particular nucleotide in triplet encoding amino acid at {@code aminoAcidPosition}.
+         */
         public final byte positionInTriplet;
 
         public AminoAcidSequencePosition(int aminoAcidPosition, int positionInTriplet) {

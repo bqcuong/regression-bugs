@@ -16,7 +16,8 @@
 package com.milaboratory.core.sequence;
 
 /**
- * Representation of amino acid sequences with missed or unknown parts (e.g. "AxxxATC", where 'x' is whatever).
+ * Representation of amino acid sequences with unknown parts (e.g. "AXXXATC", where 'X' is any/unknown amino
+ * acid).
  *
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky

@@ -16,7 +16,8 @@
 package com.milaboratory.core.sequence;
 
 /**
- * Representation of nucleotide sequences with missed or unknown parts (e.g. "AxxxATC", where 'x' is whatever).
+ * Representation of nucleotide sequences with unknown parts (e.g. "ANNNSATC", where "N" represents any nucleotide, and
+ * "S" represents G or C). See wildcards defined in {@link NucleotideAlphabet} for the full list.
  *
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky

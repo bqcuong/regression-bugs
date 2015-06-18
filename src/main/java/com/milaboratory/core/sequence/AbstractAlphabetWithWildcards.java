@@ -25,8 +25,10 @@ abstract class AbstractAlphabetWithWildcards<IS extends AbstractSequenceWithWild
 
     public AbstractAlphabetWithWildcards(Alphabet<S> alphabet) {
         super(alphabet.getAlphabetName() + "_with_wildcards", (byte) (alphabet.getId() + WILDCARDS_ALPHABET_ID_OFFSET));
+
         if (!(alphabet instanceof WithWildcards))
             throw new IllegalArgumentException();
+
         Collection<WildcardSymbol> wildcards = ((WithWildcards) alphabet).getAllWildcards();
         this.symbols = new char[wildcards.size()];
         this.alphabet = alphabet;
@@ -40,8 +42,6 @@ abstract class AbstractAlphabetWithWildcards<IS extends AbstractSequenceWithWild
         }
 
         for (char symbol : symbols) if (symbol == 0) throw new IllegalArgumentException();
-
-
     }
 
     @Override

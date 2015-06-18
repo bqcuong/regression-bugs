@@ -24,16 +24,10 @@ import static java.lang.Character.toUpperCase;
 
 /**
  * An alphabet for nucleotide sequences. This alphabet defines the following mapping:
- * <br>0 - 'A', 1 - 'G', 2 - 'C', 3 - 'T'.
- * <p>
- * This class is a singleton, and the access provided by
- * {@link com.milaboratory.core.sequence.NucleotideSequence#ALPHABET}
- * or {@link #INSTANCE}.
- * </p>
- * <p>
- * Nucleotide alphabet contains wildcards as specified in e.g. FASTA format: 'R' for 'A' or 'G',
- * 'Y' for 'C' or 'T' etc.
- * </p>
+ *
+ * <p>0 - 'A', 1 - 'G', 2 - 'C', 3 - 'T'</p>
+ *
+ * <p> This class also defines wildcards as specified by IUPAC: 'R' for 'A' or 'G', 'Y' for 'C' or 'T' etc. </p>
  *
  * @author Bolotin Dmitriy (bolotin.dmitriy@gmail.com)
  * @author Shugay Mikhail (mikhail.shugay@gmail.com)
@@ -43,38 +37,72 @@ import static java.lang.Character.toUpperCase;
  */
 public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> implements WithWildcards {
     /**
-     * Adenine byte
+     * Adenine byte representation
      */
     public static final byte A = 0x00;
     /**
-     * Guanine byte
+     * Guanine byte representation
      */
     public static final byte G = 0x01;
     /**
-     * Cytosine byte
+     * Cytosine byte representation
      */
     public static final byte C = 0x02;
     /**
-     * Thymine byte
+     * Thymine byte representation
      */
     public static final byte T = 0x03;
 
     private static char[] chars = {'A', 'G', 'C', 'T'};
     private static byte[] bytes = {'A', 'G', 'C', 'T'};
 
-    /* N */
+    /**
+     * any Nucleotide
+     */
     public static final WildcardSymbol N = new WildcardSymbol('N', (byte) 4, new byte[]{A, T, G, C});
+
     /* Two-letter wildcard */
+    /**
+     * puRine
+     */
     public static final WildcardSymbol R = new WildcardSymbol('R', (byte) 5, new byte[]{A, G});
+    /**
+     * pYrimidine
+     */
     public static final WildcardSymbol Y = new WildcardSymbol('Y', (byte) 6, new byte[]{C, T});
+    /**
+     * Strong
+     */
     public static final WildcardSymbol S = new WildcardSymbol('S', (byte) 7, new byte[]{G, C});
+    /**
+     * Weak
+     */
     public static final WildcardSymbol W = new WildcardSymbol('W', (byte) 8, new byte[]{A, T});
+    /**
+     * Keto
+     */
     public static final WildcardSymbol K = new WildcardSymbol('K', (byte) 9, new byte[]{G, T});
+    /**
+     * aMino
+     */
     public static final WildcardSymbol M = new WildcardSymbol('M', (byte) 10, new byte[]{A, C});
+
     /* Three-letter wildcard */
+    /**
+     * not A (B comes after A)
+     */
     public static final WildcardSymbol B = new WildcardSymbol('B', (byte) 11, new byte[]{C, G, T});
+    /**
+     * not C (D comes after C)
+     */
     public static final WildcardSymbol D = new WildcardSymbol('D', (byte) 12, new byte[]{A, G, T});
+    /**
+     * not G (H comes after G)
+     */
     public static final WildcardSymbol H = new WildcardSymbol('H', (byte) 13, new byte[]{A, C, T});
+    /**
+     * not T (V comes after T and U)
+     */
     public static final WildcardSymbol V = new WildcardSymbol('V', (byte) 14, new byte[]{A, C, G});
 
     /**
@@ -116,8 +144,8 @@ public final class NucleotideAlphabet extends Alphabet<NucleotideSequence> imple
     }
 
     /**
-     * Returns a byte-code for UTF-8 nucleotide symbol(i.e. {@code symbol} is a character that is
-     * casted to byte, but not a real nucleotide byte-code).
+     * Returns a byte-code for UTF-8 nucleotide symbol(i.e. {@code symbol} is a character that is casted to byte, but
+     * not a real nucleotide byte-code).
      *
      * @param symbol letter
      * @return byte-code for nucleotide letter or -1 if this letter does not represent any nucleotide.

@@ -69,7 +69,7 @@ public final class WildcardSymbol {
     /**
      * Returns <i>i-th</i> element of this wildcard.
      *
-     * @param i number of letter
+     * @param i index of letter
      * @return <i>i-th</i> element of this wildcard
      */
     public byte getCode(int i) {
@@ -77,10 +77,10 @@ public final class WildcardSymbol {
     }
 
     /**
-     * Returns whether this wildcard contains specified binary element (nucleotide or amino acid etc.).
+     * Returns whether this wildcard contains specified element (nucleotide or amino acid etc.).
      *
      * @param code binary code of element
-     * @return true if this wildcard contains specified binary element and false otherwise
+     * @return true if this wildcard contains specified element and false otherwise
      */
     public boolean contains(byte code) {
         return binarySearch(codes, code) >= 0;

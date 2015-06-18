@@ -18,7 +18,7 @@ package com.milaboratory.core.sequence;
 import java.util.Collection;
 
 /**
- * Interface specifies that alphabet contains wild cards.
+ * Interface specifies that alphabet defines some wildcards.
  *
  * @see com.milaboratory.core.sequence.NucleotideAlphabet
  * @see com.milaboratory.core.sequence.WildcardSymbol

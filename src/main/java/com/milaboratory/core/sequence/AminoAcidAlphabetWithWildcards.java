@@ -4,7 +4,7 @@ package com.milaboratory.core.sequence;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public class AminoAcidAlphabetWithWildcards extends
+public final class AminoAcidAlphabetWithWildcards extends
         AbstractAlphabetWithWildcards<AminoAcidSequenceWithWildcards, AminoAcidSequence> {
     public static final AminoAcidAlphabetWithWildcards INSTANCE = new AminoAcidAlphabetWithWildcards();
 
