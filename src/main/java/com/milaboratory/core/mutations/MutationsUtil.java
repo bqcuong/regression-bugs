@@ -184,10 +184,13 @@ public final class MutationsUtil {
 
     /**
      * Encodes mutations in compact human-readable string, that can be decoded by method {@link #decode(String,
-     * com.milaboratory.core.sequence.Alphabet)}. <p/> <p>For format see {@link com.milaboratory.core.mutations.Mutation#encode(int,
-     * com.milaboratory.core.sequence.Alphabet)}.</p> <p/> <p>Mutations are just concatenated. The following RegExp can
-     * be used for simple parsing of resulting string for nucleotide sequences: {@code ([SDI])([ATGC]?)(\d+)([ATGC]?)}
-     * .</p>
+     * com.milaboratory.core.sequence.Alphabet)}.
+     *
+     * <p>For format see {@link com.milaboratory.core.mutations.Mutation#encode(int,
+     * com.milaboratory.core.sequence.Alphabet)}.</p>
+     *
+     * <p>Mutations are just concatenated. The following RegExp can be used for simple parsing of resulting string for
+     * nucleotide sequences: {@code ([SDI])([ATGC]?)(\d+)([ATGC]?)} .</p>
      *
      * @param mutations mutations to encode
      * @return mutations in a human-readable string
