@@ -20,7 +20,7 @@ import com.milaboratory.core.io.sequence.SingleReadImpl;
 import com.milaboratory.core.sequence.NSequenceWithQuality;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceQuality;
-import com.milaboratory.core.sequence.WildcardSymbol;
+import com.milaboratory.core.sequence.Wildcard;
 import org.apache.commons.math3.random.Well1024a;
 import org.junit.Assert;
 import org.junit.Test;
@@ -80,7 +80,7 @@ public class FastaReaderTest {
 
         SingleRead[] reads = new SingleRead[readsCount];
 
-        WildcardSymbol[] wildcards = NucleotideSequence.ALPHABET.getAllWildcards().toArray(new WildcardSymbol[0]);
+        Wildcard[] wildcards = NucleotideSequence.ALPHABET.getAllWildcards().toArray(new Wildcard[0]);
         long id = 0;
         for (int i = 0; i < readsCount; ++i) {
             char[] seq = new char[50 + rnd.nextInt(100)];
@@ -96,11 +96,11 @@ public class FastaReaderTest {
                     seq[j] = seqExp[j] = '\n';
                     --qPointer;
                 } else if (withWildcards && j % 5 == 0) {//wildcard
-                    WildcardSymbol wildcard = wildcards[rnd.nextInt(wildcards.length)];
-                    if (NucleotideSequence.ALPHABET.codeFromSymbol(wildcard.getSymbol()) == -1) {
+                    Wildcard wildcard = wildcards[rnd.nextInt(wildcards.length)];
+                    if (NucleotideSequence.ALPHABET.symbolToCode(wildcard.getSymbol()) == -1) {
                         seq[j] = wildcard.getSymbol();
                         seqExp[j] = NucleotideSequence.ALPHABET.symbolFromCode(
-                                wildcard.getUniformlyDistributedSymbol(
+                                wildcard.getUniformlyDistributedBasicCode(
                                         id ^ (j + qPointer)));//as used in FastaReader#getSequenceWithQuality(..)
                         qualityData[j + qPointer] = SequenceQuality.BAD_QUALITY_VALUE;
                     }

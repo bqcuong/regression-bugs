@@ -101,10 +101,10 @@ public class MutationsTest {
 //        int p;
 //        for (int i = helper.size() - 1; i >= 0; --i) {
 //            if ((p = helper.getSequence1PositionAt(i)) > 0)
-//                assertEquals(NucleotideSequence.ALPHABET.symbolFromCode(seq1.codeAt(p)),
+//                assertEquals(NucleotideSequence.ALPHABET.codeToSymbol(seq1.codeAt(p)),
 //                        helper.getLine1().charAt(i));
 //            if ((p = helper.getSequence2PositionAt(i)) > 0)
-//                assertEquals(NucleotideSequence.ALPHABET.symbolFromCode(seq2.codeAt(p)),
+//                assertEquals(NucleotideSequence.ALPHABET.codeToSymbol(seq2.codeAt(p)),
 //                        helper.getLine3().charAt(i));
 //        }
 

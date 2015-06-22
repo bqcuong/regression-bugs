@@ -71,7 +71,7 @@ public final class AlignmentUtils {
                             throw new IllegalArgumentException("Mutation = " + Mutation.toString(initialSequence.getAlphabet(), mut) +
                                     " but seq[" + pointer + "]=" + initialSequence.charFromCodeAt(pointer));
                         sb1.append(Character.toLowerCase(initialSequence.charFromCodeAt(pointer++)));
-                        sb2.append(Character.toLowerCase(alphabet.symbolFromCode((byte) (mut & LETTER_MASK))));
+                        sb2.append(Character.toLowerCase(alphabet.codeToSymbol((byte) (mut & LETTER_MASK))));
                         ++mutPointer;
                         break;
                     case RAW_MUTATION_TYPE_DELETION:
@@ -84,7 +84,7 @@ public final class AlignmentUtils {
                         break;
                     case RAW_MUTATION_TYPE_INSERTION:
                         sb1.append("-");
-                        sb2.append(alphabet.symbolFromCode((byte) (mut & LETTER_MASK)));
+                        sb2.append(alphabet.codeToSymbol((byte) (mut & LETTER_MASK)));
                         ++mutPointer;
                         break;
                 }

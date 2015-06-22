@@ -17,7 +17,7 @@ package com.milaboratory.core.motif;
 
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
-import com.milaboratory.core.sequence.WildcardSymbol;
+import com.milaboratory.core.sequence.Wildcard;
 import com.milaboratory.core.sequence.DefinesWildcards;
 import com.milaboratory.util.BitArray;
 
@@ -39,10 +39,13 @@ public final class Motif<S extends Sequence<S>> implements java.io.Serializable 
     public Motif(S sequence) {
         this.alphabet = sequence.getAlphabet();
         this.size = sequence.size();
-        int alphabetSize = alphabet.size();
+        int alphabetSize = alphabet.basicSize();
         this.data = new BitArray(alphabetSize * size);
-        for (int i = 0; i < size; ++i)
-            data.set(sequence.codeAt(i) * size + i);
+        for (int i = 0; i < size; ++i){
+            Wildcard wildcard = this.alphabet.codeToWildcard(sequence.codeAt(i));
+            for (int j = 0; j < wildcard.count(); j++)
+                data.set(wildcard.getMatchingCode(j) * size + i);
+        }
     }
 
     public Motif(Alphabet<S> alphabet, String motif) {
@@ -53,15 +56,15 @@ public final class Motif<S extends Sequence<S>> implements java.io.Serializable 
         if (alphabet instanceof DefinesWildcards) {
             DefinesWildcards wildcardAlphabet = (DefinesWildcards) alphabet;
             for (int i = 0; i < size; ++i) {
-                final WildcardSymbol wildcard = wildcardAlphabet.getWildcardFor(motif.charAt(i));
+                final Wildcard wildcard = wildcardAlphabet.getWildcardFor(motif.charAt(i));
                 if (wildcard == null)
                     throw new IllegalArgumentException("Unknown wildcard " + motif.charAt(i));
-                for (int j = 0; j < wildcard.size(); ++j)
-                    data.set(wildcard.getCode(j) * size + i);
+                for (int j = 0; j < wildcard.count(); ++j)
+                    data.set(wildcard.getMatchingCode(j) * size + i);
             }
         } else {
             for (int i = 0; i < size; ++i) {
-                byte code = alphabet.codeFromSymbol(motif.charAt(i));
+                byte code = alphabet.symbolToCode(motif.charAt(i));
                 if (code == -1)
                     throw new IllegalArgumentException("Unknown symbol " + motif.charAt(i));
                 data.set(code * size + i);

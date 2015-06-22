@@ -15,8 +15,6 @@
  */
 package com.milaboratory.core.sequence;
 
-import gnu.trove.impl.Constants;
-import gnu.trove.map.hash.TCharByteHashMap;
 import gnu.trove.map.hash.TCharObjectHashMap;
 
 import java.util.Collection;
@@ -36,12 +34,12 @@ import static java.lang.Character.toUpperCase;
  * @see com.milaboratory.core.sequence.AminoAcidSequence
  * @see com.milaboratory.core.sequence.Sequence
  */
-public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> implements DefinesWildcards {
+public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> {
     static final AminoAcidAlphabet INSTANCE = new AminoAcidAlphabet();
     /**
      * Stop codon byte representation
      */
-    public static final byte Stop = 0;
+    public static final byte STOP = 0;
     /**
      * Alanine byte representation
      */
@@ -123,89 +121,164 @@ public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequ
      */
     public static final byte Y = 20;
     /**
-     * Stop codon byte representation
+     * Incomplete codon byte representation
      */
-    public static final byte IncompleteCodon = 21;
+    public static final byte INCOMPLETE_CODON = 21;
+
+    /* Wildcard symbols */
 
     /**
-     * Any amino acid
+     * Any amino acid byte representation
      */
-    public static final WildcardSymbol X = new WildcardSymbol('X', (byte) 22, new byte[]{A, C, D, E, F, G, H, I, K, L, M, N, P, Q, R, S, T, V, W, Y});
+    public static final byte X = 22;
     /**
-     * Aspartic acid or Asparagine (N or D)
+     * Aspartic acid or Asparagine (N or D) byte representation
      */
-    public static final WildcardSymbol B = new WildcardSymbol('B', (byte) 23, new byte[]{N, D});
+    public static final byte B = 23;
     /**
-     * Leucine or Isoleucine (I or L)
+     * Leucine or Isoleucine (I or L) byte representation
      */
-    public static final WildcardSymbol J = new WildcardSymbol('J', (byte) 24, new byte[]{I, L});
+    public static final byte J = 24;
     /**
-     * Glutamine or Glutamic acid (E or Q)
+     * Glutamine or Glutamic acid (E or Q) byte representation
      */
-    public static final WildcardSymbol Z = new WildcardSymbol('Z', (byte) 25, new byte[]{E, Q});
+    public static final byte Z = 25;
 
-    private static final char[] aa = {
-            '*',
-            'A', 'C', 'D', 'E', 'F',
-            'G', 'H', 'I', 'K', 'L',
-            'M', 'N', 'P', 'Q', 'R',
-            'S', 'T', 'V', 'W', 'Y',
-            '_'};
-    private static final TCharByteHashMap symbolToCode = new TCharByteHashMap(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, (char) -1, (byte) -1);
+    /* Wildcards */
 
-    static {
-        for (byte i = 0; i < aa.length; i++)
-            symbolToCode.put(aa[i], i);
-    }
+    /**
+     * Stop codon wildcard
+     */
+    public static final Wildcard STOP_WILDCARD = new Wildcard('*', STOP);
+    /**
+     * Alanine wildcard
+     */
+    public static final Wildcard A_WILDCARD = new Wildcard('A', A);
+    /**
+     * Cysteine wildcard
+     */
+    public static final Wildcard C_WILDCARD = new Wildcard('C', C);
+    /**
+     * Aspartic Acid wildcard
+     */
+    public static final Wildcard D_WILDCARD = new Wildcard('D', D);
+    /**
+     * Glutamic Acid wildcard
+     */
+    public static final Wildcard E_WILDCARD = new Wildcard('E', E);
+    /**
+     * Phenylalanine wildcard
+     */
+    public static final Wildcard F_WILDCARD = new Wildcard('F', F);
+    /**
+     * Glycine wildcard
+     */
+    public static final Wildcard G_WILDCARD = new Wildcard('G', G);
+    /**
+     * Histidine wildcard
+     */
+    public static final Wildcard H_WILDCARD = new Wildcard('H', H);
+    /**
+     * Isoleucine wildcard
+     */
+    public static final Wildcard I_WILDCARD = new Wildcard('I', I);
+    /**
+     * Lysine wildcard
+     */
+    public static final Wildcard K_WILDCARD = new Wildcard('K', K);
+    /**
+     * Leucine wildcard
+     */
+    public static final Wildcard L_WILDCARD = new Wildcard('L', L);
+    /**
+     * Methionine wildcard
+     */
+    public static final Wildcard M_WILDCARD = new Wildcard('M', M);
+    /**
+     * Asparagine wildcard
+     */
+    public static final Wildcard N_WILDCARD = new Wildcard('N', N);
+    /**
+     * Proline wildcard
+     */
+    public static final Wildcard P_WILDCARD = new Wildcard('P', P);
+    /**
+     * Glutamine wildcard
+     */
+    public static final Wildcard Q_WILDCARD = new Wildcard('Q', Q);
+    /**
+     * Arginine wildcard
+     */
+    public static final Wildcard R_WILDCARD = new Wildcard('R', R);
+    /**
+     * Serine wildcard
+     */
+    public static final Wildcard S_WILDCARD = new Wildcard('S', S);
+    /**
+     * Threonine wildcard
+     */
+    public static final Wildcard T_WILDCARD = new Wildcard('T', T);
+    /**
+     * Valine wildcard
+     */
+    public static final Wildcard V_WILDCARD = new Wildcard('V', V);
+    /**
+     * Tryptophan wildcard
+     */
+    public static final Wildcard W_WILDCARD = new Wildcard('W', W);
+    /**
+     * Tyrosine wildcard
+     */
+    public static final Wildcard Y_WILDCARD = new Wildcard('Y', Y);
+    /**
+     * Incomplete codon wildcard
+     */
+    public static final Wildcard INCOMPLETE_CODON_WILDCARD = new Wildcard('_', INCOMPLETE_CODON);
 
+
+    /**
+     * Any amino acid wildcard
+     */
+    public static final Wildcard X_WILDCARD = new Wildcard('X', X, new byte[]{A, C, D, E, F, G, H, I, K, L, M, N, P,
+            Q, R, S, T, V, W, Y});
+    /**
+     * Aspartic acid or Asparagine (N or D) wildcard
+     */
+    public static final Wildcard B_WILDCARD = new Wildcard('B', B, new byte[]{N, D});
+    /**
+     * Leucine or Isoleucine (I or L) wildcard
+     */
+    public static final Wildcard J_WILDCARD = new Wildcard('J', J, new byte[]{I, L});
+    /**
+     * Glutamine or Glutamic acid (E or Q) wildcard
+     */
+    public static final Wildcard Z_WILDCARD = new Wildcard('Z', Z, new byte[]{E, Q});
     private AminoAcidAlphabet() {
-        super("aminoacid", (byte) 2);
+        super("aminoacid", (byte) 2, 22,
+                // Any letter
+                X_WILDCARD,
+                // Content
+                STOP_WILDCARD, A_WILDCARD, C_WILDCARD, D_WILDCARD, E_WILDCARD, F_WILDCARD, G_WILDCARD, H_WILDCARD,
+                I_WILDCARD, K_WILDCARD, L_WILDCARD, M_WILDCARD, N_WILDCARD, P_WILDCARD, Q_WILDCARD, R_WILDCARD,
+                S_WILDCARD, T_WILDCARD, V_WILDCARD, W_WILDCARD, Y_WILDCARD,
+                INCOMPLETE_CODON_WILDCARD,
+                // Wildcards
+                X_WILDCARD,
+                B_WILDCARD, J_WILDCARD, Z_WILDCARD);
     }
 
     @Override
-    public char symbolFromCode(byte code) {
-        return aa[code];
-    }
-
-    @Override
-    public byte codeFromSymbol(char symbol) {
+    public byte symbolToCode(char symbol) {
         // Special case for backward compatibility
         if (symbol == '~')
-            return IncompleteCodon;
+            return INCOMPLETE_CODON;
 
-        // For case insensitive conversion
-        symbol = toUpperCase(symbol);
-
-        // Normal conversion (-1 will be returned for unknown symbols, see map constructor parameters)
-        return symbolToCode.get(symbol);
-    }
-
-    @Override
-    public int size() {
-        return aa.length;
+        // Normal conversion (-1 will be returned for unknown symbols, see symbolToWildcard constructor parameters)
+        return super.symbolToCode(symbol);
     }
 
     @Override
     AminoAcidSequence createUnsafe(byte[] array) {
         return new AminoAcidSequence(array, true);
-    }
-
-    private static TCharObjectHashMap<WildcardSymbol> wildcardsMap =
-            new WildcardMapBuilder()
-                    /* Exact match letters */
-                    .addAlphabet(INSTANCE)
-                    .addWildcards(X, B, J, Z)
-                    .get();
-
-    private final Collection<WildcardSymbol> allWildcardSymbols = Collections.unmodifiableCollection(wildcardsMap.valueCollection());
-
-    @Override
-    public Collection<WildcardSymbol> getAllWildcards() {
-        return allWildcardSymbols;
-    }
-
-    @Override
-    public WildcardSymbol getWildcardFor(char symbol) {
-        return wildcardsMap.get(toUpperCase(symbol));
     }
 }

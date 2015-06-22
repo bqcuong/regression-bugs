@@ -22,7 +22,7 @@ import com.milaboratory.core.io.sequence.SingleReader;
 import com.milaboratory.core.sequence.NSequenceWithQuality;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceQuality;
-import com.milaboratory.core.sequence.WildcardSymbol;
+import com.milaboratory.core.sequence.Wildcard;
 import com.milaboratory.util.Bit2Array;
 import com.milaboratory.util.CanReportProgress;
 import com.milaboratory.util.CountingInputStream;
@@ -148,14 +148,14 @@ public final class FastaReader implements SingleReader, CanReportProgress {
         char symbol;
         for (int i = 0; i < sequence.length(); ++i) {
             symbol = sequence.charAt(i);
-            nucleotide = ALPHABET.codeFromSymbol(symbol);
+            nucleotide = ALPHABET.symbolToCode(symbol);
             if (nucleotide == -1) //wildChard
             {
                 if (withWildcards) {
-                    WildcardSymbol wildcard = ALPHABET.getWildcardFor(symbol);
+                    Wildcard wildcard = ALPHABET.getWildcardFor(symbol);
                     if (wildcard == null)
                         throw new IllegalFileFormatException("Unknown wildcard: " + symbol + ".");
-                    nucleotide = wildcard.getUniformlyDistributedSymbol(id ^ i);
+                    nucleotide = wildcard.getUniformlyDistributedBasicCode(id ^ i);
                 } else
                     throw new RuntimeException("Unknown letter: " + symbol);
                 qualityData[i] = SequenceQuality.BAD_QUALITY_VALUE;

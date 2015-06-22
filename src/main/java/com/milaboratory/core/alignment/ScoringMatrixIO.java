@@ -138,7 +138,7 @@ final class ScoringMatrixIO {
         //Creating xValues array
         int[] xValues = new int[xChars.length];
         for (int i = 0; i < xValues.length; ++i)
-            if ((xValues[i] = alphabet.codeFromSymbol(xChars[i])) == -1)
+            if ((xValues[i] = alphabet.symbolToCode(xChars[i])) == -1)
                 throw new IllegalArgumentException("XChar not from this alphabet.");
 
         //~AminoAcidAlphabet.
@@ -202,6 +202,6 @@ final class ScoringMatrixIO {
         char l = letter.charAt(0);
         if (l == 'x' || l == 'X')
             return -2;
-        return alphabet.codeFromSymbol(l);
+        return alphabet.symbolToCode(l);
     }
 }

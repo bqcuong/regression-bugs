@@ -83,11 +83,11 @@ public final class Mutations<S extends Sequence<S>>
     }
 
     public char getFromAsSymbolByIndex(int index) {
-        return alphabet.symbolFromCode(getFromAsCodeByIndex(index));
+        return alphabet.codeToSymbol(getFromAsCodeByIndex(index));
     }
 
     public char getToAsSymbolByIndex(int index) {
-        return alphabet.symbolFromCode(getToAsCodeByIndex(index));
+        return alphabet.codeToSymbol(getToAsCodeByIndex(index));
     }
 
     public int getRawTypeByIndex(int index) {

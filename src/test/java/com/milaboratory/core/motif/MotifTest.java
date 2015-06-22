@@ -19,7 +19,7 @@ import com.milaboratory.core.io.util.TestUtil;
 import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.NucleotideSequenceBuilder;
-import com.milaboratory.core.sequence.WildcardSymbol;
+import com.milaboratory.core.sequence.Wildcard;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
 import org.junit.Test;
@@ -58,16 +58,16 @@ public class MotifTest {
     @Test
     public void testRandom1() throws Exception {
         RandomGenerator rg = new Well19937c();
-        for (WildcardSymbol wildcardSymbol : NucleotideSequence.ALPHABET.getAllWildcards()) {
+        for (Wildcard wildcard : NucleotideSequence.ALPHABET.getAllWildcards()) {
             int seqLength = 20 + rg.nextInt(100);
             int motifSize = rg.nextInt(20);
             StringBuilder builder = new StringBuilder(motifSize);
             for (int i = 0; i < motifSize; ++i)
-                builder.append(wildcardSymbol.getSymbol());
+                builder.append(wildcard.getSymbol());
             Motif<NucleotideSequence> motif = new Motif<>(NucleotideSequence.ALPHABET, builder.toString());
             NucleotideSequenceBuilder seqBuilder = new NucleotideSequenceBuilder().ensureCapacity(seqLength);
             for (int i = 0; i < seqLength; ++i)
-                seqBuilder.append(wildcardSymbol.getUniformlyDistributedSymbol(rg.nextLong()));
+                seqBuilder.append(wildcard.getUniformlyDistributedBasicCode(rg.nextLong()));
             NucleotideSequence seq = seqBuilder.createAndDestroy();
             for (int i = 0; i < seq.size() - motif.size(); ++i)
                 assertTrue(motif.matches(seq, i));

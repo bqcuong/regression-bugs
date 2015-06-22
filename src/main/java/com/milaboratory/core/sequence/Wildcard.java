@@ -24,18 +24,57 @@ import static java.util.Arrays.binarySearch;
 /**
  * Representation of a wildcard symbol.
  */
-public final class WildcardSymbol {
+public final class Wildcard {
+    /**
+     * Symbol of wildcard
+     */
     final char cSymbol;
+    /**
+     * Symbol of wildcard (byte)
+     */
     final byte bSymbol;
-    final byte[] codes;
-    final byte wildcardCode;
+    /**
+     * Set of codes in wildcard
+     */
+    final byte[] matchingCodes;
+    /**
+     * Code representing this wildcard (e.g. code == codes[0] for pure letters)
+     */
+    final byte code;
 
-    WildcardSymbol(char cSymbol, byte wildcardCode, byte[] codes) {
+    /**
+     * Pure letter constructor
+     *
+     * @param cSymbol uppercase symbol
+     * @param code    code
+     */
+    Wildcard(char cSymbol, byte code) {
+        this(cSymbol, code, new byte[]{code});
+    }
+
+    /**
+     * Wildcard constructor
+     *
+     * @param cSymbol       uppercase symbol of wildcard
+     * @param code          code of wildcard
+     * @param matchingCodes set of codes that this wildcards matches
+     */
+    Wildcard(char cSymbol, byte code, byte[] matchingCodes) {
+        if (matchingCodes.length == 0 || !Character.isUpperCase(cSymbol))
+            throw new IllegalArgumentException();
+
         this.cSymbol = Character.toUpperCase(cSymbol);
         this.bSymbol = (byte) cSymbol;
-        this.wildcardCode = wildcardCode;
-        this.codes = codes.clone();
-        Arrays.sort(this.codes);
+        this.code = code;
+        this.matchingCodes = matchingCodes.clone();
+
+        // Sorting for binary search
+        Arrays.sort(this.matchingCodes);
+
+        // Assert for pure letters
+        if (matchingCodes.length == 1 && code != matchingCodes[0])
+            throw new IllegalArgumentException();
+
     }
 
     /**
@@ -53,8 +92,19 @@ public final class WildcardSymbol {
      *
      * @return number of letters corresponding to this wildcard
      */
-    public int size() {
-        return codes.length;
+    public int count() {
+        return matchingCodes.length;
+    }
+
+    /**
+     * Returns {@literal true} if and only if this wildcards has only one matching letter, so it represents definite
+     * letter and formally it is not a wildcard.
+     *
+     * @return {@literal true} if and only if this wildcards has only one matching letter, so it represents definite
+     * letter and formally it is not a wildcard
+     */
+    public boolean isBasic() {
+        return matchingCodes.length == 1;
     }
 
     /**
@@ -63,8 +113,17 @@ public final class WildcardSymbol {
      * @param i index of letter
      * @return <i>i-th</i> element of this wildcard
      */
-    public byte getCode(int i) {
-        return codes[i];
+    public byte getMatchingCode(int i) {
+        return matchingCodes[i];
+    }
+
+    /**
+     * Returns alphabet code.
+     *
+     * @return alphabet code
+     */
+    public byte getCode() {
+        return code;
     }
 
     /**
@@ -74,7 +133,7 @@ public final class WildcardSymbol {
      * @return true if this wildcard contains specified element and false otherwise
      */
     public boolean contains(byte code) {
-        return binarySearch(codes, code) >= 0;
+        return binarySearch(matchingCodes, code) >= 0;
     }
 
     /**
@@ -85,8 +144,8 @@ public final class WildcardSymbol {
      * @return {@literal true} if set of symbols represented by this wildcard intersects with set of symbols represented
      * by {@code otherWildcard}
      */
-    public boolean intersectsWith(WildcardSymbol otherWildcard) {
-        byte[] a = this.codes, b = otherWildcard.codes;
+    public boolean intersectsWith(Wildcard otherWildcard) {
+        byte[] a = this.matchingCodes, b = otherWildcard.matchingCodes;
         int bPointer = 0, aPointer = 0;
         while (aPointer < a.length && bPointer < b.length)
             if (a[aPointer] == b[bPointer]) {
@@ -106,9 +165,12 @@ public final class WildcardSymbol {
      * @param seed seed
      * @return uniformly distributed symbol corresponding to this wildcard
      */
-    public byte getUniformlyDistributedSymbol(long seed) {
+    public byte getUniformlyDistributedBasicCode(long seed) {
+        if (isBasic())
+            return code;
+
         seed = HashFunctions.JenkinWang64shift(seed);
         if (seed < 0) seed = -seed;
-        return codes[(int) (seed % codes.length)];
+        return matchingCodes[(int) (seed % matchingCodes.length)];
     }
 }

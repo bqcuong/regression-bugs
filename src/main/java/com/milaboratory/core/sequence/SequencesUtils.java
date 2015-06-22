@@ -35,7 +35,7 @@ public final class SequencesUtils {
      */
     public static boolean belongsToAlphabet(Alphabet<?> alphabet, String string) {
         for (int i = 0; i < string.length(); ++i)
-            if (alphabet.codeFromSymbol(string.charAt(i)) == -1)
+            if (alphabet.symbolToCode(string.charAt(i)) == -1)
                 return false;
         return true;
     }

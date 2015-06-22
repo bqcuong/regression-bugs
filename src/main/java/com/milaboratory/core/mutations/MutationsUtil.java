@@ -164,7 +164,7 @@ public final class MutationsUtil {
         StringBuilder sb = new StringBuilder();
         StringBuilder t = new StringBuilder("([\\Q");
         for (byte i = 0; i < alphabet.size(); ++i)
-            t.append(alphabet.symbolFromCode(i));
+            t.append(alphabet.codeToSymbol(i));
         t.append("\\E])");
         sb.append("S").append(t).append("(\\d+)").append(t);
         sb.append("|");
@@ -228,16 +228,16 @@ public final class MutationsUtil {
                 //TODO codeFromSymbolWithError ?
                 case 'S':
                     list.add(createSubstitution(Integer.parseInt(matcher.group(2)),
-                            alphabet.codeFromSymbol(matcher.group(1).charAt(0)),
-                            alphabet.codeFromSymbol(matcher.group(3).charAt(0))));
+                            alphabet.symbolToCode(matcher.group(1).charAt(0)),
+                            alphabet.symbolToCode(matcher.group(3).charAt(0))));
                     break;
                 case 'D':
                     list.add(createDeletion(Integer.parseInt(matcher.group(5)),
-                            alphabet.codeFromSymbol(matcher.group(4).charAt(0))));
+                            alphabet.symbolToCode(matcher.group(4).charAt(0))));
                     break;
                 case 'I':
                     list.add(createInsertion(Integer.parseInt(matcher.group(6)),
-                            alphabet.codeFromSymbol(matcher.group(7).charAt(0))));
+                            alphabet.symbolToCode(matcher.group(7).charAt(0))));
                     break;
             }
         }
@@ -261,12 +261,12 @@ public final class MutationsUtil {
             if (isPositiveInteger(g))
                 sPosition += Integer.parseInt(g);
             else if (g.charAt(0) == '-') {
-                mutations.add(createDeletion(sPosition, alphabet.codeFromSymbolWithException(g.charAt(1))));
+                mutations.add(createDeletion(sPosition, alphabet.symbolToCodeWithException(g.charAt(1))));
                 ++sPosition;
             } else if (g.charAt(1) == '-')
-                mutations.add(createInsertion(sPosition, alphabet.codeFromSymbolWithException(g.charAt(0))));
+                mutations.add(createInsertion(sPosition, alphabet.symbolToCodeWithException(g.charAt(0))));
             else {
-                mutations.add(createSubstitution(sPosition, alphabet.codeFromSymbolWithException(g.charAt(1)), alphabet.codeFromSymbolWithException(g.charAt(0))));
+                mutations.add(createSubstitution(sPosition, alphabet.symbolToCodeWithException(g.charAt(1)), alphabet.symbolToCodeWithException(g.charAt(0))));
                 ++sPosition;
             }
         }

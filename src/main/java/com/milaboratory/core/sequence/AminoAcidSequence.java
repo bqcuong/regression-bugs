@@ -71,7 +71,7 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
      */
     public boolean containStops() {
         for (byte b : data)
-            if (b == AminoAcidAlphabet.Stop)
+            if (b == AminoAcidAlphabet.STOP)
                 return true;
         return false;
     }
@@ -84,13 +84,9 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
     public int numberOfStops() {
         int count = 0;
         for (byte b : data)
-            if (b == AminoAcidAlphabet.Stop)
+            if (b == AminoAcidAlphabet.STOP)
                 ++count;
         return count;
-    }
-
-    public AminoAcidSequenceWithWildcards toIncomplete() {
-        return new AminoAcidSequenceWithWildcards(data);
     }
 
     /**
@@ -233,14 +229,14 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
             GeneticCode.translate(data, 0, ns, 0, leftAALength * 3);
             GeneticCode.translate(data, data.length - rightAALength, ns, ns.size() - rightAALength * 3, rightAALength * 3);
             if (ns.size() % 3 != 0)
-                data[leftAALength] = AminoAcidAlphabet.IncompleteCodon;
+                data[leftAALength] = AminoAcidAlphabet.INCOMPLETE_CODON;
         } else if (fromLeft) {
             GeneticCode.translate(data, 0, ns, 0, ns.size() / 3 * 3);
             if (includeIncomplete && ns.size() % 3 != 0)
-                data[data.length - 1] = AminoAcidAlphabet.IncompleteCodon;
+                data[data.length - 1] = AminoAcidAlphabet.INCOMPLETE_CODON;
         } else {
             if (includeIncomplete && ns.size() % 3 != 0)
-                data[0] = AminoAcidAlphabet.IncompleteCodon;
+                data[0] = AminoAcidAlphabet.INCOMPLETE_CODON;
             GeneticCode.translate(data,
                     (includeIncomplete && ns.size() % 3 != 0) ? 1 : 0, ns, ns.size() % 3, ns.size() / 3 * 3);
         }

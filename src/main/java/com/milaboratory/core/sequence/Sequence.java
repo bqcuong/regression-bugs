@@ -32,12 +32,10 @@ import com.milaboratory.primitivio.annotations.Serializable;
  * @see com.milaboratory.core.sequence.NucleotideSequence
  * @see com.milaboratory.core.sequence.AminoAcidSequence
  */
-@Serializable(by = IO.SequenceSerializer.class, custom = {
-        @CustomSerializer(id = 1, type = NucleotideSequence.class)
-})
+@Serializable(by = IO.SequenceSerializer.class)
 public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> implements Comparable<S> {
     /**
-     * Returns element at specified position.
+     * Returns letter code at specified position.
      *
      * @param position position in sequence
      * @return element at specified position
@@ -70,7 +68,7 @@ public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> imp
      * @return character representation of element at specified position
      */
     public char charFromCodeAt(int position) {
-        return getAlphabet().symbolFromCode(codeAt(position));
+        return getAlphabet().codeToSymbol(codeAt(position));
     }
 
     @Override
@@ -108,7 +106,7 @@ public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> imp
     public String toString() {
         char[] chars = new char[size()];
         for (int i = 0; i < size(); i++)
-            chars[i] = getAlphabet().symbolFromCode(codeAt(i));
+            chars[i] = getAlphabet().codeToSymbol(codeAt(i));
         return new String(chars);
     }
 
