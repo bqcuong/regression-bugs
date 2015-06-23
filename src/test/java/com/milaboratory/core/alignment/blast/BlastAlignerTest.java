@@ -1,129 +1,51 @@
 package com.milaboratory.core.alignment.blast;
 
+import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.sequence.NucleotideSequenceWithWildcards;
-import com.milaboratory.core.sequence.NucleotideSequence;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
 
 /**
  * Created by poslavsky on 15/06/15.
  */
 @Ignore
 public class BlastAlignerTest {
-    private static final String outfmt = "7 btop qstart qend sstart send score sseqid";
+    @Test
+    public void test1() throws Exception {
+        BlastAligner<NucleotideSequenceWithWildcards> aligner = new BlastAligner<>(1, "blastn", "-db", "/Users/poslavsky/Projects/milab/blast/16SMicrobial");
+        String query = "CSTCAGAACGAACGCTGGCGGCATGCCTAACACATGCAAGSCGAACGAGAAACCAGAGCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGC";
+        NucleotideSequenceWithWildcards s = new NucleotideSequenceWithWildcards(query);
+        for (int i = 0; i < 10; ++i) {
+            Alignment<NucleotideSequenceWithWildcards> la = aligner.align(new NucleotideSequenceWithWildcards[]{s})[0].getHits().get(0).getAlignment();
+            Assert.assertEquals(s.getRange(la.getSequence2Range()),
+                    la.getRelativeMutations().mutate(la.getSequence1()));
+        }
+    }
 
     @Test
     public void test2() throws Exception {
-        BlastAligner<NucleotideSequenceWithWildcards> aligner = new BlastAligner<>(NucleotideSequenceWithWildcards.ALPHABET,null);
-        String query = "CTCAGAACGAACGCTGGCGGCATGCCTAACACATGCAAGTCGAACGAGAAACCAGAGCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGC";
+        BlastAligner<NucleotideSequenceWithWildcards> aligner = new BlastAligner<>(1, "blastn", "-db", "/Users/poslavsky/Projects/milab/blast/16SMicrobial");
+        String query = "ATGC";
         NucleotideSequenceWithWildcards s = new NucleotideSequenceWithWildcards(query);
-        for(int i = 0;i< 100;++i){
-            System.out.println(aligner.align(s).getHits().get(0).getAlignment());
-        }
+        Assert.assertEquals(0, aligner.align(new NucleotideSequenceWithWildcards[]{s})[0].getHits().size());
     }
+
     @Test
-    public void test1() throws Exception {
-        ProcessBuilder pb = new ProcessBuilder("blastn", "-db", "/Users/poslavsky/Projects/milab/blast/16SMicrobial", "-num_alignments", "2", "-outfmt", outfmt);
-        pb.environment().put("BATCH_SIZE", "1");
-        pb.redirectErrorStream(true);
-
-        final Process process = pb.start();
-        PrintStream outputStream = new PrintStream(process.getOutputStream());
-
-        String query = "CTCAGAACGAACGCTGGCGGCATGCCTAACACATGCAAGTCGAACGAGAAACCAGAGCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGC";
-//        +
-//                "GTGGGAATTTGCCCTTGGGTACGGAACAACTCATGGAAACGTGAGCTAATACCGTATACGCTCTTTTTCTTTAGCGGAAAAAGAGGAAAGATTTATCGCCCT" +
-//                "TGGATGAGCCCGCGTTAGATTAGCTAGTTGGTGAGGTAATGGCCCACCAAGGCGACGATCTATAGCTGGTTTGAGAGGATGATCAGCCACACTGGGACTGAG" +
-//                "ACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGGGCAACCCTGATCCAGCAATGCCGCGTGAGTGAAGAAGGCCTTAGGGTTG" +
-//                "TAAAACTCTTTCAGTGGGGAAGATAATGGCGGTACCCACAGAAAAAGCTCCGGCTAACTCCGTGCCAGCAGCCGCGGTAATACGGAGGGAGCTAGCGTTGCT" +
-//                "CGGAATTACTGGGCGTAAAGCGTACGTAGGCGGATCAACAAGTTGGGGGTGAAATCCCAGGGCTTAACCCTGGAACTGCCCCCAAAACTATTGATCTAGAGA" +
-//                "CCGGGTAAGCGGAATTCCTAGTGTAGAGGTGAAATTCGTAGATATTAGGAAGAACACCAGTGGCGAAGGCGGCTTACTGGACCGGTACTGACGCTAAGGTAC" +
-//                "GAAAGCGTGGGGAGCAAACAGGATTAGATACCCTGGTAGTCCACGCCGTAAACGATGGGTGCTAGATGTTGGGGCTTTAAGCTTCAGTGTCGCAGCTAACGC" +
-//                "ATTAAGCACCCCGCCTGGGGAGTACGGTCGCAAGATTAAAACTCAAAGGAATTGACGGGGGCCCGCACAAGCGGTGGAGCATGTGGTTTAATTCGAGGCAAC" +
-//                "GCGAAGAACCTTACCAGCCCTTGACATACCGGTCGCGATTTCCAGAGATGGATTTCTTCAGTTTGGCTGGACCGGATACAGGTGCTGCATGGCTGTCGTCAG" +
-//                "CTCGTGTCGTGAGATGTTGGGTTAAGTCCCGCAACGAGCGCAACCCTCATCTTTAGTTGCCAGCAGTTCGGCTGGGCACTCTAGAGAAACTGCCGGTGATAA" +
-//                "GCCGGAGGAAGGTGGGGATGACGTCAAGTCCTCATGGCCCTTATGGGCTGGGCTACACACGTGCTACAATGGCGGTGACAGAGGGATGCAATGGGGCGACCC" +
-//                "TGAGCTAATCTCAAAAAACCGTCTCAGTTCGGATTGTTCTCTGCAACTCGAGAGCATGAAGTCGGAATCGCTAGTAATCGCGTATCAGCATGACGCGGTGAA" +
-//                "TACGTTCCCGGGCCTTGTACACACCGCCCGTCACACCAAGGGAGTTGGTTCTACCTGAAGATGGTGAGTTAACCCGCAAGGGAGACAGCCAGCCACGGTAGG" +
-//                "GTCAGCGACTCGGGTGAAGTCGTAACAAGGTACTCAGAACGAACGCTGGCGGCATGCCTAACACATGCAAGTCGAACGAGAAACCAGAGCTTGCTCTGGCGG" +
-//                "ACAGTGGCGGACGGGTGAGTAACGCGTGGGAATTTGCCCTTGGGTACGGAACAACTCATGGAAACGTGAGCTAATACCGTATACGCTCTTTTTCTTTAGCGG" +
-//                "AAAAAGAGGAAAGATTTATCGCCCTTGGATGAGCCCGCGTTAGATTAGCTAGTTGGTGAGGTAATGGCCCACCAAGGCGACGATCTATAGCTGGTTTGAGAG" +
-//                "GATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGGGGCAACCCTGATCCAGCAATGCCGC" +
-//                "GTGAGTGAAGAAGGCCTTAGGGTTGTAAAACTCTTTCAGTGGGGAAGATAATGGCGGTACCCACAGAAAAAGCTCCGGCTAACTCCGTGCCAGCAGCCGCGG" +
-//                "TAATACGGAGGGAGCTAGCGTTGCTCGGAATTACTGGGCGTAAAGCGTACGTAGGCGGATCAACAAGTTGGGGGTGAAATCCCAGGGCTTAACCCTGGAACT" +
-//                "GCCCCCAAAACTATTGATCTAGAGACCGGGTAAGCGGAATTCCTAGTGTAGAGGTGAAATTCGTAGATATTAGGAAGAACACCAGTGGCGAAGGCGGCTTAC" +
-//                "TGGACCGGTACTGACGCTAAGGTACGAAAGCGTGGGGAGCAAACAGGATTAGATACCCTGGTAGTCCACGCCGTAAACGATGGGTGCTAGATGTTGGGGCTT" +
-//                "TAAGCTTCAGTGTCGCAGCTAACGCATTAAGCACCCCGCCTGGGGAGTACGGTCGCAAGATTAAAACTCAAAGGAATTGACGGGGGCCCGCACAAGCGGTGG" +
-//                "AGCATGTGGTTTAATTCGAGGCAACGCGAAGAACCTTACCAGCCCTTGACATACCGGTCGCGATTTCCAGAGATGGATTTCTTCAGTTTGGCTGGACCGGAT" +
-//                "ACAGGTGCTGCATGGCTGTCGTCAGCTCGTGTCGTGAGATGTTGGGTTAAGTCCCGCAACGAGCGCAACCCTCATCTTTAGTTGCCAGCAGTTCGGCTGGGC" +
-//                "ACTCTAGAGAAACTGCCGGTGATAAGCCGGAGGAAGGTGGGGATGACGTCAAGTCCTCATGGCCCTTATGGGCTGGGCTACACACGTGCTACAATGGCGGTG" +
-//                "ACAGAGGGATGCAATGGGGCGACCCTGAGCTAATCTCAAAAAACCGTCTCAGTTCGGATTGTTCTCTGCAACTCGAGAGCATGAAGTCGGAATCGCTAGTAA" +
-//                "TCGCGTATCAGCATGACGCGGTGAATACGTTCCCGGGCCTTGTACACACCGCCCGTCACACCAAGGGAGTTGGTTCTACCTGAAGATGGTGAGTTAACCCGC" +
-//                "AAGGGAGACAGCCAGCCACGGTAGGGTCAGCGACTCGGGTGAAGTCGTAACAAGGTACTCAGAACGAACGCTGGCGGCATGCCTAACACATGCAAGTCGAAC" +
-//                "GAGAAACCAGAGCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGCGTGGGAATTTGCCCTTGGGTACGGAACAACTCATGGAAACGTGAGCTAATAC" +
-//                "CGTATACGCTCTTTTTCTTTAGCGGAAAAAGAGGAAAGATTTATCGCCCTTGGATGAGCCCGCGTTAGATTAGCTAGTTGGTGAGGTAATGGCCCACCAAGG" +
-//                "CGACGATCTATAGCTGGTTTGAGAGGATGATCAGCCACACTGGGACTGAGACACGGCCCAGACTCCTACGGGAGGCAGCAGTGGGGAATATTGGACAATGGG" +
-//                "GGCAACCCTGATCCAGCAATGCCGCGTGAGTGAAGAAGGCCTTAGGGTTGTAAAACTCTTTCAGTGGGGAAGATAATGGCGGTACCCACAGAAAAAGCTCCG" +
-//                "GCTAACTCCGTGCCAGCAGCCGCGGTAATACGGAGGGAGCTAGCGTTGCTCGGAATTACTGGGCGTAAAGCGTACGTAGGCGGATCAACAAGTTGGGGGTGA" +
-//                "AATCCCAGGGCTTAACCCTGGAACTGCCCCCAAAACTATTGATCTAGAGACCGGGTAAGCGGAATTCCTAGTGTAGAGGTGAAATTCGTAGATATTAGGAAG" +
-//                "AACACCAGTGGCGAAGGCGGCTTACTGGACCGGTACTGACGCTAAGGTACGAAAGCGTGGGGAGCAAACAGGATTAGATACCCTGGTAGTCCACGCCGTAAA" +
-//                "CGATGGGTGCTAGATGTTGGGGCTTTAAGCTTCAGTGTCGCAGCTAACGCATTAAGCACCCCGCCTGGGGAGTACGGTCGCAAGATTAAAACTCAAAGGAAT" +
-//                "TGACGGGGGCCCGCACAAGCGGTGGAGCATGTGGTTTAATTCGAGGCAACGCGAAGAACCTTACCAGCCCTTGACATACCGGTCGCGATTTCCAGAGATGGA" +
-//                "TTTCTTCAGTTTGGCTGGACCGGATACAGGTGCTGCATGGCTGTCGTCAGCTCGTGTCGTGAGATGTTGGGTTAAGTCCCGCAACGAGCGCAACCCTCATCT" +
-//                "TTAGTTGCCAGCAGTTCGGCTGGGCACTCTAGAGAAACTGCCGGTGATAAGCCGGAGGAAGGTGGGGATGACGTCAAGTCCTCATGGCCCTTATGGGCTGGG" +
-//                "CTACACACGTGCTACAATGGCGGTGACAGAGGGATGCAATGGGGCGACCCTGAGCTAATCTCAAAAAACCGTCTCAGTTCGGATTGTTCTCTGCAACTCGAG" +
-//                "AGCATGAAGTCGGAATCGCTAGTAATCGCGTATCAGCATGACGCGGTGAATACGTTCCCGGGCCTTGTACACACCGCCCGTCACACCAAGGGAGTTGGTTCT" +
-//                "ACCTGAAGATGGTGAGTTAACCCGCAAGGGAGACAGCCAGCCACGGTAGGGTCAGCGACTCGGGTGAAGTCGTAACAAGGTACTCAGAACGAACGCTGGCGG" +
-//                "CATGCCTAACACATGCAAGTCGAACGAGAAACCAGAGCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGCGTGGGAATTTGCCCTTGGGTACGGAAC";
-        NucleotideSequence s = new NucleotideSequence(query);
-        NucleotideSequence[] ss = {s, s};
-//        , s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s};
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s,
-//                s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s, s};
-
-        System.out.println("PIS");
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                String line;
-                try {
-                    while ((line = reader.readLine()) != null)
-                        System.out.println(line);
-                } catch (Exception e) {
-                }
+    public void test3() throws Exception {
+        BlastAligner<NucleotideSequenceWithWildcards> aligner = new BlastAligner<>(2, "blastn", "-db", "/Users/poslavsky/Projects/milab/blast/16SMicrobial");
+        String query1 = "CSTCAGAACGAACGCTGGCGGCATGCCTAACACATGCAAGSCGAACGAGAAACCAGAGCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGC";
+        String query2 = "CSTCAGAACGAACGCTGAAGSCGAACGAGAAACCAGAGGCGGCATGCCTAACACATGCCTTGCTCTGGCGGACAGTGGCGGACGGGTGAGTAACGC";
+        NucleotideSequenceWithWildcards[] s = {new NucleotideSequenceWithWildcards(query1),
+                new NucleotideSequenceWithWildcards(query2)};
+        for (int i = 0; i < 12; ++i) {
+            BlastAlignmentResult<NucleotideSequenceWithWildcards>[] results = aligner.align(s);
+            for (int j = 0; j < s.length; ++j) {
+                Alignment<NucleotideSequenceWithWildcards> la = results[j].getHits().get(0).getAlignment();
+                Assert.assertEquals(s[j].getRange(la.getSequence2Range()),
+                        la.getRelativeMutations().mutate(la.getSequence1()));
             }
-        });
-        thread.start();
-
-        int i = 0;
-        for (NucleotideSequence x : ss) {
-            System.out.println(i++);
-            outputStream.println(">\n" + x.toString());
         }
-        outputStream.println(">");
 
-        System.out.println("BEFORE FLUSH");
-        outputStream.flush();
-        System.out.println("AFTER FLUSH");
-
-        thread.join();
     }
 }
