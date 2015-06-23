@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <SUBMISSION  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.submission.xsd?view=co" alias="ALIAS" center_name="CENTER_NAME_ACRONYM" submission_comment="COMMENT(optional)">
+    <CONTACTS>
+        <CONTACT inform_on_error="mailto:(email_address)" inform_on_status="mailto:(email_address)" name="Name of submitter or PI of project."></CONTACT>
+    </CONTACTS>
+    <ACTIONS>
+        <ACTION>
+            <ADD schema="experiment" source="(experiment XML file)"></ADD>
+        </ACTION>
+        <ACTION>
+            <ADD schema="run" source="(run XML file)"></ADD>
+        </ACTION>
+        <!-- Only include <ACTION/> elements for those objects that you wish to update. Each <ACTION/> element can include <ADD/>, <MODIFY/>, <SUPPRESS/>, <HOLD/> or <RELEASE/> elements that indicate the desired update. -->
+        <ACTION>
+            <HOLD HoldUntilDate="2020-01-01-05:00"></HOLD>
+        </ACTION>
+        <!-- If a target is not specified for HOLD or RELEASE, then the action will be applied to all objects in the submission. Use the above date / time format - objects will only be held for 1 year from the date of creation or modification. -->
+    </ACTIONS>
+</SUBMISSION>

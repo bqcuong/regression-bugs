@@ -23,7 +23,6 @@ import com.milaboratory.core.sequence.NSequenceWithQuality;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceQuality;
 import com.milaboratory.core.sequence.Wildcard;
-import com.milaboratory.util.Bit2Array;
 import com.milaboratory.util.CanReportProgress;
 import com.milaboratory.util.CountingInputStream;
 
@@ -143,7 +142,7 @@ public final class FastaReader implements SingleReader, CanReportProgress {
         byte[] qualityData = new byte[sequence.length()];
         Arrays.fill(qualityData, SequenceQuality.GOOD_QUALITY_VALUE);
 
-        Bit2Array sequenceData = new Bit2Array(sequence.length());
+        byte[] sequenceData = new byte[sequence.length()];
         byte nucleotide;
         char symbol;
         for (int i = 0; i < sequence.length(); ++i) {
@@ -152,7 +151,7 @@ public final class FastaReader implements SingleReader, CanReportProgress {
             if (nucleotide == -1) //wildChard
             {
                 if (withWildcards) {
-                    Wildcard wildcard = ALPHABET.getWildcardFor(symbol);
+                    Wildcard wildcard = ALPHABET.symbolToWildcard(symbol);
                     if (wildcard == null)
                         throw new IllegalFileFormatException("Unknown wildcard: " + symbol + ".");
                     nucleotide = wildcard.getUniformlyDistributedBasicCode(id ^ i);
@@ -160,7 +159,7 @@ public final class FastaReader implements SingleReader, CanReportProgress {
                     throw new RuntimeException("Unknown letter: " + symbol);
                 qualityData[i] = SequenceQuality.BAD_QUALITY_VALUE;
             }
-            sequenceData.set(i, nucleotide);
+            sequenceData[i] = nucleotide;
         }
 
         return new NSequenceWithQuality(new NucleotideSequence(sequenceData),

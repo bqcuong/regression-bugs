@@ -35,7 +35,6 @@ import static java.lang.Character.toUpperCase;
  * @see com.milaboratory.core.sequence.Sequence
  */
 public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequence> {
-    static final AminoAcidAlphabet INSTANCE = new AminoAcidAlphabet();
     /**
      * Stop codon byte representation
      */
@@ -253,6 +252,12 @@ public final class AminoAcidAlphabet extends AbstractArrayAlphabet<AminoAcidSequ
      * Glutamine or Glutamic acid (E or Q) wildcard
      */
     public static final Wildcard Z_WILDCARD = new Wildcard('Z', Z, new byte[]{E, Q});
+
+    /**
+     * Instance of amino acid alphabet.
+     */
+    static final AminoAcidAlphabet INSTANCE = new AminoAcidAlphabet();
+
     private AminoAcidAlphabet() {
         super("aminoacid", (byte) 2, 22,
                 // Any letter

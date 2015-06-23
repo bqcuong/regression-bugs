@@ -17,7 +17,6 @@ package com.milaboratory.core.tree;
 
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.sequence.*;
-import com.milaboratory.util.Bit2Array;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937a;
@@ -424,10 +423,10 @@ public class SequenceTreeMapTest {
 
     @Test
     public void testGuideNew() throws Exception {
-        SequenceTreeMap<AminoAcidSequenceWithWildcards, Integer> map = new SequenceTreeMap<>(AminoAcidSequenceWithWildcards.ALPHABET);
+        SequenceTreeMap<AminoAcidSequence, Integer> map = new SequenceTreeMap<>(AminoAcidSequence.ALPHABET);
 
-        map.put(new AminoAcidSequenceWithWildcards("AA.SFD"), 3);
-        map.put(new AminoAcidSequenceWithWildcards("AA.FD"), 4);
+        map.put(new AminoAcidSequence("AAXSFD"), 3);
+        map.put(new AminoAcidSequence("AAXFD"), 4);
 
         Set<Integer> set = new HashSet<>();
         Integer i;
@@ -440,7 +439,8 @@ public class SequenceTreeMapTest {
             }
         };
 
-        NeighborhoodIterator<AminoAcidSequenceWithWildcards, Integer> ni = map.getNeighborhoodIterator(new AminoAcidSequenceWithWildcards("AASFD"), 1, 1, 1, 1, guide);
+        NeighborhoodIterator<AminoAcidSequence, Integer> ni = map.getNeighborhoodIterator(
+                new AminoAcidSequence("AASFD"), 1, 1, 1, 1, guide);
 
         while ((i = ni.next()) != null) {
             set.add(i);
@@ -456,7 +456,7 @@ public class SequenceTreeMapTest {
             }
         };
 
-        ni = map.getNeighborhoodIterator(new AminoAcidSequenceWithWildcards("AA.SD"), 1, 1, 1, 1, guide);
+        ni = map.getNeighborhoodIterator(new AminoAcidSequence("AAXSD"), 1, 1, 1, 1, guide);
 
         while ((i = ni.next()) != null) {
             set.add(i);
@@ -473,7 +473,7 @@ public class SequenceTreeMapTest {
             }
         };
 
-        ni = map.getNeighborhoodIterator(new AminoAcidSequenceWithWildcards("AA_SGFD"), 1, 1, 1, 1, guide);
+        ni = map.getNeighborhoodIterator(new AminoAcidSequence("AA_SGFD"), 1, 1, 1, 1, guide);
 
         while ((i = ni.next()) != null) {
             set.add(i);
@@ -542,14 +542,13 @@ public class SequenceTreeMapTest {
     }
 
     private NucleotideSequence introduceNucleotideMismatch(NucleotideSequence sequence) {
-        final Bit2Array storage = sequence.getInnerData();
-        int position = random.nextInt(storage.size());
-        storage.set(position, 0x3 & (storage.get(position) + 1 + random.nextInt(3)));
+        final byte[] storage = sequence.asArray();
+        int position = random.nextInt(storage.length);
+        storage[position] = (byte) (0x3 & (storage[position] + 1 + random.nextInt(3)));
         return new NucleotideSequence(storage);
     }
 
-    final static Alphabet[] alphabets = {NucleotideSequence.ALPHABET, AminoAcidSequence.ALPHABET,
-            NucleotideSequenceWithWildcards.ALPHABET, AminoAcidSequenceWithWildcards.ALPHABET};
+    final static Alphabet[] alphabets = {NucleotideSequence.ALPHABET, AminoAcidSequence.ALPHABET};
 
     private Alphabet getRandomAlphabet() {
         return alphabets[random.nextInt(alphabets.length)];
@@ -805,7 +804,6 @@ public class SequenceTreeMapTest {
             int[] mut = new int[3];
             mut[t] = 2;
             clusterTest(NucleotideSequence.ALPHABET, 100, 30, mut);
-            clusterTest(AminoAcidSequenceWithWildcards.ALPHABET, 100, 30, mut);
             clusterTest(AminoAcidSequence.ALPHABET, 100, 30, mut);
         }
     }

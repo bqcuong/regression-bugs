@@ -60,7 +60,7 @@ public final class Wildcard {
      * @param matchingCodes set of codes that this wildcards matches
      */
     Wildcard(char cSymbol, byte code, byte[] matchingCodes) {
-        if (matchingCodes.length == 0 || !Character.isUpperCase(cSymbol))
+        if (matchingCodes.length == 0 || Character.isLowerCase(cSymbol))
             throw new IllegalArgumentException();
 
         this.cSymbol = Character.toUpperCase(cSymbol);

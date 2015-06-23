@@ -38,14 +38,14 @@ public class SequencesUtilsTest {
     @Test
     public void testBelongs1() throws Exception {
         assertTrue(belongsToAlphabet(NucleotideSequence.ALPHABET, "ATTAGagacca"));
-        assertFalse(belongsToAlphabet(NucleotideSequence.ALPHABET, "ATTAGagaccaw"));
+        assertFalse(belongsToAlphabet(NucleotideSequence.ALPHABET, "ATTAGagaccaQ"));
     }
 
     @Test
     public void testBelongs2() throws Exception {
         assertTrue(belongsToAlphabet(AminoAcidSequence.ALPHABET, "CAsSL*~GAT"));
         assertTrue(belongsToAlphabet(AminoAcidSequence.ALPHABET, "CAsSL*_GAT"));
-        assertFalse(belongsToAlphabet(AminoAcidSequence.ALPHABET, "CAsSL*_XAT"));
+        assertFalse(belongsToAlphabet(AminoAcidSequence.ALPHABET, "CAsSL*_XAOT"));
     }
 
     @Test

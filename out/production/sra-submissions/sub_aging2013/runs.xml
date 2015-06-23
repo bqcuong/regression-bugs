@@ -1,0 +1,371 @@
+<RUN_SET>
+  <RUN alias='A3I110_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A3I110_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A3-i110_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='8cdfe5efd0c6c2fdae1d122f29fd56f5' />
+        <FILE filename='A3-i110_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='aedb1b7e8013bab48a93439c066f4364' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I185_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I185_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i185_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='25a33ef98dd0947ddb3a91e04f592045' />
+        <FILE filename='A4-i185_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='fdf73df47cb8fa5d7265ded18dd02cf9' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I184_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I184_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i184_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='d7c1d6c08ac1b06a5d8c1526d52176ca' />
+        <FILE filename='A4-i184_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='7eadc496a310f14462af1c96496312a6' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I183_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I183_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i183_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='797507ea29d7ee704f5e53f4b0d90b50' />
+        <FILE filename='A4-i183_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='11f73b4e583807eddc53f6e20cdc1568' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I141_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I141_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i141_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='be4c53c8a705b9bb968f3002c723f7e2' />
+        <FILE filename='A2-i141_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='41c9b5ce6f4414ad66fb181aa882df1b' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I140_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I140_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i140_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='3a756710f36d3199f18c441965ce4331' />
+        <FILE filename='A2-i140_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='8bbbd33356905887876e47a6f03e1851' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I118_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I118_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i118_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='f42d3656d30984029ec124bbc6e41969' />
+        <FILE filename='A4-i118_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='cdf5bc42018b8c5281e07e50099a9cbd' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I129_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I129_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i129_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='fa0b54783f90b73e5b27577ccea4d35d' />
+        <FILE filename='A2-i129_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='979e91089fd0782a106cd0c190c4831c' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I110_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I110_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i110_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='c9cbbfb08fb02cd28799889ae4827125' />
+        <FILE filename='A4-i110_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='5a73e3d8dc0ce3716810ee904f5502d5' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I132_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I132_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i132_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='f99fc33dd9792c6420a9ee501ce43088' />
+        <FILE filename='A4-i132_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='398049bd8f412b76ebd6ca64966ba110' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I192_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I192_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i192_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='f335e6e9a8def66a477c2e360cf6e7ce' />
+        <FILE filename='A4-i192_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='70c63154fbf4d87667391c141892e006' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I191_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I191_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i191_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='0a838fe20a854338aa08f0108c584944' />
+        <FILE filename='A4-i191_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='ef0d137ea2c9bafb5463c0b3b08a36d2' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A3I101_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A3I101_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A3-i101_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='c832147ac9fdb14baf2206a9cdb8cead' />
+        <FILE filename='A3-i101_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='9d3674977bbee194c35e9a989eafbd67' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A3I145_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A3I145_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A3-i145_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='5f6e716f14231d2893f49267197259f5' />
+        <FILE filename='A3-i145_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='d770b5443deb705d4d5bfea0b33fc8d1' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I190_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I190_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i190_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='4756dcb5d84963d9c6daca2fa9527b23' />
+        <FILE filename='A4-i190_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='c362d089344dff64538ff3ff323a0032' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A3I102_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A3I102_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A3-i102_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='1fe1303671bdfb290c2c34489ae7bf3a' />
+        <FILE filename='A3-i102_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='a387415d6a64108c74752bd1dd2c7e19' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I195_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I195_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i195_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='279e17f62c52ac9f1a01537cee229a54' />
+        <FILE filename='A4-i195_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='1f7054547354a15abd77fe261cd0b770' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I194_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I194_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i194_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='8227096eac089ecaaa150efd9719ea86' />
+        <FILE filename='A4-i194_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='d4681f336fe60d22fb5d767ee04fd665' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A3I107_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A3I107_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A3-i107_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='6e52d14ef840426500dcda4ea4fa4e27' />
+        <FILE filename='A3-i107_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='680e23c376a4d389e9422f220ba9c263' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A3I106_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A3I106_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A3-i106_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='53ef824a3f44106260701ed03f20fe14' />
+        <FILE filename='A3-i106_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='5ad1df810ba015ebfd79b6962bcfb7e4' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I132_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I132_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i132_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='c2969e04abb61368d9310bbe3ed0e3f6' />
+        <FILE filename='A2-i132_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='bbebff34272f838c30295bb0fe57d181' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I107_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I107_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i107_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='5e1cb28976b4d6346ef489f1adbbac8f' />
+        <FILE filename='A4-i107_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='1e1fae4f9eda3821b9e6fd2d9cd6203a' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I131_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I131_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i131_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='776fccf665b300b1da351211dc85f29b' />
+        <FILE filename='A2-i131_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='d3ef1f8a8ca947321a902c4a6b795f7d' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I106_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I106_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i106_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='1825ccd6cee080b93b69f8d0f2918b13' />
+        <FILE filename='A4-i106_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='eca0291acad49e10740159b991c73975' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I128_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I128_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i128_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='460a058d0722893278892072e02cc6a4' />
+        <FILE filename='A4-i128_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='223197e5c79da78fc2a83f0ee46c7193' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I134_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I134_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i134_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='5b1845dfd224354b0d496ad902de08f5' />
+        <FILE filename='A2-i134_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='f7194769a80c1b0c417c59e3fd9145a4' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I133_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I133_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i133_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='c5918f689fbbffb94da2f99a9168944f' />
+        <FILE filename='A2-i133_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='41e7869356d97269ddb9f0a69ef96339' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I136_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I136_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i136_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='7ae7a17703bf7d3206f7dc9d6bfce09c' />
+        <FILE filename='A2-i136_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='2224b2ecaaa184f0c99c8720153dce91' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I138_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I138_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i138_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='ac1d35575a9b41c81a0b2f28f5c926bc' />
+        <FILE filename='A2-i138_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='54adda86f0199bcef11b77a09b57d6b9' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A3I150_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A3I150_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A3-i150_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='3595bcf522376b89f2c2e6667afb4be7' />
+        <FILE filename='A3-i150_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='d786735c0ad7ad3ef5ec586707b25442' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I101_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I101_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i101_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='f3d9c06ed503253c6a8be540574c7b74' />
+        <FILE filename='A4-i101_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='555b1e8fc711808b07448c5efcc5a693' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I189_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I189_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i189_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='f64b51732e7e593c57994eda5eb03fbc' />
+        <FILE filename='A4-i189_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='a6cf8254458d2d7087b3b304c28f89fa' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A3I151_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A3I151_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A3-i151_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='1399e0cf8685ad81633aabfd9110a5a7' />
+        <FILE filename='A3-i151_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='e057b717be9df03a10522d2cb2389eea' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I122_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I122_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i122_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='9acdc31c8daca7a3e4364e3b5eb883ed' />
+        <FILE filename='A4-i122_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='0dfb51ce7194a105d9ba9bbc8418ab9d' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I188_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I188_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i188_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='dc70b9f8c5f33310382434db2c424be5' />
+        <FILE filename='A4-i188_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='6058e0bbebc44edcce981acef329d9b1' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A2I139_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A2I139_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A2-i139_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='65b450e16d843cbf28d00511bcb1ba51' />
+        <FILE filename='A2-i139_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='9e1700667bbce7391469dab8a3964217' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I186_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I186_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i186_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='1cdf2d604ec48de289b05a31dd87462c' />
+        <FILE filename='A4-i186_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='299134345e12f1d159f9806914625db7' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I127_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I127_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i127_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='10a0f6ff1899370f60a9d4aa2bd166f0' />
+        <FILE filename='A4-i127_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='004a4a279510df3538c517c233e3d00f' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I125_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I125_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i125_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='deee5ee45550496cfaa884805577d4bc' />
+        <FILE filename='A4-i125_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='07e5e5e818d0240f8e2b8f116cce9d9b' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I102_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I102_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i102_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='ab2f96331f011bfea33a524e2d1e8109' />
+        <FILE filename='A4-i102_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='8c2ad5f2ffb00867b34feee0e32b7932' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+  <RUN alias='A4I124_run' center_name='MILAB' run_date='2013-09-13T00:00:00'>
+    <EXPERIMENT_REF refname='A4I124_exp' />
+    <DATA_BLOCK>
+      <FILES>
+        <FILE filename='A4-i124_R1.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='f9274ea9239f8055721d39b904be6c4c' />
+        <FILE filename='A4-i124_R2.fastq.gz' filetype='fastq' checksum_method='MD5' checksum='6f5c17c5eb71023ce5ce62eeb1618c7d' />
+      </FILES>
+    </DATA_BLOCK>
+  </RUN>
+</RUN_SET>

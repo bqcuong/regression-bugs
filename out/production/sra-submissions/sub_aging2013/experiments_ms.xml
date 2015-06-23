@@ -1,0 +1,618 @@
+<EXPERIMENT_SET>
+  <EXPERIMENT alias='MS10_exp' center_name='MILAB'>
+    <TITLE>Sample: MS10</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465105' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS10</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS11_exp' center_name='MILAB'>
+    <TITLE>Sample: MS11</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465106' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS11</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS12_exp' center_name='MILAB'>
+    <TITLE>Sample: MS12</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465107' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS12</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS1_exp' center_name='MILAB'>
+    <TITLE>Sample: MS1</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465096' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS1</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS3_exp' center_name='MILAB'>
+    <TITLE>Sample: MS3</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465098' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS3</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS13_exp' center_name='MILAB'>
+    <TITLE>Sample: MS13</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465108' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS13</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS2_exp' center_name='MILAB'>
+    <TITLE>Sample: MS2</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465097' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS2</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS14_exp' center_name='MILAB'>
+    <TITLE>Sample: MS14</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465109' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS14</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS5_exp' center_name='MILAB'>
+    <TITLE>Sample: MS5</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465100' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS5</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS4_exp' center_name='MILAB'>
+    <TITLE>Sample: MS4</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465099' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS4</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS7_exp' center_name='MILAB'>
+    <TITLE>Sample: MS7</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465102' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS7</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS6_exp' center_name='MILAB'>
+    <TITLE>Sample: MS6</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465101' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS6</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS9_exp' center_name='MILAB'>
+    <TITLE>Sample: MS9</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465104' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS9</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+  <EXPERIMENT alias='MS8_exp' center_name='MILAB'>
+    <TITLE>Sample: MS8</TITLE>
+    <STUDY_REF>
+      <IDENTIFIERS>
+        <PRIMARY_ID>PRJNA280417</PRIMARY_ID>
+      </IDENTIFIERS>
+    </STUDY_REF>
+    <DESIGN>
+      <DESIGN_DESCRIPTION>The dataset contains T-cell Receptor Beta Chain sequences from multiple sclerosis patients. Individual cDNA molecules were labeled with an unique molecular identifier (UMI) tag prior to library preparation. Custom adapters with sample barcodes were used. Libraries were prepared according to our standardized protocol (http://www.frontiersin.org/Journal/10.3389/fimmu.2013.00456/abstract). Sequencing was performed using Illumina HiSeq2500.
+MiGEC software suite (http://www.nature.com/nmeth/journal/v11/n6/abs/nmeth.2960.html) was used to de-multiplex samples, trim adapters and extract UMI sequences. UMI sequences were appended to header as UMI:NNN:QQQ, where NNN is the nucleotide sequence and QQQ is the Phred quality score string.</DESIGN_DESCRIPTION>
+      <SAMPLE_DESCRIPTOR accession='SAMN03465103' />
+      <LIBRARY_DESCRIPTOR>
+        <LIBRARY_NAME>MS8</LIBRARY_NAME>
+        <LIBRARY_STRATEGY>AMPLICON</LIBRARY_STRATEGY>
+        <LIBRARY_SOURCE>TRANSCRIPTOMIC</LIBRARY_SOURCE>
+        <LIBRARY_SELECTION>PCR</LIBRARY_SELECTION>
+        <LIBRARY_LAYOUT>
+          <PAIRED NOMINAL_LENGTH='550' NOMINAL_SDEV='50' />
+        </LIBRARY_LAYOUT>
+      </LIBRARY_DESCRIPTOR>
+      <SPOT_DESCRIPTOR>
+        <SPOT_DECODE_SPEC>
+          <SPOT_LENGTH>200</SPOT_LENGTH>
+          <READ_SPEC>
+            <READ_INDEX>0</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Forward</READ_TYPE>
+            <BASE_COORD>1</BASE_COORD>
+          </READ_SPEC>
+          <READ_SPEC>
+            <READ_INDEX>1</READ_INDEX>
+            <READ_CLASS>Application Read</READ_CLASS>
+            <READ_TYPE>Reverse</READ_TYPE>
+            <BASE_COORD>101</BASE_COORD>
+          </READ_SPEC>
+        </SPOT_DECODE_SPEC>
+      </SPOT_DESCRIPTOR>
+    </DESIGN>
+    <PLATFORM>
+      <ILLUMINA>
+        <INSTRUMENT_MODEL>Illumina HiSeq 2500</INSTRUMENT_MODEL>
+      </ILLUMINA>
+    </PLATFORM>
+  </EXPERIMENT>
+</EXPERIMENT_SET>

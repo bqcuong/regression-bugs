@@ -20,7 +20,6 @@ import com.milaboratory.core.io.sequence.SingleReadImpl;
 import com.milaboratory.core.sequence.NSequenceWithQuality;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceQuality;
-import com.milaboratory.util.Bit2Array;
 import org.apache.commons.math3.random.Well1024a;
 import org.junit.Assert;
 import org.junit.Test;
@@ -58,10 +57,10 @@ public class FastaWriterTest {
 
     private static SingleRead randomRead(long id) {
         Well1024a random = new Well1024a(id);
-        Bit2Array seq = new Bit2Array(50 + random.nextInt(150));
-        for (int i = 0; i < seq.size(); ++i)
-            seq.set(i, (byte) random.nextInt(NucleotideSequence.ALPHABET.size()));
-        byte[] quality = new byte[seq.size()];
+        byte[] seq = new byte[50 + random.nextInt(150)];
+        for (int i = 0; i < seq.length; ++i)
+            seq[i] = (byte) random.nextInt(NucleotideSequence.ALPHABET.size());
+        byte[] quality = new byte[seq.length];
         Arrays.fill(quality, SequenceQuality.GOOD_QUALITY_VALUE);
         return new SingleReadImpl(id,
                 new NSequenceWithQuality(new NucleotideSequence(seq), new SequenceQuality(quality)), "id" + id);

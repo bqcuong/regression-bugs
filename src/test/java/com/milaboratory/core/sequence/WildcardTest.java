@@ -34,7 +34,7 @@ public class WildcardTest {
             codes = new byte[count];
             for (int i = 1; i < count; ++i)
                 codes[i] = (byte) i;
-            symbol = new Wildcard('a', (byte) 0, codes);
+            symbol = new Wildcard('A', (byte) 0, codes);
             unif = new int[count];
             for (int i = 0; i < tries; ++i)
                 unif[symbol.getUniformlyDistributedBasicCode(i)]++;
@@ -46,8 +46,8 @@ public class WildcardTest {
 
     @Test
     public void testIntersection() throws Exception {
-        Assert.assertTrue(NucleotideAlphabet.S.intersectsWith(NucleotideAlphabet.Y));
-        Assert.assertFalse(NucleotideAlphabet.S.intersectsWith(NucleotideAlphabet.W));
-        Assert.assertTrue(NucleotideAlphabet.S.intersectsWith(NucleotideAlphabet.INSTANCE.getWildcardFor('C')));
+        Assert.assertTrue(NucleotideAlphabet.S_WILDCARD.intersectsWith(NucleotideAlphabet.Y_WILDCARD));
+        Assert.assertFalse(NucleotideAlphabet.S_WILDCARD.intersectsWith(NucleotideAlphabet.W_WILDCARD));
+        Assert.assertTrue(NucleotideAlphabet.S_WILDCARD.intersectsWith(NucleotideAlphabet.C_WILDCARD));
     }
 }

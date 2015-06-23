@@ -1,0 +1,14 @@
+<SUBMISSION alias='mixcr' center_name='MILAB'>
+    <CONTACTS>
+        <CONTACT inform_on_error='mailto:bolotin.dmitriy@gmail.com' inform_on_status='mailto:bolotin.dmitriy@gmail.com'
+                 name='Bolotin Dmitry'/>
+    </CONTACTS>
+    <ACTIONS>
+        <ACTION>
+            <ADD schema='run' source='runs.xml'/>
+        </ACTION>
+        <ACTION>
+            <ADD schema='experiment' source='experiments.xml'/>
+        </ACTION>
+    </ACTIONS>
+</SUBMISSION>

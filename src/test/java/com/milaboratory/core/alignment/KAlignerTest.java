@@ -16,7 +16,6 @@
 package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
-import com.milaboratory.core.io.util.TestUtil;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.generator.MutationModels;
 import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
@@ -105,7 +104,8 @@ public class KAlignerTest extends AlignmentTest {
     public void test3() throws Exception {
         KAlignerParameters parameters = gParams.clone();
         parameters
-                .setScoring(new LinearGapAlignmentScoring(NucleotideSequence.ALPHABET, ScoringUtils.getSymmetricMatrix(4, -4, 4), -5))
+                .setScoring(new LinearGapAlignmentScoring(NucleotideSequence.ALPHABET,
+                        ScoringUtils.getSymmetricMatrix(4, -4, NucleotideSequence.ALPHABET), -5))
                 .setFloatingRightBound(true).setMaxAdjacentIndels(2);
         KAligner aligner = new KAligner(parameters);
         aligner.addReference(new NucleotideSequence("ATTAGACACAATATATCTATGATCCTCTATTAGCTACGTACGGCTGATGCTAGTGTCGAT"));
@@ -148,7 +148,8 @@ public class KAlignerTest extends AlignmentTest {
     public void testRandomCorrectness() throws Exception {
         KAlignerParameters p = gParams.clone().setMapperKValue(6).setAlignmentStopPenalty(Integer.MIN_VALUE)
                 .setMapperAbsoluteMinScore(2.1f).setMapperMinSeedsDistance(4).setAbsoluteMinScore(100.0f).setMapperRelativeMinScore(0.8f);
-        p.setScoring(new LinearGapAlignmentScoring(NucleotideSequence.ALPHABET, ScoringUtils.getSymmetricMatrix(4, -4, 4), -5)).setMaxAdjacentIndels(2);
+        p.setScoring(new LinearGapAlignmentScoring(NucleotideSequence.ALPHABET,
+                ScoringUtils.getSymmetricMatrix(4, -4, NucleotideSequence.ALPHABET), -5)).setMaxAdjacentIndels(2);
 
         KAlignerParameters[] params = new KAlignerParameters[]{p.clone(),
                 p.clone().setFloatingLeftBound(true), p.clone().setFloatingRightBound(true),
@@ -290,8 +291,11 @@ public class KAlignerTest extends AlignmentTest {
 
     @Test
     public void testRandomCorrectnessConcurrent() throws Exception {
-        KAlignerParameters p = gParams.clone().setMapperKValue(6).setAlignmentStopPenalty(Integer.MIN_VALUE).setMapperAbsoluteMinScore(2.1f).setMapperMinSeedsDistance(4);
-        p.setScoring(new LinearGapAlignmentScoring(NucleotideSequence.ALPHABET, ScoringUtils.getSymmetricMatrix(4, -4, 4), -5)).setMaxAdjacentIndels(2);
+        KAlignerParameters p = gParams.clone().setMapperKValue(6)
+                .setAlignmentStopPenalty(Integer.MIN_VALUE)
+                .setMapperAbsoluteMinScore(2.1f).setMapperMinSeedsDistance(4);
+        p.setScoring(new LinearGapAlignmentScoring(NucleotideSequence.ALPHABET,
+                ScoringUtils.getSymmetricMatrix(4, -4, NucleotideSequence.ALPHABET), -5)).setMaxAdjacentIndels(2);
 
         KAlignerParameters[] params = new KAlignerParameters[]{p.clone(),
                 p.clone().setFloatingLeftBound(true), p.clone().setFloatingRightBound(true),

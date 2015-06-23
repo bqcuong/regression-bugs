@@ -166,7 +166,7 @@ public class AminoAcidSequenceTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testUnknownSymbol1() throws Exception {
-        new AminoAcidSequence("ATTAGACANX");
+        new AminoAcidSequence("ATTAGACANXOD");
     }
 
     @Test

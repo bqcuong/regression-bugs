@@ -90,7 +90,7 @@ public class FastaReaderTest {
             byte[] qualityData = new byte[seq.length];
             Arrays.fill(qualityData, SequenceQuality.GOOD_QUALITY_VALUE);
             for (int j = 0; j < seq.length; ++j) {
-                seq[j] = seqExp[j] = NucleotideSequence.ALPHABET.symbolFromCode((byte) rnd.nextInt(4));
+                seq[j] = seqExp[j] = NucleotideSequence.ALPHABET.codeToSymbol((byte) rnd.nextInt(4));
                 if (j != 0 && j != seq.length - 1 && ((4 * j) % seq.length == 0) && rnd.nextBoolean()) {
                     //next line for sequence
                     seq[j] = seqExp[j] = '\n';
@@ -99,7 +99,7 @@ public class FastaReaderTest {
                     Wildcard wildcard = wildcards[rnd.nextInt(wildcards.length)];
                     if (NucleotideSequence.ALPHABET.symbolToCode(wildcard.getSymbol()) == -1) {
                         seq[j] = wildcard.getSymbol();
-                        seqExp[j] = NucleotideSequence.ALPHABET.symbolFromCode(
+                        seqExp[j] = NucleotideSequence.ALPHABET.codeToSymbol(
                                 wildcard.getUniformlyDistributedBasicCode(
                                         id ^ (j + qPointer)));//as used in FastaReader#getSequenceWithQuality(..)
                         qualityData[j + qPointer] = SequenceQuality.BAD_QUALITY_VALUE;

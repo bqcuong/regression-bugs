@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RUN_SET  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://www.ncbi.nlm.nih.gov/viewvc/v1/trunk/sra/doc/SRA_1-5/SRA.run.xsd?view=co">
+    <RUN alias="RUN_ALIAS" center_name="CENTER_NAME_ACRONYM"
+        run_date="Format: 2000-01-01T00:00:00">
+        <!-- run_date is optional, but uses a strict format. If you include it, please make sure the time stamp is included, even if it is zeroes (i.e., T00:00:00). -->
+        <EXPERIMENT_REF refname="EXPERIMENT_ALIAS"/>
+        <!-- reference assembly and sequences should be provided for BAM files with aligned reads; not applicable to unaligned (e.g., fastq) data -->
+        <DATA_BLOCK>
+            <FILES>
+                <FILE filename="FILENAME" filetype="SELECT FROM CONTROLLED VOCABULARY AT END OF XML" checksum_method="MD5" checksum="CHECKSUM"/> 
+            </FILES>
+        </DATA_BLOCK>
+        <RUN_ATTRIBUTES>
+        <RUN_ATTRIBUTE>
+            <TAG>assembly</TAG>
+            <VALUE>ASSEMBLY_NAME</VALUE>
+        </RUN_ATTRIBUTE>
+        </RUN_ATTRIBUTES>
+        <!-- The <RUN_ATTRIBUTES/> element can map a bam file to an NCBI reference genome assembly. Otherwise, it should be removed.
+        Please see ftp://ftp-trace.ncbi.nlm.nih.gov/sra/refseq/ for available assemblies. If your assembly is not on this list, please also transmit a reference_fasta and list it as a <FILE/> above. -->
+    </RUN>
+    <!-- If you are submitting more than one run, replicate the <RUN/> element here, as many times as necessary. -->
+</RUN_SET>
+<!--
+ Controlled vocabulary for filetype:
+	"srf"
+	"sff"
+	"fastq"
+	"tab"
+	"454_native"
+	"454_native_seq"
+	"454_native_qual"
+	"Helicos_native"
+	"Illumina_native"
+	"Illumina_native_seq"
+	"Illumina_native_prb"
+	"Illumina_native_int"
+	"Illumina_native_qseq"
+	"Illumina_native_scarf"
+	"SOLiD_native"
+	"SOLiD_native_csfasta"
+	"SOLiD_native_qual"
+	"PacBio_HDF5"
+	"CompleteGenomics_native"
+	"CompleteGenomics_native_MAP"
+	"CompleteGenomics_native_ASM"
+	"CompleteGenomics_native_LIB"
+	"bam"
+	"bam_header"
+	"reference_fasta" (for bam files aligned to a local assembly)
+-->

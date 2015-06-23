@@ -175,7 +175,7 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
         this.relativeMinScore = relativeMinScore;
         this.maxHits = maxHits;
         this.scoring = scoring;
-        if (scoring != null && !scoring.uniformMatchScore())
+        if (scoring != null && !scoring.uniformBasicMatchScore())
             throw new IllegalArgumentException("Use scoring with common match score.");
     }
 
@@ -430,7 +430,7 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
      * @return parameters object
      */
     public KAlignerParameters setScoring(LinearGapAlignmentScoring scoring) {
-        if (scoring != null && !scoring.uniformMatchScore())
+        if (scoring != null && !scoring.uniformBasicMatchScore())
             throw new IllegalArgumentException("Use scoring with common match score.");
         this.scoring = scoring;
         return this;

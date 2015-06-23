@@ -98,6 +98,8 @@ public class KAligner implements java.io.Serializable {
      * @return index assigned to the sequence
      */
     public int addReference(NucleotideSequence sequence, int offset, int length) {
+        if(sequence.containWildcards())
+            throw new IllegalArgumentException("Reference sequences with wildcards not supported.");
         int id = mapper.addReference(sequence, offset, length);
         assert sequences.size() == id;
         sequences.add(sequence);

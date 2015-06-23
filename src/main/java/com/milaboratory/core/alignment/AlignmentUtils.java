@@ -39,17 +39,21 @@ public final class AlignmentUtils {
      * @return score of alignment
      */
     public static float calculateScore(LinearGapAlignmentScoring scoring, int initialLength, Mutations mutations) {
-        if (!scoring.uniformMatchScore())
+        if (!scoring.uniformBasicMatchScore())
             throw new IllegalArgumentException("Scoring with non-uniform match score is not supported.");
 
         float matchScore = scoring.getScore((byte) 0, (byte) 0);
         float score = matchScore * initialLength;
         for (int i = 0; i < mutations.size(); ++i) {
             int mutation = mutations.getMutation(i);
+
+            if (scoring.getAlphabet().isWildcard(getFrom(mutation)) || scoring.getAlphabet().isWildcard(getTo(mutation)))
+                throw new IllegalArgumentException("Mutations with wildcards are not supported.");
+
             if (isDeletion(mutation) || isInsertion(mutation))
                 score += scoring.getGapPenalty();
             else //Substitution
-                score += scoring.getScore((byte) getFrom(mutation), (byte) getTo(mutation));
+                score += scoring.getScore(getFrom(mutation), getTo(mutation));
             if (isDeletion(mutation) || isSubstitution(mutation))
                 score -= matchScore;
         }

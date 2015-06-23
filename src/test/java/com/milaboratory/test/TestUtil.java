@@ -165,7 +165,7 @@ public class TestUtil {
                 minLength : minLength + r.nextInt(maxLength - minLength + 1);
         SequenceBuilder<S> builder = alphabet.getBuilder();
         for (int i = 0; i < length; ++i)
-            builder.append((byte) r.nextInt(alphabet.size()));
+            builder.append((byte) r.nextInt(alphabet.basicSize()));
         return builder.createAndDestroy();
     }
 }

@@ -15,7 +15,7 @@
  */
 package com.milaboratory.core.alignment;
 
-import com.milaboratory.core.sequence.NucleotideSequenceWithWildcards;
+import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.GlobalObjectMappers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class LinearGapAlignmentScoringTest {
 
     @Test
     public void test2() throws Exception {
-        AlignmentScoring expected = new LinearGapAlignmentScoring<NucleotideSequenceWithWildcards>(NucleotideSequenceWithWildcards.ALPHABET, 15, -24, -4);
+        AlignmentScoring expected = new LinearGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 15, -24, -4);
         String s = GlobalObjectMappers.PRETTY.writeValueAsString(expected);
         AlignmentScoring scoring = GlobalObjectMappers.ONE_LINE.readValue(s, AlignmentScoring.class);
         Assert.assertEquals(expected, scoring);

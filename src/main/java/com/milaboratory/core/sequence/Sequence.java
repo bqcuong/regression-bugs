@@ -15,7 +15,7 @@
  */
 package com.milaboratory.core.sequence;
 
-import com.milaboratory.primitivio.annotations.CustomSerializer;
+import com.milaboratory.core.motif.Motif;
 import com.milaboratory.primitivio.annotations.Serializable;
 
 /**
@@ -69,6 +69,24 @@ public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> imp
      */
     public char charFromCodeAt(int position) {
         return getAlphabet().codeToSymbol(codeAt(position));
+    }
+
+    /**
+     * Converts sequnce to motif data structure efficient for exact and fuzzy wildcard-aware matching and searching of
+     * sequences.
+     *
+     * @return motif
+     */
+    @SuppressWarnings("unchecked")
+    public Motif<S> toMotif() {
+        return new Motif(this);
+    }
+
+    public boolean containWildcards() {
+        for (int i = 0; i < size(); i++)
+            if (getAlphabet().isWildcard(codeAt(i)))
+                return true;
+        return false;
     }
 
     @Override
