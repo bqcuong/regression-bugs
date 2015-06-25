@@ -9,7 +9,13 @@
 package com.gdssecurity.pmd.smap;
 
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.LineNumberReader;
+
+import com.gdssecurity.pmd.Utils;
 
 
 public class SmapFileReader implements SmapReader {
@@ -20,18 +26,21 @@ public class SmapFileReader implements SmapReader {
         this.file = file;
     }
     
-    public String toString() {
+    @Override
+	public String toString() {
         if (file != null) {
             return file.toString();
         }
         return null;
     }
     
-    public String readSmap() {
+    @SuppressWarnings("resource")
+	@Override
+	public String readSmap() {
         if (file != null) {
+        	LineNumberReader lnr = null;
             try {
-                FileReader fr = new FileReader(file);
-                LineNumberReader lnr = new LineNumberReader(fr);
+            	lnr = new LineNumberReader( new FileReader(file));
                 String line = "";
                 String out = "";
 
@@ -44,6 +53,9 @@ public class SmapFileReader implements SmapReader {
                 return null;
             } catch (IOException ioe) {
                 return null;
+            }
+            finally {
+            	Utils.close(lnr);
             }
         }
         return null;

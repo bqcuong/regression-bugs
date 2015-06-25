@@ -10,33 +10,39 @@ package com.gdssecurity.pmd;
 
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sourceforge.pmd.RuleContext;
-import net.sourceforge.pmd.ast.ASTClassOrInterfaceType;
-import net.sourceforge.pmd.ast.ASTExpression;
-import net.sourceforge.pmd.ast.ASTName;
-import net.sourceforge.pmd.ast.ASTPrimaryExpression;
-import net.sourceforge.pmd.ast.SimpleNode;
+import net.sourceforge.pmd.lang.ast.Node;
+import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceType;
+import net.sourceforge.pmd.lang.java.ast.ASTExpression;
+import net.sourceforge.pmd.lang.java.ast.ASTName;
+import net.sourceforge.pmd.lang.java.ast.ASTPrimaryExpression;
+import net.sourceforge.pmd.lang.java.ast.ASTPrimaryPrefix;
 
 
-public class Utils {
+public final class Utils {
 
-    private static final Logger LOG = Logger.getLogger(
-            "com.gdssecurity.pmd.rules");
+    private static final Logger LOG = Logger.getLogger("com.gdssecurity.pmd.rules");
 	
-    public static String getCodeSnippet(String fileName, int start, int end) {
-        StringBuffer sb = new StringBuffer();
+    private Utils () {
+    	throw new AssertionError("No instances allowed");
+    }
+    
+    @SuppressWarnings("resource")
+	public static String getCodeSnippet(String fileName, int start, int end) {
+        StringBuilder sb = new StringBuilder();
         BufferedReader br = null;
-        
         try {
-            br = new BufferedReader(new FileReader(new File(fileName)));
+        	br = new BufferedReader(new FileReader(new File(fileName)));
             int lintCtr = 1;
 
             for (String s = null; (s = br.readLine()) != null;) {
@@ -53,34 +59,41 @@ public class Utils {
             LOG.warning(
                     "Unexpected error while retrieving code snippet from "
                             + fileName + " " + ioe.getStackTrace().toString());
+        } 
+        finally {
+        	close(br);
         }
-        
         return sb.toString();
     }
 	
-    public static String getType(SimpleNode node, RuleContext rc, String method) {
+    public static String getType(Node node, RuleContext rc, String method) {
         String methodMsg = "Utils::getType - {0}";
 		
         String cannonicalName = "";
-        Class type = null;
+        Class<? extends Object> type = null;
 		
         try {
-            if (node instanceof ASTExpression) {
-				
+            if (node instanceof ASTExpression) {				
                 type = node.getFirstChildOfType(ASTPrimaryExpression.class).getFirstChildOfType(ASTName.class).getType();
             } else if (node instanceof ASTPrimaryExpression) {
-                if (node.containsChildOfType(ASTClassOrInterfaceType.class)) {
-					
-                    type = node.getFirstChildOfType(ASTClassOrInterfaceType.class).getType();
-                } else {
-					
-                    type = node.getFirstChildOfType(ASTName.class).getType();
+                if (node.hasDescendantOfType(ASTClassOrInterfaceType.class)) {					
+                    type = node.getFirstDescendantOfType(ASTClassOrInterfaceType.class).getType();
+                } else {	
+                	ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
+                	ASTName astName = prefix.getFirstChildOfType(ASTName.class);        	
+                	if (astName != null) {
+                		type = node.getFirstDescendantOfType(ASTName.class).getType();
+                	}                    
                 }
             } else if (node instanceof ASTName) {
                 type = ((ASTName) node).getType();
-            }
-			
-            cannonicalName = type.getCanonicalName();
+            }            
+			if (type != null) {
+				cannonicalName = type.getCanonicalName();
+			}
+			else {
+				cannonicalName = "UNKNOWN_TYPE";
+			}
         } catch (Exception ex1) {
     		
             LOG.log(Level.INFO, methodMsg,
@@ -93,15 +106,35 @@ public class Utils {
         return cannonicalName;
     }
 	
-    public static HashSet<String> arrayAsHashSet(String[] array) {
-        HashSet<String> hashSet = new HashSet<String>(array.length);
-        int nbItem = 0;
+  
 
-        while (nbItem < array.length) {
-            String str = array[nbItem++];
-
-            hashSet.add(str);
+	public static Set<String> arrayAsSet(String[] array) {
+        Set<String> hashSet = new HashSet<String>(array.length);
+        
+        for(String element: array) {
+        	if (element != null) {
+	        	element = element.trim();
+	        	if (element.length() > 0) {
+	        		hashSet.add(element);
+	        	}
+        	}
         }
         return hashSet;
+    }
+    
+    public static void close(Closeable closeable) {
+    	try {
+    		if (closeable != null) {
+    			closeable.close();
+    		}
+    	}
+    	catch (Exception e) {
+    		//
+    	}
+    }
+    public static void close(Closeable... closeables) {
+    	for (Closeable closeable: closeables) {
+    		close (closeable);
+    	}
     }
 }
