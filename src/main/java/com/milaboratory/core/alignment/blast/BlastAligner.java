@@ -21,7 +21,7 @@ import static java.lang.Integer.parseInt;
  * @author Stanislav Poslavsky
  */
 public final class BlastAligner<S extends Sequence<S>> implements AutoCloseable {
-    private static final String outfmt = "7 btop sstart send qstart qend score sseqid qseq sseq";
+    private static final String outfmt = "7 btop sstart send qstart qend score bitscore sseqid qseq sseq";
     private final Process process;
     private final PrintStream outputStream;
     private final int batchSize;
@@ -70,7 +70,6 @@ public final class BlastAligner<S extends Sequence<S>> implements AutoCloseable 
             int num = -1, done = 0;
             try {
                 while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
                     if (line.contains("hits found")) {
                         num = parseInt(line.replace("#", "").replace("hits found", "").trim());
                         if (num == 0)
@@ -111,6 +110,7 @@ public final class BlastAligner<S extends Sequence<S>> implements AutoCloseable 
                 qstart = fields[i++],
                 qend = fields[i++],
                 score = fields[i++],
+                bitscore = fields[i++],
                 sseqid = fields[i++],
                 qseq = fields[i++].replace("-", ""),
                 sseq = fields[i++].replace("-", "");
@@ -118,7 +118,7 @@ public final class BlastAligner<S extends Sequence<S>> implements AutoCloseable 
         Mutations<S> mutations = new Mutations<>(alphabet, MutationsUtil.btopDecode(btop, alphabet));
         Alignment<S> alignment = new Alignment<>(alphabet.parse(sseq), mutations,
                 new Range(0, sseq.length()), new Range(parseInt(qstart) - 1, parseInt(qend)),
-                Float.parseFloat(score));
+                Float.parseFloat(bitscore));
         return new BlastAlignmentHit<>(sseqid, -1, alignment);
     }
 }
