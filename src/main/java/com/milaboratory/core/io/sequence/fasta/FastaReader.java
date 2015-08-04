@@ -181,6 +181,18 @@ public class FastaReader<S extends Sequence<S>> implements CanReportProgress,
     }
 
     /**
+     * For sequential readers returns the number of reads read till this moment, after reader is exhausted returns total
+     * number of reads.
+     *
+     * <p>This method is thread-safe.</p>
+     *
+     * @return number of reads read till this moment for sequential readers
+     */
+    public synchronized long getNumberOfReads() {
+        return id;
+    }
+
+    /**
      * Used internally
      */
     private static final class Item {

@@ -40,7 +40,7 @@ final class FastqRecordsReader implements AutoCloseable {
     int pointer;
     int descriptionBegin, sequenceBegin, sequenceEnd, qualityBegin, qualityEnd;
     /**
-     * If true, then this reader will be automatically closed after it will read the last record
+     * If true, then this reader will be automatically closed after reading the last record
      */
     final boolean autoClose;
 

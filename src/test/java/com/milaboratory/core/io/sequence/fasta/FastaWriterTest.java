@@ -33,7 +33,6 @@ public class FastaWriterTest {
     @Test
     public void test1() throws Exception {
         for (Alphabet alphabet : new Alphabet[]{NucleotideSequence.ALPHABET, AminoAcidSequence.ALPHABET}) {
-
             int count = 1000;
             FastaRecord[] reads = new FastaRecord[count];
             File temp = File.createTempFile("temp", ".fasta");

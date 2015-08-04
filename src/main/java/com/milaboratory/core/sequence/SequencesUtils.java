@@ -15,6 +15,8 @@
  */
 package com.milaboratory.core.sequence;
 
+import com.milaboratory.util.HashFunctions;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -105,5 +107,31 @@ public final class SequencesUtils {
             builder.append(s);
 
         return builder.createAndDestroy();
+    }
+
+    /**
+     * Converts sequence with wildcards to a sequence without wildcards by converting wildcard letters to uniformly
+     * distributed letters from the set of letters allowed by the wildcard. (see {@link
+     * Wildcard#getUniformlyDistributedBasicCode(long)}.
+     *
+     * <p>Returns same result for the same combination of sequence and seed.</p>
+     *
+     * @param sequence sequence to convert
+     * @param seed     seed for random generator
+     * @param <S>      type of sequence
+     * @return sequence with wildcards replaced by uniformly distributed random basic letters
+     */
+    public <S extends Sequence<S>> S wildcardsToRandomBasic(S sequence, long seed) {
+        Alphabet<S> alphabet = sequence.getAlphabet();
+        SequenceBuilder<S> sequenceBuilder = alphabet.getBuilder().ensureCapacity(sequence.size());
+        for (int i = 0; i < sequence.size(); ++i) {
+            byte code = sequence.codeAt(i);
+            if (alphabet.isWildcard(code)) {
+                seed = HashFunctions.JenkinWang64shift(seed + i);
+                sequenceBuilder.append(alphabet.codeToWildcard(code).getUniformlyDistributedBasicCode(seed));
+            } else
+                sequenceBuilder.append(code);
+        }
+        return sequenceBuilder.createAndDestroy();
     }
 }
