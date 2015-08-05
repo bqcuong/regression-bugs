@@ -13,10 +13,10 @@ Basic Usage Steps
 Before reading the steps below, please first read the official PMD documentation for running PMD from the command-line or as a ANT task. 
 The following steps supplement the typical instructions for running PMD and should be followed irrespective of whether PMD will be run from the command-line or as a ANT task.
 
-1. Place pmd-gds-2.0.jar on the PMD CLASSPATH
+1. Download pmd-gds-2.x.x.jar from release page on github and put it on the PMD CLASSPATH
 2. For the application source code to be scanned, place libraries and classes normally needed to build it on the PMD CLASSPATH.
 This provides additional type information to PMD, which makes for more accurate results.
-3. Configure PMD to use the GDS Secure Coding Ruleset. Assuming pmd-gds-2.0.jar is on the CLASSPATH, this ruleset will be accessible via "rulesets/GDS/SecureCoding.xml".
+3. Configure PMD to use the GDS Secure Coding Ruleset. Assuming pmd-gds-2.x.x.jar is on the CLASSPATH, this ruleset will be accessible via "rulesets/GDS/SecureCoding.xml".
 4. Run PMD against application source code and audit the results to determine if a security violation reported by PMD is actually a security vulnerability.
 
 Next Steps
@@ -86,7 +86,7 @@ as well as the section in this README called "Preparing JSP Files for Scanning".
 		</fileset>
 		
 		<!-- The following path is required in order to use the GDS Secure Coding Ruleset -->
-		<pathelement location="pmd-gds-2.0.jar" />
+		<pathelement location="pmd-gds-2.x.x.jar" />
 		
 		<!-- Add paths to JARs and classes needed to build application source code. Adding these JARs is recommended when using PMD with the GDS Secure Coding Ruleset -->
 		
@@ -113,10 +113,22 @@ as well as the section in this README called "Preparing JSP Files for Scanning".
 			</fileset>
 		</pmd>	
 	</target>
+	
 
+Building from sources
+---------------------
+
+Download source code from release page or clone directly with git.
+To compile you need java 7 and maven.
+
+Run mvn
+
+$mvn package
+
+The resulting jar is target/pmd-gds-2.x.x.jar
 
 Miscellaneous Notes
-------------------
+-------------------
 - Unfortunately, the official PMD Eclipse plugin only supports XPath rules out of box. 
 Therefore, GDS Secure Coding Ruleset is not officially supported in Eclipse at this time.
 
