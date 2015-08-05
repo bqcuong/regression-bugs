@@ -448,7 +448,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 	    	}
 	    	
 	    	if (clazz == null && !StringUtils.isBlank(realType) && !UNKNOWN_TYPE.equals(realType)) {
-	    		clazz = Class.forName(realType);
+	    		clazz = Class.forName(realType, false, this.getClass().getClassLoader());
 	    	}
 	    	if (clazz != null) {		    	
 		    	Set<Class<?>> methodReturnTypes = new HashSet<Class<?>>();
@@ -544,7 +544,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     
     private String getType(Node node) {
 		
-        String cannonicalName = "";
+        String cannonicalName = UNKNOWN_TYPE;
         Class<?> type = null;
 		
         try {
@@ -578,9 +578,6 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
             }            
 			if (type != null) {
 				cannonicalName = type.getCanonicalName();
-			}
-			else {
-				cannonicalName = UNKNOWN_TYPE;
 			}
         } catch (Exception ex1) {    		
         	//
