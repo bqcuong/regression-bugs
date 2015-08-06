@@ -21,7 +21,12 @@ import com.milaboratory.core.io.sequence.SingleReader;
 import com.milaboratory.core.sequence.NSequenceWithQuality;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceQuality;
+import com.milaboratory.core.sequence.SequencesUtils;
 import com.milaboratory.util.CanReportProgress;
+
+import static com.milaboratory.core.sequence.NucleotideSequence.ALPHABET;
+import static com.milaboratory.core.sequence.SequenceQuality.BAD_QUALITY_VALUE;
+import static com.milaboratory.core.sequence.SequenceQuality.GOOD_QUALITY_VALUE;
 
 /**
  * Converts {@link FastaReader}<{@link NucleotideSequence}> to
@@ -29,9 +34,16 @@ import com.milaboratory.util.CanReportProgress;
  */
 public class FastaSequenceReaderWrapper implements SingleReader, CanReportProgress {
     private final FastaReader<NucleotideSequence> internalReader;
+    private final boolean replaceWildcards;
 
     public FastaSequenceReaderWrapper(FastaReader<NucleotideSequence> internalReader) {
+        this(internalReader, false);
+    }
+
+    public FastaSequenceReaderWrapper(FastaReader<NucleotideSequence> internalReader,
+                                      boolean replaceWildcards) {
         this.internalReader = internalReader;
+        this.replaceWildcards = replaceWildcards;
     }
 
     @Override
@@ -57,8 +69,21 @@ public class FastaSequenceReaderWrapper implements SingleReader, CanReportProgre
     @Override
     public SingleRead take() {
         FastaRecord<NucleotideSequence> record = internalReader.take();
-        return new SingleReadImpl(record.getId(), new NSequenceWithQuality(record.getSequence(),
-                SequenceQuality.getUniformQuality(SequenceQuality.GOOD_QUALITY_VALUE, record.getSequence().size())),
+        NucleotideSequence sequence = record.getSequence();
+        NSequenceWithQuality seq;
+
+        if (replaceWildcards) {
+            byte[] quality = new byte[sequence.size()];
+            for (int i = 0; i < quality.length; ++i)
+                quality[i] = ALPHABET.isWildcard(sequence.codeAt(i)) ?
+                        BAD_QUALITY_VALUE : GOOD_QUALITY_VALUE;
+            seq = new NSequenceWithQuality(SequencesUtils.wildcardsToRandomBasic(sequence, record.getId()),
+                    new SequenceQuality(quality));
+        } else
+            seq = new NSequenceWithQuality(sequence,
+                    SequenceQuality.getUniformQuality(GOOD_QUALITY_VALUE, sequence.size()));
+
+        return new SingleReadImpl(record.getId(), seq,
                 record.getDescription());
     }
 }

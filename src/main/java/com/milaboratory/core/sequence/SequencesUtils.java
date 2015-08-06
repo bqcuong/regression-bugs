@@ -121,7 +121,7 @@ public final class SequencesUtils {
      * @param <S>      type of sequence
      * @return sequence with wildcards replaced by uniformly distributed random basic letters
      */
-    public <S extends Sequence<S>> S wildcardsToRandomBasic(S sequence, long seed) {
+    public static <S extends Sequence<S>> S wildcardsToRandomBasic(S sequence, long seed) {
         Alphabet<S> alphabet = sequence.getAlphabet();
         SequenceBuilder<S> sequenceBuilder = alphabet.getBuilder().ensureCapacity(sequence.size());
         for (int i = 0; i < sequence.size(); ++i) {

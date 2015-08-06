@@ -52,7 +52,7 @@ public final class Motif<S extends Sequence<S>> implements java.io.Serializable 
         this.size = sequence.size();
         int alphabetSize = alphabet.basicSize();
         this.data = new BitArray(alphabetSize * size);
-        for (int i = 0; i < size; ++i){
+        for (int i = 0; i < size; ++i) {
             Wildcard wildcard = this.alphabet.codeToWildcard(sequence.codeAt(i));
             for (int j = 0; j < wildcard.count(); j++)
                 data.set(wildcard.getMatchingCode(j) * size + i);
@@ -61,12 +61,14 @@ public final class Motif<S extends Sequence<S>> implements java.io.Serializable 
     }
 
     public BitapPattern getBitapPattern() {
+        if (size >= 64)
+            throw new RuntimeException("Supports motifs with length less then 64.");
         return bitapPattern;
     }
 
     private BitapPattern toBitapPattern() {
         if (size >= 64)
-            throw new RuntimeException("Supports motifs with length less then 64.");
+            return null;
         int aSize = alphabet.basicSize();
         long[] patternMask = new long[aSize],
                 reversePatternMask = new long[aSize];

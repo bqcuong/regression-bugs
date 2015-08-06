@@ -15,6 +15,9 @@
  */
 package com.milaboratory.core.sequence;
 
+import com.milaboratory.core.motif.Motif;
+import com.milaboratory.test.TestUtil;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Set;
@@ -52,6 +55,20 @@ public class SequencesUtilsTest {
     public void testSet1() throws Exception {
         Set<Alphabet<?>> set = possibleAlphabets("ATTAGagacca");
         assertTrue(set.contains(NucleotideSequence.ALPHABET));
+    }
+
+    @Test
+    public void testWildcardToRandomBasics1() throws Exception {
+        for (int i = 0; i < 100; i++) {
+            NucleotideSequence seq1 = TestUtil.randomSequence(NucleotideSequence.ALPHABET, 40, 100);
+            NucleotideSequence seq2 = SequencesUtils.wildcardsToRandomBasic(seq1, 132);
+            NucleotideSequence seq3 = SequencesUtils.wildcardsToRandomBasic(seq1, 132);
+            NucleotideSequence seq4 = SequencesUtils.wildcardsToRandomBasic(seq1, 135);
+            Motif<NucleotideSequence> motif1 = seq1.toMotif();
+            assertTrue(motif1.matches(seq2, 0));
+            assertEquals(seq2, seq3);
+            assertTrue(motif1.matches(seq4, 0));
+        }
     }
 
     @Test

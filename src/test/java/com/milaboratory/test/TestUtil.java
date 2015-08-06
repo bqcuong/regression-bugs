@@ -154,18 +154,33 @@ public class TestUtil {
         return randomSequence(alphabet, RandomUtil.getThreadLocalRandom(), minLength, maxLength);
     }
 
+    public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet,
+                                                           int minLength, int maxLength, boolean basicLettersOnly) {
+        return randomSequence(alphabet, RandomUtil.getThreadLocalRandom(), minLength, maxLength, basicLettersOnly);
+    }
+
     public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomDataGenerator r,
                                                            int minLength, int maxLength) {
         return randomSequence(alphabet, r.getRandomGenerator(), minLength, maxLength);
     }
 
+    public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomDataGenerator r,
+                                                           int minLength, int maxLength, boolean basicLettersOnly) {
+        return randomSequence(alphabet, r.getRandomGenerator(), minLength, maxLength, basicLettersOnly);
+    }
+
     public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomGenerator r,
                                                            int minLength, int maxLength) {
+        return randomSequence(alphabet, r, minLength, maxLength, true);
+    }
+
+    public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomGenerator r,
+                                                           int minLength, int maxLength, boolean basicLettersOnly) {
         int length = minLength == maxLength ?
                 minLength : minLength + r.nextInt(maxLength - minLength + 1);
         SequenceBuilder<S> builder = alphabet.getBuilder();
         for (int i = 0; i < length; ++i)
-            builder.append((byte) r.nextInt(alphabet.basicSize()));
+            builder.append((byte) r.nextInt(basicLettersOnly ? alphabet.basicSize() : alphabet.size()));
         return builder.createAndDestroy();
     }
 }
