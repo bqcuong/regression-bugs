@@ -13,6 +13,7 @@ public final class PMDRunner {
 	public static final String RULESET_ACCESS="rulesets/GDS/OWASP/2013-A7-Missing-Function-Level-Access-Control.xml";
 	public static final String RULESET_VULNERABLE = "rulesets/GDS/OWASP/2013-A9-Using-Known-Vulnerable-Component.xml";
 	public static final String RULESET_UNVALIDATED_REDIRECTS = "rulesets/GDS/OWASP/2013-A10-Unvalidated-Redirects-and-Forwards.xml";
+	public static final String RULESET_HTTP_RESPONSE_SPLITTING = "rulesets/GDS/CWE/cwe113-http-response-splitting.xml";
 
 	private PMDRunner() {
 		throw new AssertionError("No instances allowed");
