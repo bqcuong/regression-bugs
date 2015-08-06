@@ -10,8 +10,14 @@ public class CWE113HttpResponseSplittingTest {
 	}
 
 	@Test
-	public void test1() throws Exception {
+	public void testUnvalidatedRedirects() throws Exception {
 		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/cwe113responsesplitting/redirect",
 				PMDRunner.RULESET_UNVALIDATED_REDIRECTS));
+	}
+	
+	@Test
+	public void testHTTPResponseSplitting() throws Exception {
+		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/cwe113responsesplitting/redirect",
+				PMDRunner.RULESET_HTTP_RESPONSE_SPLITTING));
 	}
 }
