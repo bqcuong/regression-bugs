@@ -1,4 +1,4 @@
-package resources.cwe89sqlinjection.sqlinjection1;
+package resources.cwe89sqlinjection;
 
 import java.io.IOException;
 import java.io.PrintWriter;

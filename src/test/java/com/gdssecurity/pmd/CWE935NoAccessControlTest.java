@@ -12,6 +12,6 @@ public class CWE935NoAccessControlTest {
 	@Test
 	public void test1() throws Exception {
 		Assert.assertEquals(2,
-				PMDRunner.run("src/test/java/resources/cwe935noaccesscontrol/access01", PMDRunner.RULESET_ACCESS));
+				PMDRunner.run("src/test/java/resources/cwe935noaccesscontrol/TestRoleAuthZServlet.java", PMDRunner.RULESET_ACCESS));
 	}
 }

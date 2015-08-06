@@ -1,4 +1,4 @@
-package resources.cwe931xss.xss02jsp;
+package resources.cwe931xss;
 
 import java.util.List;
 

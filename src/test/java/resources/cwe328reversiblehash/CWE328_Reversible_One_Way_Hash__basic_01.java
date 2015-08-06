@@ -1,4 +1,4 @@
-package resources.cwe328reversiblehash.CWE328_Reversible_One_Way_Hash;
+package resources.cwe328reversiblehash;
 
 import java.security.MessageDigest;
 

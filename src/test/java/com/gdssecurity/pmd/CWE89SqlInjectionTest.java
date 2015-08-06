@@ -11,7 +11,7 @@ public class CWE89SqlInjectionTest {
 
 	@Test
 	public void test1() throws Exception {
-		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/cwe89sqlinjection/sqlinjection1",
+		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/cwe89sqlinjection/TestSqliServlet.java",
 				PMDRunner.RULESET_SQL_INJECTION));
 	}
 

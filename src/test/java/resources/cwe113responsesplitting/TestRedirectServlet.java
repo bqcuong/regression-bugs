@@ -1,4 +1,4 @@
-package resources.cwe113responsesplitting.redirect;
+package resources.cwe113responsesplitting;
 
 import java.io.IOException;
 

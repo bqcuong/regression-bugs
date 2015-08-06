@@ -1,4 +1,4 @@
-package resources.cwe327brokencrypto.CWE327_Use_Broken_Crypto;
+package resources.cwe327brokencrypto;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
