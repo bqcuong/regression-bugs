@@ -28,8 +28,6 @@ Next Steps
 
 - Refer to the file rulesets/GDS/SecureCoding.xml for information about the types of issues the rules will find and how they work.
 
-- Read and then run the the batch file samples\run_pmd.bat to give the rules a quick test run. 
-
 - Contribute to the project!
 
 
