@@ -9,7 +9,7 @@ public class SqlInjectionTest {
 	
 	@Test
 	public void test1() throws Exception {
-		Assert.assertEquals(1, PMDRunner.run("src/test/resources/sqlinjection1"));
+		Assert.assertEquals(1, PMDRunner.run("src/test/resources/sqlinjection1", PMDRunner.RULESET_SQL_INJECTION));
 	}
 
 }
