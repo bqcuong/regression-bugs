@@ -8,7 +8,7 @@
    <description>
    		This file is part of the GDS PMD Secure Coding Ruleset. 
    		
-   		This file should be used to enable/disable specific rulesets under rulesets/GDS/OWASP. 
+   		This file should be used to enable/disable specific rulesets under rulesets/GDS/OWASP and rulesets/GDS/CWE
    		
    		Each referenced ruleset listed below is intended to match up with the OWASP TOP 10.
    </description>
@@ -17,12 +17,16 @@
    <!-- refer to the ruleset file for descriptions of the rules --> 
    <rule ref="rulesets/GDS/OWASP/2013-A1-Injection.xml"/>
    <rule ref="rulesets/GDS/OWASP/2013-A3-Cross-Site-Scripting.xml"/>
-   <!--  Requires additional configuration -->
+   
+   <!-- May require additional configuration -->
    <!-- <rule ref="rulesets/GDS/OWASP/2013-A7-Missing-Function-Level-Access-Control.xml"/> -->
+   
    <rule ref="rulesets/GDS/OWASP/2013-A9-Using-Known-Vulnerable-Component.xml"/>
-   <rule ref="rulesets/GDS/OWASP/2013-A10-Unvalidated-Redirects-and-Forwards.xml"/>
    
+   <!-- Replaced by cwe113-http-response-splitting.xml -->   
+   <!-- rule ref="rulesets/GDS/OWASP/2013-A10-Unvalidated-Redirects-and-Forwards.xml"/ -->
    
+   <rule ref="rulesets/GDS/CWE/cwe113-http-response-splitting.xml" />   
    
 
    
