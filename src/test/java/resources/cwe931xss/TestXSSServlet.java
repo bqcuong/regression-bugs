@@ -1,4 +1,4 @@
-package resources.cwe931xss.xss01;
+package resources.cwe931xss;
 
 import java.io.IOException;
 import java.io.PrintWriter;

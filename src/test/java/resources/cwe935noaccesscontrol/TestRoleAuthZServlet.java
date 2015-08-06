@@ -1,4 +1,4 @@
-package resources.cwe935noaccesscontrol.access01;
+package resources.cwe935noaccesscontrol;
 
 import java.io.IOException;
 

@@ -12,6 +12,6 @@ public class PMDBug1024HangsTest {
 	
 	@Test(timeout=10000)
 	public void testTimeoutPMDBug1024 () throws Exception{
-		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/pmdbug1024", PMDRunner.RULESET_UNVALIDATED_REDIRECTS));
+		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/pmdbug1024/PMDBug1024.java", PMDRunner.RULESET_UNVALIDATED_REDIRECTS));
 	}
 }
