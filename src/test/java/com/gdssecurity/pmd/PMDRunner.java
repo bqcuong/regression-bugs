@@ -10,6 +10,7 @@ public final class PMDRunner {
 	public static final String RULESET_ALL = "rulesets/GDS/SecureCoding.xml";
 	public static final String RULESET_SQL_INJECTION = "rulesets/GDS/OWASP/2013-A1-Injection.xml";
 	public static final String RULESET_XSS = "rulesets/GDS/OWASP/2013-A3-Cross-Site-Scripting.xml";
+	public static final String RULESET_ACCESS="rulesets/GDS/OWASP/2013-A7-Missing-Function-Level-Access-Control.xml";
 	public static final String RULESET_VULNERABLE = "rulesets/GDS/OWASP/2013-A9-Using-Known-Vulnerable-Component.xml";
 	public static final String RULESET_UNVALIDATED_REDIRECTS = "rulesets/GDS/OWASP/2013-A10-Unvalidated-Redirects-and-Forwards.xml";
 
