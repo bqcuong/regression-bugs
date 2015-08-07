@@ -51,6 +51,7 @@ import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclarator;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclaratorId;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableInitializer;
 import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
+import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jaxen.JaxenException;
@@ -293,28 +294,14 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
 
 	private void handleDataFlowNode(DataFlowNode iDataFlowNode) {
-        boolean def = false;
-        boolean ref = false;
-        String variableName = "";
-
         for(VariableAccess access : iDataFlowNode.getVariableAccess()) {
-        	if (access.isDefinition()){
-        		def = true;
-        		variableName = access.getVariableName();
-        	}
-        	if (access.isReference()) {
-        		ref = true;
+        	if (access.isDefinition()){        		
+        		String variableName = access.getVariableName();
+        		handleVariableDefinition(iDataFlowNode, variableName);
+        		return;
         	}
         }
-
-        if (def) {        	
-            handleVariableDefinition(iDataFlowNode, variableName);
-        }
-
-        if (ref && !def) {
-            handleVariableReference(iDataFlowNode, variableName);
-        }
-
+        handleVariableReference(iDataFlowNode, "");
     }
 
     private void handleVariableReference(DataFlowNode iDataFlowNode,   String variableName) {
@@ -511,7 +498,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     }
     
     private String getFullMethodName(Node node) {
-    	ASTClassOrInterfaceType astClass = node.getFirstDescendantOfType(ASTClassOrInterfaceType.class);
+    	ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
         if (astClass != null) {
             return astClass.getImage();
         }
@@ -551,7 +538,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
             if (node instanceof ASTExpression) {				
                 type = node.getFirstChildOfType(ASTPrimaryExpression.class).getFirstChildOfType(ASTName.class).getType();
             } else if (node instanceof ASTPrimaryExpression) {
-            	ASTClassOrInterfaceType astClass = node.getFirstDescendantOfType(ASTClassOrInterfaceType.class);
+            	ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
                 if (astClass != null) {					
                     type = astClass.getType();
                 } else {	
@@ -586,15 +573,19 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
         return cannonicalName;
     }
     
-
-
-
     
     private boolean analyzeVariable(List<ASTName> listOfAstNames) {
 		for (ASTName name : listOfAstNames) {
 			String var = name.getImage();
 			if (var.indexOf('.') != -1) {
 				var = var.substring(var.indexOf('.') + 1);
+			}
+			NameDeclaration declaration = name.getNameDeclaration();
+			if (declaration != null) {
+				List<ASTFieldDeclaration> fieldDeclarations = declaration.getNode().getParentsOfType(ASTFieldDeclaration.class);
+				if (fieldDeclarations != null && !fieldDeclarations.isEmpty()) {
+					var = "this." + var;
+				}
 			}
 			if (isTaintedVariable(var) || isSource(getType(name), var)) {
 				return true;
