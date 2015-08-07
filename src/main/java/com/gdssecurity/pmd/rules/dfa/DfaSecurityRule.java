@@ -581,12 +581,10 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 				var = var.substring(var.indexOf('.') + 1);
 			}
 			NameDeclaration declaration = name.getNameDeclaration();
-			if (declaration != null) {
-				List<ASTFieldDeclaration> fieldDeclarations = declaration.getNode().getParentsOfType(ASTFieldDeclaration.class);
-				if (fieldDeclarations != null && !fieldDeclarations.isEmpty()) {
-					var = "this." + var;
-				}
+			if (declaration != null && !declaration.getNode().getParentsOfType(ASTFieldDeclaration.class).isEmpty()) {
+				var = "this." + var;
 			}
+
 			if (isTaintedVariable(var) || isSource(getType(name), var)) {
 				return true;
 			}
