@@ -558,7 +558,6 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
                 		ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
                 		type = fieldTypes.get(suffix.getImage());
                 	}
-                    
                 }
             } else if (node instanceof ASTName) {
                 type = ((ASTName) node).getType();
