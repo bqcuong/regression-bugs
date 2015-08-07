@@ -293,28 +293,14 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
 
 	private void handleDataFlowNode(DataFlowNode iDataFlowNode) {
-        boolean def = false;
-        boolean ref = false;
-        String variableName = "";
-
         for(VariableAccess access : iDataFlowNode.getVariableAccess()) {
-        	if (access.isDefinition()){
-        		def = true;
-        		variableName = access.getVariableName();
-        	}
-        	if (access.isReference()) {
-        		ref = true;
+        	if (access.isDefinition()){        		
+        		String variableName = access.getVariableName();
+        		handleVariableDefinition(iDataFlowNode, variableName);
+        		return;
         	}
         }
-
-        if (def) {        	
-            handleVariableDefinition(iDataFlowNode, variableName);
-        }
-
-        if (ref && !def) {
-            handleVariableReference(iDataFlowNode, variableName);
-        }
-
+        handleVariableReference(iDataFlowNode, "");
     }
 
     private void handleVariableReference(DataFlowNode iDataFlowNode,   String variableName) {
@@ -511,7 +497,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     }
     
     private String getFullMethodName(Node node) {
-    	ASTClassOrInterfaceType astClass = node.getFirstDescendantOfType(ASTClassOrInterfaceType.class);
+    	ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
         if (astClass != null) {
             return astClass.getImage();
         }
@@ -551,7 +537,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
             if (node instanceof ASTExpression) {				
                 type = node.getFirstChildOfType(ASTPrimaryExpression.class).getFirstChildOfType(ASTName.class).getType();
             } else if (node instanceof ASTPrimaryExpression) {
-            	ASTClassOrInterfaceType astClass = node.getFirstDescendantOfType(ASTClassOrInterfaceType.class);
+            	ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
                 if (astClass != null) {					
                     type = astClass.getType();
                 } else {	
