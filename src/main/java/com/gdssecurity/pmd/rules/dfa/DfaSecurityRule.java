@@ -51,6 +51,7 @@ import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclarator;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclaratorId;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableInitializer;
 import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
+import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jaxen.JaxenException;
@@ -572,15 +573,19 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
         return cannonicalName;
     }
     
-
-
-
     
     private boolean analyzeVariable(List<ASTName> listOfAstNames) {
 		for (ASTName name : listOfAstNames) {
 			String var = name.getImage();
 			if (var.indexOf('.') != -1) {
 				var = var.substring(var.indexOf('.') + 1);
+			}
+			NameDeclaration declaration = name.getNameDeclaration();
+			if (declaration != null) {
+				List<ASTFieldDeclaration> fieldDeclarations = declaration.getNode().getParentsOfType(ASTFieldDeclaration.class);
+				if (fieldDeclarations != null && !fieldDeclarations.isEmpty()) {
+					var = "this." + var;
+				}
 			}
 			if (isTaintedVariable(var) || isSource(getType(name), var)) {
 				return true;
