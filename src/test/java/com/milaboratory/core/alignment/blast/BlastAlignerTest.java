@@ -3,6 +3,7 @@ package com.milaboratory.core.alignment.blast;
 import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -20,6 +21,11 @@ public class BlastAlignerTest {
     //        System.out.println(aligner.align(s).getHits().get(0).getAlignment());
     //    }
     //}
+
+    @Test
+    public void test11() throws Exception {
+        Assume.assumeTrue(Blast.isBlastAvailable());
+    }
 
     @Test
     public void test2() throws Exception {

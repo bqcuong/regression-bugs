@@ -18,10 +18,11 @@ package com.milaboratory.core.alignment;
 import com.milaboratory.core.sequence.Sequence;
 
 /**
- * Created by dbolotin on 01/06/15.
+ * @param <S> sequence type
+ * @param <P> type of record payload, used to identify particular sequence from base that query was aligned with
  */
-public interface AlignmentHit<S extends Sequence<S>> {
-    int getId();
+public interface AlignmentHit<S extends Sequence<S>, P> {
+    P getRecordPayload();
 
     Alignment<S> getAlignment();
 }

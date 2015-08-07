@@ -20,8 +20,9 @@ import com.milaboratory.core.sequence.Sequence;
 import java.util.List;
 
 /**
- * Created by dbolotin on 01/06/15.
+ * @param <S> sequence type
+ * @param <P> type of record payload, used to identify particular sequence from base that query was aligned with
  */
-public interface AlignmentResult<S extends Sequence<S>> {
-    List<? extends AlignmentHit<S>> getHits();
+public interface AlignmentResult<S extends Sequence<S>, P> {
+    List<? extends AlignmentHit<S, P>> getHits();
 }
