@@ -14,7 +14,7 @@ import com.milaboratory.core.sequence.Sequence;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public interface PipedBatchAligner<S extends Sequence<S>, P> {
+public interface PipedBatchAligner<S extends Sequence<S>, H extends AlignmentHit<? extends S, ?>> {
     /**
      * Starts processing of input sequences and returns pipe of results.
      *
@@ -23,8 +23,7 @@ public interface PipedBatchAligner<S extends Sequence<S>, P> {
      * @param <Q>       type of query object
      * @return pipe of alignment results
      */
-    <Q> OutputPort<? extends PipedAlignmentResult<? extends AlignmentHit<? extends S, ? extends P>, Q>>
-    align(OutputPort<Q> input, SequenceExtractor<Q, S> extractor);
+    <Q> OutputPort<? extends PipedAlignmentResult<H, Q>> align(OutputPort<Q> input, SequenceExtractor<Q, S> extractor);
 
     /**
      * Starts processing of input sequences and returns pipe of results.
@@ -33,6 +32,5 @@ public interface PipedBatchAligner<S extends Sequence<S>, P> {
      * @param <Q>   type of query objects
      * @return pipe of alignment results
      */
-    <Q extends HasSequence<S>> OutputPort<? extends PipedAlignmentResult<? extends AlignmentHit<? extends S, ? extends P>, Q>>
-    align(OutputPort<Q> input);
+    <Q extends HasSequence<S>> OutputPort<? extends PipedAlignmentResult<H, Q>> align(OutputPort<Q> input);
 }

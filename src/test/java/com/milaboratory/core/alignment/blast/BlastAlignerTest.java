@@ -2,8 +2,8 @@ package com.milaboratory.core.alignment.blast;
 
 import cc.redberry.pipe.CUtils;
 import cc.redberry.pipe.OutputPort;
-import com.milaboratory.core.alignment.batch.AlignmentHit;
 import com.milaboratory.core.alignment.batch.PipedAlignmentResult;
+import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import org.junit.Test;
 
@@ -23,9 +23,26 @@ public class BlastAlignerTest {
         BlastDB db = BlastDBBuilder.build(seqs);
 
         BlastAligner<NucleotideSequence> aligner = new BlastAligner<>(db);
-        OutputPort<PipedAlignmentResult<AlignmentHit<NucleotideSequence, BlastHitInfo>, NucleotideSequence>> results = aligner.align(CUtils.asOutputPort(seqs));
-        for (PipedAlignmentResult<AlignmentHit<NucleotideSequence, BlastHitInfo>, NucleotideSequence> result : CUtils.it(results)) {
+        OutputPort<PipedAlignmentResult<ExternalDBBlastHit<NucleotideSequence>, NucleotideSequence>> results = aligner.align(CUtils.asOutputPort(seqs));
+        for (PipedAlignmentResult<ExternalDBBlastHit<NucleotideSequence>, NucleotideSequence> result : CUtils.it(results)) {
             System.out.println(result);
+        }
+    }
+
+    @Test
+    public void test2() throws Exception {
+        List<AminoAcidSequence> seqs = new ArrayList<>();
+        seqs.add(new AminoAcidSequence("PMISVGGVKCYMVRLTNFLQVFIRITISSYHLDMVKQVWLFYVEVIRLWFIVLDSTGSV"));
+        seqs.add(new AminoAcidSequence("LNGMSYNNKDLLNIKNTINNYEVMPNLKIPYDKMNDYWI"));
+
+        BlastDB db = BlastDB.get("/Volumes/Data/tools/ncbi-blast-2.2.31+/db/yeast");
+        BlastAligner<AminoAcidSequence> aligner = new BlastAligner<>(db);
+        OutputPort<PipedAlignmentResult<ExternalDBBlastHit<AminoAcidSequence>, AminoAcidSequence>> results = aligner.align(CUtils.asOutputPort(seqs));
+        for (PipedAlignmentResult<ExternalDBBlastHit<AminoAcidSequence>, AminoAcidSequence> result : CUtils.it(results)) {
+            System.out.println(result);
+            for (ExternalDBBlastHit<AminoAcidSequence> hit : result.getHits()) {
+                System.out.println(hit.getAlignment().getAlignmentHelper());
+            }
         }
     }
 }
