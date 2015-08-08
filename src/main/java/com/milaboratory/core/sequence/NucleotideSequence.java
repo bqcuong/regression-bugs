@@ -16,8 +16,6 @@
 package com.milaboratory.core.sequence;
 
 import com.milaboratory.core.Range;
-import com.milaboratory.primitivio.annotations.Serializable;
-import com.milaboratory.util.Bit2Array;
 
 /**
  * Representation of nucleotide sequence.

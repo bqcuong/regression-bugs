@@ -13,24 +13,29 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BlastDB {
+    private final String name;
     private final String title;
     private final long recordsCount, lettersCount;
     private final Alphabet<?> alphabet;
     private final List<String> volumes;
     private final boolean temp;
 
-    public BlastDB(String title, long recordsCount, long lettersCount, Alphabet<?> alphabet, List<String> volumes,
-                   boolean temp) {
+    public BlastDB(String name, String title, long recordsCount, long lettersCount, Alphabet<?> alphabet, List<String> volumes, boolean temp) {
+        this.name = name;
         this.title = title;
         this.recordsCount = recordsCount;
         this.lettersCount = lettersCount;
         this.alphabet = alphabet;
-        this.volumes = Collections.unmodifiableList(volumes);
+        this.volumes = volumes;
         this.temp = temp;
     }
 
     public Alphabet<?> getAlphabet() {
         return alphabet;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getTitle() {
@@ -137,7 +142,7 @@ public class BlastDB {
             else
                 alphabet = AminoAcidSequence.ALPHABET;
 
-            return new BlastDB(dbTitle, records, letters, alphabet, volumes, temp);
+            return new BlastDB(name, dbTitle, records, letters, alphabet, volumes, temp);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

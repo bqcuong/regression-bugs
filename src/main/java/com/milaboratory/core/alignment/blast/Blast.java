@@ -55,6 +55,14 @@ public class Blast {
         throw new IllegalArgumentException("Alphabet not supported.");
     }
 
+    static String toBlastCommand(Alphabet<?> alphabet) {
+        if (alphabet == NucleotideSequence.ALPHABET)
+            return CMD_BLASTN;
+        if (alphabet == AminoAcidSequence.ALPHABET)
+            return CMD_BLASTP;
+        throw new IllegalArgumentException("Alphabet not supported.");
+    }
+
     static synchronized ProcessBuilder getProcessBuilder(String... cmd) {
         cmd[0] = getBlastCommand(cmd[0], true);
         ProcessBuilder builder = new ProcessBuilder(cmd);

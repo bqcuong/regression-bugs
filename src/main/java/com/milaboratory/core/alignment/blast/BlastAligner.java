@@ -1,124 +1,151 @@
-//package com.milaboratory.core.alignment.blast;
-//
-//import com.milaboratory.core.Range;
-//import com.milaboratory.core.alignment.Alignment;
-//import com.milaboratory.core.mutations.Mutations;
-//import com.milaboratory.core.mutations.MutationsUtil;
-//import com.milaboratory.core.sequence.Alphabet;
-//import com.milaboratory.core.sequence.Sequence;
-//
-//import java.io.BufferedReader;
-//import java.io.IOException;
-//import java.io.InputStreamReader;
-//import java.io.PrintStream;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//import static java.lang.Integer.parseInt;
-//
-///**
-// * @author Dmitry Bolotin
-// * @author Stanislav Poslavsky
-// */
-//public final class BlastAligner<S extends Sequence<S>> implements AutoCloseable {
-//    private static final String outfmt = "7 btop sstart send qstart qend score bitscore sseqid qseq sseq";
-//    private final Process process;
-//    private final PrintStream outputStream;
-//    private final int batchSize;
-//    private boolean closed = false;
-//
-//    public BlastAligner(int batchSize, String blast, String... args) throws IOException {
-//        this.batchSize = batchSize;
-//        String[] args0 = new String[args.length + 3];
-//        args0[0] = blast;
-//        args0[1] = "-outfmt";
-//        args0[2] = outfmt;
-//        System.arraycopy(args, 0, args0, 3, args.length);
-//        ProcessBuilder pb = new ProcessBuilder(args0);
-//        pb.redirectErrorStream(false);
-//        pb.environment().put("BATCH_SIZE", Integer.toString(batchSize));
-//        this.process = pb.start();
-//        this.outputStream = new PrintStream(process.getOutputStream());
-//        this.outputStream.println(">");
-//    }
-//
-//    @SuppressWarnings("unchecked")
-//    public BlastAlignmentResult<S>[] align(final S[] sequences) throws Exception {
-//        if (sequences.length > batchSize)
-//            throw new IllegalArgumentException("sequences.length > batchSize");
-//        if (closed)
-//            throw new IllegalStateException("Closed.");
-//        Thread t = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                for (S s : sequences)
-//                    outputStream.println(s.toString() + "\n>");
-//                outputStream.flush();
-//                if (sequences.length < batchSize) {
-//                    closed = true;
-//                    outputStream.close();
-//                }
-//            }
-//        });
-//        t.start();
-//        String line;
-//        int i = 0;
-//        final BlastAlignmentResult<S>[] results = new BlastAlignmentResult[sequences.length];
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//        while (i < sequences.length) {
-//            final List<BlastAlignmentHit<S>> hits = new ArrayList<>();
-//            int num = -1, done = 0;
-//            try {
-//                while ((line = reader.readLine()) != null) {
-//                    if (line.contains("hits found")) {
-//                        num = parseInt(line.replace("#", "").replace("hits found", "").trim());
-//                        if (num == 0)
-//                            break;
-//                    } else if (num != -1 && !line.startsWith("#")) {
-//                        hits.add(parseLine(line, sequences[i].getAlphabet()));
-//                        if (++done == num)
-//                            break;
-//                    }
-//                }
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//            results[i++] = new BlastAlignmentResult<>(hits);
-//        }
-//        if (closed)
-//            close();
-//
-//        t.join();
-//        return results;
-//    }
-//
-//    @Override
-//    public void close() throws Exception {
-//        closed = true;
-//        outputStream.close();
-//        process.getInputStream().close();
-//        process.waitFor();
-//    }
-//
-//    private static <S extends Sequence<S>> BlastAlignmentHit<S> parseLine(String line, Alphabet<S> alphabet) {
-//        String[] fields = line.split("\t");
-//        int i = 0;
-//        //btop sstart send qstart qend score sseqid qseq sseq
-//        String btop = fields[i++],
-//                sstart = fields[i++],
-//                send = fields[i++],
-//                qstart = fields[i++],
-//                qend = fields[i++],
-//                score = fields[i++],
-//                bitscore = fields[i++],
-//                sseqid = fields[i++],
-//                qseq = fields[i++].replace("-", ""),
-//                sseq = fields[i++].replace("-", "");
-//
-//        Mutations<S> mutations = new Mutations<>(alphabet, MutationsUtil.btopDecode(btop, alphabet));
-//        Alignment<S> alignment = new Alignment<>(alphabet.parse(sseq), mutations,
-//                new Range(0, sseq.length()), new Range(parseInt(qstart) - 1, parseInt(qend)),
-//                Float.parseFloat(bitscore));
-//        return new BlastAlignmentHit<>(sseqid, -1, alignment);
-//    }
-//}
+package com.milaboratory.core.alignment.blast;
+
+import cc.redberry.pipe.InputPort;
+import cc.redberry.pipe.OutputPort;
+import cc.redberry.pipe.OutputPortCloseable;
+import cc.redberry.pipe.blocks.Buffer;
+import com.milaboratory.core.alignment.batch.*;
+import com.milaboratory.core.io.sequence.fasta.FastaWriter;
+import com.milaboratory.core.sequence.Sequence;
+
+import java.io.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+public class BlastAligner<S extends Sequence<S>> implements PipedBatchAligner<S, BlastHitInfo> {
+    private static final String OUTFMT = "7 btop sstart send qstart qend score bitscore sseqid qseq sseq";
+    private static final String QUERY_ID_PREFIX = "Q";
+    final BlastDB database;
+    final BlastAlignerParameters parameters;
+    final int batchSize;
+
+    public BlastAligner(BlastDB database) {
+        this(database, null, -1);
+    }
+
+    public BlastAligner(BlastDB database, BlastAlignerParameters parameters, int batchSize) {
+        this.database = database;
+        this.parameters = parameters;
+        this.batchSize = batchSize;
+    }
+
+    @Override
+    public <Q> OutputPort<PipedAlignmentResult<AlignmentHit<S, BlastHitInfo>, Q>> align(OutputPort<Q> input, SequenceExtractor<Q, S> extractor) {
+        return new BlastWorker<>(input, extractor);
+    }
+
+    @Override
+    public <Q extends HasSequence<S>> OutputPort<PipedAlignmentResult<AlignmentHit<S, BlastHitInfo>, Q>> align(OutputPort<Q> input) {
+        return new BlastWorker<>(input, BatchAlignmentUtil.DUMMY_EXTRACTOR);
+    }
+
+    private class BlastWorker<S extends Sequence<S>, Q> implements
+            OutputPortCloseable<PipedAlignmentResult<AlignmentHit<S, BlastHitInfo>, Q>> {
+        final ConcurrentMap<String, Q> queryMapping = new ConcurrentHashMap<>();
+        final Buffer<PipedAlignmentResult<AlignmentHit<S, BlastHitInfo>, Q>> resultsBuffer;
+        final Process process;
+        final BlastSequencePusher<S, Q> pusher;
+        final BlastResultsFetcher<S, Q> fetcher;
+
+        public BlastWorker(OutputPort<Q> source, SequenceExtractor<Q, S> sequenceExtractor) {
+            this.resultsBuffer = new Buffer<>(32);
+            try {
+                ProcessBuilder processBuilder = Blast.getProcessBuilder(
+                        Blast.toBlastCommand(database.getAlphabet()), "-db", database.getName(), "-outfmt", OUTFMT);
+
+                processBuilder.redirectErrorStream(false);
+                if (batchSize != -1)
+                    processBuilder.environment().put("BATCH_SIZE", Integer.toString(batchSize));
+
+                this.process = processBuilder.start();
+                this.pusher = new BlastSequencePusher<>(source, sequenceExtractor, queryMapping,
+                        this.process.getOutputStream());
+                this.fetcher = new BlastResultsFetcher<>(this.resultsBuffer.createInputPort(),
+                        this.process.getInputStream());
+
+                this.pusher.start();
+                this.fetcher.start();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public PipedAlignmentResult<AlignmentHit<S, BlastHitInfo>, Q> take() {
+            return resultsBuffer.take();
+        }
+
+        @Override
+        public void close() {
+            if (pusher.source instanceof OutputPortCloseable)
+                ((OutputPortCloseable) pusher.source).close();
+        }
+    }
+
+    private class BlastResultsFetcher<S extends Sequence<S>, Q> extends Thread {
+        final InputPort<PipedAlignmentResult<AlignmentHit<S, BlastHitInfo>, Q>> resultsInputPort;
+        final BufferedReader reader;
+
+        public BlastResultsFetcher(InputPort<PipedAlignmentResult<AlignmentHit<S, BlastHitInfo>, Q>> resultsInputPort,
+                                   InputStream stream) {
+            this.resultsInputPort = resultsInputPort;
+            this.reader = new BufferedReader(new InputStreamReader(stream));
+        }
+
+        @Override
+        public void run() {
+            try {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                    //if (line.contains("hits found")) {
+                    //    num = parseInt(line.replace("#", "").replace("hits found", "").trim());
+                    //    if (num == 0)
+                    //        break;
+                    //} else if (num != -1 && !line.startsWith("#")) {
+                    //    hits.add(parseLine(line, sequences[i].getAlphabet()));
+                    //    if (++done == num)
+                    //        break;
+                    //}
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } finally {
+                // Closing port
+                resultsInputPort.put(null);
+            }
+        }
+    }
+
+    private class BlastSequencePusher<S extends Sequence<S>, Q> extends Thread {
+        final AtomicLong counter = new AtomicLong();
+        final OutputPort<Q> source;
+        final SequenceExtractor<Q, S> sequenceExtractor;
+        final ConcurrentMap<String, Q> queryMapping;
+        final FastaWriter<S> writer;
+
+        public BlastSequencePusher(OutputPort<Q> source, SequenceExtractor<Q, S> sequenceExtractor,
+                                   ConcurrentMap<String, Q> queryMapping,
+                                   OutputStream stream) {
+            this.source = source;
+            this.sequenceExtractor = sequenceExtractor;
+            this.queryMapping = queryMapping;
+            this.writer = new FastaWriter<S>(stream, FastaWriter.DEFAULT_MAX_LENGTH);
+        }
+
+        @Override
+        public void run() {
+            Q query;
+
+            while ((query = source.take()) != null) {
+                S sequence = sequenceExtractor.extract(query);
+                String name = QUERY_ID_PREFIX + counter.incrementAndGet();
+                queryMapping.put(name, query);
+                writer.write(name, sequence);
+            }
+
+            writer.close();
+        }
+    }
+}

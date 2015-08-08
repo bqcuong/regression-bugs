@@ -15,6 +15,7 @@
  */
 package com.milaboratory.core.sequence;
 
+import com.milaboratory.core.alignment.batch.HasSequence;
 import com.milaboratory.core.motif.Motif;
 import com.milaboratory.primitivio.annotations.Serializable;
 
@@ -33,7 +34,7 @@ import com.milaboratory.primitivio.annotations.Serializable;
  * @see com.milaboratory.core.sequence.AminoAcidSequence
  */
 @Serializable(by = IO.SequenceSerializer.class)
-public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> implements Comparable<S> {
+public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> implements Comparable<S>, HasSequence<S> {
     /**
      * Returns letter code at specified position.
      *
@@ -87,6 +88,11 @@ public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> imp
             if (getAlphabet().isWildcard(codeAt(i)))
                 return true;
         return false;
+    }
+
+    @Override
+    public S getSequence() {
+        return (S) this;
     }
 
     @Override
