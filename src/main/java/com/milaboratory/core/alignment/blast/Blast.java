@@ -1,5 +1,9 @@
 package com.milaboratory.core.alignment.blast;
 
+import com.milaboratory.core.sequence.Alphabet;
+import com.milaboratory.core.sequence.AminoAcidSequence;
+import com.milaboratory.core.sequence.NucleotideSequence;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +15,11 @@ import java.util.Map;
  * To set blast path use {@link #setBlastPath(String)} or set blastPath java property.
  */
 public class Blast {
+    public static final String CMD_BLASTDBCMD = "blastdbcmd";
+    public static final String CMD_MAKEBLASTDB = "makeblastdb";
+    public static final String CMD_BLASTN = "blastn";
+    public static final String CMD_BLASTP = "blastp";
+
     private static final String ERROR_CMD_PATH = "***ERROR***";
     private static String path = "";
     private static Map<String, String> commandPaths = new HashMap<>();
@@ -36,6 +45,20 @@ public class Blast {
 
         // Resetting all cached command paths
         commandPaths.clear();
+    }
+
+    static String toBlastAlphabet(Alphabet<?> alphabet) {
+        if (alphabet == NucleotideSequence.ALPHABET)
+            return "nucl";
+        if (alphabet == AminoAcidSequence.ALPHABET)
+            return "prot";
+        throw new IllegalArgumentException("Alphabet not supported.");
+    }
+
+    static synchronized ProcessBuilder getProcessBuilder(String... cmd) {
+        cmd[0] = getBlastCommand(cmd[0], true);
+        ProcessBuilder builder = new ProcessBuilder(cmd);
+        return builder;
     }
 
     static synchronized String getBlastCommand(String command, boolean withError) {
