@@ -1,0 +1,89 @@
+/*
+ * Copyright 2015 MiLaboratory.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.milaboratory.core.alignment.batch;
+
+import com.milaboratory.core.alignment.Aligner;
+import com.milaboratory.core.alignment.Alignment;
+import com.milaboratory.core.sequence.Sequence;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class NaiveBatchAligner<S extends Sequence<S>, P> extends AbstractBatchAligner<S, P, AlignmentHit<S, P>>
+        implements BatchAlignerWithBase<S, P> {
+    final NaiveBatchAlignerParameters<S> parameters;
+    final List<Record<S, P>> references = new ArrayList<>();
+
+    public NaiveBatchAligner(NaiveBatchAlignerParameters<S> parameters) {
+        this.parameters = parameters;
+    }
+
+    @Override
+    public void addReference(S sequence, P payload) {
+        references.add(new Record<>(sequence, payload));
+    }
+
+    public AlignmentResult<AlignmentHit<S, P>> align(final S sequence) {
+        // Special case
+        if (references.isEmpty())
+            return new AlignmentResultImpl<>();
+
+        // Building all alignments
+        ArrayList<AlignmentHit<S, P>> alignments = new ArrayList<>(references.size());
+        for (Record<S, P> record : references)
+            alignments.add(alignSingle(record, sequence));
+
+        // Sorting alignments by score
+        Collections.sort(alignments, BatchAlignmentUtil.ALIGNMENT_SCORE_HIT_COMPARATOR);
+
+        // Calculating top score and score cutoff
+        float topScore = alignments.get(0).getAlignment().getScore();
+        float scoreThreshold = Math.max(topScore * parameters.getRelativeMinScore(), parameters.getAbsoluteMinScore());
+
+        // Slicing results according to cutoff
+        for (int i = 0; i < alignments.size(); i++)
+            if (i == parameters.getMaxHits() || alignments.get(i).getAlignment().getScore() < scoreThreshold)
+                return new AlignmentResultImpl<>(new ArrayList<>(alignments.subList(0, i)));
+
+        return new AlignmentResultImpl<>(alignments);
+    }
+
+    AlignmentHit<S, P> alignSingle(Record<S, P> record, S query) {
+        Alignment<S> alignment = parameters.isGlobal() ?
+                Aligner.alignGlobal(parameters.getScoring(), record.sequence, query) :
+                Aligner.alignLocal(parameters.getScoring(), record.sequence, query);
+        return new AlignmentHitImpl<>(alignment, record.payload);
+    }
+
+    private static class Record<S extends Sequence<S>, P> {
+        final S sequence;
+        final P payload;
+
+        public Record(S sequence, P payload) {
+            this.sequence = sequence;
+            this.payload = payload;
+        }
+
+        public S getSequence() {
+            return sequence;
+        }
+
+        public P getPayload() {
+            return payload;
+        }
+    }
+}

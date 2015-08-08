@@ -1,4 +1,4 @@
-package com.milaboratory.core.alignment;
+package com.milaboratory.core.alignment.batch;
 
 import com.milaboratory.core.sequence.Sequence;
 

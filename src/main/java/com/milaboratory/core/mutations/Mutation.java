@@ -15,6 +15,7 @@
  */
 package com.milaboratory.core.mutations;
 
+import com.milaboratory.core.alignment.batch.AlignmentScoring;
 import com.milaboratory.core.sequence.Alphabet;
 
 public final class Mutation {
@@ -81,7 +82,7 @@ public final class Mutation {
     /**
      * Returns: 0x20 for substitution, 0x40 for Deletion, 0x60 for insertion.
      *
-     * @param code mutation code form mutations array returned by {@link com.milaboratory.core.alignment.Aligner#alignGlobal(com.milaboratory.core.alignment.AlignmentScoring,
+     * @param code mutation code form mutations array returned by {@link com.milaboratory.core.alignment.Aligner#alignGlobal(AlignmentScoring,
      *             com.milaboratory.core.sequence.Sequence, com.milaboratory.core.sequence.Sequence)} method.
      * @return 0x20 for substitution, 0x40 for Deletion, 0x60 for insertion
      */

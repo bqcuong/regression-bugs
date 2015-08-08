@@ -16,6 +16,7 @@
 package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
+import com.milaboratory.core.alignment.batch.AlignmentScoring;
 import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.Sequence;
 

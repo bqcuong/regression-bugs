@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.milaboratory.core.alignment;
+package com.milaboratory.core.alignment.batch;
 
+import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.sequence.Sequence;
-
-import java.util.List;
 
 /**
  * @param <S> sequence type
  * @param <P> type of record payload, used to identify particular sequence from base that query was aligned with
  */
-public interface AlignmentResult<S extends Sequence<S>, P> {
-    List<? extends AlignmentHit<S, P>> getHits();
+public interface AlignmentHit<S extends Sequence<S>, P> {
+    Alignment<S> getAlignment();
+
+    P getRecordPayload();
 }

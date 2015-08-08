@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.milaboratory.core.alignment.batchaligner;
+package com.milaboratory.core.alignment.batch;
 
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.sequence.NucleotideSequence;
@@ -34,19 +34,19 @@ public class NaiveBatchAlignerTest {
         NaiveBatchAlignerParameters<NucleotideSequence> batchAlignerParameters = new NaiveBatchAlignerParameters<>(5,
                 0.5f, 0f, true, AffineGapAlignmentScoring.getNucleotideBLASTScoring());
 
-        NaiveBatchAligner<NucleotideSequence> naiveBatchAligner = new NaiveBatchAligner<>(batchAlignerParameters);
+        NaiveBatchAligner<NucleotideSequence, Integer> naiveBatchAligner = new NaiveBatchAligner<>(batchAlignerParameters);
 
-        naiveBatchAligner.addReference(ref1);
-        naiveBatchAligner.addReference(ref2);
-        naiveBatchAligner.addReference(ref3);
-        naiveBatchAligner.addReference(ref4);
-        naiveBatchAligner.addReference(ref5);
+        naiveBatchAligner.addReference(ref1, 0);
+        naiveBatchAligner.addReference(ref2, 1);
+        naiveBatchAligner.addReference(ref3, 2);
+        naiveBatchAligner.addReference(ref4, 3);
+        naiveBatchAligner.addReference(ref5, 4);
 
-        NaiveBatchAlignmentResult alignmentResult = naiveBatchAligner.align(query);
+        AlignmentResult<AlignmentHit<NucleotideSequence, Integer>> result = naiveBatchAligner.align(query);
 
-        System.out.println(alignmentResult);
+        System.out.println(result);
 
-        Assert.assertEquals(0, ((NaiveBatchAlignmentHit) alignmentResult.hits.get(0)).id);
-        Assert.assertEquals(4, alignmentResult.hits.size());
+        Assert.assertEquals((Integer) 0, result.getHits().get(0).getRecordPayload());
+        Assert.assertEquals(4, result.getHits().size());
     }
 }

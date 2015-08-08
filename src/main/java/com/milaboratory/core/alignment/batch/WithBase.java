@@ -1,4 +1,4 @@
-package com.milaboratory.core.alignment;
+package com.milaboratory.core.alignment.batch;
 
 import com.milaboratory.core.sequence.Sequence;
 
@@ -14,5 +14,5 @@ public interface WithBase<S extends Sequence<S>, P> {
      * @param payload  payload to store additional information with this record (can be retrieved from resulting {@link
      *                 AlignmentHit})
      */
-    void addRecord(S sequence, P payload);
+    void addReference(S sequence, P payload);
 }

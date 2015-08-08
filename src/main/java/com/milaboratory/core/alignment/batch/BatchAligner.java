@@ -1,4 +1,4 @@
-package com.milaboratory.core.alignment;
+package com.milaboratory.core.alignment.batch;
 
 import com.milaboratory.core.sequence.Sequence;
 
@@ -13,5 +13,5 @@ import com.milaboratory.core.sequence.Sequence;
  * @author Stanislav Poslavsky
  */
 public interface BatchAligner<S extends Sequence<S>, P> {
-    AlignmentResult<S, P> align(S sequence);
+    AlignmentResult<? extends AlignmentHit<? extends S, ? extends P>> align(S sequence);
 }

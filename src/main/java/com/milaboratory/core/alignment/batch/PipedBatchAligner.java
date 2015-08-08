@@ -1,6 +1,5 @@
-package com.milaboratory.core.alignment;
+package com.milaboratory.core.alignment.batch;
 
-import cc.redberry.pipe.InputPort;
 import cc.redberry.pipe.OutputPort;
 import com.milaboratory.core.sequence.Sequence;
 
@@ -24,7 +23,8 @@ public interface PipedBatchAligner<S extends Sequence<S>, P> {
      * @param <Q>       type of query object
      * @return pipe of alignment results
      */
-    <Q> OutputPort<PipedAlignmentResult<S, P, Q>> align(OutputPort<Q> input, SequenceExtractor<Q, S> extractor);
+    <Q> OutputPort<? extends PipedAlignmentResult<? extends AlignmentHit<? extends S, ? extends P>, Q>>
+    align(OutputPort<Q> input, SequenceExtractor<Q, S> extractor);
 
     /**
      * Starts processing of input sequences and returns pipe of results.
@@ -33,5 +33,6 @@ public interface PipedBatchAligner<S extends Sequence<S>, P> {
      * @param <Q>   type of query objects
      * @return pipe of alignment results
      */
-    <Q extends HasSequence<S>> OutputPort<PipedAlignmentResult<S, P, Q>> align(OutputPort<Q> input);
+    <Q extends HasSequence<S>> OutputPort<? extends PipedAlignmentResult<? extends AlignmentHit<? extends S, ? extends P>, Q>>
+    align(OutputPort<Q> input);
 }

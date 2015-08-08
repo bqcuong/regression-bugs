@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.milaboratory.core.alignment.batchaligner;
+package com.milaboratory.core.alignment.batch;
 
-import com.milaboratory.core.alignment.AlignmentScoring;
 import com.milaboratory.core.sequence.Sequence;
 
 public class NaiveBatchAlignerParameters<S extends Sequence<S>> {
