@@ -527,11 +527,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 		    	}
 	    	}
 		} catch (NoClassDefFoundError err) {
-			err.printStackTrace();
 		} catch (ExceptionInInitializerError err) {
-			err.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		}
 	}
 
