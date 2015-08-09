@@ -425,13 +425,14 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
                 }
                 else if (isSink(type, method)) {
                     analyzeSinkMethodArgs(node);
-                }                 
+                }         
                 else if (isSafeType(getReturnType(node, type, method))){
                 	continue;
                 }
                 else if (isSource(type, method) || isUsedOverTaintedVariable(node) || isAnyArgumentTainted(node)) {
                     return true;
                 }
+
             } else if (node.hasDescendantOfType(ASTName.class)){
                 List<ASTName> astNames = node.findDescendantsOfType(ASTName.class);
                 if (analyzeVariable(astNames)){
@@ -486,58 +487,71 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 		}
 		return varName;
     }
+    
+    
+    private String getReturnType(Class<?> clazz, String realType, String methodName) {
+    	if (!cacheReturnTypes.containsKey(realType)) {
+    		 populateCache(clazz, realType);
+    	}
+    	String retVal = cacheReturnTypes.get(realType + "." + methodName);
+    	if (StringUtils.isBlank(retVal)){
+    		return UNKNOWN_TYPE;
+    	}
+    	return retVal;
+    }
 
     
-    private String getReturnType(ASTPrimaryExpression node, String type, String methodName) {
-    	String realType = type;
+    private void populateCache(Class<?> clz, String realType) {
+    	cacheReturnTypes.put(realType, UNKNOWN_TYPE);
+    	Class<?> clazz = clz;
     	try {
-	    	Class<?> clazz = null;
-	    	if (StringUtils.isBlank(realType) || UNKNOWN_TYPE.equals(realType)) {
-	    		ASTClassOrInterfaceDeclaration type2 = node.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
-	    		if (type2 != null && type2.getType() != null){
-	    			clazz = type2.getType();
-	    			realType = clazz.getCanonicalName();
-	    		}
-	    	}
-	    	
-	    	if (cacheReturnTypes.containsKey(realType + "." + methodName)) {
-	    		return cacheReturnTypes.get(realType + "." + methodName);
-	    	}
-	    	
-	    	if (clazz == null && !StringUtils.isBlank(realType) && !UNKNOWN_TYPE.equals(realType)) {
+	    	if (clazz == null) {
 	    		clazz = Class.forName(realType, false, this.getClass().getClassLoader());
 	    	}
-	    	if (clazz != null) {		    	
-		    	Set<Class<?>> methodReturnTypes = new HashSet<Class<?>>();
+	    	if (clazz != null) {
 		    	for(Method method: clazz.getMethods()) {
-		    		if (method.getName().equals(methodName)) {
-		    			Class<?> returnType = method.getReturnType();
-		    			if (returnType != null && !"void".equals(returnType.getCanonicalName())){
-		    				methodReturnTypes.add(returnType);
+		    		Class<?> returnType = method.getReturnType();
+		    		String methodName = method.getName();
+		    		if (returnType != null && !"void".equals(returnType.getCanonicalName())){
+		    			String key = realType + "." + methodName;
+		    			String old = cacheReturnTypes.get(key);
+		    			if (old == null || StringUtils.equals(old, returnType.getCanonicalName())){
+		    				cacheReturnTypes.put(key, returnType.getCanonicalName());
 		    			}
+						// else {
+						// // various return types for same method
+						// cacheReturnTypes.put(key, UNKNOWN_TYPE);
+						// }
 		    		}
-		    	}
-		    	if (methodReturnTypes.size() == 1) {
-		    		String methodReturnType = methodReturnTypes.iterator().next().getCanonicalName();
-		    		cacheReturnTypes.put(realType + "." + methodName, methodReturnType);
-		    		return methodReturnType;
+
 		    	}
 	    	}
-    	}
-    	catch (Exception e) {
-    		cacheReturnTypes.put(realType + "." + methodName, UNKNOWN_TYPE);
-    		return UNKNOWN_TYPE;
-    	}
-    	catch (NoClassDefFoundError err) {
-    		cacheReturnTypes.put(realType + "." + methodName, UNKNOWN_TYPE);
-    		return UNKNOWN_TYPE;
-    	}
-    	catch (ExceptionInInitializerError err) {
-    		cacheReturnTypes.put(realType + "." + methodName, UNKNOWN_TYPE);
-    		return UNKNOWN_TYPE;
-    	}
-    	cacheReturnTypes.put(realType + "." + methodName, UNKNOWN_TYPE);
-		return UNKNOWN_TYPE;
+		} catch (NoClassDefFoundError err) {
+			err.printStackTrace();
+		} catch (ExceptionInInitializerError err) {
+			err.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private String getReturnType(ASTPrimaryExpression node, String type, String methodName) {
+    	String realType = type;
+
+		Class<?> clazz = null;
+		if (StringUtils.isBlank(realType) || UNKNOWN_TYPE.equals(realType)) {
+			ASTClassOrInterfaceDeclaration type2 = node.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
+			if (type2 != null && type2.getType() != null) {
+				clazz = type2.getType();
+				realType = clazz.getCanonicalName();
+			}
+		}
+		if (StringUtils.isBlank(realType) || UNKNOWN_TYPE.equals(realType)) {
+			return UNKNOWN_TYPE;
+		}
+		return getReturnType(clazz, realType, methodName);
+
+
 	}
 
 	private List<ASTPrimaryExpression> getExp(Node node2) {
