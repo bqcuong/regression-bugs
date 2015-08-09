@@ -3,6 +3,7 @@ The ruleset contains rules intended to identify security violations that map to 
 (https://www.owasp.org/index.php/Top_10_2013) application security risks.
 
 Author: Joe Hemler - Gotham Digital Science (labs@gdssecurity.com)
+Author: Alberto Fernández (infjaf@gmail.com)
  
 Below are instructions for running PMD 5.3.X with the GDS Secure Coding Ruleset.
 
@@ -121,7 +122,7 @@ To compile you need java 7 and maven.
 
 Run mvn
 
-$mvn package
+	$mvn package
 
 The resulting jar is target/pmd-gds-2.x.x.jar
 
