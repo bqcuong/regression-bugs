@@ -28,8 +28,8 @@ public class SmapFileReader implements SmapReader {
     
     @Override
 	public String toString() {
-        if (file != null) {
-            return file.toString();
+        if (this.file != null) {
+            return this.file.toString();
         }
         return null;
     }
@@ -37,10 +37,10 @@ public class SmapFileReader implements SmapReader {
     @SuppressWarnings("resource")
 	@Override
 	public String readSmap() {
-        if (file != null) {
+        if (this.file != null) {
         	LineNumberReader lnr = null;
             try {
-            	lnr = new LineNumberReader( new FileReader(file));
+            	lnr = new LineNumberReader( new FileReader(this.file));
                 String line = "";
                 String out = "";
 

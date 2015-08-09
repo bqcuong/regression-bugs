@@ -251,9 +251,9 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 				ASTVariableDeclaratorId name1 = declarator.getFirstChildOfType(ASTVariableDeclaratorId.class);
 				if (name1 != null) {
 					String name = name1.getImage();
-					fieldTypes.put(name, type);
+					this.fieldTypes.put(name, type);
 					if (!field.isFinal() && isUnsafeType(field.getType())) {
-						fieldTypesTainted.add("this." + name);
+						this.fieldTypesTainted.add("this." + name);
 					}
 				}
 			}
@@ -281,7 +281,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 			ASTVariableDeclaratorId name1 = parameter.getFirstChildOfType(ASTVariableDeclaratorId.class);						
 			String name = name1.getImage();
 			if (name != null && type != null) {
-				functionParameterTypes.put(name, type.getType());
+				this.functionParameterTypes.put(name, type.getType());
 			}
 			if (name != null && isUnsafeType(type)){
 				this.functionParameterTainted.add(name);
@@ -402,7 +402,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
             	ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
             	if ((prefix == null || prefix.getImage() == null) && suffix != null && suffix.getImage() != null){
             		String fieldName = suffix.getImage();
-            		if (currentPathTaintedVariables.contains("this." + fieldName)){
+            		if (this.currentPathTaintedVariables.contains("this." + fieldName)){
             			return true;
             		}
             	}        		
@@ -551,12 +551,12 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
                 			if (parameterName.indexOf('.') > 0) {
                 				parameterName = parameterName.substring(0, parameterName.indexOf('.'));
                 			}
-                			type = functionParameterTypes.get(parameterName);
+                			type = this.functionParameterTypes.get(parameterName);
                 		}
                 	}
                 	else {
                 		ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
-                		type = fieldTypes.get(suffix.getImage());
+                		type = this.fieldTypes.get(suffix.getImage());
                 	}
                 }
             } else if (node instanceof ASTName) {

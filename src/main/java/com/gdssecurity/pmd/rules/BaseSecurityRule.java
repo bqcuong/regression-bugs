@@ -71,23 +71,23 @@ public class BaseSecurityRule extends AbstractJavaRule {
 	
 	public BaseSecurityRule() {
 		super();
-		this.propertyDescriptors.add(sourceDescriptor);
-    	this.propertyDescriptors.add(unsafeTypesDescriptor);
-    	this.propertyDescriptors.add(safeTypesDescriptor);    	
+		this.propertyDescriptors.add(this.sourceDescriptor);
+    	this.propertyDescriptors.add(this.unsafeTypesDescriptor);
+    	this.propertyDescriptors.add(this.safeTypesDescriptor);    	
 	}
 
 
 
     protected void init() {
         if (this.sources == null) {
-            this.sources = Utils.arrayAsSet(getProperty(sourceDescriptor));
+            this.sources = Utils.arrayAsSet(getProperty(this.sourceDescriptor));
         }
         if (this.unsafeTypes == null) {
-            this.unsafeTypes = Utils.arrayAsSet(getProperty(unsafeTypesDescriptor));
+            this.unsafeTypes = Utils.arrayAsSet(getProperty(this.unsafeTypesDescriptor));
         }
 
         if (this.safeTypes == null) {
-            this.safeTypes = Utils.arrayAsSet(getProperty(safeTypesDescriptor));
+            this.safeTypes = Utils.arrayAsSet(getProperty(this.safeTypesDescriptor));
         }    	
     }
     
@@ -108,7 +108,7 @@ public class BaseSecurityRule extends AbstractJavaRule {
     	if (type == null) {
     		return false;
     	}
-    	return safeTypes.contains(type);
+    	return this.safeTypes.contains(type);
     }
 
     
@@ -128,7 +128,7 @@ public class BaseSecurityRule extends AbstractJavaRule {
     	if (type == null) {
     		return true;
     	}
-    	return unsafeTypes.contains(type);
+    	return this.unsafeTypes.contains(type);
     }
     
     protected boolean isSource(String type, String method) {

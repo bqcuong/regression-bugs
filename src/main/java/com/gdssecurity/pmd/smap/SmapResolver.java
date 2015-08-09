@@ -54,7 +54,7 @@ public class SmapResolver {
 
     @Override
 	public String toString() {
-        return reader.toString();
+        return this.reader.toString();
     }
         
     private boolean resolve(String smap) {
@@ -83,9 +83,9 @@ public class SmapResolver {
                     return false;
                 }
             } else if (counter == 2) {  
-                outputFileName = token;  
+                this.outputFileName = token;  
             } else if (counter == 3) {  
-                defaultStratum = token;
+                this.defaultStratum = token;
             } else if (STRATUM_SECTION.equals(token)) {
                 jspStratumSection = true;
             } else if (FILE_SECTION.equals(token) && (jspStratumSection)) {
@@ -148,7 +148,7 @@ public class SmapResolver {
             id = token.substring(firstSpaceIndex + 1, secondSpaceIndex);
             sourceName = token.substring(secondSpaceIndex + 1);
             sourceNameSourcePath = true;
-        } else if (fsection_sourceNameSourcePath) {
+        } else if (this.fsection_sourceNameSourcePath) {
             sourcePath = token;
             if (token.lastIndexOf("/") != -1) {
                 sourceName = sourcePath.substring(token.lastIndexOf("/") + 1,
@@ -161,10 +161,10 @@ public class SmapResolver {
     		
         }
     	
-        fsection.put(id,
-                (fsection_sourceNameSourcePath) ? sourcePath : sourceName);
+        this.fsection.put(id,
+                (this.fsection_sourceNameSourcePath) ? sourcePath : sourceName);
         
-        fsection_sourceNameSourcePath = (sourceNameSourcePath) ? true : false;
+        this.fsection_sourceNameSourcePath = (sourceNameSourcePath) ? true : false;
     }
 
     private void storeLine(String token, String fileIndex) {
@@ -214,45 +214,45 @@ public class SmapResolver {
             
             jspLine = Integer.toString(jspL).concat(FID_DELIM).concat(fileIndex);
             javaLine = Integer.toString(javaL);
-            if (!jsp2java.containsKey(jspLine)) { 
-                jsp2java.put(jspLine, javaLine);
+            if (!this.jsp2java.containsKey(jspLine)) { 
+                this.jsp2java.put(jspLine, javaLine);
             }
             
             jspLine = Integer.toString(jspL).concat("#").concat(fileIndex);
             
             javaLine = Integer.toString(javaL);
             
-            if (!java2jsp.containsKey(javaLine)) { 
-                java2jsp.put(javaLine, jspLine);
+            if (!this.java2jsp.containsKey(javaLine)) { 
+                this.java2jsp.put(javaLine, jspLine);
             }
         }
     }
     
     private boolean sanityCheck() {   
-        if (!DEFAULT_STRATUM.equals(defaultStratum)) {
+        if (!DEFAULT_STRATUM.equals(this.defaultStratum)) {
             return false;
         }
-        if (!(outputFileName.endsWith(".java"))) {
+        if (!(this.outputFileName.endsWith(".java"))) {
             return false;
         }
-        if (fsection.isEmpty()) {
+        if (this.fsection.isEmpty()) {
             return false;
         }
-        if (jsp2java.isEmpty()) {
+        if (this.jsp2java.isEmpty()) {
             return false;
         }   
-        if (java2jsp.isEmpty()) {
+        if (this.java2jsp.isEmpty()) {
             return false;
         }   
         return true;
     }
     
     private String getFileNameByIndex(String index) {
-        return fsection.get(index);
+        return this.fsection.get(index);
     }
     
     private String getIndexByFileName(String fname) {    	
-    	for (Map.Entry<String, String> mentry: fsection.entrySet()){
+    	for (Map.Entry<String, String> mentry: this.fsection.entrySet()){
     		String value =  mentry.getValue();            
             if (value.equalsIgnoreCase(fname)) {
                 return mentry.getKey().toString();
@@ -262,7 +262,7 @@ public class SmapResolver {
     }
     
     public String getSourcePath(String fname) {
-    	for (Map.Entry<String, String> mentry: fsection.entrySet()){
+    	for (Map.Entry<String, String> mentry: this.fsection.entrySet()){
     		 String value =  mentry.getValue();
              int delim = value.lastIndexOf(":");
              String sourceName = value.substring(0, delim);
@@ -280,24 +280,24 @@ public class SmapResolver {
     }
     
     public Map<Integer, String> getFileNames() {
-        Map<Integer, String> h = new Hashtable<Integer,String>(fsection.size());
+        Map<Integer, String> h = new Hashtable<Integer,String>(this.fsection.size());
         int counter = 0;
-        for (String fileName: fsection.values()){
+        for (String fileName: this.fsection.values()){
         	h.put(counter++, fileName);
         }
         return h;
     }
     
     public String getPrimaryJspFileName() {
-        TreeMap<String, String> tm = new TreeMap<String, String>(fsection);
+        TreeMap<String, String> tm = new TreeMap<String, String>(this.fsection);
         String o = tm.firstKey();
-        String s = fsection.get(o);
+        String s = this.fsection.get(o);
         
         return s;
     }
 
     public boolean hasIncludedFiles() {
-        return (fsection.size() > 1);
+        return (this.fsection.size() > 1);
     }
     
     public String getJavaLineType(int line, int col) {
@@ -306,12 +306,12 @@ public class SmapResolver {
     }
     
     public boolean isEmpty() {
-        return jsp2java.isEmpty();  
+        return this.jsp2java.isEmpty();  
     }
 
     public String getJspFileName(int line, int col) {
         String key = Integer.toString(line);
-        String value = java2jsp.get(key);
+        String value = this.java2jsp.get(key);
         
         if (value == null) {
             return null;
@@ -329,7 +329,7 @@ public class SmapResolver {
         }
         String key = "".concat(Integer.toString(line)).concat("#").concat(
                 fileIndex);
-        String value = jsp2java.get(key);
+        String value = this.jsp2java.get(key);
 
         if (value == null) {
             return -1;
@@ -339,7 +339,7 @@ public class SmapResolver {
 
     public int unmangle(int line, int col) {
         String key = Integer.toString(line);
-        String value = java2jsp.get(key);
+        String value = this.java2jsp.get(key);
 
         if (value == null) {
             return -1;
