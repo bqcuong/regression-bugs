@@ -579,10 +579,10 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 			if (var.indexOf('.') != -1) {
 				var = var.substring(var.indexOf('.') + 1);
 			}
-			NameDeclaration declaration = name.getNameDeclaration();
-			if (declaration != null && !declaration.getNode().getParentsOfType(ASTFieldDeclaration.class).isEmpty()) {
+			if (isField(name)) {
 				var = "this." + var;
 			}
+			
 
 			if (isTaintedVariable(var) || isSource(getType(name), var)) {
 				return true;
@@ -590,5 +590,10 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 		}
 		return false;
     }
+
+	private boolean isField(ASTName name) {
+		NameDeclaration declaration = name.getNameDeclaration();
+		return declaration != null && !declaration.getNode().getParentsOfType(ASTFieldDeclaration.class).isEmpty();
+	}
 
 }
