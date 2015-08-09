@@ -18,7 +18,7 @@ public class CWE89SqlInjectionTest {
 	
 	@Test
 	public void simpleTest() throws Exception {
-		Assert.assertEquals(1, run("TestSqliServlet.java"));
+		Assert.assertEquals(1, run("SqliServletTest.java"));
 	}
 	
 	@Test
@@ -45,5 +45,6 @@ public class CWE89SqlInjectionTest {
 	public void testNumericTypesAreSafe() throws Exception {
 		Assert.assertEquals(0, run("SqliNumericTypesAreSafe.java"));
 	}
+	
 
 }

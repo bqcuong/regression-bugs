@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 
-public class TestSqliServlet extends HttpServlet {
+public class SqliServletTest extends HttpServlet {
 
 	/**
 	 * 
