@@ -17,12 +17,19 @@ public class PMDBug1024 {
 			try {
 				builder.append(employee);
 			} catch (Exception e) {
-				return;				
+				if (isBatchMode) {
+					log("Error!" + employee);
+				} else {
+					throw e;
+				}
 			}
 			if (builder.length() == 0) {
 				builder.append("NoResults");
 			}
 		}
+	}
+	private static void log(String a) {
+		// log to somewhere
 	}
 
 }
