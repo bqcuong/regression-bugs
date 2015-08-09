@@ -62,6 +62,7 @@ import com.gdssecurity.pmd.rules.BaseSecurityRule;
 
 public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
+	private static Map<String, String> cacheReturnTypes = new HashMap<String, String>();
     private static final String UNKNOWN_TYPE = "UNKNOWN_TYPE";
 	private Set<String> currentPathTaintedVariables;
     private Set<String> functionParameterTainted = new HashSet<String>();
@@ -323,23 +324,54 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
             method = getMethod(astMethod);
             type = getType(astMethod);    
 
+            
+            if (type.startsWith("java.lang.StringBu") && ("insert".equals(method) || "append".equals(method))){
+            	analizeStringBuilderAppend(simpleNode);
+            }
+            
             if (isSink(type, method)) {
                 analyzeSinkMethodArgs(simpleNode);
             }
 			
         } 
     }
-
-    private void analyzeSinkMethodArgs(Node simpleNode) {
-        ASTArgumentList argListNode = simpleNode.getFirstDescendantOfType(ASTArgumentList.class);    
-        for(int i = 0; i < argListNode.jjtGetNumChildren(); i++) {
-        	Node argument = argListNode.jjtGetChild(i);
-        	if (isTainted(argument)){
-        		addSecurityViolation(this, this.rc, simpleNode, getMessage(), "");
-        	}
-        } 		
+    
+    private void analizeStringBuilderAppend(Node simpleNode) {
+    	ASTName name = simpleNode.getFirstDescendantOfType(ASTName.class);
+    	if (name == null) {
+    		return;
+    	}
+    	
+    	String varName = getVarName(name);
+    	
+    	if (this.isTaintedVariable(varName)) {
+    		return;
+    	}
+    	if (isTainted(simpleNode)) {
+    		this.currentPathTaintedVariables.add(varName);
+    	}
+    	
     }
 
+    private void analyzeSinkMethodArgs(Node simpleNode) {
+    	if (isAnyArgumentTainted(simpleNode)) {    		
+    		addSecurityViolation(this, this.rc, simpleNode, getMessage(), "");
+    	}
+
+    }
+
+    private boolean isAnyArgumentTainted (Node simpleNode) {
+        ASTArgumentList argListNode = simpleNode.getFirstDescendantOfType(ASTArgumentList.class); 
+        if (argListNode != null) {
+	        for(int i = 0; i < argListNode.jjtGetNumChildren(); i++) {
+	        	Node argument = argListNode.jjtGetChild(i);
+	        	if (isTainted(argument)){
+	        		return true;
+	        	}
+	        }
+        }
+        return false;
+    }
 
 
     private boolean isMethodCall(Node node) {
@@ -383,13 +415,14 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
                 if (isSanitizerMethod(type, method)) {
                 	continue;
                 }
-                else if (isSource(type, method)) {
-                    return true;
-                } else if (isSink(type, method)) {
+                else if (isSink(type, method)) {
                     analyzeSinkMethodArgs(node);
-                } 
+                }                 
                 else if (isSafeType(getReturnType(node, type, method))){
                 	continue;
+                }
+                else if (isSource(type, method) || isUsedOverTaintedVariable(node) || isAnyArgumentTainted(node)) {
+                    return true;
                 }
             } else if (node.hasDescendantOfType(ASTName.class)){
                 List<ASTName> astNames = node.findDescendantsOfType(ASTName.class);
@@ -397,15 +430,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
                 	return true;
                 }
             }
-            else {
-            	ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
-            	ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
-            	if ((prefix == null || prefix.getImage() == null) && suffix != null && suffix.getImage() != null){
-            		String fieldName = suffix.getImage();
-            		if (this.currentPathTaintedVariables.contains("this." + fieldName)){
-            			return true;
-            		}
-            	}        		
+            else if (isUsedOverTaintedVariable(node)){
+            	return true;
             }
     		boolean childsTainted = isTainted(node);
     		if (childsTainted) {
@@ -416,7 +442,43 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     	
     }
     
-    private static Map<String, String> cacheReturnTypes = new HashMap<String, String>();
+    private boolean isUsedOverTaintedVariable(Node node) {
+    	ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
+    	ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
+    	if ((prefix == null || prefix.getImage() == null) && suffix != null && suffix.getImage() != null){
+    		String fieldName = suffix.getImage();
+    		if (this.currentPathTaintedVariables.contains("this." + fieldName)){
+    			return true;
+    		}
+    	}
+		if (prefix != null) {
+			ASTName astName = prefix.getFirstChildOfType(ASTName.class);
+			if (astName != null) {
+				String varName = getVarName(astName);
+				return isTaintedVariable(varName);
+			}
+		}
+    	return false;
+    }
+    
+    
+    private String getVarName(ASTName name) {
+    	String varName = name.getImage();
+    	if (varName.startsWith("this.")) {
+    		varName = StringUtils.removeStart(varName, "this.");
+    	}
+    	else if (varName.contains(".")){
+    		varName = StringUtils.split(varName, ".")[0];
+    	}
+		if (varName.indexOf('.') != -1) {
+			varName = varName.substring(varName.indexOf('.') + 1);
+		}
+		if (isField(name)) {
+			varName = "this." + varName;
+		}
+		return varName;
+    }
+
     
     private String getReturnType(ASTPrimaryExpression node, String type, String methodName) {
     	String realType = type;
@@ -575,14 +637,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     
     private boolean analyzeVariable(List<ASTName> listOfAstNames) {
 		for (ASTName name : listOfAstNames) {
-			String var = name.getImage();
-			if (var.indexOf('.') != -1) {
-				var = var.substring(var.indexOf('.') + 1);
-			}
-			if (isField(name)) {
-				var = "this." + var;
-			}
-			
+			String var = getVarName(name);			
 
 			if (isTaintedVariable(var) || isSource(getType(name), var)) {
 				return true;

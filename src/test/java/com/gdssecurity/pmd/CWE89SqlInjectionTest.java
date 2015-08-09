@@ -46,5 +46,10 @@ public class CWE89SqlInjectionTest {
 		Assert.assertEquals(0, run("SqliNumericTypesAreSafe.java"));
 	}
 	
+	@Test
+	public void testStringBuilder() throws Exception {
+		Assert.assertEquals(2, run("StringBuilderTest.java"));
+	}
+	
 
 }
