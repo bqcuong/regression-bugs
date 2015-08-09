@@ -198,4 +198,16 @@
 	</build>
 
 
+	<name>PMD-Security-Rules</name>
+	<scm>
+		<url>https://github.com/albfernandez/GDS-PMD-Security-Rules.git</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/albfernandez/GDS-PMD-Security-Rules/issues</url>
+	</issueManagement>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 </project>
