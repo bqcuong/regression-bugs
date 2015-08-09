@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class NaiveBatchAligner<S extends Sequence<S>, P> extends AbstractBatchAligner<S, P, AlignmentHit<S, P>>
-        implements BatchAlignerWithBase<S, P> {
+public class NaiveBatchAligner<S extends Sequence<S>, P> extends AbstractBatchAligner<S, AlignmentHit<S, P>>
+        implements BatchAlignerWithBase<S, P, AlignmentHit<S, P>> {
     final NaiveBatchAlignerParameters<S> parameters;
     final List<Record<S, P>> references = new ArrayList<>();
 

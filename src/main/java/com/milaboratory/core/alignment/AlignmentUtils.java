@@ -100,4 +100,8 @@ public final class AlignmentUtils {
 
         return sb1.toString() + "\n" + sb2.toString() + '\n';
     }
+
+    public static <S extends Sequence<S>> S getAlignedSequence2Part(Alignment<S> alignment) {
+        return alignment.getRelativeMutations().mutate(alignment.getSequence1().getRange(alignment.getSequence1Range()));
+    }
 }

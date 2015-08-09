@@ -12,6 +12,6 @@ import com.milaboratory.core.sequence.Sequence;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
-public interface BatchAligner<S extends Sequence<S>, P> {
-    AlignmentResult<? extends AlignmentHit<? extends S, ? extends P>> align(S sequence);
+public interface BatchAligner<S extends Sequence<S>, H extends AlignmentHit<? extends S, ?>> {
+    AlignmentResult<? extends H> align(S sequence);
 }

@@ -9,8 +9,8 @@ import com.milaboratory.core.sequence.Sequence;
 /**
  * Created by dbolotin on 07/08/15.
  */
-public abstract class AbstractBatchAligner<S extends Sequence<S>, P, H extends AlignmentHit<S, P>>
-        implements BatchAligner<S, P>, PipedBatchAligner<S, H> {
+public abstract class AbstractBatchAligner<S extends Sequence<S>, H extends AlignmentHit<S, ?>>
+        implements BatchAligner<S, H>, PipedBatchAligner<S, H> {
     /**
      * 0    -> Runtime.getRuntime().availableProcessors()
      * 1    -> process in the same thread as take() method call

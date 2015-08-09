@@ -11,7 +11,7 @@
 // * Created by poslavsky on 15/06/15.
 // */
 //@Ignore
-//public class BlastAlignerTest {
+//public class ExternalDBBlastAlignerTest {
 //    //@Test
 //    //public void test2() throws Exception {
 //    //    BlastAligner1<NucleotideSequence> aligner = new BlastAligner1<>(NucleotideSequence.ALPHABET,null);

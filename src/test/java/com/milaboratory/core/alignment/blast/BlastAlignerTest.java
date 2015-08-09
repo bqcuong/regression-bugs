@@ -1,48 +1,27 @@
 package com.milaboratory.core.alignment.blast;
 
-import cc.redberry.pipe.CUtils;
-import cc.redberry.pipe.OutputPort;
+import com.milaboratory.core.alignment.AlignmentUtils;
 import com.milaboratory.core.alignment.batch.PipedAlignmentResult;
-import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
+import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
+import static cc.redberry.pipe.CUtils.asOP;
 
 public class BlastAlignerTest {
     @Test
     public void test1() throws Exception {
-        List<NucleotideSequence> seqs = new ArrayList<>();
-        seqs.add(new NucleotideSequence("ATTAGACACAGACACA"));
-        seqs.add(new NucleotideSequence("GATACACCACCGATGCTGGAGATGCATGCTAGCGGCGCGGATAGCTGCATG"));
-        long bases = 0;
-        for (NucleotideSequence seq : seqs)
-            bases += seq.size();
+        BlastAligner<NucleotideSequence, Integer> ba = new BlastAligner<>();
+        NucleotideSequence ns1 = new NucleotideSequence("ATTAGACGAATCCGATGCTGACTGCGCGATGATGCTAGTCGTGCTAGTACTAGCTGGCGCGGATTC");
+        NucleotideSequence ns2 = new NucleotideSequence("TATTACCTGCTGCGCGCGCTAGATCGGTACTACGTTGCTAGCTAGCTTCGTATACGTCGTGCTAGTATCGATCGCTAG");
 
-        BlastDB db = BlastDBBuilder.build(seqs);
+        ba.addReference(ns1, 1);
+        ba.addReference(ns2, 2);
 
-        BlastAligner<NucleotideSequence> aligner = new BlastAligner<>(db);
-        OutputPort<PipedAlignmentResult<ExternalDBBlastHit<NucleotideSequence>, NucleotideSequence>> results = aligner.align(CUtils.asOutputPort(seqs));
-        for (PipedAlignmentResult<ExternalDBBlastHit<NucleotideSequence>, NucleotideSequence> result : CUtils.it(results)) {
-            System.out.println(result);
-        }
-    }
+        NucleotideSequence nsq = new NucleotideSequence("TAGACGAATCCGATGCTGACTGCGCGATGAACCTAGTCGTGCTAGTACTA");
 
-    @Test
-    public void test2() throws Exception {
-        List<AminoAcidSequence> seqs = new ArrayList<>();
-        seqs.add(new AminoAcidSequence("PMISVGGVKCYMVRLTNFLQVFIRITISSYHLDMVKQVWLFYVEVIRLWFIVLDSTGSV"));
-        seqs.add(new AminoAcidSequence("LNGMSYNNKDLLNIKNTINNYEVMPNLKIPYDKMNDYWI"));
-
-        BlastDB db = BlastDB.get("/Volumes/Data/tools/ncbi-blast-2.2.31+/db/yeast");
-        BlastAligner<AminoAcidSequence> aligner = new BlastAligner<>(db);
-        OutputPort<PipedAlignmentResult<ExternalDBBlastHit<AminoAcidSequence>, AminoAcidSequence>> results = aligner.align(CUtils.asOutputPort(seqs));
-        for (PipedAlignmentResult<ExternalDBBlastHit<AminoAcidSequence>, AminoAcidSequence> result : CUtils.it(results)) {
-            System.out.println(result);
-            for (ExternalDBBlastHit<AminoAcidSequence> hit : result.getHits()) {
-                System.out.println(hit.getAlignment().getAlignmentHelper());
-            }
-        }
+        PipedAlignmentResult<BlastHit<NucleotideSequence, Integer>, NucleotideSequence> result = ba.align(asOP(nsq)).take();
+        Assert.assertEquals((Integer) 1, result.getHits().get(0).getRecordPayload());
+        Assert.assertEquals(nsq, AlignmentUtils.getAlignedSequence2Part(result.getHits().get(0).getAlignment()));
     }
 }

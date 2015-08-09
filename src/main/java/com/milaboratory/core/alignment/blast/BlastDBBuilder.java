@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 public final class BlastDBBuilder {
-    public static final String RECORD_PREFIX = "RECORD";
+    private static final String RECORD_PREFIX = "RECORD";
     private static Path blastDbFolder = null;
 
     private static synchronized Path getTmpDBPath() {
@@ -19,12 +19,16 @@ public final class BlastDBBuilder {
         return blastDbFolder;
     }
 
-    public static final <S extends Sequence<S>> BlastDB build(List<S> sequences) {
+    public static String getId(int id) {
+        return RECORD_PREFIX + id;
+    }
+
+    public static <S extends Sequence<S>> BlastDB build(List<S> sequences) {
         return build(sequences, null, true);
     }
 
     //TODO caching etc..
-    private static final <S extends Sequence<S>> BlastDB build(List<S> sequences, Path path, boolean tmp) {
+    private static <S extends Sequence<S>> BlastDB build(List<S> sequences, Path path, boolean tmp) {
         if (sequences.isEmpty())
             throw new IllegalArgumentException("No records.");
 
@@ -40,7 +44,7 @@ public final class BlastDBBuilder {
                     "-out", fullName, "-title", name).start();
             FastaWriter<S> writer = new FastaWriter<>(proc.getOutputStream(), FastaWriter.DEFAULT_MAX_LENGTH);
             for (int i = 0; i < sequences.size(); i++)
-                writer.write(RECORD_PREFIX + i, sequences.get(i));
+                writer.write(getId(i), sequences.get(i));
             writer.close();
             if (proc.waitFor() != 0)
                 throw new RuntimeException("Something goes wrong.");
