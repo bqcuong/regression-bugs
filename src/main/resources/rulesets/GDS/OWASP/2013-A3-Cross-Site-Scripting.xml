@@ -22,7 +22,17 @@
       
       <properties>
          <property name="sinks">
-         	<value>javax.servlet.jsp.JspWriter.print|java.io.PrintWriter.print</value>
+         	<value>
+         		|javax.servlet.jsp.JspWriter.print
+         		|javax.servlet.jsp.JspWriter.println
+         		|javax.servlet.jsp.JspWriter.write
+         		|java.io.PrintWriter.print
+         		|java.io.PrintWriter.println
+         		|java.io.PrintWriter.write
+         	</value>
+         </property>
+         <property name="sanitizers">
+         	<value>org.apache.commons.lang3.StringEscapeUtils.escapeHtml4</value>
          </property>
       </properties>
   
