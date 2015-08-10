@@ -25,7 +25,7 @@ import static java.lang.Integer.parseInt;
  * Blast aligner of query sequences with external (non-milib-managed) database of sequences.
  */
 public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatchAligner<S, ExternalDBBlastHit<S>> {
-    private static final String OUTFMT = "7 btop sstart send qstart qend score bitscore evalue stitle sseq";
+    private static final String OUTFMT = "7 btop sstart send qstart qend score bitscore evalue stitle sseqid sseq";
     private static final String QUERY_ID_PREFIX = "Q";
     final BlastDB database;
     final Alphabet<S> alphabet;
@@ -169,6 +169,7 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
                     bitscore = fields[i++],
                     evalue = fields[i++],
                     stitle = fields[i++],
+                    sseqid = fields[i++],
                     sseq = fields[i++].replace("-", "");
 
             // Converting mutations to MILib representation
@@ -183,8 +184,8 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
             Range sRange = new Range(parseInt(sstart) - 1, parseInt(send));
 
             // Return parsed hit
-            return new ExternalDBBlastHit<>(alignment, stitle, Double.parseDouble(score), Double.parseDouble(bitscore),
-                    Double.parseDouble(evalue), sRange);
+            return new ExternalDBBlastHit<>(alignment, Double.parseDouble(score), Double.parseDouble(bitscore),
+                    Double.parseDouble(evalue), sRange, sseqid, stitle);
         }
     }
 

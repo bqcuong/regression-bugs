@@ -24,10 +24,14 @@ import com.milaboratory.util.RandomUtil;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.HashMap;
@@ -74,6 +78,23 @@ public class TestUtil {
             return ret;
         } else
             throw new IllegalArgumentException(serverEnv + " not exists.");
+    }
+
+    public static final String BIG_TEST_RESOURCE_PREFIX = "/big/";
+
+    public static String getBigTestResource(String file) {
+        return getBigTestResource(file, file);
+    }
+
+    public static String getBigTestResource(String name, String file) {
+        try {
+            URL resource = TestUtil.class.getResource(BIG_TEST_RESOURCE_PREFIX + file);
+            Assume.assumeNotNull(resource);
+            Path path = Paths.get(resource.toURI()).toAbsolutePath().resolveSibling(name);
+            return path.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void assertJson(Object object) {

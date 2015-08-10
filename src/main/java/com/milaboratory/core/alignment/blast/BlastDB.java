@@ -1,26 +1,33 @@
 package com.milaboratory.core.alignment.blast;
 
+import com.milaboratory.core.io.sequence.fasta.FastaReader;
+import com.milaboratory.core.io.sequence.fasta.FastaRecord;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
+import com.milaboratory.core.sequence.Sequence;
 import org.apache.commons.io.IOUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class BlastDB {
+public class BlastDB<S extends Sequence<S>> {
     private final String name;
     private final String title;
     private final long recordsCount, lettersCount;
-    private final Alphabet<?> alphabet;
+    private final Alphabet<S> alphabet;
     private final List<String> volumes;
     private final boolean temp;
 
-    public BlastDB(String name, String title, long recordsCount, long lettersCount, Alphabet<?> alphabet, List<String> volumes, boolean temp) {
+    public BlastDB(String name, String title, long recordsCount, long lettersCount, Alphabet<S> alphabet,
+                   List<String> volumes, boolean temp) {
         this.name = name;
         this.title = title;
         this.recordsCount = recordsCount;
@@ -30,7 +37,23 @@ public class BlastDB {
         this.temp = temp;
     }
 
-    public Alphabet<?> getAlphabet() {
+    public S retriveSequenceById(String id) {
+        try {
+            Process proc = Blast.getProcessBuilder(Blast.CMD_BLASTDBCMD, "-db", name, "-entry", id).start();
+            FastaReader<S> reader = new FastaReader<>(proc.getInputStream(), getAlphabet());
+            FastaRecord<S> record = reader.take();
+            while (reader.take() != null) ;
+            proc.waitFor();
+            if (record == null)
+                return null;
+            else
+                return record.getSequence();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Alphabet<S> getAlphabet() {
         return alphabet;
     }
 
@@ -84,11 +107,11 @@ public class BlastDB {
             Pattern.compile("^\\s*Volumes:\\s*$")
     };
 
-    public static BlastDB get(String name) {
+    public static <S extends Sequence<S>> BlastDB<S> get(String name) {
         return get(name, false);
     }
 
-    static BlastDB get(String name, boolean temp) {
+    static <S extends Sequence<S>> BlastDB<S> get(String name, boolean temp) {
         try {
             ProcessBuilder processBuilder = Blast.getProcessBuilder(Blast.CMD_BLASTDBCMD, "-db", name, "-info");
             Process proc = processBuilder.start();

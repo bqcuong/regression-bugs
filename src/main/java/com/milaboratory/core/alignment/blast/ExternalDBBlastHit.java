@@ -8,9 +8,9 @@ import com.milaboratory.core.sequence.Sequence;
  * Created by dbolotin on 08/08/15.
  */
 public class ExternalDBBlastHit<S extends Sequence<S>> extends BlastHit<S, String> {
-    public ExternalDBBlastHit(Alignment<S> alignment, String recordPayload, double score, double bitScore,
-                              double eValue, Range subjectRange) {
-        super(alignment, recordPayload, score, bitScore, eValue, subjectRange);
+    public ExternalDBBlastHit(Alignment<S> alignment, double score, double bitScore, double eValue, Range subjectRange, String subjectId, String subjectTitle) {
+        super(alignment, subjectTitle, score, bitScore, eValue,
+                subjectRange, subjectId, subjectTitle);
     }
 
     public String getTitle() {

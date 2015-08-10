@@ -1,5 +1,6 @@
 package com.milaboratory.core.alignment.blast;
 
+import cc.redberry.pipe.CUtils;
 import cc.redberry.pipe.OutputPort;
 import com.milaboratory.core.alignment.AlignmentUtils;
 import com.milaboratory.core.alignment.batch.HasSequence;
@@ -19,10 +20,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cc.redberry.pipe.CUtils.asOP;
+import static cc.redberry.pipe.CUtils.asOutputPort;
 import static cc.redberry.pipe.CUtils.it;
 
-public class BlastAlignerTest {
+public class BlastAlignerTest extends BlastTest {
     @Test
     public void test1() throws Exception {
         BlastAligner<NucleotideSequence, Integer> ba = new BlastAligner<>();
@@ -34,7 +35,7 @@ public class BlastAlignerTest {
 
         NucleotideSequence nsq = new NucleotideSequence("TAGACGAATCCGATGCTGACTGCGCGATGAACCTAGTCGTGCTAGTACTA");
 
-        PipedAlignmentResult<BlastHit<NucleotideSequence, Integer>, NucleotideSequence> result = ba.align(asOP(nsq)).take();
+        PipedAlignmentResult<BlastHit<NucleotideSequence, Integer>, NucleotideSequence> result = ba.align(asOutputPort(nsq)).take();
         Assert.assertEquals((Integer) 1, result.getHits().get(0).getRecordPayload());
         Assert.assertEquals(nsq, AlignmentUtils.getAlignedSequence2Part(result.getHits().get(0).getAlignment()));
     }
@@ -80,7 +81,7 @@ public class BlastAlignerTest {
             queries.add(new QueryObject<>(query, hit, muts.move(qFrom)));
         }
 
-        OutputPort<PipedAlignmentResult<BlastHit<NucleotideSequence, Integer>, QueryObject<NucleotideSequence>>> results = ba.align(asOP(queries));
+        OutputPort<PipedAlignmentResult<BlastHit<NucleotideSequence, Integer>, QueryObject<NucleotideSequence>>> results = ba.align(CUtils.asOutputPort(queries));
 
         int noHit = 0;
         int wrongHit = 0;

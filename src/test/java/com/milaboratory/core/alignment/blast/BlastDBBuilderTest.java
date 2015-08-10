@@ -18,10 +18,12 @@ public class BlastDBBuilderTest {
         for (NucleotideSequence seq : seqs)
             bases += seq.size();
 
-        BlastDB db = BlastDBBuilder.build(seqs);
+        BlastDB db = BlastDBBuilder.build(seqs, true);
 
         assertEquals(NucleotideSequence.ALPHABET, db.getAlphabet());
         assertEquals(bases, db.getLettersCount());
         assertEquals(seqs.size(), db.getRecordsCount());
+
+        assertEquals(seqs.get(1), db.retriveSequenceById(BlastDBBuilder.getId(1)));
     }
 }

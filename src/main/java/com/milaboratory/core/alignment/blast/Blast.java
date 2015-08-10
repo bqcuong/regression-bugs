@@ -6,6 +6,7 @@ import com.milaboratory.core.sequence.NucleotideSequence;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,10 +64,14 @@ public class Blast {
         throw new IllegalArgumentException("Alphabet not supported.");
     }
 
+    static synchronized ProcessBuilder getProcessBuilder(List<String> cmd) {
+        cmd.set(0, getBlastCommand(cmd.get(0), true));
+        return new ProcessBuilder(cmd);
+    }
+
     static synchronized ProcessBuilder getProcessBuilder(String... cmd) {
         cmd[0] = getBlastCommand(cmd[0], true);
-        ProcessBuilder builder = new ProcessBuilder(cmd);
-        return builder;
+        return new ProcessBuilder(cmd);
     }
 
     static synchronized String getBlastCommand(String command, boolean withError) {
