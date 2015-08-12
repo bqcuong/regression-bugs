@@ -1,0 +1,2 @@
+New automated release mechanism
+More named presets for TreeSearchParameters (`two`/`three`/`four` x `mismatches`/`indels`/`mismatchesOrIndels`)
