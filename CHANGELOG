@@ -1,4 +1,12 @@
 
+MiLib 1.0.2 (12 Aug 2015)
+========================
+
+-- New automated release mechanism
+-- More named presets for TreeSearchParameters (`two`/`three`/`four` x 
+   smatches`/`indels`/`mismatchesOrIndels`)
+
+
 MiLib v1.0.1 (16 Jun 2015)
 ========================
 
