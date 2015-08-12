@@ -1,5 +1,5 @@
 
-MiLIB v1.0.1 (16 Jun 2015)
+MiLib v1.0.1 (16 Jun 2015)
 ========================
 
 -- Added StringSerializer to PrimitivIO
@@ -8,7 +8,7 @@ MiLIB v1.0.1 (16 Jun 2015)
 
 
 
-MiLIB v1.0 (23 Jan 2015)
+MiLib v1.0 (23 Jan 2015)
 ========================
 
 -- Initial release
