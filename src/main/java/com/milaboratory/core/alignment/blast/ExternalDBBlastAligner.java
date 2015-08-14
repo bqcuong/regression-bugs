@@ -15,11 +15,13 @@ import com.milaboratory.core.sequence.Sequence;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static java.lang.Integer.parseInt;
+import static java.util.Arrays.asList;
 
 /**
  * Blast aligner of query sequences with external (non-milib-managed) database of sequences.
@@ -39,6 +41,7 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
         this.database = database;
         this.alphabet = (Alphabet<S>) database.getAlphabet();
         this.parameters = parameters == null ? new BlastAlignerParameters() : parameters;
+        this.parameters.chechAlphabet(alphabet);
     }
 
     @Override
@@ -66,12 +69,17 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
         public BlastWorker(OutputPort<Q> source, SequenceExtractor<Q, S> sequenceExtractor) {
             this.resultsBuffer = new Buffer<>(32);
             try {
-                ProcessBuilder processBuilder = Blast.getProcessBuilder(
-                        Blast.toBlastCommand(database.getAlphabet()), "-db", database.getName(), "-outfmt", OUTFMT);
+                List<String> cmd = new ArrayList<>();
+
+                cmd.addAll(asList(Blast.toBlastCommand(database.getAlphabet()),
+                        "-db", database.getName(),
+                        "-outfmt", OUTFMT));
+                parameters.addArgumentsTo(cmd);
+
+                ProcessBuilder processBuilder = Blast.getProcessBuilder(cmd);
 
                 processBuilder.redirectErrorStream(false);
-                if (parameters.getBatchSize() != -1)
-                    processBuilder.environment().put("BATCH_SIZE", Integer.toString(parameters.getBatchSize()));
+                parameters.addEnvVariablesTo(processBuilder);
 
                 this.process = processBuilder.start();
                 this.pusher = new BlastSequencePusher<>(source, sequenceExtractor,

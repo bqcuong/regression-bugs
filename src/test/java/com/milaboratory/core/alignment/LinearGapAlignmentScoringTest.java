@@ -15,7 +15,6 @@
  */
 package com.milaboratory.core.alignment;
 
-import com.milaboratory.core.alignment.batch.AlignmentScoring;
 import com.milaboratory.core.sequence.NucleotideAlphabet;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.GlobalObjectMappers;

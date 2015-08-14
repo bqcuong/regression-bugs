@@ -15,7 +15,6 @@
  */
 package com.milaboratory.core.alignment;
 
-import com.milaboratory.core.alignment.batch.AlignmentScoring;
 import com.milaboratory.core.mutations.Mutation;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.MutationsUtil;

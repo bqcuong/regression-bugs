@@ -15,7 +15,7 @@
  */
 package com.milaboratory.core.mutations;
 
-import com.milaboratory.core.alignment.batch.AlignmentScoring;
+import com.milaboratory.core.alignment.AlignmentScoring;
 import com.milaboratory.core.sequence.Alphabet;
 
 public final class Mutation {

@@ -15,6 +15,7 @@
  */
 package com.milaboratory.core.alignment.batch;
 
+import com.milaboratory.core.alignment.AlignmentScoring;
 import com.milaboratory.core.sequence.Sequence;
 
 public class NaiveBatchAlignerParameters<S extends Sequence<S>> {
