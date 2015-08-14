@@ -18,7 +18,7 @@ case $os in
     ;;
 esac
 
-if ! type blastn > /dev/null ; then
+if type blastn > /dev/null ; then
     echo "Blast already installed."
 else
     distFilter=""
