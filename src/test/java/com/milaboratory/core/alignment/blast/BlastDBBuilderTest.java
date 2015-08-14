@@ -8,7 +8,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class BlastDBBuilderTest {
+public class BlastDBBuilderTest extends BlastTest {
     @Test
     public void test1() throws Exception {
         List<NucleotideSequence> seqs = new ArrayList<>();

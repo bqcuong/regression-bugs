@@ -37,7 +37,7 @@ else
     echo -n "Checking local blast version..."
     fileName=$(curl ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ 2> /dev/null | grep -o -E 'ncbi-blast.*.gz$' | grep -o -E 'ncbi-blast.*.gz' | grep ${distFilter} )
     #echo ${fileName}
-    blastVersion=$(echo ${fileName} | grep -o '\d\+\.\d\+\.\d\++')
+    blastVersion=$(echo ${fileName} | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\++')
     #echo ${blastVersion}
     versionMarker="blast/ncbi-blast-${blastVersion}"
     if [ ! -f ${versionMarker} ]
