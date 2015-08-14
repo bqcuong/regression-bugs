@@ -26,7 +26,7 @@ import static cc.redberry.pipe.CUtils.it;
 public class BlastAlignerTest extends BlastTest {
     @Test
     public void test1() throws Exception {
-        BlastAligner<NucleotideSequence, Integer> ba = new BlastAligner<>();
+        NBlastAligner<Integer> ba = new NBlastAligner<>();
         NucleotideSequence ns1 = new NucleotideSequence("ATTAGACGAATCCGATGCTGACTGCGCGATGATGCTAGTCGTGCTAGTACTAGCTGGCGCGGATTC");
         NucleotideSequence ns2 = new NucleotideSequence("TATTACCTGCTGCGCGCGCTAGATCGGTACTACGTTGCTAGCTAGCTTCGTATACGTCGTGCTAGTATCGATCGCTAG");
 
@@ -35,7 +35,7 @@ public class BlastAlignerTest extends BlastTest {
 
         NucleotideSequence nsq = new NucleotideSequence("TAGACGAATCCGATGCTGACTGCGCGATGAACCTAGTCGTGCTAGTACTA");
 
-        PipedAlignmentResult<BlastHit<NucleotideSequence, Integer>, NucleotideSequence> result = ba.align(asOutputPort(nsq)).take();
+        PipedAlignmentResult<NBlastHit<Integer>, NucleotideSequence> result = ba.align(asOutputPort(nsq)).take();
         Assert.assertEquals((Integer) 1, result.getHits().get(0).getRecordPayload());
         Assert.assertEquals(nsq, AlignmentUtils.getAlignedSequence2Part(result.getHits().get(0).getAlignment()));
     }
@@ -57,7 +57,7 @@ public class BlastAlignerTest extends BlastTest {
 
         List<NucleotideSequence> base = new ArrayList<>();
 
-        BlastAligner<NucleotideSequence, Integer> ba = new BlastAligner<>();
+        NBlastAligner<Integer> ba = new NBlastAligner<>();
 
         for (int i = 0; i < recordsInBase; i++) {
             NucleotideSequence seq = TestUtil.randomSequence(NucleotideSequence.ALPHABET, baseLengtFrom, baseLengtTo);
@@ -81,12 +81,12 @@ public class BlastAlignerTest extends BlastTest {
             queries.add(new QueryObject<>(query, hit, muts.move(qFrom)));
         }
 
-        OutputPort<PipedAlignmentResult<BlastHit<NucleotideSequence, Integer>, QueryObject<NucleotideSequence>>> results = ba.align(CUtils.asOutputPort(queries));
+        OutputPort<PipedAlignmentResult<NBlastHit<Integer>, QueryObject<NucleotideSequence>>> results = ba.align(CUtils.asOutputPort(queries));
 
         int noHit = 0;
         int wrongHit = 0;
         int wrongMutations = 0;
-        for (PipedAlignmentResult<BlastHit<NucleotideSequence, Integer>, QueryObject<NucleotideSequence>> result : it(results)) {
+        for (PipedAlignmentResult<NBlastHit<Integer>, QueryObject<NucleotideSequence>> result : it(results)) {
             if (result.isEmpty()) {
                 ++noHit;
                 continue;

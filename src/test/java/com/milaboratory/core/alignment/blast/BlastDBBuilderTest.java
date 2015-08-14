@@ -24,6 +24,6 @@ public class BlastDBBuilderTest {
         assertEquals(bases, db.getLettersCount());
         assertEquals(seqs.size(), db.getRecordsCount());
 
-        assertEquals(seqs.get(1), db.retriveSequenceById(BlastDBBuilder.getId(1)));
+        assertEquals(seqs.get(1), db.retriveSequenceById(BlastDBBuilder.getIdFasta(1)));
     }
 }

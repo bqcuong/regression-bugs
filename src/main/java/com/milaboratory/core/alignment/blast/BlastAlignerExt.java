@@ -26,18 +26,18 @@ import static java.util.Arrays.asList;
 /**
  * Blast aligner of query sequences with external (non-milib-managed) database of sequences.
  */
-public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatchAligner<S, ExternalDBBlastHit<S>> {
+public class BlastAlignerExt<S extends Sequence<S>> implements PipedBatchAligner<S, BlastHitExt<S>> {
     private static final String OUTFMT = "7 btop sstart send qstart qend score bitscore evalue stitle sseqid sseq";
     private static final String QUERY_ID_PREFIX = "Q";
     final BlastDB database;
     final Alphabet<S> alphabet;
     final BlastAlignerParameters parameters;
 
-    public ExternalDBBlastAligner(BlastDB database) {
+    public BlastAlignerExt(BlastDB database) {
         this(database, null);
     }
 
-    public ExternalDBBlastAligner(BlastDB database, BlastAlignerParameters parameters) {
+    public BlastAlignerExt(BlastDB database, BlastAlignerParameters parameters) {
         this.database = database;
         this.alphabet = (Alphabet<S>) database.getAlphabet();
         this.parameters = parameters == null ? new BlastAlignerParameters() : parameters;
@@ -45,12 +45,12 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
     }
 
     @Override
-    public <Q> OutputPort<PipedAlignmentResult<ExternalDBBlastHit<S>, Q>> align(OutputPort<Q> input, SequenceExtractor<Q, S> extractor) {
+    public <Q> OutputPort<PipedAlignmentResult<BlastHitExt<S>, Q>> align(OutputPort<Q> input, SequenceExtractor<Q, S> extractor) {
         return new BlastWorker<>(input, extractor);
     }
 
     @Override
-    public <Q extends HasSequence<S>> OutputPort<PipedAlignmentResult<ExternalDBBlastHit<S>, Q>> align(OutputPort<Q> input) {
+    public <Q extends HasSequence<S>> OutputPort<PipedAlignmentResult<BlastHitExt<S>, Q>> align(OutputPort<Q> input) {
         return new BlastWorker<>(input, BatchAlignmentUtil.DUMMY_EXTRACTOR);
     }
 
@@ -59,9 +59,9 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
      * fetching alignment results and blast process by itself.
      */
     private class BlastWorker<Q> implements
-            OutputPortCloseable<PipedAlignmentResult<ExternalDBBlastHit<S>, Q>> {
+            OutputPortCloseable<PipedAlignmentResult<BlastHitExt<S>, Q>> {
         final ConcurrentMap<String, Q> queryMapping = new ConcurrentHashMap<>();
-        final Buffer<PipedAlignmentResult<ExternalDBBlastHit<S>, Q>> resultsBuffer;
+        final Buffer<PipedAlignmentResult<BlastHitExt<S>, Q>> resultsBuffer;
         final Process process;
         final BlastSequencePusher<Q> pusher;
         final BlastResultsFetcher<Q> fetcher;
@@ -95,7 +95,7 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
         }
 
         @Override
-        public PipedAlignmentResult<ExternalDBBlastHit<S>, Q> take() {
+        public PipedAlignmentResult<BlastHitExt<S>, Q> take() {
             return resultsBuffer.take();
         }
 
@@ -110,11 +110,11 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
      * Fetches blast alignment results
      */
     private class BlastResultsFetcher<Q> extends Thread {
-        final InputPort<PipedAlignmentResult<ExternalDBBlastHit<S>, Q>> resultsInputPort;
+        final InputPort<PipedAlignmentResult<BlastHitExt<S>, Q>> resultsInputPort;
         final BufferedReader reader;
         final ConcurrentMap<String, Q> queryMapping;
 
-        public BlastResultsFetcher(InputPort<PipedAlignmentResult<ExternalDBBlastHit<S>, Q>> resultsInputPort,
+        public BlastResultsFetcher(InputPort<PipedAlignmentResult<BlastHitExt<S>, Q>> resultsInputPort,
                                    ConcurrentMap<String, Q> queryMapping, InputStream stream) {
             this.resultsInputPort = resultsInputPort;
             this.reader = new BufferedReader(new InputStreamReader(stream));
@@ -128,7 +128,7 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
                 int num = -1;
 
                 Q query = null;
-                ArrayList<ExternalDBBlastHit<S>> hits = null;
+                ArrayList<BlastHitExt<S>> hits = null;
 
                 while ((line = reader.readLine()) != null) {
                     if (line.contains("hits found")) {
@@ -164,7 +164,7 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
             }
         }
 
-        private ExternalDBBlastHit<S> parseLine(String line) {
+        private BlastHitExt<S> parseLine(String line) {
             // Parsing individual fields
             String[] fields = line.split("\t");
             int i = 0;
@@ -192,7 +192,7 @@ public class ExternalDBBlastAligner<S extends Sequence<S>> implements PipedBatch
             Range sRange = new Range(parseInt(sstart) - 1, parseInt(send));
 
             // Return parsed hit
-            return new ExternalDBBlastHit<>(alignment, Double.parseDouble(score), Double.parseDouble(bitscore),
+            return new BlastHitExt<>(alignment, Double.parseDouble(score), Double.parseDouble(bitscore),
                     Double.parseDouble(evalue), sRange, sseqid, stitle);
         }
     }

@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class BlastDBBuilder {
-    private static final String RECORD_PREFIX = "lcl|RECORD";
+    private static final String RECORD_PREFIX = "RECORD";
     private static Path blastDbFolder = null;
 
     private static synchronized Path getTmpDBPath() {
@@ -22,8 +22,12 @@ public final class BlastDBBuilder {
         return blastDbFolder;
     }
 
-    public static String getId(int id) {
-        return RECORD_PREFIX + id + "|";
+    public static String getIdFasta(int id) {
+        return "lcl|" + RECORD_PREFIX + id + "|";
+    }
+
+    public static String getIdKey(int id) {
+        return RECORD_PREFIX + id;
     }
 
     public static <S extends Sequence<S>> BlastDB build(List<S> sequences) {
@@ -55,7 +59,7 @@ public final class BlastDBBuilder {
             Process proc = Blast.getProcessBuilder(cmd).start();
             FastaWriter<S> writer = new FastaWriter<>(proc.getOutputStream(), FastaWriter.DEFAULT_MAX_LENGTH);
             for (int i = 0; i < sequences.size(); i++)
-                writer.write(getId(i), sequences.get(i));
+                writer.write(getIdFasta(i), sequences.get(i));
             writer.close();
             String err = IOUtils.toString(proc.getErrorStream());
             if (proc.waitFor() != 0)

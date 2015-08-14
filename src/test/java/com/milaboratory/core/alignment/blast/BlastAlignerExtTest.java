@@ -11,7 +11,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ExternalDBBlastAlignerTest extends BlastTest {
+public class BlastAlignerExtTest extends BlastTest {
     @Test
     public void test1() throws Exception {
         List<NucleotideSequence> seqs = new ArrayList<>();
@@ -20,9 +20,9 @@ public class ExternalDBBlastAlignerTest extends BlastTest {
 
         BlastDB db = BlastDBBuilder.build(seqs);
 
-        ExternalDBBlastAligner<NucleotideSequence> aligner = new ExternalDBBlastAligner<>(db);
-        OutputPort<PipedAlignmentResult<ExternalDBBlastHit<NucleotideSequence>, NucleotideSequence>> results = aligner.align(CUtils.asOutputPort(seqs.get(1)));
-        for (PipedAlignmentResult<ExternalDBBlastHit<NucleotideSequence>, NucleotideSequence> result : CUtils.it(results)) {
+        BlastAlignerExt<NucleotideSequence> aligner = new BlastAlignerExt<>(db);
+        OutputPort<PipedAlignmentResult<BlastHitExt<NucleotideSequence>, NucleotideSequence>> results = aligner.align(CUtils.asOutputPort(seqs.get(1)));
+        for (PipedAlignmentResult<BlastHitExt<NucleotideSequence>, NucleotideSequence> result : CUtils.it(results)) {
             System.out.println(result);
         }
     }
@@ -36,10 +36,10 @@ public class ExternalDBBlastAlignerTest extends BlastTest {
                 "GTGGAGGATGAAGGCCTTCGGGTCGTAAACTCCTGTTCTGGGGGAAGAAAACGGGATGCGTGAATAATTCATCCCGCTGACGGTACCCCAGGAGAAAG" +
                 "CTCCG";
         NucleotideSequence seq = new NucleotideSequence(sseq);
-        ExternalDBBlastAligner<NucleotideSequence> blast = new ExternalDBBlastAligner<>(db);
-        PipedAlignmentResult<ExternalDBBlastHit<NucleotideSequence>, NucleotideSequence> result =
+        BlastAlignerExt<NucleotideSequence> blast = new BlastAlignerExt<>(db);
+        PipedAlignmentResult<BlastHitExt<NucleotideSequence>, NucleotideSequence> result =
                 blast.align(CUtils.asOutputPort(seq)).take();
-        ExternalDBBlastHit<NucleotideSequence> topHit = result.getHits().get(0);
+        BlastHitExt<NucleotideSequence> topHit = result.getHits().get(0);
         Assert.assertNotNull(db.retriveSequenceById(topHit.getSubjectId()));
     }
 }
