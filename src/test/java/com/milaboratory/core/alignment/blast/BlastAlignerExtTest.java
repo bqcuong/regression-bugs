@@ -20,9 +20,9 @@ public class BlastAlignerExtTest extends BlastTest {
 
         BlastDB db = BlastDBBuilder.build(seqs);
 
-        BlastAlignerExt<NucleotideSequence> aligner = new BlastAlignerExt<>(db);
-        OutputPort<PipedAlignmentResult<BlastHitExt<NucleotideSequence>, NucleotideSequence>> results = aligner.align(CUtils.asOutputPort(seqs.get(1)));
-        for (PipedAlignmentResult<BlastHitExt<NucleotideSequence>, NucleotideSequence> result : CUtils.it(results)) {
+        NBlastAlignerExt aligner = new NBlastAlignerExt(db);
+        OutputPort<PipedAlignmentResult<NBlastHitExt, NucleotideSequence>> results = aligner.align(CUtils.asOutputPort(seqs.get(1)));
+        for (PipedAlignmentResult<NBlastHitExt, NucleotideSequence> result : CUtils.it(results)) {
             System.out.println(result);
         }
     }
@@ -36,8 +36,8 @@ public class BlastAlignerExtTest extends BlastTest {
                 "GTGGAGGATGAAGGCCTTCGGGTCGTAAACTCCTGTTCTGGGGGAAGAAAACGGGATGCGTGAATAATTCATCCCGCTGACGGTACCCCAGGAGAAAG" +
                 "CTCCG";
         NucleotideSequence seq = new NucleotideSequence(sseq);
-        BlastAlignerExt<NucleotideSequence> blast = new BlastAlignerExt<>(db);
-        PipedAlignmentResult<BlastHitExt<NucleotideSequence>, NucleotideSequence> result =
+        NBlastAlignerExt blast = new NBlastAlignerExt(db);
+        PipedAlignmentResult<NBlastHitExt, NucleotideSequence> result =
                 blast.align(CUtils.asOutputPort(seq)).take();
         BlastHitExt<NucleotideSequence> topHit = result.getHits().get(0);
         Assert.assertNotNull(db.retriveSequenceById(topHit.getSubjectId()));
