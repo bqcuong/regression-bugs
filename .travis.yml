@@ -7,4 +7,5 @@ cache:
   - $HOME/.m2
   - blast
 install:
-	- ./init.sh
+  - ./init.sh
+  
