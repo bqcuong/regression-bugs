@@ -5,6 +5,8 @@ import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,8 @@ public class Blast {
         String propertyBlastPath = System.getProperty("blastPath");
         if (propertyBlastPath != null)
             setBlastPath(propertyBlastPath);
+        else if (Files.exists(Paths.get("blast/blast/bin")))
+            setBlastPath("blast/blast");
     }
 
     /**

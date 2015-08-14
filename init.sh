@@ -18,8 +18,44 @@ case $os in
     ;;
 esac
 
-mkdir -p ${scriptDir}/src/test/resources/big
+if ! type blastn > /dev/null ; then
+    echo "Blast already installed."
+else
+    distFilter=""
+    case $os in
+        Darwin)
+            distFilter="universal-macosx"
+        ;;
+        Linux)
+            distFilter="x64-linux"
+        ;;
+        *)
+           echo "Unknown OS."
+           exit 1
+        ;;
+    esac
+    echo -n "Checking local blast version..."
+    fileName=$(curl ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ 2> /dev/null | grep -o -E 'ncbi-blast.*.gz$' | grep -o -E 'ncbi-blast.*.gz' | grep ${distFilter} )
+    #echo ${fileName}
+    blastVersion=$(echo ${fileName} | grep -o '\d\+\.\d\+\.\d\++')
+    #echo ${blastVersion}
+    versionMarker="blast/ncbi-blast-${blastVersion}"
+    if [ ! -f ${versionMarker} ]
+    then
+        echo " Upgrading..."
+        rm -rf blast
+        mkdir -p blast
+        (cd blast; curl ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/${fileName} 2> /dev/null | tar -xzv )
+        mv ${versionMarker} blast/blast
+        touch ${versionMarker}
+    else
+        echo " Latest version is already installed.."
+    fi
+fi
 
-cd ${scriptDir}/src/test/resources/big
+if [ ! -f src/test/resources/big/16SMicrobial.nsq ]
+then
+    mkdir -p ${scriptDir}/src/test/resources/big
+    (cd ${scriptDir}/src/test/resources/big; curl ftp://ftp.ncbi.nlm.nih.gov/blast/db/16SMicrobial.tar.gz 2> /dev/null | tar -xzv)
+fi
 
-curl ftp://ftp.ncbi.nlm.nih.gov/blast/db/16SMicrobial.tar.gz | tar -xzv 
