@@ -1,10 +1,17 @@
 package resources.cwe931xss;
 
-import java.util.List;
+import java.util.Map;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
-import javax.servlet.jsp.*;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.JspFactory;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.SkipPageException;
 
 public final class XSS1_jsp extends org.apache.jasper.runtime.HttpJspBase
     implements org.apache.jasper.runtime.JspSourceDependent {
@@ -13,13 +20,10 @@ public final class XSS1_jsp extends org.apache.jasper.runtime.HttpJspBase
 
 	private static final JspFactory _jspxFactory = JspFactory.getDefaultFactory();
 
-	private static java.util.List<String> _jspx_dependants;
-
-
 
 	@Override
-	public List<String> getDependants() {
-		return _jspx_dependants;
+	public Map<String, Long> getDependants() {
+		return null;
 	}
 
 	@Override

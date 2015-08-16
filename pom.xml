@@ -162,9 +162,21 @@
 
 
 		<dependency>
-			<groupId>org.glassfish.main.extras</groupId>
-			<artifactId>glassfish-embedded-all</artifactId>
-			<version>3.1.2.2</version>
+			<groupId>org.apache.tomcat</groupId>
+			<artifactId>tomcat-catalina</artifactId>
+			<version>8.0.24</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-core</artifactId>
+			<version>8.0.24</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+			<version>8.0.24</version>
 			<scope>test</scope>
 		</dependency>
 
