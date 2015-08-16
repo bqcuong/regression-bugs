@@ -10,6 +10,7 @@ public class SqliNumericTypesAreSafe {
 	public void execute(Connection con, int safeParameter) throws SQLException {
 		con.prepareStatement("select * from users where id = " + safeParameter);
 	}
+	@SuppressWarnings("unqualified-field-access")
 	public void execute(Connection con) throws SQLException {
 		con.prepareStatement("select * from users where id = " + safeField);
 	}
