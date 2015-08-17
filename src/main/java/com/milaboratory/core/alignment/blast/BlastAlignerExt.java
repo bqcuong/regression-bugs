@@ -4,9 +4,6 @@ import com.milaboratory.core.Range;
 import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.sequence.Sequence;
 
-/**
- * Created by dbolotin on 14/08/15.
- */
 public class BlastAlignerExt<S extends Sequence<S>> extends BlastAlignerExtAbstract<S, BlastHitExt<S>> {
     public BlastAlignerExt(BlastDB database) {
         super(database);

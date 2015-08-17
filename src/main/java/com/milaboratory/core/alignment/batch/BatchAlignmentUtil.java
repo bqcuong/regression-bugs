@@ -4,7 +4,10 @@ import com.milaboratory.core.sequence.Sequence;
 
 import java.util.Comparator;
 
-public class BatchAlignmentUtil {
+public final class BatchAlignmentUtil {
+    private BatchAlignmentUtil() {
+    }
+
     public static final Comparator<AlignmentHit<?, ?>> ALIGNMENT_SCORE_HIT_COMPARATOR = new Comparator<AlignmentHit<?, ?>>() {
         @Override
         public int compare(AlignmentHit<?, ?> o1, AlignmentHit<?, ?> o2) {

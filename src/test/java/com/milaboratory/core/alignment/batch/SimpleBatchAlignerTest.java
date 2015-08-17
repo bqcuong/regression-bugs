@@ -20,7 +20,7 @@ import com.milaboratory.core.sequence.NucleotideSequence;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class NaiveBatchAlignerTest {
+public class SimpleBatchAlignerTest {
     @Test
     public void test1() {
         NucleotideSequence ref1 = new NucleotideSequence("ATAAGAGACACATAGGTCTGGC"),
@@ -31,18 +31,18 @@ public class NaiveBatchAlignerTest {
 
         NucleotideSequence query = new NucleotideSequence("ATCAGAGACACATAGGTCTGGC");
 
-        NaiveBatchAlignerParameters<NucleotideSequence> batchAlignerParameters = new NaiveBatchAlignerParameters<>(5,
+        SimpleBatchAlignerParameters<NucleotideSequence> batchAlignerParameters = new SimpleBatchAlignerParameters<>(5,
                 0.5f, 0f, true, AffineGapAlignmentScoring.getNucleotideBLASTScoring());
 
-        NaiveBatchAligner<NucleotideSequence, Integer> naiveBatchAligner = new NaiveBatchAligner<>(batchAlignerParameters);
+        SimpleBatchAligner<NucleotideSequence, Integer> simpleBatchAligner = new SimpleBatchAligner<>(batchAlignerParameters);
 
-        naiveBatchAligner.addReference(ref1, 0);
-        naiveBatchAligner.addReference(ref2, 1);
-        naiveBatchAligner.addReference(ref3, 2);
-        naiveBatchAligner.addReference(ref4, 3);
-        naiveBatchAligner.addReference(ref5, 4);
+        simpleBatchAligner.addReference(ref1, 0);
+        simpleBatchAligner.addReference(ref2, 1);
+        simpleBatchAligner.addReference(ref3, 2);
+        simpleBatchAligner.addReference(ref4, 3);
+        simpleBatchAligner.addReference(ref5, 4);
 
-        AlignmentResult<AlignmentHit<NucleotideSequence, Integer>> result = naiveBatchAligner.align(query);
+        AlignmentResult<AlignmentHit<NucleotideSequence, Integer>> result = simpleBatchAligner.align(query);
 
         System.out.println(result);
 

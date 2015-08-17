@@ -6,9 +6,6 @@ import cc.redberry.pipe.Processor;
 import cc.redberry.pipe.blocks.ParallelProcessor;
 import com.milaboratory.core.sequence.Sequence;
 
-/**
- * Created by dbolotin on 07/08/15.
- */
 public abstract class AbstractBatchAligner<S extends Sequence<S>, H extends AlignmentHit<S, ?>>
         implements BatchAligner<S, H>, PipedBatchAligner<S, H> {
     /**
@@ -28,7 +25,7 @@ public abstract class AbstractBatchAligner<S extends Sequence<S>, H extends Alig
             public PipedAlignmentResult<H, Q> process(Q input) {
                 S seq = extractor.extract(input);
                 AlignmentResult<H> result = align(seq);
-                return new PipedAlignmentResultImpl<>(result.getHits(), input);
+                return new PipedAlignmentResult<>(result.getHits(), input);
             }
         };
 
@@ -41,7 +38,7 @@ public abstract class AbstractBatchAligner<S extends Sequence<S>, H extends Alig
             @Override
             public PipedAlignmentResult<H, Q> process(Q input) {
                 AlignmentResult<H> result = align(input.getSequence());
-                return new PipedAlignmentResultImpl<>(result.getHits(), input);
+                return new PipedAlignmentResult<>(result.getHits(), input);
             }
         };
 

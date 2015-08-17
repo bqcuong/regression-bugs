@@ -4,9 +4,6 @@ import com.milaboratory.core.Range;
 import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.sequence.NucleotideSequence;
 
-/**
- * Created by dbolotin on 14/08/15.
- */
 public class NBlastHitExt extends BlastHitExt<NucleotideSequence> {
     public NBlastHitExt(Alignment<NucleotideSequence> alignment, double score, double bitScore, double eValue, Range subjectRange, String subjectId, String subjectTitle) {
         super(alignment, score, bitScore, eValue, subjectRange, subjectId, subjectTitle);

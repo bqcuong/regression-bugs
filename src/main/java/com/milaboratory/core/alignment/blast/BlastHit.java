@@ -5,9 +5,6 @@ import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.alignment.batch.AlignmentHitImpl;
 import com.milaboratory.core.sequence.Sequence;
 
-/**
- * Created by dbolotin on 08/08/15.
- */
 public class BlastHit<S extends Sequence<S>, P> extends AlignmentHitImpl<S, P> {
     private final double score, bitScore, eValue;
     private final String subjectId, subjectTitle;

@@ -23,12 +23,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class NaiveBatchAligner<S extends Sequence<S>, P> extends AbstractBatchAligner<S, AlignmentHit<S, P>>
+/**
+ * Simplest implementation of {@link BatchAligner}, which aligns target sequence with all subjects using classical (low
+ * performance) alignment algorithms.
+ *
+ * @param <S> type of sequence
+ * @param <P> type of record payload, used to store additional information along with sequence to simplify it's
+ *            subsequent identification in result (e.g. {@link Integer} to just index sequences.
+ */
+public class SimpleBatchAligner<S extends Sequence<S>, P> extends AbstractBatchAligner<S, AlignmentHit<S, P>>
         implements BatchAlignerWithBase<S, P, AlignmentHit<S, P>> {
-    final NaiveBatchAlignerParameters<S> parameters;
+    final SimpleBatchAlignerParameters<S> parameters;
     final List<Record<S, P>> references = new ArrayList<>();
 
-    public NaiveBatchAligner(NaiveBatchAlignerParameters<S> parameters) {
+    public SimpleBatchAligner(SimpleBatchAlignerParameters<S> parameters) {
         this.parameters = parameters;
     }
 
@@ -40,7 +48,7 @@ public class NaiveBatchAligner<S extends Sequence<S>, P> extends AbstractBatchAl
     public AlignmentResult<AlignmentHit<S, P>> align(final S sequence) {
         // Special case
         if (references.isEmpty())
-            return new AlignmentResultImpl<>();
+            return new AlignmentResult<>();
 
         // Building all alignments
         ArrayList<AlignmentHit<S, P>> alignments = new ArrayList<>(references.size());
@@ -57,9 +65,9 @@ public class NaiveBatchAligner<S extends Sequence<S>, P> extends AbstractBatchAl
         // Slicing results according to cutoff
         for (int i = 0; i < alignments.size(); i++)
             if (i == parameters.getMaxHits() || alignments.get(i).getAlignment().getScore() < scoreThreshold)
-                return new AlignmentResultImpl<>(new ArrayList<>(alignments.subList(0, i)));
+                return new AlignmentResult<>(new ArrayList<>(alignments.subList(0, i)));
 
-        return new AlignmentResultImpl<>(alignments);
+        return new AlignmentResult<>(alignments);
     }
 
     AlignmentHit<S, P> alignSingle(Record<S, P> record, S query) {

@@ -89,7 +89,7 @@ public abstract class BlastAlignerAbstract<S extends Sequence<S>, P, H extends B
                         alignment.getScore());
                 hits.add(createHit(alignment, payload, iHit));
             }
-            return new PipedAlignmentResultImpl<>(hits, input.getQuery());
+            return new PipedAlignmentResult<>(hits, input.getQuery());
         }
     }
 }

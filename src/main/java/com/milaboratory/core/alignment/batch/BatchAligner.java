@@ -6,9 +6,7 @@ import com.milaboratory.core.sequence.Sequence;
  * Represents aligner that can align a sequence against a set of other sequences.
  *
  * @param <S> sequence type
- * @param <P> type of record payload, used to store additional information sequence in base to simplify it's subsequent
- *            identification in result (e.g. {@link Integer} to just index sequences, or
- *            {@link com.milaboratory.core.alignment.blast.BlastDBRecord} etc...)
+ * @param <H> hit class
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */

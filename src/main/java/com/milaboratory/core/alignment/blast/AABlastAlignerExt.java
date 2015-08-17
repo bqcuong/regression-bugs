@@ -4,13 +4,9 @@ import com.milaboratory.core.Range;
 import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.sequence.AminoAcidSequence;
 
-/**
- * Created by dbolotin on 14/08/15.
- */
 public class AABlastAlignerExt extends BlastAlignerExtAbstract<AminoAcidSequence, AABlastHitExt> {
     public AABlastAlignerExt(BlastDB database) {
         super(database);
-        //asd
     }
 
     public AABlastAlignerExt(BlastDB database, BlastAlignerParameters parameters) {
