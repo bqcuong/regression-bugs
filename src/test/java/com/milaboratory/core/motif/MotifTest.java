@@ -15,7 +15,7 @@
  */
 package com.milaboratory.core.motif;
 
-import com.milaboratory.core.io.util.TestUtil;
+import com.milaboratory.core.io.util.IOTestUtil;
 import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
@@ -77,6 +77,6 @@ public class MotifTest {
     @Test
     public void test4() throws Exception {
         Motif<AminoAcidSequence> se = new AminoAcidSequence("CASSLAP").toMotif();
-        TestUtil.assertJavaSerialization(se);
+        IOTestUtil.assertJavaSerialization(se);
     }
 }
