@@ -56,5 +56,10 @@ public class CWE89SqlInjectionTest {
 		Assert.assertEquals(0, run("MethodsThatReturnIntAreSafe.java"));
 	}
 	
+	@Test
+	public void testJPAInjection() throws Exception {
+		Assert.assertEquals(3, run("JPAInjection.java"));
+	}
+	
 
 }

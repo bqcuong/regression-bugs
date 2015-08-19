@@ -30,6 +30,8 @@
 |java.sql.Connection.nativeSQL
 |java.sql.Connection.prepareCall
 |java.sql.Connection.prepareStatement
+|javax.persistence.EntityManager.createNativeQuery
+|javax.persistence.EntityManager.createQuery
 			</value>
          </property>
          <property name="safeTypes">
