@@ -18,10 +18,9 @@ language governing rights and limitations under the RPL.
 This code is licensed under the Reciprocal Public License 1.5 (RPL1.5)
 http://www.opensource.org/licenses/rpl1.5
 
-*/
+ */
 
 package com.gdssecurity.pmd.smap;
-
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -31,49 +30,46 @@ import java.io.LineNumberReader;
 
 import com.gdssecurity.pmd.Utils;
 
-
 public class SmapFileReader implements SmapReader {
-        
-    private File file;
-    
-    public SmapFileReader(java.io.File file) {
-        this.file = file;
-    }
-    
-    @Override
+
+	private File file;
+
+	public SmapFileReader(File file) {
+		this.file = file;
+	}
+
+	@Override
 	public String toString() {
-        if (this.file != null) {
-            return this.file.toString();
-        }
-        return null;
-    }
-    
-    @SuppressWarnings("resource")
+		if (this.file != null) {
+			return this.file.toString();
+		}
+		return null;
+	}
+
+	@SuppressWarnings("resource")
 	@Override
 	public String readSmap() {
-        if (this.file != null) {
-        	LineNumberReader lnr = null;
-            try {
-            	lnr = new LineNumberReader( new FileReader(this.file));
-                String line = "";
-                String out = "";
+		if (this.file != null) {
+			LineNumberReader lnr = null;
+			try {
+				lnr = new LineNumberReader(new FileReader(this.file));
+				String line = "";
+				String out = "";
 
-                while ((line = lnr.readLine()) != null) {
-                    out = out.concat(line);
-                    out = out.concat("\n");
-                }
-                return out;
-            } catch (FileNotFoundException fne) {
-                return null;
-            } catch (IOException ioe) {
-                return null;
-            }
-            finally {
-            	Utils.close(lnr);
-            }
-        }
-        return null;
-    }
- 
+				while ((line = lnr.readLine()) != null) {
+					out = out.concat(line);
+					out = out.concat("\n");
+				}
+				return out;
+			} catch (FileNotFoundException fne) {
+				return null;
+			} catch (IOException ioe) {
+				return null;
+			} finally {
+				Utils.close(lnr);
+			}
+		}
+		return null;
+	}
+
 }
-

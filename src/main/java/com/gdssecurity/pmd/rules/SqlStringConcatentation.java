@@ -127,10 +127,8 @@ public class SqlStringConcatentation extends BaseSecurityRule {
 							astAdditiveExpression,
 							MessageFormat.format(getMessage(), new Object[] { varName, varType,
 									varType + " is  tainted data" }), "");
-				} else if (isSafeType(varType)) {
-					// LOG.finest("Ignoring " + varType +
-					// " as this was configured as one of the safe types.");
-				} else {
+				} 
+				else if (!isSafeType(varType)){
 					addSecurityViolation(
 							this,
 							rc,

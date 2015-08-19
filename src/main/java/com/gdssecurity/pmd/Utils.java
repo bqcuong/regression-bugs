@@ -143,7 +143,7 @@ public final class Utils {
     			closeable.close();
     		}
     	}
-    	catch (Exception e) {
+    	catch (Exception e) { //NOPMD
     		//
     	}
     }

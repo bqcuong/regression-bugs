@@ -102,15 +102,15 @@ public class SmapResolver {
                 this.defaultStratum = token;
             } else if (STRATUM_SECTION.equals(token)) {
                 jspStratumSection = true;
-            } else if (FILE_SECTION.equals(token) && (jspStratumSection)) {
+            } else if (FILE_SECTION.equals(token) && jspStratumSection) {
                 fileSection = true;
                 sectionCounter = 0;
-            } else if (LINE_SECTION.equals(token) && (jspStratumSection)) {
+            } else if (LINE_SECTION.equals(token) && jspStratumSection) {
                 fileSection = false;
                 lineSection = true;
                 sectionCounter = 0;
                 fileIndex = "0";
-            } else if (END_SECTION.equals(token) && (jspStratumSection)) {
+            } else if (END_SECTION.equals(token) && jspStratumSection) {
                 lineSection = false;
                 fileSection = false;
                 sectionCounter = 0;
@@ -175,10 +175,9 @@ public class SmapResolver {
     		
         }
     	
-        this.fsection.put(id,
-                (this.fsection_sourceNameSourcePath) ? sourcePath : sourceName);
+        this.fsection.put(id,this.fsection_sourceNameSourcePath ? sourcePath : sourceName);
         
-        this.fsection_sourceNameSourcePath = (sourceNameSourcePath) ? true : false;
+        this.fsection_sourceNameSourcePath = sourceNameSourcePath;
     }
 
     private void storeLine(String token, String fileIndex) {
@@ -311,7 +310,7 @@ public class SmapResolver {
     }
 
     public boolean hasIncludedFiles() {
-        return (this.fsection.size() > 1);
+        return this.fsection.size() > 1;
     }
     
     public String getJavaLineType(int line, int col) {

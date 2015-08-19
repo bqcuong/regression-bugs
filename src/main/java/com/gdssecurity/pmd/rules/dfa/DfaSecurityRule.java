@@ -133,12 +133,10 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
         if (astClass == null) {
         	return data;
         }
-        String visitedClass = astClass.getImage();
-        String visitedMethod = visitedClass;
         this.rc = (RuleContext) data;
         processReturnStatements(astConstructorDeclaration);
         processThrowsStatements(astConstructorDeclaration);
-        runFinder(astConstructorDeclaration, visitedMethod);
+        runFinder(astConstructorDeclaration);
         return data;
         
     }
@@ -150,21 +148,20 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
         if (astClass == null) {
         	return data;
         }
-        String visitedMethod = astMethodDeclaration.getMethodName();
         
         this.rc = (RuleContext) data;
                
         processReturnStatements(astMethodDeclaration);
         processThrowsStatements(astMethodDeclaration);
 
-        runFinder(astMethodDeclaration, visitedMethod);
+        runFinder(astMethodDeclaration);
 
         super.visit(astMethodDeclaration, data);
         
         return data;
     }
 
-	private void runFinder(Node astMethodDeclaration, String visitedMethod) {
+	private void runFinder(Node astMethodDeclaration) {
         DataFlowNode rootDataFlowNode = astMethodDeclaration.getDataFlowNode().getFlow().get(0);
 		
         this.methodDataFlowCount = 0;
@@ -202,7 +199,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 			}
         	
         }
-        catch (JaxenException e) {
+        catch (JaxenException e) { // NOPMD
         	//
         }
     }
@@ -310,10 +307,10 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
         		return;
         	}
         }
-        handleVariableReference(iDataFlowNode, "");
+        handleVariableReference(iDataFlowNode);
     }
 
-    private void handleVariableReference(DataFlowNode iDataFlowNode,   String variableName) {
+    private void handleVariableReference(DataFlowNode iDataFlowNode) {
 
         Node simpleNode = iDataFlowNode.getNode();
 
@@ -526,9 +523,9 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
 		    	}
 	    	}
-		} catch (NoClassDefFoundError err) {
-		} catch (ExceptionInInitializerError err) {
-		} catch (ClassNotFoundException e) {
+		} catch (NoClassDefFoundError err) { //NOPMD
+		} catch (ExceptionInInitializerError err) { //NOPMD
+		} catch (ClassNotFoundException e) { //NOPMD
 		}
 	}
 
@@ -643,11 +640,11 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 			if (type != null) {
 				cannonicalName = type.getCanonicalName();
 			}
+			return cannonicalName;
         } catch (Exception ex1) {    		
-        	//
+        	return cannonicalName;
         }
 		
-        return cannonicalName;
     }
     
     

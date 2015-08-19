@@ -24,5 +24,5 @@ package com.gdssecurity.pmd.smap;
 
 
 public interface SmapReader {
-    public String readSmap();
+     String readSmap();
 }
