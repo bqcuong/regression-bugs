@@ -25,7 +25,7 @@ public abstract class AbstractBatchAligner<S extends Sequence<S>, H extends Alig
             public PipedAlignmentResult<H, Q> process(Q input) {
                 S seq = extractor.extract(input);
                 AlignmentResult<H> result = align(seq);
-                return new PipedAlignmentResult<>(result.getHits(), input);
+                return new PipedAlignmentResultImpl<>(result.getHits(), input);
             }
         };
 
@@ -38,7 +38,7 @@ public abstract class AbstractBatchAligner<S extends Sequence<S>, H extends Alig
             @Override
             public PipedAlignmentResult<H, Q> process(Q input) {
                 AlignmentResult<H> result = align(input.getSequence());
-                return new PipedAlignmentResult<>(result.getHits(), input);
+                return new PipedAlignmentResultImpl<>(result.getHits(), input);
             }
         };
 

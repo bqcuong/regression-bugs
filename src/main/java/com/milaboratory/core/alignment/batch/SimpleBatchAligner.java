@@ -48,7 +48,7 @@ public class SimpleBatchAligner<S extends Sequence<S>, P> extends AbstractBatchA
     public AlignmentResult<AlignmentHit<S, P>> align(final S sequence) {
         // Special case
         if (references.isEmpty())
-            return new AlignmentResult<>();
+            return new AlignmentResultImpl<>();
 
         // Building all alignments
         ArrayList<AlignmentHit<S, P>> alignments = new ArrayList<>(references.size());
@@ -65,9 +65,9 @@ public class SimpleBatchAligner<S extends Sequence<S>, P> extends AbstractBatchA
         // Slicing results according to cutoff
         for (int i = 0; i < alignments.size(); i++)
             if (i == parameters.getMaxHits() || alignments.get(i).getAlignment().getScore() < scoreThreshold)
-                return new AlignmentResult<>(new ArrayList<>(alignments.subList(0, i)));
+                return new AlignmentResultImpl<>(new ArrayList<>(alignments.subList(0, i)));
 
-        return new AlignmentResult<>(alignments);
+        return new AlignmentResultImpl<>(alignments);
     }
 
     AlignmentHit<S, P> alignSingle(Record<S, P> record, S query) {
