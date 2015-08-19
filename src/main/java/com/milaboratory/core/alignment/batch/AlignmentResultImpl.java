@@ -20,12 +20,12 @@ public class AlignmentResultImpl<H extends AlignmentHit<?, ?>> implements Alignm
     }
 
     @Override
-    public boolean isEmpty() {
-        return hits.isEmpty();
+    public boolean hasHits() {
+        return !hits.isEmpty();
     }
 
     @Override
     public String toString() {
-        return isEmpty() ? "Empty result." : (hits.size() + " hits.");
+        return !hasHits() ? "Empty result." : (hits.size() + " hits.");
     }
 }

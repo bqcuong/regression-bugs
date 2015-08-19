@@ -145,7 +145,7 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
      * @param minAlignmentLength       minimal allowed alignment length
      * @param maxAdjacentIndels        maximal allowed number of insertions and deletions between 2 kMers
      * @param alignmentStopPenalty     penalty score defining when to stop alignment procedure performed by {@link
-     *                                 KAlignmentHit#calculateAlignmnet()}
+     *                                 KAlignmentHit#calculateAlignment()}
      * @param absoluteMinScore         minimal absolute score of a hit obtained by {@link com.milaboratory.core.alignment.KAligner}
      * @param relativeMinScore         maximal ratio between best hit score and scores of other hits obtained by {@link
      *                                 com.milaboratory.core.alignment.KAligner}
@@ -394,7 +394,7 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
 
     /**
      * Returns penalty score defining when to stop alignment procedure performed by {@link
-     * KAlignmentHit#calculateAlignmnet()}
+     * KAlignmentHit#calculateAlignment()}
      *
      * @return penalty score
      */
@@ -404,7 +404,7 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
 
     /**
      * Sets penalty score defining when to stop alignment procedure performed by {@link
-     * KAlignmentHit#calculateAlignmnet()}
+     * KAlignmentHit#calculateAlignment()}
      *
      * @param alignmentStopPenalty penalty score
      * @return parameters object

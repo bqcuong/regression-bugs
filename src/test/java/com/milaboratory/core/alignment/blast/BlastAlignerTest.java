@@ -87,7 +87,7 @@ public class BlastAlignerTest extends BlastTest {
         int wrongHit = 0;
         int wrongMutations = 0;
         for (PipedAlignmentResult<NBlastHit<Integer>, QueryObject<NucleotideSequence>> result : it(results)) {
-            if (result.isEmpty()) {
+            if (!result.hasHits()) {
                 ++noHit;
                 continue;
             }

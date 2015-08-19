@@ -23,5 +23,5 @@ import java.util.List;
 public interface AlignmentResult<H extends AlignmentHit<?, ?>> {
     List<? extends H> getHits();
 
-    boolean isEmpty();
+    boolean hasHits();
 }
