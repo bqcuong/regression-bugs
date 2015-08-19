@@ -149,7 +149,7 @@ public class SecurityRuleViolation implements Comparator<RuleViolation>, RuleVio
                 this.endLine = this.javaEndLine;
             }
 
-            if (specificMsg == "") {
+            if ("".equals(specificMsg)) {
                 this.description = "No message for rule violation. Code snippet: "
                         + Utils.getCodeSnippet(this.fileName, this.beginLine, this.endLine);
             } else {

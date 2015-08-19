@@ -24,13 +24,12 @@ http://www.opensource.org/licenses/rpl1.5
 package com.gdssecurity.pmd;
 
 
-import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -52,32 +51,21 @@ public final class Utils {
     	throw new AssertionError("No instances allowed");
     }
     
-    @SuppressWarnings("resource")
 	public static String getCodeSnippet(String fileName, int start, int end) {
         StringBuilder sb = new StringBuilder();
-        BufferedReader br = null;
         try {
-        	br = new BufferedReader(new FileReader(new File(fileName)));
-            int lintCtr = 1;
+        	File file = new File(fileName);
+        	List<String> lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+        	for (int i = 0; i < lines.size(); i++) {
+        		int lineNumber = i+1;
+        		if (lineNumber >= start && lineNumber <= end) {
+        			sb.append(lines.get(i)).append("\n");
+        		}
+        	}
 
-            for (String s = null; (s = br.readLine()) != null;) {
-                if (lintCtr >= start && lintCtr <= end) {
-                    sb.append(s);
-                }
-                lintCtr++;
-            }
-        } catch (FileNotFoundException fnfe) {
-            LOG.warning(
-                    "Unable to find the file " + fileName
-                    + ". Ensure PMD short file names option is disabled.");
-        } catch (IOException ioe) {
-            LOG.warning(
-                    "Unexpected error while retrieving code snippet from "
-                            + fileName + " " + ioe.getStackTrace().toString());
+        }  catch (IOException ioe) {
+        	LOG.log(Level.WARNING, "Unexpected error while retrieving code snippet from " + fileName, ioe);
         } 
-        finally {
-        	close(br);
-        }
         return sb.toString();
     }
 	
@@ -136,20 +124,5 @@ public final class Utils {
         }
         return hashSet;
     }
-    
-    public static void close(Closeable closeable) {
-    	try {
-    		if (closeable != null) {
-    			closeable.close();
-    		}
-    	}
-    	catch (Exception e) { //NOPMD
-    		//
-    	}
-    }
-    public static void close(Closeable... closeables) {
-    	for (Closeable closeable: closeables) {
-    		close (closeable);
-    	}
-    }
+
 }

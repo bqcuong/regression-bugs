@@ -23,12 +23,11 @@ http://www.opensource.org/licenses/rpl1.5
 package com.gdssecurity.pmd.smap;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
-
-import com.gdssecurity.pmd.Utils;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SmapFileReader implements SmapReader {
 
@@ -41,35 +40,22 @@ public class SmapFileReader implements SmapReader {
 	@Override
 	public String toString() {
 		if (this.file != null) {
-			return this.file.toString();
+			return "SmapFileReader:" + this.file.toString();
 		}
-		return null;
+		return "SmapFileReader";
 	}
 
-	@SuppressWarnings("resource")
 	@Override
-	public String readSmap() {
+	public List<String> readSmap() {
 		if (this.file != null) {
-			LineNumberReader lnr = null;
 			try {
-				lnr = new LineNumberReader(new FileReader(this.file));
-				String line = "";
-				String out = "";
-
-				while ((line = lnr.readLine()) != null) {
-					out = out.concat(line);
-					out = out.concat("\n");
-				}
-				return out;
-			} catch (FileNotFoundException fne) {
-				return null;
-			} catch (IOException ioe) {
-				return null;
-			} finally {
-				Utils.close(lnr);
+				return Files.readAllLines(this.file.toPath(), StandardCharsets.UTF_8);
+			} catch (IOException e) {
+				return new ArrayList<String>();
 			}
+
 		}
-		return null;
+		return new ArrayList<String>();
 	}
 
 }

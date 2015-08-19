@@ -22,7 +22,9 @@ http://www.opensource.org/licenses/rpl1.5
 
 package com.gdssecurity.pmd.smap;
 
+import java.util.List;
+
 
 public interface SmapReader {
-     String readSmap();
+     List<String> readSmap();
 }

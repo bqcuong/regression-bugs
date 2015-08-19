@@ -89,9 +89,9 @@ public class SqlStringConcatentation extends BaseSecurityRule {
         String codeSnippet = Utils.getCodeSnippet(rc.getSourceCodeFilename(), beginLine, endLine);
         boolean match = false;
         
-        if (codeSnippet != null && standardSqlRegex != null && RegexHelper.isMatch(standardSqlRegex, codeSnippet)) {
+        if (standardSqlRegex != null && RegexHelper.isMatch(standardSqlRegex, codeSnippet)) {
             match = true;
-        } else if (codeSnippet != null && customSqlRegex != null && RegexHelper.isMatch(customSqlRegex, codeSnippet)) {
+        } else if (customSqlRegex != null && RegexHelper.isMatch(customSqlRegex, codeSnippet)) {
             match = true;
 		}
 

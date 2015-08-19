@@ -18,7 +18,6 @@ public class JPAInjection {
 	public void function4(String param) {
 		this.entityManager.createNativeQuery("select * from table where bad='" + param + "'");
 	}
-	@SuppressWarnings("unqualified-field-access")
 	public void function5() {
 		entityManager.createQuery("from entity", String.class);
 	}

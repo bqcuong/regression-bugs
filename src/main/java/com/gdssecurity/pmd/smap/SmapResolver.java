@@ -24,8 +24,8 @@ package com.gdssecurity.pmd.smap;
 
 
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 
@@ -71,17 +71,14 @@ public class SmapResolver {
         return this.reader.toString();
     }
         
-    private boolean resolve(String smap) {
+    private boolean resolve(List<String> smap) {
         
         boolean fileSection = false;        
         boolean lineSection = false;        
         boolean jspStratumSection = false;  
 
-        if (smap == null) {
-            return false;
-        }
+
         
-        StringTokenizer st = new StringTokenizer(smap, "\n", false);
         
         int counter = 1;
         int sectionCounter = 0; 
@@ -89,8 +86,7 @@ public class SmapResolver {
         String fileIndex = null;
         
         
-        while (st.hasMoreTokens()) {
-            String token = st.nextToken();
+        for (String token: smap) {
             
             if (counter == 1) {         
                 if (!SMAP_HEADER.equals(token)) {
