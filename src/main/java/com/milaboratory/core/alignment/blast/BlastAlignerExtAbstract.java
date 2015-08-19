@@ -153,7 +153,7 @@ public abstract class BlastAlignerExtAbstract<S extends Sequence<S>, H extends B
                         if (query == null)
                             throw new RuntimeException();
 
-                        resultsInputPort.put(new PipedAlignmentResult<>(hits, query));
+                        resultsInputPort.put(new PipedAlignmentResultImpl<>(hits, query));
 
                         query = null;
                         hits = null;

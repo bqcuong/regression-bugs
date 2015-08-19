@@ -3,9 +3,6 @@ package com.milaboratory.core.alignment.batch;
 import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.sequence.Sequence;
 
-/**
- * Created by dbolotin on 07/08/15.
- */
 public class AlignmentHitImpl<S extends Sequence<S>, P> implements AlignmentHit<S, P> {
     final Alignment<S> alignment;
     final P recordPayload;
