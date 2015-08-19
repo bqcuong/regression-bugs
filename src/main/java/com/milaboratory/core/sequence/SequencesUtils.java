@@ -15,6 +15,7 @@
  */
 package com.milaboratory.core.sequence;
 
+import com.milaboratory.util.Bit2Array;
 import com.milaboratory.util.HashFunctions;
 
 import java.util.HashSet;
@@ -133,5 +134,31 @@ public final class SequencesUtils {
                 sequenceBuilder.append(code);
         }
         return sequenceBuilder.createAndDestroy();
+    }
+
+    /**
+     * Used to write legacy file formats.
+     *
+     * @return Bit2Array representation of nucleotide sequence
+     */
+    public static Bit2Array convertNSequenceToBit2Array(NucleotideSequence seq) {
+        if (seq.containWildcards())
+            throw new IllegalArgumentException("Sequences with wildcards are not supported.");
+        Bit2Array bar = new Bit2Array(seq.size());
+        for (int i = 0; i < seq.size(); i++)
+            bar.set(i, seq.codeAt(i));
+        return bar;
+    }
+
+    /**
+     * Used to read legacy file formats.
+     *
+     * @return NucleotideSequence constructed from Bit2Array
+     */
+    public static NucleotideSequence convertBit2ArrayToNSequence(Bit2Array bar) {
+        SequenceBuilder<NucleotideSequence> seq = NucleotideSequence.ALPHABET.getBuilder().ensureCapacity(bar.size());
+        for (int i = 0; i < bar.size(); i++)
+            seq.append((byte) bar.get(i));
+        return seq.createAndDestroy();
     }
 }

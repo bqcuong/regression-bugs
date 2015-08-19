@@ -188,6 +188,16 @@ public final class SingleFastqReader implements SingleReader, CanReportProgress,
     }
 
     /**
+     * Creates a {@link SingleRead} stream from a FASTQ stream with single-end reads data
+     *
+     * @param stream stream with reads
+     * @throws IOException in case there is problem with reading from files
+     */
+    public SingleFastqReader(InputStream stream, boolean replaceWildcards) throws IOException {
+        this(stream, null, CompressionType.None, true, DEFAULT_BUFFER_SIZE, replaceWildcards, true);
+    }
+
+    /**
      * Creates a {@link SingleRead} stream from a FASTQ files with single-end read data
      *
      * @param stream stream with reads

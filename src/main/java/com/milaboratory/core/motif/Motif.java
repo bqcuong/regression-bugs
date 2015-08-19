@@ -60,6 +60,24 @@ public final class Motif<S extends Sequence<S>> implements java.io.Serializable 
         this.bitapPattern = toBitapPattern();
     }
 
+    /**
+     * Returns per-position or of two motifs.
+     *
+     * <p>e.g. ATGC or TTCC = WTSC</p>
+     *
+     * @param other
+     * @return
+     */
+    public Motif<S> or(Motif<S> other) {
+        if (other.size != size)
+            throw new IllegalArgumentException("Supports only motifs with the same size as this.");
+
+        BitArray result = data.clone();
+        result.or(other.data);
+
+        return new Motif<>(alphabet, size, result);
+    }
+
     public BitapPattern getBitapPattern() {
         if (size >= 64)
             throw new RuntimeException("Supports motifs with length less then 64.");

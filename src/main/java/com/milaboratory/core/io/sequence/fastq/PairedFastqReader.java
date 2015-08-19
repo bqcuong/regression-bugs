@@ -103,6 +103,10 @@ public final class PairedFastqReader extends PairedReader {
         super(new SingleFastqReader(stream1), new SingleFastqReader(stream2));
     }
 
+    public PairedFastqReader(InputStream stream1, InputStream stream2, boolean replaceWildcards) throws IOException {
+        super(new SingleFastqReader(stream1, replaceWildcards), new SingleFastqReader(stream2, replaceWildcards));
+    }
+
     public PairedFastqReader(InputStream stream1, InputStream stream2, CompressionType compressionType) throws IOException {
         super(new SingleFastqReader(stream1, compressionType), new SingleFastqReader(stream2, compressionType));
     }
