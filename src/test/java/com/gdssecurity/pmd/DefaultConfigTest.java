@@ -12,7 +12,7 @@ public class DefaultConfigTest {
 	// Execute default rules over all tests files to ensure no misconfiguration occurs
 	@Test(timeout=20000)
 	public void defaultConfig() throws Exception {
-		Assert.assertTrue(0 < PMDRunner.run("src/test/java/resources", PMDRunner.RULESET_DEFAULT) );
+		Assert.assertTrue(PMDRunner.run("src/test/java/resources", PMDRunner.RULESET_DEFAULT) > 0);
 	}
 
 }
