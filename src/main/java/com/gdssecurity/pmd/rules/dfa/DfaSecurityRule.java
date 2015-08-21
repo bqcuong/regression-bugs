@@ -24,6 +24,7 @@ http://www.opensource.org/licenses/rpl1.5
 package com.gdssecurity.pmd.rules.dfa;
 
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +43,6 @@ import net.sourceforge.pmd.lang.dfa.VariableAccess;
 import net.sourceforge.pmd.lang.dfa.pathfinder.CurrentPath;
 import net.sourceforge.pmd.lang.dfa.pathfinder.DAAPathFinder;
 import net.sourceforge.pmd.lang.dfa.pathfinder.Executable;
-import net.sourceforge.pmd.lang.java.ast.ASTConditionalExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTArgumentList;
 import net.sourceforge.pmd.lang.java.ast.ASTArguments;
 import net.sourceforge.pmd.lang.java.ast.ASTAssignmentOperator;
@@ -50,6 +50,7 @@ import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceBody;
 import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceBodyDeclaration;
 import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
 import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceType;
+import net.sourceforge.pmd.lang.java.ast.ASTConditionalExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTConstructorDeclaration;
 import net.sourceforge.pmd.lang.java.ast.ASTExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTFieldDeclaration;
@@ -70,6 +71,7 @@ import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
 import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jaxen.JaxenException;
 
 import com.gdssecurity.pmd.Utils;
@@ -88,14 +90,20 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     private Map<String, Class<?>> functionParameterTypes;
     private Set<String> sinks;
     private Set<String> sanitizers;
+	private Set<String> sinkAnnotations;
 	
 
 
     private final PropertyDescriptor<String[]> sinkDescriptor = new StringMultiProperty("sinks", "TODO",
             new String[] { "" }, 1.0f, '|');
     
+    private final PropertyDescriptor<String[]> sinkAnnotationsDescriptor = new StringMultiProperty("sinksannotations", "TODO",
+            new String[] { "com.gdssecurity.pmd.annotations.SQLSink" }, 1.0f, '|');
+    
     private final PropertyDescriptor<String[]> sanitizerDescriptor = new StringMultiProperty("sanitizers", "TODO", 
     		new String[] { "" }, 1.0f, '|');
+    
+    
 
     private RuleContext rc;
     private int methodDataFlowCount;
@@ -108,6 +116,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     	super();
     	this.propertyDescriptors.add(this.sinkDescriptor);
     	this.propertyDescriptors.add(this.sanitizerDescriptor);
+    	this.propertyDescriptors.add(this.sinkAnnotationsDescriptor);
+    	
     }
 	
     @Override
@@ -115,6 +125,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     	super.init();
     	this.sinks = Utils.arrayAsSet(getProperty(this.sinkDescriptor));
         this.sanitizers = Utils.arrayAsSet(getProperty(this.sanitizerDescriptor));
+        this.sinkAnnotations = Utils.arrayAsSet(getProperty(this.sinkAnnotationsDescriptor));
     }
 
 
@@ -124,8 +135,57 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     private boolean isSink(String objectType, String objectMethod) {
         return this.sinks.contains(objectType + "." + objectMethod);
     }
+	private boolean isSink(Node node) {
+		Class<?> type = getJavaType(node);
+		if (type == null) {
+			return false;
+		}
+		String method = UNKNOWN_TYPE;
+		if (node instanceof ASTMethodDeclaration ||  node instanceof ASTConstructorDeclaration) {
+			Node declarator = node.getFirstChildOfType(ASTMethodDeclarator.class);
+			if( declarator == null) {
+				return false;
+			}
+			method = declarator.getImage();
+			ASTFormalParameters parameters = node.getFirstDescendantOfType(ASTFormalParameters.class);
+			
+			List<Class<?>> types = new ArrayList<>();
+			for(int i = 0; i < parameters.jjtGetNumChildren(); i++) {
+				Node a = parameters.jjtGetChild(i);
+				if (a instanceof ASTFormalParameter){
+					types.add(((ASTFormalParameter) a).getTypeNode().getType());
+					
+				}
+			}
+			boolean sink = isSink(type.getCanonicalName(), method);
+			if (sink){
+				return true;
+			}
+			Method m = MethodUtils.getAccessibleMethod(type, method, types.toArray(new Class<?>[types.size()]));
+			return isSink(m);
+			
+		}
+
+		return false;
+	}
 	
-    private boolean isTaintedVariable(String variable) {
+
+	private boolean isSink(Method m) {
+		if (m == null) {
+			return false;
+		}
+		Annotation[] annotations = m.getAnnotations();
+    	for (Annotation annotation: annotations) {
+    		if (this.sinkAnnotations.contains(annotation.annotationType().getCanonicalName())){
+    			return true;
+    		}
+    	}
+    	return false;
+	}
+	
+
+
+	private boolean isTaintedVariable(String variable) {
         return this.currentPathTaintedVariables.contains(variable);
     }
     @Override
@@ -218,8 +278,10 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
                 DataFlowNode iDataFlowNode = iterator.next();
                 Node node = iDataFlowNode.getNode();
                 if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {                	
-                    this.currentPathTaintedVariables = new HashSet<String>();                    
-                    addMethodParamsToTaintedVariables(node);
+                    this.currentPathTaintedVariables = new HashSet<String>();
+                    if (!isSink(node)) {
+                    	addMethodParamsToTaintedVariables(node);
+                    }
                     addClassFieldsToTaintedVariables(node);
                     this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
                     this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
@@ -238,6 +300,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 			
         } 
     }
+
+
 
 
 
@@ -317,7 +381,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
         if (isMethodCall(simpleNode)) {
 			
-            String type = "";
+            Class<?> type = null;
             String method = "";
 			
             Node astMethod = null;
@@ -328,21 +392,42 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
             	astMethod = simpleNode.getFirstDescendantOfType(ASTExpression.class);
             }
             method = getMethod(astMethod);
-            type = getType(astMethod);    
+            type = getJavaType(astMethod);    
 
             
-            if (type.startsWith("java.lang.StringBu") && ("insert".equals(method) || "append".equals(method))){
+            if ((type == StringBuilder.class || type == StringBuffer.class) && ("insert".equals(method) || "append".equals(method))){
             	analizeStringBuilderAppend(simpleNode);
             }
             
-            if (isSink(type, method)) {
+            if (isSink(type, method, simpleNode)) {
                 analyzeSinkMethodArgs(simpleNode);
             }
 			
         } 
     }
     
-    private void analizeStringBuilderAppend(Node simpleNode) {
+    private boolean isSink(Class<?> type, String methodName, Node simpleNode) {
+    	if (type == null) {
+    		return false;
+    	}
+    	if (isSink(type.getCanonicalName(), methodName)){
+    		return true;
+    	}    	
+    	ASTArgumentList argListNode = simpleNode.getFirstDescendantOfType(ASTArgumentList.class); 
+        if (argListNode != null) {        	
+        	int params = argListNode.jjtGetNumChildren();
+        	
+        	Method[] methods = type.getMethods();
+        	for (Method method : methods) {
+        		if (method.getName().equals(methodName) && method.getParameterTypes().length == params && isSink(method)){
+        			return true;
+        		}
+        	}        
+        }
+        return false;
+	}
+
+	private void analizeStringBuilderAppend(Node simpleNode) {
     	ASTName name = simpleNode.getFirstDescendantOfType(ASTName.class);
     	if (name == null) {
     		return;
@@ -368,9 +453,9 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
     private boolean isAnyArgumentTainted (Node simpleNode) {
         ASTArgumentList argListNode = simpleNode.getFirstDescendantOfType(ASTArgumentList.class); 
-        if (argListNode != null) {
+        if (argListNode != null) {        	
 	        for(int i = 0; i < argListNode.jjtGetNumChildren(); i++) {
-	        	Node argument = argListNode.jjtGetChild(i);
+	        	Node argument = argListNode.jjtGetChild(i);	        	
 	        	if (isTainted(argument)){
 	        		return true;
 	        	}
@@ -614,33 +699,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
         Class<?> type = null;
 		
         try {
-            if (node instanceof ASTExpression) {				
-                type = node.getFirstChildOfType(ASTPrimaryExpression.class).getFirstChildOfType(ASTName.class).getType();
-            } else if (node instanceof ASTPrimaryExpression) {
-            	ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
-                if (astClass != null) {					
-                    type = astClass.getType();
-                } else {	
-                	ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
-                	ASTName astName = prefix.getFirstChildOfType(ASTName.class);        	
-                	if (astName != null) {
-                		type = astName.getType();
-                		if (type == null) {
-                			String parameterName = astName.getImage();
-                			if (parameterName.indexOf('.') > 0) {
-                				parameterName = parameterName.substring(0, parameterName.indexOf('.'));
-                			}
-                			type = this.functionParameterTypes.get(parameterName);
-                		}
-                	}
-                	else {
-                		ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
-                		type = this.fieldTypes.get(suffix.getImage());
-                	}
-                }
-            } else if (node instanceof ASTName) {
-                type = ((ASTName) node).getType();
-            }            
+        	type = getJavaType(node);
 			if (type != null) {
 				cannonicalName = type.getCanonicalName();
 			}
@@ -652,7 +711,49 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     }
     
     
-    private boolean analyzeVariable(List<ASTName> listOfAstNames) {
+    private Class<?> getJavaType(Node node) {
+    	try {
+	    	Class<?> type = null;
+	        if (node instanceof ASTExpression) {				
+	            type = node.getFirstChildOfType(ASTPrimaryExpression.class).getFirstChildOfType(ASTName.class).getType();
+	        } else if (node instanceof ASTPrimaryExpression) {
+	        	ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
+	            if (astClass != null) {					
+	                type = astClass.getType();
+	            } else {	
+	            	ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
+	            	ASTName astName = prefix.getFirstChildOfType(ASTName.class);        	
+	            	if (astName != null) {
+	            		type = astName.getType();
+	            		if (type == null) {
+	            			String parameterName = astName.getImage();
+	            			if (parameterName.indexOf('.') > 0) {
+	            				parameterName = parameterName.substring(0, parameterName.indexOf('.'));
+	            			}
+	            			type = this.functionParameterTypes.get(parameterName);
+	            		}
+	            	}
+	            	else {
+	            		ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
+	            		type = this.fieldTypes.get(suffix.getImage());
+	            	}
+	            }
+	        } else if (node instanceof ASTName) {
+	            type = ((ASTName) node).getType();
+	        }
+	        else if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
+	        	ASTClassOrInterfaceDeclaration type2 = node.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
+	        	if (type2 != null) {
+					type = type2.getType();
+				}
+	        }
+	        return type;
+    	} catch (Exception e) {
+    		return null;
+    	}
+	}
+
+	private boolean analyzeVariable(List<ASTName> listOfAstNames) {
 		for (ASTName name : listOfAstNames) {
 			String var = getVarName(name);			
 
