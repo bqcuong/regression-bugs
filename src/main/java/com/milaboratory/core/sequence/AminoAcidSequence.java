@@ -98,7 +98,9 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
      * @return {@literal int} representation of triplet
      */
     public static int getTriplet(NucleotideSequence nSequence, int tripletStart) {
-        int triplet = (nSequence.codeAt(tripletStart) << 4) | (nSequence.codeAt(tripletStart + 1) << 2) | nSequence.codeAt(tripletStart + 2);
+        int triplet = (nSequence.codeAt(tripletStart) << 4) |
+                (nSequence.codeAt(tripletStart + 1) << 2) |
+                nSequence.codeAt(tripletStart + 2);
         return triplet;
     }
 
@@ -149,7 +151,8 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
      * <li>{@link #convertPositionFromCenter(int, int)}</li>
      * </ul>
      */
-    public static AminoAcidSequencePosition convertPosition(int ntPosition, Boolean fromLeft, boolean includeIncomplete, int ntSequenceLength) {
+    public static AminoAcidSequencePosition convertPosition(int ntPosition, Boolean fromLeft, boolean includeIncomplete,
+                                                            int ntSequenceLength) {
         int aaSequenceSize = (ntSequenceLength + 2) / 3;
         if (fromLeft == null) {
             if (!includeIncomplete)

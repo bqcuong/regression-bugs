@@ -69,6 +69,8 @@ public class FastaSequenceReaderWrapper implements SingleReader, CanReportProgre
     @Override
     public SingleRead take() {
         FastaRecord<NucleotideSequence> record = internalReader.take();
+        if(record == null)
+            return null;
         NucleotideSequence sequence = record.getSequence();
         NSequenceWithQuality seq;
 
