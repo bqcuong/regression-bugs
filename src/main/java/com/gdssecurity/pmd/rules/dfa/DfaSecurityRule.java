@@ -42,6 +42,7 @@ import net.sourceforge.pmd.lang.dfa.VariableAccess;
 import net.sourceforge.pmd.lang.dfa.pathfinder.CurrentPath;
 import net.sourceforge.pmd.lang.dfa.pathfinder.DAAPathFinder;
 import net.sourceforge.pmd.lang.dfa.pathfinder.Executable;
+import net.sourceforge.pmd.lang.java.ast.ASTConditionalExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTArgumentList;
 import net.sourceforge.pmd.lang.java.ast.ASTArguments;
 import net.sourceforge.pmd.lang.java.ast.ASTAssignmentOperator;
@@ -414,6 +415,9 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     private boolean isTainted(Node node2) {
     	List<ASTPrimaryExpression> primaryExpressions = getExp(node2);
     	for (ASTPrimaryExpression node: primaryExpressions) {
+    		if (node.jjtGetParent() instanceof ASTConditionalExpression && node.jjtGetParent().jjtGetChild(0) == node){
+    			continue;
+    		}
     		if (isMethodCall(node)) {
                 String method = getMethod(node);
                 String type = getType(node);
