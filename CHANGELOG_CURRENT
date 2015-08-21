@@ -1,0 +1,8 @@
+Substantial modification for basic Sequence abstraction
+Wildcars are incorporated into normal alphabets
+IncompleteSequences are removed
+`FastaReader` isolated into sepparate entity (now it can read AminoAcid sequences) and special wrapper is created (`FastaSequenceReaderWrapper`) to wire it back to SequenceReader abstraction
+`BatchAligner` abstraction
+`SimpleBatchAligner`
+Extancive binding to Blast implemeting BatchAligner abstraction for interoperability with other BatchAligners
+many other small modifications to support new abstraction
