@@ -135,5 +135,7 @@ Therefore, GDS Secure Coding Ruleset is not officially supported in Eclipse at t
 
 GDS PMD Secure Coding Ruleset is released under the Reciprocal Public License 1.5 (RPL1.5)
 http://www.opensource.org/licenses/rpl1.5
+
 (C) Copyright 2014-2015 Alberto Fernández 
+
 (C) Copyright 2012 Gotham Digital Science, LLC -- All Rights Reserved 
