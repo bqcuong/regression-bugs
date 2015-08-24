@@ -79,8 +79,8 @@ import com.gdssecurity.pmd.rules.BaseSecurityRule;
 
 public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
-	private static Map<String, String> cacheReturnTypes = new HashMap<String, String>();
-    private static final String UNKNOWN_TYPE = "UNKNOWN_TYPE";
+	private static final String UNKNOWN_TYPE = "UNKNOWN_TYPE";
+	private Map<String, String> cacheReturnTypes = new HashMap<String, String>();
 	private Set<String> currentPathTaintedVariables;
     private Set<String> functionParameterTainted = new HashSet<String>();
     private Set<String> fieldTypesTainted = new HashSet<String>();
@@ -556,10 +556,10 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     
     
     private String getReturnType(Class<?> clazz, String realType, String methodName) {
-    	if (!cacheReturnTypes.containsKey(realType)) {
+    	if (!this.cacheReturnTypes.containsKey(realType)) {
     		 populateCache(clazz, realType);
     	}
-    	String retVal = cacheReturnTypes.get(realType + "." + methodName);
+    	String retVal = this.cacheReturnTypes.get(realType + "." + methodName);
     	if (StringUtils.isBlank(retVal)){
     		return UNKNOWN_TYPE;
     	}
@@ -568,10 +568,10 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
     
     private void populateCache(Class<?> clz, String realType) {
-    	if (cacheReturnTypes.containsKey(realType)) {
+    	if (this.cacheReturnTypes.containsKey(realType)) {
     		return;
     	}
-    	cacheReturnTypes.put(realType, realType);
+    	this.cacheReturnTypes.put(realType, realType);
     	Class<?> clazz = clz;
     	try {
 	    	if (clazz == null) {
@@ -583,9 +583,9 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 		    		String methodName = method.getName();
 		    		String key = clazz.getCanonicalName() + "." + methodName;
 		    		if (returnType != null && !"void".equals(returnType.getCanonicalName())){
-		    			String old = cacheReturnTypes.get(key);
+		    			String old = this.cacheReturnTypes.get(key);
 		    			if (old == null || StringUtils.equals(old, returnType.getCanonicalName())){
-		    				cacheReturnTypes.put(key, returnType.getCanonicalName());
+		    				this.cacheReturnTypes.put(key, returnType.getCanonicalName());
 		    			}
 						// else {
 						// // various return types for same method
