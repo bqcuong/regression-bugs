@@ -71,7 +71,6 @@ import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
 import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jaxen.JaxenException;
 
 import com.gdssecurity.pmd.Utils;
@@ -92,6 +91,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     private Set<String> sanitizers;
 	private Set<String> sinkAnnotations;
 	private Set<String> searchAnnotationsInPackages;
+	
+	private String[] searchAnnotationsInPackagesArray;
 	
 
 
@@ -131,6 +132,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
         this.sanitizers = Utils.arrayAsSet(getProperty(this.sanitizerDescriptor));
         this.sinkAnnotations = Utils.arrayAsSet(getProperty(this.sinkAnnotationsDescriptor));
         this.searchAnnotationsInPackages = Utils.arrayAsSet(getProperty(this.annotationsPackagesDescriptor));
+        this.searchAnnotationsInPackagesArray = this.searchAnnotationsInPackages.toArray(new String[this.searchAnnotationsInPackages.size()]);
     }
 
 
@@ -144,10 +146,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 		Class<?> type = getJavaType(node);
 		if (type == null) {
 			return false;
-		}
-		if (!analizeTypeWithReflectionForAnnotations(type)){
-			return false;
-		}
+		}		
 		String methodName = UNKNOWN_TYPE;
 		if (node instanceof ASTMethodDeclaration ||  node instanceof ASTConstructorDeclaration) {
 			Node declarator = node.getFirstChildOfType(ASTMethodDeclarator.class);
@@ -155,22 +154,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 				return false;
 			}
 			methodName = declarator.getImage();
-			ASTFormalParameters parameters = node.getFirstDescendantOfType(ASTFormalParameters.class);
-			
-			List<Class<?>> types = new ArrayList<>();
-			for(int i = 0; i < parameters.jjtGetNumChildren(); i++) {
-				Node a = parameters.jjtGetChild(i);
-				if (a instanceof ASTFormalParameter){
-					types.add(((ASTFormalParameter) a).getTypeNode().getType());
-					
-				}
-			}
-			boolean sink = isSink(type.getCanonicalName(), methodName);
-			if (sink){
-				return true;
-			}
-			Method m = MethodUtils.getAccessibleMethod(type, methodName, types.toArray(new Class<?>[types.size()]));
-			return isSink(m);
+			populateCache(type, type.getCanonicalName());
+			return isSink(type.getCanonicalName(), methodName);			
 			
 		}
 
@@ -178,19 +163,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 	}
 	
 
-	private boolean isSink(Method m) {
-		if (m == null) {
-			return false;
-		}
-		Annotation[] annotations = m.getAnnotations();
-    	for (Annotation annotation: annotations) {
-    		if (this.sinkAnnotations.contains(annotation.annotationType().getCanonicalName())){
-    			return true;
-    		}
-    	}
-    	return false;
-	}
-	
+
 
 
 	private boolean isTaintedVariable(String variable) {
@@ -418,37 +391,20 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     	if (type == null) {
     		return false;
     	}
-    	if (isSink(type.getCanonicalName(), methodName)){
-    		return true;
-    	}
-    	if (!analizeTypeWithReflectionForAnnotations(type)) {
-    		return false;
-    	}
+    	populateCache(type, type.getCanonicalName());
+    	return isSink(type.getCanonicalName(), methodName);
     	
-    	ASTArgumentList argListNode = simpleNode.getFirstDescendantOfType(ASTArgumentList.class); 
-        if (argListNode != null) {        	
-        	int params = argListNode.jjtGetNumChildren();
-        	
-        	Method[] methods = type.getMethods();
-        	for (Method method : methods) {
-        		if (method.getName().equals(methodName) && method.getParameterTypes().length == params && isSink(method)){
-        			return true;
-        		}
-        	}        
-        }
-        return false;
 	}
 
 	private boolean analizeTypeWithReflectionForAnnotations(Class<?> type) {
+		if (this.searchAnnotationsInPackagesArray.length == 0) {
+			return false;
+		}
 		if (type == null || type.getPackage() == null) {
 			return false;
 		}
-		if (this.searchAnnotationsInPackages.isEmpty()) {
-			return false;
-		}
 		String packageName = type.getPackage().getName();
-		String[] packages = this.searchAnnotationsInPackages.toArray(new String[this.searchAnnotationsInPackages.size()]);
-    	return StringUtils.startsWithAny(packageName, packages);
+    	return StringUtils.startsWithAny(packageName, this.searchAnnotationsInPackagesArray);
 	}
 
 	private void analizeStringBuilderAppend(Node simpleNode) {
@@ -612,7 +568,10 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
     
     private void populateCache(Class<?> clz, String realType) {
-    	cacheReturnTypes.put(realType, UNKNOWN_TYPE);
+    	if (cacheReturnTypes.containsKey(realType)) {
+    		return;
+    	}
+    	cacheReturnTypes.put(realType, realType);
     	Class<?> clazz = clz;
     	try {
 	    	if (clazz == null) {
@@ -622,8 +581,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 		    	for(Method method: clazz.getMethods()) {
 		    		Class<?> returnType = method.getReturnType();
 		    		String methodName = method.getName();
+		    		String key = clazz.getCanonicalName() + "." + methodName;
 		    		if (returnType != null && !"void".equals(returnType.getCanonicalName())){
-		    			String key = realType + "." + methodName;
 		    			String old = cacheReturnTypes.get(key);
 		    			if (old == null || StringUtils.equals(old, returnType.getCanonicalName())){
 		    				cacheReturnTypes.put(key, returnType.getCanonicalName());
@@ -632,7 +591,16 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 						// // various return types for same method
 						// cacheReturnTypes.put(key, UNKNOWN_TYPE);
 						// }
+		    			
 		    		}
+	    			if (analizeTypeWithReflectionForAnnotations(clazz)) {
+	    				Annotation[] annotations = method.getAnnotations();
+	    		    	for (Annotation annotation: annotations) {
+	    		    		if (this.sinkAnnotations.contains(annotation.annotationType().getCanonicalName())){
+	    		    			this.sinks.add(clazz.getCanonicalName() + "." + method.getName());
+	    		    		}
+	    		    	}
+	    	    	}
 
 		    	}
 	    	}
