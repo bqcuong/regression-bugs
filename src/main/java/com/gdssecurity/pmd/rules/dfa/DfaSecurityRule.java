@@ -106,7 +106,7 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     		new String[] { "" }, 1.0f, '|');
     
     private final PropertyDescriptor<String[]> annotationsPackagesDescriptor = new StringMultiProperty("search-annotattions-in-packages", "TODO",
-    		new String[] { "resources" }, 1.0f, '|');
+    		new String[] {  }, 1.0f, '|');
     
 
     private RuleContext rc;
@@ -434,7 +434,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
     private boolean isAnyArgumentTainted (Node simpleNode) {
         ASTArgumentList argListNode = simpleNode.getFirstDescendantOfType(ASTArgumentList.class); 
         if (argListNode != null) {        	
-	        for(int i = 0; i < argListNode.jjtGetNumChildren(); i++) {
+        	int numChildren = argListNode.jjtGetNumChildren();
+	        for(int i = 0; i < numChildren; i++) {
 	        	Node argument = argListNode.jjtGetChild(i);	        	
 	        	if (isTainted(argument)){
 	        		return true;
@@ -631,7 +632,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 
 	private List<ASTPrimaryExpression> getExp(Node node2) {
     	List<ASTPrimaryExpression> expressions = new ArrayList<ASTPrimaryExpression>();
-    	for (int i=0; i < node2.jjtGetNumChildren(); i++) {
+    	int numChildren = node2.jjtGetNumChildren();
+    	for (int i=0; i < numChildren; i++) {
     		Node child = node2.jjtGetChild(i);
     		if (child instanceof ASTPrimaryExpression) {
     			expressions.add((ASTPrimaryExpression) child);
