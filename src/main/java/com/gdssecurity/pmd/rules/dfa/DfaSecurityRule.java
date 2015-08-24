@@ -380,14 +380,14 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
             	analizeStringBuilderAppend(simpleNode);
             }
             
-            if (isSink(type, method, simpleNode)) {
+            if (isSink(type, method)) {
                 analyzeSinkMethodArgs(simpleNode);
             }
 			
         } 
     }
     
-    private boolean isSink(Class<?> type, String methodName, Node simpleNode) {
+    private boolean isSink(Class<?> type, String methodName) {
     	if (type == null) {
     		return false;
     	}
