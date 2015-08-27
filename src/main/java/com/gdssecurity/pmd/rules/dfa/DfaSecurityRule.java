@@ -465,6 +465,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		List<ASTPrimaryExpression> primaryExpressions = getExp(node2);
 		for (ASTPrimaryExpression node : primaryExpressions) {
 			if (node.jjtGetParent() instanceof ASTConditionalExpression && node.jjtGetParent().jjtGetChild(0) == node) {
+				isTainted(node);
 				continue;
 			}
 			if (isMethodCall(node)) {
