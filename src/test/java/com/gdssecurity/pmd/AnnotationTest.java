@@ -33,6 +33,11 @@ public class AnnotationTest {
 	@Test
 	public void testCallinkSinkValidateParamsStaticQualified() throws Exception {
 		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/annotations/AnnotationExampleValidateParamsStaticQualified.java", RULESET_ANNOTATIONS));
+	}	
+	@Test
+	public void testCallinkSinkValidateParamsStaticOtherClass() throws Exception {
+		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/annotations/AnnotationExampleValidateParamsStaticOtherClass.java", RULESET_ANNOTATIONS));
 	}
+	
 	
 }
