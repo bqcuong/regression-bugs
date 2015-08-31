@@ -1,4 +1,4 @@
-package resources.others;
+package resources.annotations;
 
 import java.io.IOException;
 

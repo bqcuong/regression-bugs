@@ -18,11 +18,9 @@ language governing rights and limitations under the RPL.
 This code is licensed under the Reciprocal Public License 1.5 (RPL1.5)
 http://www.opensource.org/licenses/rpl1.5
 
-*/
-
+ */
 
 package com.gdssecurity.pmd.rules.dfa;
-
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -62,6 +60,7 @@ import net.sourceforge.pmd.lang.java.ast.ASTName;
 import net.sourceforge.pmd.lang.java.ast.ASTPrimaryExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTPrimaryPrefix;
 import net.sourceforge.pmd.lang.java.ast.ASTPrimarySuffix;
+import net.sourceforge.pmd.lang.java.ast.ASTReturnStatement;
 import net.sourceforge.pmd.lang.java.ast.ASTStatementExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTType;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclarator;
@@ -71,192 +70,193 @@ import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
 import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
 import org.jaxen.JaxenException;
 
 import com.gdssecurity.pmd.Utils;
 import com.gdssecurity.pmd.rules.BaseSecurityRule;
 
+public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
-public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
-
-	private static Map<String, String> cacheReturnTypes = new HashMap<String, String>();
-    private static final String UNKNOWN_TYPE = "UNKNOWN_TYPE";
+	private static final String UNKNOWN_TYPE = "UNKNOWN_TYPE";
+	private Map<String, String> cacheReturnTypes = new HashMap<String, String>();
 	private Set<String> currentPathTaintedVariables;
-    private Set<String> functionParameterTainted = new HashSet<String>();
-    private Set<String> fieldTypesTainted = new HashSet<String>();
-    
-    private Map<String, Class<?>> fieldTypes;
-    private Map<String, Class<?>> functionParameterTypes;
-    private Set<String> sinks;
-    private Set<String> sanitizers;
+	private Set<String> functionParameterTainted = new HashSet<String>();
+	private Set<String> fieldTypesTainted = new HashSet<String>();
+
+	private Map<String, Class<?>> fieldTypes;
+	private Map<String, Class<?>> functionParameterTypes;
+	private Set<String> sinks;
+	private Set<String> generators;
+	private Set<String> sanitizers;
 	private Set<String> sinkAnnotations;
+	private Set<String> generatorAnnotations;
 	private Set<String> searchAnnotationsInPackages;
-	
 
+	private String[] searchAnnotationsInPackagesArray;
 
-    private final PropertyDescriptor<String[]> sinkDescriptor = new StringMultiProperty("sinks", "TODO",
-            new String[] { "" }, 1.0f, '|');
-    
-    private final PropertyDescriptor<String[]> sinkAnnotationsDescriptor = new StringMultiProperty("sinksannotations", "TODO",
-            new String[] { com.gdssecurity.pmd.annotations.SQLSink.class.getCanonicalName() }, 1.0f, '|');
-    
-    private final PropertyDescriptor<String[]> sanitizerDescriptor = new StringMultiProperty("sanitizers", "TODO", 
-    		new String[] { "" }, 1.0f, '|');
-    
-    private final PropertyDescriptor<String[]> annotationsPackagesDescriptor = new StringMultiProperty("search-annotattions-in-packages", "TODO",
-    		new String[] { "resources" }, 1.0f, '|');
-    
+	private final PropertyDescriptor<String[]> sinkDescriptor = new StringMultiProperty("sinks", "TODO",
+			new String[] { "" }, 1.0f, '|');
 
-    private RuleContext rc;
-    private int methodDataFlowCount;
-	
-    private List<DataFlowNode> additionalDataFlowNodes = new ArrayList<DataFlowNode>();
-	
-    private static final int MAX_DATAFLOWS = 1000;
-    
-    public DfaSecurityRule () {
-    	super();
-    	this.propertyDescriptors.add(this.sinkDescriptor);
-    	this.propertyDescriptors.add(this.sanitizerDescriptor);
-    	this.propertyDescriptors.add(this.sinkAnnotationsDescriptor);
-    	this.propertyDescriptors.add(this.annotationsPackagesDescriptor);
-    	
-    }
-	
-    @Override
-    protected void init() {
-    	super.init();
-    	this.sinks = Utils.arrayAsSet(getProperty(this.sinkDescriptor));
-        this.sanitizers = Utils.arrayAsSet(getProperty(this.sanitizerDescriptor));
-        this.sinkAnnotations = Utils.arrayAsSet(getProperty(this.sinkAnnotationsDescriptor));
-        this.searchAnnotationsInPackages = Utils.arrayAsSet(getProperty(this.annotationsPackagesDescriptor));
-    }
+	private final PropertyDescriptor<String[]> sinkAnnotationsDescriptor = new StringMultiProperty("sink-annotations",
+			"TODO", new String[] {  }, 1.0f, '|');
 
+	private final PropertyDescriptor<String[]> sanitizerDescriptor = new StringMultiProperty("sanitizers", "TODO",
+			new String[] { "" }, 1.0f, '|');
+
+	private final PropertyDescriptor<String[]> annotationsPackagesDescriptor = new StringMultiProperty(
+			"search-annotattions-in-packages", "TODO", new String[] {}, 1.0f, '|');
+
+	private final PropertyDescriptor<String[]> generatorAnnotationsDescriptor = new StringMultiProperty("generator-annotations",
+			"TODO", new String[] {  }, 1.0f, '|');
+
+	private RuleContext rc;
+	private int methodDataFlowCount;
+
+	private List<DataFlowNode> additionalDataFlowNodes = new ArrayList<DataFlowNode>();
+
+	private static final int MAX_DATAFLOWS = 1000;
+
+	public DfaSecurityRule() {
+		super();
+		this.propertyDescriptors.add(this.sinkDescriptor);
+		this.propertyDescriptors.add(this.sanitizerDescriptor);
+		this.propertyDescriptors.add(this.sinkAnnotationsDescriptor);
+		this.propertyDescriptors.add(this.generatorAnnotationsDescriptor);
+		this.propertyDescriptors.add(this.annotationsPackagesDescriptor);
+
+	}
+
+	@Override
+	protected void init() {
+		super.init();
+		this.sinks = Utils.arrayAsSet(getProperty(this.sinkDescriptor));
+		this.sanitizers = Utils.arrayAsSet(getProperty(this.sanitizerDescriptor));
+		this.sinkAnnotations = Utils.arrayAsSet(getProperty(this.sinkAnnotationsDescriptor));
+		this.generatorAnnotations = Utils.arrayAsSet(getProperty(this.generatorAnnotationsDescriptor));
+		this.searchAnnotationsInPackages = Utils.arrayAsSet(getProperty(this.annotationsPackagesDescriptor));
+		this.searchAnnotationsInPackagesArray = this.searchAnnotationsInPackages
+				.toArray(new String[this.searchAnnotationsInPackages.size()]);
+		this.generators = new HashSet<String>();
+	}
 
 	protected boolean isSanitizerMethod(String type, String method) {
-		return this.sanitizers.contains(type+"."+method);
+		return this.sanitizers.contains(type + "." + method);
 	}
-    private boolean isSink(String objectType, String objectMethod) {
-        return this.sinks.contains(objectType + "." + objectMethod);
-    }
+
+	private boolean isSink(String objectType, String objectMethod) {
+		return this.sinks.contains(objectType + "." + objectMethod);
+	}
+	private boolean isGenerator(String objectType, String objectMethod) {
+		return this.generators.contains(objectType + "." + objectMethod);
+	}
+
+	private boolean isGenerator(Node node) {
+		Class<?> type = getJavaType(node);
+		if (type == null) {
+			return false;
+		}
+		String methodName = UNKNOWN_TYPE;
+		if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
+			Node declarator = node.getFirstChildOfType(ASTMethodDeclarator.class);
+			if (declarator == null) {
+				return false;
+			}
+			methodName = declarator.getImage();
+			populateCache(type, type.getCanonicalName());
+			return isGenerator(type.getCanonicalName(), methodName);
+		}
+
+		return false;
+	}
 	private boolean isSink(Node node) {
 		Class<?> type = getJavaType(node);
 		if (type == null) {
 			return false;
 		}
-		if (!analizeTypeWithReflectionForAnnotations(type)){
-			return false;
-		}
 		String methodName = UNKNOWN_TYPE;
-		if (node instanceof ASTMethodDeclaration ||  node instanceof ASTConstructorDeclaration) {
+		if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
 			Node declarator = node.getFirstChildOfType(ASTMethodDeclarator.class);
-			if( declarator == null) {
+			if (declarator == null) {
 				return false;
 			}
 			methodName = declarator.getImage();
-			ASTFormalParameters parameters = node.getFirstDescendantOfType(ASTFormalParameters.class);
-			
-			List<Class<?>> types = new ArrayList<>();
-			for(int i = 0; i < parameters.jjtGetNumChildren(); i++) {
-				Node a = parameters.jjtGetChild(i);
-				if (a instanceof ASTFormalParameter){
-					types.add(((ASTFormalParameter) a).getTypeNode().getType());
-					
-				}
-			}
-			boolean sink = isSink(type.getCanonicalName(), methodName);
-			if (sink){
-				return true;
-			}
-			Method m = MethodUtils.getAccessibleMethod(type, methodName, types.toArray(new Class<?>[types.size()]));
-			return isSink(m);
-			
+			populateCache(type, type.getCanonicalName());
+			return isSink(type.getCanonicalName(), methodName);
+
 		}
 
 		return false;
 	}
-	
-
-	private boolean isSink(Method m) {
-		if (m == null) {
-			return false;
-		}
-		Annotation[] annotations = m.getAnnotations();
-    	for (Annotation annotation: annotations) {
-    		if (this.sinkAnnotations.contains(annotation.annotationType().getCanonicalName())){
-    			return true;
-    		}
-    	}
-    	return false;
-	}
-	
-
 
 	private boolean isTaintedVariable(String variable) {
-        return this.currentPathTaintedVariables.contains(variable);
-    }
-    @Override
-    public Object visit(ASTConstructorDeclaration astConstructorDeclaration, Object data) {
-    	ASTClassOrInterfaceDeclaration astClass = astConstructorDeclaration.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
-        if (astClass == null) {
-        	return data;
-        }
-        this.rc = (RuleContext) data;
-        processReturnStatements(astConstructorDeclaration);
-        processThrowsStatements(astConstructorDeclaration);
-        runFinder(astConstructorDeclaration);
-        return data;
-        
-    }
-
-    @Override
-	public Object visit(ASTMethodDeclaration astMethodDeclaration, Object data) {
-
-        ASTClassOrInterfaceDeclaration astClass = astMethodDeclaration.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
-        if (astClass == null) {
-        	return data;
-        }
-        
-        this.rc = (RuleContext) data;
-               
-        processReturnStatements(astMethodDeclaration);
-        processThrowsStatements(astMethodDeclaration);
-
-        runFinder(astMethodDeclaration);
-
-        super.visit(astMethodDeclaration, data);
-        
-        return data;
-    }
-
-	private void runFinder(Node astMethodDeclaration) {
-        DataFlowNode rootDataFlowNode = astMethodDeclaration.getDataFlowNode().getFlow().get(0);
-		
-        this.methodDataFlowCount = 0;
-			
-        DAAPathFinder daaPathFinder = new DAAPathFinder(rootDataFlowNode, this, MAX_DATAFLOWS);
-
-        daaPathFinder.run();
-		
+		return this.currentPathTaintedVariables.contains(variable);
 	}
 
-	private void processReturnStatements (Node node) {
-    	processDataFlow(node, "./Block/BlockStatement//TryStatement/CatchStatement//ReturnStatement");
-    }
-    private void processThrowsStatements (Node node) {
-    	processDataFlow(node,  "./Block/BlockStatement//TryStatement/CatchStatement//ThrowStatement");
-    }
-    private void processDataFlow(Node node, String xpath){
-        try { 
+	@Override
+	public Object visit(ASTConstructorDeclaration astConstructorDeclaration, Object data) {
+		ASTClassOrInterfaceDeclaration astClass = astConstructorDeclaration
+				.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
+		if (astClass == null) {
+			return data;
+		}
+		this.rc = (RuleContext) data;
+		processReturnStatements(astConstructorDeclaration);
+		processThrowsStatements(astConstructorDeclaration);
+		runFinder(astConstructorDeclaration);
+		return data;
 
-			List<? extends Node> statements =  node.findChildNodesWithXPath(xpath);
+	}
+
+	@Override
+	public Object visit(ASTMethodDeclaration astMethodDeclaration, Object data) {
+
+		ASTClassOrInterfaceDeclaration astClass = astMethodDeclaration
+				.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
+		if (astClass == null) {
+			return data;
+		}
+
+		this.rc = (RuleContext) data;
+
+		processReturnStatements(astMethodDeclaration);
+		processThrowsStatements(astMethodDeclaration);
+
+		runFinder(astMethodDeclaration);
+
+		super.visit(astMethodDeclaration, data);
+
+		return data;
+	}
+
+	private void runFinder(Node astMethodDeclaration) {
+		DataFlowNode rootDataFlowNode = astMethodDeclaration.getDataFlowNode().getFlow().get(0);
+
+		this.methodDataFlowCount = 0;
+
+		DAAPathFinder daaPathFinder = new DAAPathFinder(rootDataFlowNode, this, MAX_DATAFLOWS);
+
+		daaPathFinder.run();
+
+	}
+
+	private void processReturnStatements(Node node) {
+		processDataFlow(node, "./Block/BlockStatement//TryStatement/CatchStatement//ReturnStatement");
+	}
+
+	private void processThrowsStatements(Node node) {
+		processDataFlow(node, "./Block/BlockStatement//TryStatement/CatchStatement//ThrowStatement");
+	}
+
+	private void processDataFlow(Node node, String xpath) {
+		try {
+
+			List<? extends Node> statements = node.findChildNodesWithXPath(xpath);
 			if (statements == null || statements.isEmpty()) {
 				return;
 			}
 			int i = 0;
-			for (DataFlowNode current: node.getDataFlowNode().getFlow()) {
-				for (Node statement: statements) {
+			for (DataFlowNode current : node.getDataFlowNode().getFlow()) {
+				for (Node statement : statements) {
 					if (current.equals(statement.getDataFlowNode())) {
 						DataFlowNode next = node.getDataFlowNode().getFlow().get(i + 1);
 						if (!next.isType(NodeType.IF_EXPR)) {
@@ -266,38 +266,42 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 				}
 				i++;
 			}
-        	
-        }
-        catch (JaxenException e) { // NOPMD
-        	//
-        }
-    }
 
-    @Override
+		} catch (JaxenException e) { // NOPMD
+			//
+		}
+	}
+	
+	boolean generator = false;
+
+	@Override
 	public void execute(CurrentPath currentPath) {
 
-        this.methodDataFlowCount++;
-        this.currentPathTaintedVariables = new HashSet<String>();
-        this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
-        this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
-        
-        if (this.methodDataFlowCount < MAX_DATAFLOWS) {
-            for (Iterator<DataFlowNode> iterator = currentPath.iterator(); iterator.hasNext();) {
-                DataFlowNode iDataFlowNode = iterator.next();
-                Node node = iDataFlowNode.getNode();
-                if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {                	
-                    this.currentPathTaintedVariables = new HashSet<String>();
-                    if (!isSink(node)) {
-                    	addMethodParamsToTaintedVariables(node);
-                    }
-                    addClassFieldsToTaintedVariables(node);
-                    this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
-                    this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
-                } else if (node instanceof ASTVariableDeclarator || node instanceof ASTStatementExpression) {
-                    handleDataFlowNode(iDataFlowNode);
-                } 										
-            }
+		this.methodDataFlowCount++;
+		this.currentPathTaintedVariables = new HashSet<String>();
+		this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
+		this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
 
+		if (this.methodDataFlowCount < MAX_DATAFLOWS) {
+			for (Iterator<DataFlowNode> iterator = currentPath.iterator(); iterator.hasNext();) {
+				DataFlowNode iDataFlowNode = iterator.next();
+				Node node = iDataFlowNode.getNode();
+				if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
+					this.currentPathTaintedVariables = new HashSet<String>();
+					this.generator = isGenerator(node);
+					if (!isSink(node)) {
+						addMethodParamsToTaintedVariables(node);
+					}
+					addClassFieldsToTaintedVariables(node);
+					this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
+					this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
+				} else if (node instanceof ASTVariableDeclarator || node instanceof ASTStatementExpression) {
+					handleDataFlowNode(iDataFlowNode);
+				}
+				else if (node instanceof ASTReturnStatement) {
+					handeReturnNode(node, iDataFlowNode);
+				}
+			}
 
 			if (!this.additionalDataFlowNodes.isEmpty()) {
 				DataFlowNode additionalRootNode = this.additionalDataFlowNodes.remove(0);
@@ -305,29 +309,35 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 				this.methodDataFlowCount = 0;
 				daaPathFinder.run();
 			}
-			
-        } 
-    }
 
+		}
+	}
 
+	private void handeReturnNode(Node node, DataFlowNode iDataFlowNode) {
+		
+		handleVariableReference(iDataFlowNode);
+		if (this.generator && !isSafeType(this.getType(node)) && isTainted(node)) {
+			addSecurityViolation(this, this.rc, node, getMessage(), "");
 
-
+		}
+		
+	}
 
 	private void addClassFieldsToTaintedVariables(Node node) {
-		
-		
+
 		this.fieldTypes = new HashMap<String, Class<?>>();
 		this.fieldTypesTainted = new HashSet<String>();
-		
+
 		ASTClassOrInterfaceBody astBody = node.getFirstParentOfType(ASTClassOrInterfaceBody.class);
 		if (astBody == null) {
 			return;
 		}
-		
-		List<ASTClassOrInterfaceBodyDeclaration> declarations = astBody.findChildrenOfType(ASTClassOrInterfaceBodyDeclaration.class);
-		for (ASTClassOrInterfaceBodyDeclaration declaration: declarations) {
+
+		List<ASTClassOrInterfaceBodyDeclaration> declarations = astBody
+				.findChildrenOfType(ASTClassOrInterfaceBodyDeclaration.class);
+		for (ASTClassOrInterfaceBodyDeclaration declaration : declarations) {
 			ASTFieldDeclaration field = declaration.getFirstChildOfType(ASTFieldDeclaration.class);
-			if (field != null) {				
+			if (field != null) {
 				Class<?> type = field.getType();
 				ASTVariableDeclarator declarator = field.getFirstChildOfType(ASTVariableDeclarator.class);
 				ASTVariableDeclaratorId name1 = declarator.getFirstChildOfType(ASTVariableDeclaratorId.class);
@@ -339,8 +349,8 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 					}
 				}
 			}
-		}		
-		
+		}
+
 	}
 
 	private void addMethodParamsToTaintedVariables(Node node) {
@@ -350,155 +360,134 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 		if (node instanceof ASTMethodDeclaration) {
 			ASTMethodDeclarator declarator = node.getFirstChildOfType(ASTMethodDeclarator.class);
 			formalParameters = declarator.getFirstChildOfType(ASTFormalParameters.class);
-		}
-		else if (node instanceof ASTConstructorDeclaration) {
-			formalParameters = node.getFirstChildOfType(ASTFormalParameters.class); 
+		} else if (node instanceof ASTConstructorDeclaration) {
+			formalParameters = node.getFirstChildOfType(ASTFormalParameters.class);
 		}
 		if (formalParameters == null) {
 			return;
 		}
-		List<ASTFormalParameter> parameters = formalParameters.findChildrenOfType(ASTFormalParameter.class);       
+		List<ASTFormalParameter> parameters = formalParameters.findChildrenOfType(ASTFormalParameter.class);
 		for (ASTFormalParameter parameter : parameters) {
 			ASTType type = parameter.getTypeNode();
-			ASTVariableDeclaratorId name1 = parameter.getFirstChildOfType(ASTVariableDeclaratorId.class);						
+			ASTVariableDeclaratorId name1 = parameter.getFirstChildOfType(ASTVariableDeclaratorId.class);
 			String name = name1.getImage();
 			if (name != null && type != null) {
 				this.functionParameterTypes.put(name, type.getType());
 			}
-			if (name != null && isUnsafeType(type)){
+			if (name != null && isUnsafeType(type)) {
 				this.functionParameterTainted.add(name);
 			}
 		}
 	}
 
-
 	private void handleDataFlowNode(DataFlowNode iDataFlowNode) {
-        for(VariableAccess access : iDataFlowNode.getVariableAccess()) {
-        	if (access.isDefinition()){        		
-        		String variableName = access.getVariableName();
-        		handleVariableDefinition(iDataFlowNode, variableName);
-        		return;
-        	}
-        }
-        handleVariableReference(iDataFlowNode);
-    }
+		for (VariableAccess access : iDataFlowNode.getVariableAccess()) {
+			if (access.isDefinition()) {
+				String variableName = access.getVariableName();
+				handleVariableDefinition(iDataFlowNode, variableName);
+				return;
+			}
+		}
+		handleVariableReference(iDataFlowNode);
+	}
 
-    private void handleVariableReference(DataFlowNode iDataFlowNode) {
+	private void handleVariableReference(DataFlowNode iDataFlowNode) {
 
-        Node simpleNode = iDataFlowNode.getNode();
+		Node simpleNode = iDataFlowNode.getNode();
 
-        if (isMethodCall(simpleNode)) {
-			
-            Class<?> type = null;
-            String method = "";
-			
-            Node astMethod = null;
-            if (simpleNode.getFirstDescendantOfType(ASTAssignmentOperator.class) == null) {
-            	astMethod = simpleNode.getFirstDescendantOfType(ASTPrimaryExpression.class);
-            }
-            else {
-            	astMethod = simpleNode.getFirstDescendantOfType(ASTExpression.class);
-            }
-            method = getMethod(astMethod);
-            type = getJavaType(astMethod);    
+		if (isMethodCall(simpleNode)) {
 
-            
-            if ((type == StringBuilder.class || type == StringBuffer.class) && ("insert".equals(method) || "append".equals(method))){
-            	analizeStringBuilderAppend(simpleNode);
-            }
-            
-            if (isSink(type, method, simpleNode)) {
-                analyzeSinkMethodArgs(simpleNode);
-            }
-			
-        } 
-    }
-    
-    private boolean isSink(Class<?> type, String methodName, Node simpleNode) {
-    	if (type == null) {
-    		return false;
-    	}
-    	if (isSink(type.getCanonicalName(), methodName)){
-    		return true;
-    	}
-    	if (!analizeTypeWithReflectionForAnnotations(type)) {
-    		return false;
-    	}
-    	
-    	ASTArgumentList argListNode = simpleNode.getFirstDescendantOfType(ASTArgumentList.class); 
-        if (argListNode != null) {        	
-        	int params = argListNode.jjtGetNumChildren();
-        	
-        	Method[] methods = type.getMethods();
-        	for (Method method : methods) {
-        		if (method.getName().equals(methodName) && method.getParameterTypes().length == params && isSink(method)){
-        			return true;
-        		}
-        	}        
-        }
-        return false;
+			Class<?> type = null;
+			String method = "";
+
+			Node astMethod = null;
+			if (simpleNode.getFirstDescendantOfType(ASTAssignmentOperator.class) == null) {
+				astMethod = simpleNode.getFirstDescendantOfType(ASTPrimaryExpression.class);
+			} else {
+				astMethod = simpleNode.getFirstDescendantOfType(ASTExpression.class);
+			}
+			method = getMethod(astMethod);
+			type = getJavaType(astMethod);
+
+			if ((type == StringBuilder.class || type == StringBuffer.class)
+					&& ("insert".equals(method) || "append".equals(method))) {
+				analizeStringBuilderAppend(simpleNode);
+			}
+
+			if (isSink(type, method)) {
+				analyzeSinkMethodArgs(simpleNode);
+			}
+
+		}
+	}
+
+	private boolean isSink(Class<?> type, String methodName) {
+		if (type == null) {
+			return false;
+		}
+		populateCache(type, type.getCanonicalName());
+		return isSink(type.getCanonicalName(), methodName);
+
 	}
 
 	private boolean analizeTypeWithReflectionForAnnotations(Class<?> type) {
+		if (this.searchAnnotationsInPackagesArray.length == 0) {
+			return false;
+		}
 		if (type == null || type.getPackage() == null) {
 			return false;
 		}
-		if (this.searchAnnotationsInPackages.isEmpty()) {
-			return false;
-		}
 		String packageName = type.getPackage().getName();
-		String[] packages = this.searchAnnotationsInPackages.toArray(new String[this.searchAnnotationsInPackages.size()]);
-    	return StringUtils.startsWithAny(packageName, packages);
+		return StringUtils.startsWithAny(packageName, this.searchAnnotationsInPackagesArray);
 	}
 
 	private void analizeStringBuilderAppend(Node simpleNode) {
-    	ASTName name = simpleNode.getFirstDescendantOfType(ASTName.class);
-    	if (name == null) {
-    		return;
-    	}
-    	
-    	String varName = getVarName(name);
-    	
-    	if (this.isTaintedVariable(varName)) {
-    		return;
-    	}
-    	if (isTainted(simpleNode)) {
-    		this.currentPathTaintedVariables.add(varName);
-    	}
-    	
-    }
+		ASTName name = simpleNode.getFirstDescendantOfType(ASTName.class);
+		if (name == null) {
+			return;
+		}
 
-    private void analyzeSinkMethodArgs(Node simpleNode) {
-    	if (isAnyArgumentTainted(simpleNode)) {    		
-    		addSecurityViolation(this, this.rc, simpleNode, getMessage(), "");
-    	}
+		String varName = getVarName(name);
 
-    }
+		if (this.isTaintedVariable(varName)) {
+			return;
+		}
+		if (isTainted(simpleNode)) {
+			this.currentPathTaintedVariables.add(varName);
+		}
 
-    private boolean isAnyArgumentTainted (Node simpleNode) {
-        ASTArgumentList argListNode = simpleNode.getFirstDescendantOfType(ASTArgumentList.class); 
-        if (argListNode != null) {        	
-	        for(int i = 0; i < argListNode.jjtGetNumChildren(); i++) {
-	        	Node argument = argListNode.jjtGetChild(i);	        	
-	        	if (isTainted(argument)){
-	        		return true;
-	        	}
-	        }
-        }
-        return false;
-    }
+	}
 
+	private void analyzeSinkMethodArgs(Node simpleNode) {
+		if (isAnyArgumentTainted(simpleNode)) {
+			addSecurityViolation(this, this.rc, simpleNode, getMessage(), "");
+		}
 
-    private boolean isMethodCall(Node node) {
-        ASTArguments arguments = node.getFirstDescendantOfType(ASTArguments.class);
-        return arguments != null;
-    }
+	}
+
+	private boolean isAnyArgumentTainted(Node simpleNode) {
+		ASTArgumentList argListNode = simpleNode.getFirstDescendantOfType(ASTArgumentList.class);
+		if (argListNode != null) {
+			int numChildren = argListNode.jjtGetNumChildren();
+			for (int i = 0; i < numChildren; i++) {
+				Node argument = argListNode.jjtGetChild(i);
+				if (isTainted(argument)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isMethodCall(Node node) {
+		ASTArguments arguments = node.getFirstDescendantOfType(ASTArguments.class);
+		return arguments != null;
+	}
 
 	private void handleVariableDefinition(DataFlowNode iDataFlowNode, String variable) {
 		Node simpleNode = iDataFlowNode.getNode();
 		Class<?> clazz = String.class;
-		
-		
+
 		Node primaryExpression = simpleNode.jjtGetChild(0);
 		if (primaryExpression instanceof ASTPrimaryExpression) {
 			Node primaryPrefix = primaryExpression.jjtGetChild(0);
@@ -509,67 +498,61 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 		if (primaryExpression instanceof ASTVariableDeclaratorId && simpleNode.jjtGetNumChildren() > 1) {
 			Node initializer = simpleNode.jjtGetChild(1);
 			if (initializer instanceof ASTVariableInitializer) {
-				clazz = ((ASTVariableDeclaratorId)primaryExpression).getType();
+				clazz = ((ASTVariableDeclaratorId) primaryExpression).getType();
 			}
 		}
 
-		
-		
-				
 		if (isTainted(simpleNode) && isUnsafeType(clazz)) {
 			this.currentPathTaintedVariables.add(variable);
 		}
 	}
-    
-    private boolean isTainted(Node node2) {
-    	List<ASTPrimaryExpression> primaryExpressions = getExp(node2);
-    	for (ASTPrimaryExpression node: primaryExpressions) {
-    		if (node.jjtGetParent() instanceof ASTConditionalExpression && node.jjtGetParent().jjtGetChild(0) == node){
-    			continue;
-    		}
-    		if (isMethodCall(node)) {
-                String method = getMethod(node);
-                String type = getType(node);
-                if (isSanitizerMethod(type, method)) {
-                	continue;
-                }
-                else if (isSink(type, method)) {
-                    analyzeSinkMethodArgs(node);
-                }         
-                else if (isSafeType(getReturnType(node, type, method))){
-                	continue;
-                }
-                else if (isSource(type, method) || isUsedOverTaintedVariable(node) || isAnyArgumentTainted(node)) {
-                    return true;
-                }
 
-            } else if (node.hasDescendantOfType(ASTName.class)){
-                List<ASTName> astNames = node.findDescendantsOfType(ASTName.class);
-                if (analyzeVariable(astNames)){
-                	return true;
-                }
-            }
-            else if (isUsedOverTaintedVariable(node)){
-            	return true;
-            }
-    		boolean childsTainted = isTainted(node);
-    		if (childsTainted) {
-    			return true;
-    		}
-    	}
-    	return false;
-    	
-    }
-    
-    private boolean isUsedOverTaintedVariable(Node node) {
-    	ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
-    	ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
-    	if ((prefix == null || prefix.getImage() == null) && suffix != null && suffix.getImage() != null){
-    		String fieldName = suffix.getImage();
-    		if (this.currentPathTaintedVariables.contains("this." + fieldName)){
-    			return true;
-    		}
-    	}
+	private boolean isTainted(Node node2) {
+		List<ASTPrimaryExpression> primaryExpressions = getExp(node2);
+		for (ASTPrimaryExpression node : primaryExpressions) {
+			if (node.jjtGetParent() instanceof ASTConditionalExpression && node.jjtGetParent().jjtGetChild(0) == node) {
+				isTainted(node);
+				continue;
+			}
+			if (isMethodCall(node)) {
+				String method = getMethod(node);
+				String type = getType(node);
+				if (isSanitizerMethod(type, method) || isGenerator(type, method)) {
+					continue;
+				} else if (isSink(type, method)) {
+					analyzeSinkMethodArgs(node);
+				} else if (isSafeType(getReturnType(node, type, method))) {
+					continue;
+				} else if (isSource(type, method) || isUsedOverTaintedVariable(node) || isAnyArgumentTainted(node)) {
+					return true;
+				}
+
+			} else if (node.hasDescendantOfType(ASTName.class)) {
+				List<ASTName> astNames = node.findDescendantsOfType(ASTName.class);
+				if (analyzeVariable(astNames)) {
+					return true;
+				}
+			} else if (isUsedOverTaintedVariable(node)) {
+				return true;
+			}
+			boolean childsTainted = isTainted(node);
+			if (childsTainted) {
+				return true;
+			}
+		}
+		return false;
+
+	}
+
+	private boolean isUsedOverTaintedVariable(Node node) {
+		ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
+		ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
+		if ((prefix == null || prefix.getImage() == null) && suffix != null && suffix.getImage() != null) {
+			String fieldName = suffix.getImage();
+			if (this.currentPathTaintedVariables.contains("this." + fieldName)) {
+				return true;
+			}
+		}
 		if (prefix != null) {
 			ASTName astName = prefix.getFirstChildOfType(ASTName.class);
 			if (astName != null) {
@@ -577,18 +560,16 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 				return isTaintedVariable(varName);
 			}
 		}
-    	return false;
-    }
-    
-    
-    private String getVarName(ASTName name) {
-    	String varName = name.getImage();
-    	if (varName.startsWith("this.")) {
-    		varName = StringUtils.removeStart(varName, "this.");
-    	}
-    	else if (varName.contains(".")){
-    		varName = StringUtils.split(varName, ".")[0];
-    	}
+		return false;
+	}
+
+	private String getVarName(ASTName name) {
+		String varName = name.getImage();
+		if (varName.startsWith("this.")) {
+			varName = StringUtils.removeStart(varName, "this.");
+		} else if (varName.contains(".")) {
+			varName = StringUtils.split(varName, ".")[0];
+		}
 		if (varName.indexOf('.') != -1) {
 			varName = varName.substring(varName.indexOf('.') + 1);
 		}
@@ -596,60 +577,75 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 			varName = "this." + varName;
 		}
 		return varName;
-    }
-    
-    
-    private String getReturnType(Class<?> clazz, String realType, String methodName) {
-    	if (!cacheReturnTypes.containsKey(realType)) {
-    		 populateCache(clazz, realType);
-    	}
-    	String retVal = cacheReturnTypes.get(realType + "." + methodName);
-    	if (StringUtils.isBlank(retVal)){
-    		return UNKNOWN_TYPE;
-    	}
-    	return retVal;
-    }
+	}
 
-    
-    private void populateCache(Class<?> clz, String realType) {
-    	cacheReturnTypes.put(realType, UNKNOWN_TYPE);
-    	Class<?> clazz = clz;
-    	try {
-	    	if (clazz == null) {
-	    		clazz = Class.forName(realType, false, this.getClass().getClassLoader());
-	    	}
-	    	if (clazz != null) {
-		    	for(Method method: clazz.getMethods()) {
-		    		Class<?> returnType = method.getReturnType();
-		    		String methodName = method.getName();
-		    		if (returnType != null && !"void".equals(returnType.getCanonicalName())){
-		    			String key = realType + "." + methodName;
-		    			String old = cacheReturnTypes.get(key);
-		    			if (old == null || StringUtils.equals(old, returnType.getCanonicalName())){
-		    				cacheReturnTypes.put(key, returnType.getCanonicalName());
-		    			}
-						// else {
-						// // various return types for same method
-						// cacheReturnTypes.put(key, UNKNOWN_TYPE);
-						// }
-		    		}
+	private String getReturnType(Class<?> clazz, String realType, String methodName) {
+		if (!this.cacheReturnTypes.containsKey(realType)) {
+			populateCache(clazz, realType);
+		}
+		String retVal = this.cacheReturnTypes.get(realType + "." + methodName);
+		if (StringUtils.isBlank(retVal)) {
+			return UNKNOWN_TYPE;
+		}
+		return retVal;
+	}
 
-		    	}
-	    	}
-		} catch (NoClassDefFoundError err) { //NOPMD
-		} catch (ExceptionInInitializerError err) { //NOPMD
-		} catch (ClassNotFoundException e) { //NOPMD
+	private void populateCache(Class<?> clz, String realType) {
+		if (this.cacheReturnTypes.containsKey(realType)) {
+			return;
+		}
+		this.cacheReturnTypes.put(realType, realType);
+		Class<?> clazz = clz;
+		try {
+			if (clazz == null) {
+				clazz = Class.forName(realType, false, this.getClass().getClassLoader());
+			}
+			if (clazz != null) {
+				for (Method method : clazz.getMethods()) {
+					Class<?> returnType = method.getReturnType();
+					String methodName = method.getName();
+					String key = clazz.getCanonicalName() + "." + methodName;
+
+					String returnTypeName = UNKNOWN_TYPE;
+					if (returnType != null) {
+						returnTypeName = returnType.getCanonicalName();
+					}
+					String old = this.cacheReturnTypes.get(key);
+					if (old == null || StringUtils.equals(old, returnTypeName)) {
+						this.cacheReturnTypes.put(key, returnTypeName);
+					}
+					// else {
+					// // various return types for same method
+					// cacheReturnTypes.put(key, UNKNOWN_TYPE);
+					// }
+
+					if (analizeTypeWithReflectionForAnnotations(clazz)) {
+						Annotation[] annotations = method.getAnnotations();
+						for (Annotation annotation : annotations) {
+							if (this.sinkAnnotations.contains(annotation.annotationType().getCanonicalName())) {
+								this.sinks.add(key);
+							}
+							if (this.generatorAnnotations.contains(annotation.annotationType().getCanonicalName())) {
+								this.generators.add(key);
+							}
+						}
+					}
+
+				}
+			}
+		} catch (NoClassDefFoundError err) { // NOPMD
+		} catch (ExceptionInInitializerError err) { // NOPMD
+		} catch (ClassNotFoundException e) { // NOPMD
 		}
 	}
 
 	private String getReturnType(ASTPrimaryExpression node, String type, String methodName) {
-    	String realType = type;
+		String realType = type;
 
 		Class<?> clazz = null;
 		if (StringUtils.isBlank(realType) || UNKNOWN_TYPE.equals(realType)) {
-			ASTClassOrInterfaceDeclaration type2 = node.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
-			if (type2 != null && type2.getType() != null) {
-				clazz = type2.getType();
+			clazz = getContainingType(node);
+			if (clazz != null) {
 				realType = clazz.getCanonicalName();
 			}
 		}
@@ -658,40 +654,38 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 		}
 		return getReturnType(clazz, realType, methodName);
 
-
 	}
 
 	private List<ASTPrimaryExpression> getExp(Node node2) {
-    	List<ASTPrimaryExpression> expressions = new ArrayList<ASTPrimaryExpression>();
-    	for (int i=0; i < node2.jjtGetNumChildren(); i++) {
-    		Node child = node2.jjtGetChild(i);
-    		if (child instanceof ASTPrimaryExpression) {
-    			expressions.add((ASTPrimaryExpression) child);
-    		}
-    		else {
-    			expressions.addAll(getExp(child));
-    		}
-    	}
-    	
+		List<ASTPrimaryExpression> expressions = new ArrayList<ASTPrimaryExpression>();
+		int numChildren = node2.jjtGetNumChildren();
+		for (int i = 0; i < numChildren; i++) {
+			Node child = node2.jjtGetChild(i);
+			if (child instanceof ASTPrimaryExpression) {
+				expressions.add((ASTPrimaryExpression) child);
+			} else {
+				expressions.addAll(getExp(child));
+			}
+		}
+
 		return expressions;
 	}
 
-
 	private String getMethod(Node node) {
-        String method = getFullMethodName(node); 
-        if (method.indexOf('.') != -1) {
-            method = method.substring(method.indexOf('.') + 1);
-        }
-        return method;
-    }
-    
-    private String getFullMethodName(Node node) {
-    	ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
-        if (astClass != null) {
-            return astClass.getImage();
-        }
+		String method = getFullMethodName(node);
+		if (method.indexOf('.') != -1) {
+			method = method.substring(method.indexOf('.') + 1);
+		}
+		return method;
+	}
+
+	private String getFullMethodName(Node node) {
+		ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
+		if (astClass != null) {
+			return astClass.getImage();
+		}
 		ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
-		
+
 		if (prefix != null) {
 			ASTName astName = prefix.getFirstChildOfType(ASTName.class);
 			if (astName != null && astName.getImage() != null) {
@@ -714,79 +708,98 @@ public class DfaSecurityRule extends BaseSecurityRule  implements Executable {
 				mName.append(suffix.getImage());
 			}
 		}
-		return mName.toString();		
-    }
-    
-    private String getType(Node node) {
-		
-        String cannonicalName = UNKNOWN_TYPE;
-        Class<?> type = null;
-		
-        try {
-        	type = getJavaType(node);
+		return mName.toString();
+	}
+
+	private String getType(Node node) {
+
+		String cannonicalName = UNKNOWN_TYPE;
+		Class<?> type = null;
+
+		try {
+			type = getJavaType(node);
 			if (type != null) {
 				cannonicalName = type.getCanonicalName();
 			}
 			return cannonicalName;
-        } catch (Exception ex1) {    		
-        	return cannonicalName;
-        }
-		
-    }
-    
-    
-    private Class<?> getJavaType(Node node) {
-    	try {
-	    	Class<?> type = null;
-	        if (node instanceof ASTExpression) {				
-	            type = node.getFirstChildOfType(ASTPrimaryExpression.class).getFirstChildOfType(ASTName.class).getType();
-	        } else if (node instanceof ASTPrimaryExpression) {
-	        	ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
-	            if (astClass != null) {					
-	                type = astClass.getType();
-	            } else {	
-	            	ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
-	            	ASTName astName = prefix.getFirstChildOfType(ASTName.class);        	
-	            	if (astName != null) {
-	            		type = astName.getType();
-	            		if (type == null) {
-	            			String parameterName = astName.getImage();
-	            			if (parameterName.indexOf('.') > 0) {
-	            				parameterName = parameterName.substring(0, parameterName.indexOf('.'));
-	            			}
-	            			type = this.functionParameterTypes.get(parameterName);
-	            		}
-	            	}
-	            	else {
-	            		ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
-	            		type = this.fieldTypes.get(suffix.getImage());
-	            	}
-	            }
-	        } else if (node instanceof ASTName) {
-	            type = ((ASTName) node).getType();
-	        }
-	        else if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
-	        	ASTClassOrInterfaceDeclaration type2 = node.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
-	        	if (type2 != null) {
-					type = type2.getType();
+		} catch (Exception ex1) {
+			return cannonicalName;
+		}
+
+	}
+	
+
+
+	private Class<?> getJavaType(Node node) {
+
+		Class<?> type = null;
+		if (node instanceof ASTExpression) {
+			ASTPrimaryExpression primaryExpression = node.getFirstChildOfType(ASTPrimaryExpression.class);
+			if (primaryExpression != null) {
+				ASTName astName = primaryExpression.getFirstChildOfType(ASTName.class);
+				if (astName != null) {
+					type = astName.getType();
 				}
-	        }
-	        return type;
-    	} catch (Exception e) {
-    		return null;
-    	}
+			}
+		} else if (node instanceof ASTPrimaryExpression) {
+			ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
+			if (astClass != null) {
+				type = astClass.getType();
+			} else {
+				ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
+				ASTName astName = prefix.getFirstChildOfType(ASTName.class);
+				if (astName != null) {
+					type = astName.getType();
+					if (type == null) {
+						String parameterName = astName.getImage();
+						if (parameterName.indexOf('.') > 0) {
+							parameterName = parameterName.substring(0, parameterName.indexOf('.'));
+						}
+						if (this.functionParameterTypes.containsKey(parameterName)) {
+							type = this.functionParameterTypes.get(parameterName);
+						} else {
+							type = getContainingType(node);
+						}
+					}
+				} else {
+					ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
+					if (suffix != null) {
+						if (this.fieldTypes.containsKey(suffix.getImage())) {
+							type = this.fieldTypes.get(suffix.getImage());
+						} else {
+							type = getContainingType(node);
+						}
+					}
+
+				}
+			}
+		} else if (node instanceof ASTName) {
+			type = ((ASTName) node).getType();
+		} else if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
+			type = getContainingType(node);
+		}
+		return type;
+
 	}
 
+	private Class<?> getContainingType (Node node) {
+		ASTClassOrInterfaceDeclaration astClass = node.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
+		if (astClass != null) {
+			return astClass.getType();
+		}
+		return null;
+	}
+	
 	private boolean analyzeVariable(List<ASTName> listOfAstNames) {
 		for (ASTName name : listOfAstNames) {
-			String var = getVarName(name);			
+			String var = getVarName(name);
 
 			if (isTaintedVariable(var) || isSource(getType(name), var)) {
 				return true;
 			}
 		}
 		return false;
-    }
+	}
 
 	private boolean isField(ASTName name) {
 		NameDeclaration declaration = name.getNameDeclaration();
