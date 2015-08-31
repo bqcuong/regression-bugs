@@ -34,6 +34,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceType;
@@ -112,17 +114,15 @@ public final class Utils {
   
 
 	public static Set<String> arrayAsSet(String[] array) {
-        Set<String> hashSet = new HashSet<String>(array.length);
-        
-        for(String element: array) {
-        	if (element != null) {
-	        	element = element.trim();
-	        	if (element.length() > 0) {
-	        		hashSet.add(element);
-	        	}
-        	}
-        }
-        return hashSet;
-    }
+		Set<String> hashSet = new HashSet<String>((int) Math.ceil(array.length / 0.75));
+
+		for (String element : array) {
+			element = element.trim();
+			if (!StringUtils.isBlank(element)) {
+				hashSet.add(element);
+			}
+		}
+		return hashSet;
+	}
 
 }
