@@ -37,6 +37,9 @@
          <property name="search-annotattions-in-packages">
          	<value>resources</value>
          </property>
+         <property name="sink-annotations">
+         	<value>com.gdssecurity.pmd.annotations.HTMLSink</value>
+         </property>
       </properties>
   
    </rule>

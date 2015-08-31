@@ -94,7 +94,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	private final PropertyDescriptor<String[]> sinkDescriptor = new StringMultiProperty("sinks", "TODO",
 			new String[] { "" }, 1.0f, '|');
 
-	private final PropertyDescriptor<String[]> sinkAnnotationsDescriptor = new StringMultiProperty("sinksannotations",
+	private final PropertyDescriptor<String[]> sinkAnnotationsDescriptor = new StringMultiProperty("sink-annotations",
 			"TODO", new String[] { com.gdssecurity.pmd.annotations.SQLSink.class.getCanonicalName() }, 1.0f, '|');
 
 	private final PropertyDescriptor<String[]> sanitizerDescriptor = new StringMultiProperty("sanitizers", "TODO",
