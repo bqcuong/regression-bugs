@@ -40,6 +40,9 @@
          <property name="sink-annotations">
          	<value>com.gdssecurity.pmd.annotations.HTMLSink</value>
          </property>
+         <property name="generator-annotations">
+         	<value>com.gdssecurity.pmd.annotations.HTMLGenerator</value>
+         </property>
       </properties>
   
    </rule>
