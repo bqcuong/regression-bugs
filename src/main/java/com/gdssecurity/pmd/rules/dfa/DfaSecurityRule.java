@@ -98,7 +98,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			new String[] { "" }, 1.0f, '|');
 
 	private final PropertyDescriptor<String[]> sinkAnnotationsDescriptor = new StringMultiProperty("sink-annotations",
-			"TODO", new String[] { com.gdssecurity.pmd.annotations.SQLSink.class.getCanonicalName() }, 1.0f, '|');
+			"TODO", new String[] {  }, 1.0f, '|');
 
 	private final PropertyDescriptor<String[]> sanitizerDescriptor = new StringMultiProperty("sanitizers", "TODO",
 			new String[] { "" }, 1.0f, '|');
@@ -107,7 +107,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			"search-annotattions-in-packages", "TODO", new String[] {}, 1.0f, '|');
 
 	private final PropertyDescriptor<String[]> generatorAnnotationsDescriptor = new StringMultiProperty("generator-annotations",
-			"TODO", new String[] { com.gdssecurity.pmd.annotations.SQLGenerator.class.getCanonicalName() }, 1.0f, '|');
+			"TODO", new String[] {  }, 1.0f, '|');
 
 	private RuleContext rc;
 	private int methodDataFlowCount;
