@@ -679,18 +679,25 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		}
 
 	}
+	
+
 
 	private Class<?> getJavaType(Node node) {
 		try {
 			Class<?> type = null;
 			if (node instanceof ASTExpression) {
-				type = node.getFirstChildOfType(ASTPrimaryExpression.class).getFirstChildOfType(ASTName.class)
-						.getType();
+				ASTPrimaryExpression primaryExpression = node.getFirstChildOfType(ASTPrimaryExpression.class);
+				if (primaryExpression != null){
+					ASTName astName = primaryExpression.getFirstChildOfType(ASTName.class);
+					if (astName != null) {
+						type = astName.getType();
+					}
+				}
 			} else if (node instanceof ASTPrimaryExpression) {
 				ASTClassOrInterfaceType astClass = node.getFirstChildOfType(ASTClassOrInterfaceType.class);
 				if (astClass != null) {
 					type = astClass.getType();
-				} else {
+				}  else {
 					ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
 					ASTName astName = prefix.getFirstChildOfType(ASTName.class);
 					if (astName != null) {
@@ -700,11 +707,28 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 							if (parameterName.indexOf('.') > 0) {
 								parameterName = parameterName.substring(0, parameterName.indexOf('.'));
 							}
-							type = this.functionParameterTypes.get(parameterName);
+							if (this.functionParameterTypes.containsKey(parameterName)) {
+								type = this.functionParameterTypes.get(parameterName);
+							}
+							else {
+								ASTClassOrInterfaceDeclaration type2 = node.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
+								if (type2 != null) {
+									type = type2.getType();
+								}
+							}
 						}
 					} else {
 						ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
-						type = this.fieldTypes.get(suffix.getImage());
+						if (this.fieldTypes.containsKey(suffix.getImage())) {
+							type = this.fieldTypes.get(suffix.getImage());
+						} else {
+							ASTClassOrInterfaceDeclaration type2 = node
+									.getFirstParentOfType(ASTClassOrInterfaceDeclaration.class);
+							if (type2 != null) {
+								type = type2.getType();
+							}
+						}
+
 					}
 				}
 			} else if (node instanceof ASTName) {
