@@ -216,13 +216,13 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
                     case RAW_MUTATION_TYPE_SUBSTITUTION:
                         pos1.add(pointer1);
                         pos2.add(pointer2++);
-                        sb1.append(sequence1.charFromCodeAt(pointer1++));
+                        sb1.append(sequence1.symbolAt(pointer1++));
                         sb2.append(mutations.getToAsSymbolByIndex(mutPointer));
                         break;
                     case RAW_MUTATION_TYPE_DELETION:
                         pos1.add(pointer1);
                         pos2.add(-1 - pointer2);
-                        sb1.append(sequence1.charFromCodeAt(pointer1++));
+                        sb1.append(sequence1.symbolAt(pointer1++));
                         sb2.append("-");
                         break;
                     case RAW_MUTATION_TYPE_INSERTION:
@@ -238,8 +238,8 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
                 // If current position is not affected by mutations
                 pos1.add(pointer1);
                 pos2.add(pointer2++);
-                sb1.append(sequence1.charFromCodeAt(pointer1));
-                sb2.append(sequence1.charFromCodeAt(pointer1++));
+                sb1.append(sequence1.symbolAt(pointer1));
+                sb2.append(sequence1.symbolAt(pointer1++));
                 matches.add(true);
             }
         }
