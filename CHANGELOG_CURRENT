@@ -1,2 +1,5 @@
 exception in fastq files with `.` symbol in sequence fixed, `.` symbol in fastq files converts to 'N'
 verbose error message if fastq file parsing failed
+added `MultiAlignmentHelper` for pretty output of several alignments with common sequence (like V, D, J alignments in VDJ assembly)
+`charFromCodeAt` renamed to `symbolAt` in base Sequence class
+BLAST aligner now supports management of several concurrent BLAST instances (to align queries from a common pipe)

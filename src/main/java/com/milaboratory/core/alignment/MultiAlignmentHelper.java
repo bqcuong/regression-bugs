@@ -68,9 +68,16 @@ public class MultiAlignmentHelper {
     public MultiAlignmentHelper addSubjectQuality(String title, SequenceQuality quality) {
         char[] chars = new char[size()];
         for (int i = 0; i < size(); ++i)
-            chars[i] = subjectPositions[i] < 0 ? ' ' : (char) (33 + quality.value(subjectPositions[i]));
+            chars[i] = subjectPositions[i] < 0 ? ' ' : simplifiedQuality(quality.value(subjectPositions[i]));
         addAnnotationString(title, new String(chars));
         return this;
+    }
+
+    private static char simplifiedQuality(int value) {
+        value /= 5;
+        if (value > 9)
+            value = 9;
+        return Integer.toString(value).charAt(0);
     }
 
     public MultiAlignmentHelper addAnnotationString(String title, String string) {
