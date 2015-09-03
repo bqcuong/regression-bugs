@@ -132,7 +132,8 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
      * returns {@code -2 - p}, where {@code p} is a position of previous letter in sequence2.
      *
      * @param position position in sequence1
-     * @return position in coordinates of sequence2, or -1 if specified position is out of aligned range of sequence1, or if
+     * @return position in coordinates of sequence2, or -1 if specified position is out of aligned range of sequence1,
+     * or if
      * letter at specified position in sequence1 is removed in sequence2  --- {@code -2 - p} where {@code p} is a
      * position of previous letter in sequence2
      */
@@ -147,6 +148,11 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
 
     public float getScore() {
         return score;
+    }
+
+    public Alignment<S> invert(S sequence2) {
+        return new Alignment<S>(sequence2, getRelativeMutations().invert().move(sequence2Range.getFrom()),
+                sequence2Range, sequence1Range, score);
     }
 
     /**

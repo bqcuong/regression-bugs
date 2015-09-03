@@ -36,6 +36,20 @@ public class MultiAlignmentHelperTest {
                 Aligner.alignGlobalAffine(AffineGapAlignmentScoring.getNucleotideBLASTScoring(), seq0, seq2),
         };
 
+        System.out.println(alignments[0].getAlignmentHelper());
+        System.out.println(alignments[0].invert(seq1).getAlignmentHelper());
+        System.out.println();
+        System.out.println(alignments[1].getAlignmentHelper());
+        System.out.println(alignments[1].invert(seq1).getAlignmentHelper());
+        System.out.println();
+        System.out.println(alignments[2].getAlignmentHelper());
+        System.out.println(alignments[2].invert(seq2).getAlignmentHelper());
+        System.out.println();
+        System.out.println(alignments[3].getAlignmentHelper());
+        System.out.println(alignments[3].invert(seq2).getAlignmentHelper());
+        System.out.println();
+
+
         for (Alignment<NucleotideSequence> alignment : alignments) {
             System.out.println(alignment.getAlignmentHelper());
             System.out.println();
