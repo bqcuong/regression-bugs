@@ -17,6 +17,7 @@ package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
 import com.milaboratory.core.sequence.NucleotideSequence;
+import com.milaboratory.core.sequence.SequenceQuality;
 import org.junit.Test;
 
 /**
@@ -25,6 +26,7 @@ import org.junit.Test;
 public class MultiAlignmentHelperTest {
     @Test
     public void test1() throws Exception {
+        SequenceQuality seq0qual = new SequenceQuality("GIHGIIHIHFHGHGIIIGKHK");
         NucleotideSequence seq0 = new NucleotideSequence("GATACATTAGACACAGATACA");
         NucleotideSequence seq1 = new NucleotideSequence("AGACACATATACACAG");
         NucleotideSequence seq2 = new NucleotideSequence("GATACGATACATTAGAGACCACAGATACA");
@@ -36,20 +38,6 @@ public class MultiAlignmentHelperTest {
                 Aligner.alignGlobalAffine(AffineGapAlignmentScoring.getNucleotideBLASTScoring(), seq0, seq2),
         };
 
-        System.out.println(alignments[0].getAlignmentHelper());
-        System.out.println(alignments[0].invert(seq1).getAlignmentHelper());
-        System.out.println();
-        System.out.println(alignments[1].getAlignmentHelper());
-        System.out.println(alignments[1].invert(seq1).getAlignmentHelper());
-        System.out.println();
-        System.out.println(alignments[2].getAlignmentHelper());
-        System.out.println(alignments[2].invert(seq2).getAlignmentHelper());
-        System.out.println();
-        System.out.println(alignments[3].getAlignmentHelper());
-        System.out.println(alignments[3].invert(seq2).getAlignmentHelper());
-        System.out.println();
-
-
         for (Alignment<NucleotideSequence> alignment : alignments) {
             System.out.println(alignment.getAlignmentHelper());
             System.out.println();
@@ -57,6 +45,7 @@ public class MultiAlignmentHelperTest {
 
         MultiAlignmentHelper helper = MultiAlignmentHelper.build(MultiAlignmentHelper.DEFAULT_SETTINGS, new Range(0, seq0.size()),
                 alignments);
+        helper.addSubjectQuality("Quality", seq0qual);
         helper.setSubjectTitle("Subject");
         for (int i = 0; i < 4; i++)
             helper.setQueryTitle(i, "Query" + i);

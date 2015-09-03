@@ -20,6 +20,7 @@ import com.milaboratory.core.mutations.MutationType;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
+import com.milaboratory.core.sequence.SequenceQuality;
 import com.milaboratory.util.BitArray;
 import com.milaboratory.util.IntArrayList;
 
@@ -36,6 +37,8 @@ public class MultiAlignmentHelper {
     final int[] subjectPositions;
     final int[][] queryPositions;
     final BitArray[] match;
+    final List<String> annotationStrings = new ArrayList<>();
+    final List<String> annotationStringTitles = new ArrayList<>();
 
     String subjectTitle;
     final String[] queryTitles;
@@ -62,9 +65,49 @@ public class MultiAlignmentHelper {
         return this;
     }
 
+    public MultiAlignmentHelper addSubjectQuality(String title, SequenceQuality quality) {
+        char[] chars = new char[size()];
+        for (int i = 0; i < size(); ++i)
+            chars[i] = subjectPositions[i] < 0 ? ' ' : (char) (33 + quality.value(subjectPositions[i]));
+        addAnnotationString(title, new String(chars));
+        return this;
+    }
+
+    public MultiAlignmentHelper addAnnotationString(String title, String string) {
+        if (string.length() != size())
+            throw new IllegalArgumentException();
+        annotationStrings.add(string);
+        annotationStringTitles.add(title);
+        return this;
+    }
+
     public MultiAlignmentHelper setQueryTitle(int id, String queryTitle) {
         this.queryTitles[id] = queryTitle;
         return this;
+    }
+
+    public int getSubjectPositionAt(int position) {
+        return subjectPositions[position];
+    }
+
+    public int getQueryPositionAt(int index, int position) {
+        return queryPositions[index][position];
+    }
+
+    public int getAbsSubjectPositionAt(int position) {
+        return aabs(subjectPositions[position]);
+    }
+
+    public int getAbsQueryPositionAt(int index, int position) {
+        return aabs(queryPositions[index][position]);
+    }
+
+    private static int aabs(int pos) {
+        if (pos >= 0)
+            return pos;
+        if (pos == -1)
+            return -1;
+        return -2 - pos;
     }
 
     public int getSubjectFrom() {
@@ -118,9 +161,13 @@ public class MultiAlignmentHelper {
             j++;
         }
 
-        return new MultiAlignmentHelper(subject.substring(from, to), cQueries,
+        MultiAlignmentHelper result = new MultiAlignmentHelper(subject.substring(from, to), cQueries,
                 Arrays.copyOfRange(subjectPositions, from, to), cQueryPositions, cMatch,
                 subjectTitle, cQueryTitles);
+        for (int i = 0; i < annotationStrings.size(); i++)
+            result.addAnnotationString(annotationStringTitles.get(i),
+                    annotationStrings.get(i).substring(from, to));
+        return result;
     }
 
     public MultiAlignmentHelper[] split(int length) {
@@ -153,12 +200,13 @@ public class MultiAlignmentHelper {
         return -1;
     }
 
-    private static void fixedWidth(String[] strings) {
+    private static int fixedWidth(String[] strings) {
         int length = 0;
         for (String string : strings)
             length = Math.max(length, string.length());
         for (int i = 0; i < strings.length; i++)
             strings[i] = spaces(length - strings[i].length()) + strings[i];
+        return length;
     }
 
     public static class Settings {
@@ -180,32 +228,42 @@ public class MultiAlignmentHelper {
     @Override
     public String toString() {
         int aCount = queries.length;
-        String[] leftColumn = new String[queries.length + 1];
+        int asSize = annotationStringTitles.size();
 
-        leftColumn[0] = "" + getSubjectFrom();
+        String[] leftColumn = new String[aCount + 1 + asSize];
+
+        for (int i = 0; i < asSize; i++)
+            leftColumn[i] = "";
+
+        leftColumn[asSize] = "" + getSubjectFrom();
         for (int i = 0; i < aCount; i++)
-            leftColumn[i + 1] = "" + getQueryFrom(i);
+            leftColumn[i + 1 + asSize] = "" + getQueryFrom(i);
 
-        fixedWidth(leftColumn);
+        int leftWidth = fixedWidth(leftColumn);
 
-        leftColumn[0] = (subjectTitle == null ? "" : subjectTitle) +
-                " " + leftColumn[0];
+        for (int i = 0; i < asSize; i++)
+            leftColumn[i] = annotationStringTitles.get(i) + spaces(leftWidth + 1);
+
+        leftColumn[asSize] = (subjectTitle == null ? "" : subjectTitle) +
+                " " + leftColumn[asSize];
 
         for (int i = 0; i < aCount; i++)
-            leftColumn[i + 1] = (queryTitles[i] == null ? "" : queryTitles[i]) +
-                    " " + leftColumn[i + 1];
+            leftColumn[i + 1 + asSize] = (queryTitles[i] == null ? "" : queryTitles[i]) +
+                    " " + leftColumn[i + 1 + asSize];
 
-        fixedWidth(leftColumn);
+        leftWidth = fixedWidth(leftColumn);
 
         StringBuilder result = new StringBuilder();
-        result.append(leftColumn[0]).append(" ").append(subject).append(" ").append(getSubjectTo());
+        for (int i = 0; i < asSize; i++)
+            result.append(leftColumn[i]).append(" ").append(annotationStrings.get(i)).append('\n');
+        result.append(leftColumn[asSize]).append(" ").append(subject).append(" ").append(getSubjectTo());
         for (int i = 0; i < aCount; i++) {
-            result.append('\n').append(leftColumn[i + 1]).append(" ").append(queries[i]).append(" ").append(getQueryTo(i));
+            result.append('\n').append(leftColumn[i + 1 + asSize]).append(" ").append(queries[i]).append(" ").append(getQueryTo(i));
         }
         return result.toString();
     }
 
-    public static final Settings DEFAULT_SETTINGS = new Settings(false, true, false, '.', ' ');
+    public static final Settings DEFAULT_SETTINGS = new Settings(false, true, false, ' ', ' ');
     public static final Settings DOT_MATCH_SETTINGS = new Settings(true, true, false, '.', ' ');
 
     public static <S extends Sequence<S>> MultiAlignmentHelper build(Settings settings, Range subjectRange,
