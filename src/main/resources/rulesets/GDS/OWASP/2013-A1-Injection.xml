@@ -30,6 +30,9 @@
 |java.sql.Connection.nativeSQL
 |java.sql.Connection.prepareCall
 |java.sql.Connection.prepareStatement
+|javax.persistence.EntityQuery.createNamedQuery
+|javax.persistence.EntityQuery.createNativeQuery
+|javax.persistence.EntityQuery.createQuery
 |javax.persistence.EntityManager.createNativeQuery
 |javax.persistence.EntityManager.createQuery
 			</value>
