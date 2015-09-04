@@ -317,6 +317,17 @@ public class MultiAlignmentHelper {
 
             processed.clearAll();
 
+            // Processing out of range sequences
+            for (int i = 0; i < aCount; i++)
+                if (!alignments[i].getSequence1Range().contains(subjectPointer)
+                        && !(alignments[i].getSequence1Range().containsBoundary(subjectPointer) &&
+                        mutationPointers[i] != mutations[i].size())) {
+                    queryStrings[i].append(settings.outOfRangeChar);
+                    queryPositions[i].add(-1);
+                    matches[i].add(false);
+                    processed.set(i);
+                }
+
             // Checking for insertions
             boolean insertion = false;
             for (int i = 0; i < aCount; i++)
@@ -328,15 +339,6 @@ public class MultiAlignmentHelper {
                     queryPositions[i].add(queryPointers[i]++);
                     matches[i].add(false);
                     mutationPointers[i]++;
-                    processed.set(i);
-                }
-
-            // Processing out of range sequences
-            for (int i = 0; i < aCount; i++)
-                if (!alignments[i].getSequence1Range().containsBoundary(subjectPointer)) {
-                    queryStrings[i].append(settings.outOfRangeChar);
-                    queryPositions[i].add(-1);
-                    matches[i].add(false);
                     assert !processed.get(i);
                     processed.set(i);
                 }
