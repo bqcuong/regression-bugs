@@ -46,9 +46,9 @@ public class MultiAlignmentHelperTest {
         MultiAlignmentHelper helper = MultiAlignmentHelper.build(MultiAlignmentHelper.DEFAULT_SETTINGS, new Range(0, seq0.size()),
                 alignments);
         helper.addSubjectQuality("Quality", seq0qual);
-        helper.setSubjectTitle("Subject");
+        helper.setSubjectLeftTitle("Subject");
         for (int i = 0; i < 4; i++)
-            helper.setQueryTitle(i, "Query" + i);
+            helper.setQueryLeftTitle(i, "Query" + i);
 
         System.out.println(helper);
 

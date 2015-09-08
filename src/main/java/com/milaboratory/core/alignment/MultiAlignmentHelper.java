@@ -40,28 +40,35 @@ public class MultiAlignmentHelper {
     final List<String> annotationStrings = new ArrayList<>();
     final List<String> annotationStringTitles = new ArrayList<>();
 
-    String subjectTitle;
-    final String[] queryTitles;
+    String subjectLeftTitle;
+    final String[] queryLeftTitles;
+
+    String subjectRightTitle;
+    final String[] queryRightTitles;
 
     private MultiAlignmentHelper(String subject, String[] queries, int[] subjectPositions, int[][] queryPositions,
                                  BitArray[] match) {
-        this(subject, queries, subjectPositions, queryPositions, match, "", new String[queries.length]);
+        this(subject, queries, subjectPositions, queryPositions, match, "", new String[queries.length],
+                "", new String[queries.length]);
     }
 
     public MultiAlignmentHelper(String subject, String[] queries, int[] subjectPositions,
-                                int[][] queryPositions, BitArray[] match, String subjectTitle,
-                                String[] queryTitles) {
+                                int[][] queryPositions, BitArray[] match,
+                                String subjectLeftTitle, String[] queryLeftTitles,
+                                String subjectRightTitle, String[] queryRightTitles) {
         this.subject = subject;
         this.queries = queries;
         this.subjectPositions = subjectPositions;
         this.queryPositions = queryPositions;
         this.match = match;
-        this.subjectTitle = subjectTitle;
-        this.queryTitles = queryTitles;
+        this.subjectLeftTitle = subjectLeftTitle;
+        this.queryLeftTitles = queryLeftTitles;
+        this.subjectRightTitle = subjectRightTitle;
+        this.queryRightTitles = queryRightTitles;
     }
 
-    public MultiAlignmentHelper setSubjectTitle(String subjectTitle) {
-        this.subjectTitle = subjectTitle;
+    public MultiAlignmentHelper setSubjectLeftTitle(String subjectLeftTitle) {
+        this.subjectLeftTitle = subjectLeftTitle;
         return this;
     }
 
@@ -80,6 +87,11 @@ public class MultiAlignmentHelper {
         return Integer.toString(value).charAt(0);
     }
 
+    public MultiAlignmentHelper setSubjectRightTitle(String subjectRightTitle) {
+        this.subjectRightTitle = subjectRightTitle;
+        return this;
+    }
+
     public MultiAlignmentHelper addAnnotationString(String title, String string) {
         if (string.length() != size())
             throw new IllegalArgumentException();
@@ -88,8 +100,13 @@ public class MultiAlignmentHelper {
         return this;
     }
 
-    public MultiAlignmentHelper setQueryTitle(int id, String queryTitle) {
-        this.queryTitles[id] = queryTitle;
+    public MultiAlignmentHelper setQueryLeftTitle(int id, String queryLeftTitle) {
+        this.queryLeftTitles[id] = queryLeftTitle;
+        return this;
+    }
+
+    public MultiAlignmentHelper setQueryRightTitle(int id, String queryRightTitle) {
+        this.queryRightTitles[id] = queryRightTitle;
         return this;
     }
 
@@ -155,7 +172,8 @@ public class MultiAlignmentHelper {
         String[] cQueries = new String[queriesCount];
         int[][] cQueryPositions = new int[queriesCount][];
         BitArray[] cMatch = new BitArray[queriesCount];
-        String[] cQueryTitles = new String[queriesCount];
+        String[] cQueryLeftTitles = new String[queriesCount];
+        String[] cQueryRightTitles = new String[queriesCount];
 
         int j = 0;
         for (int i = 0; i < queries.length; i++) {
@@ -164,13 +182,15 @@ public class MultiAlignmentHelper {
             cQueries[j] = queries[i].substring(from, to);
             cQueryPositions[j] = Arrays.copyOfRange(queryPositions[i], from, to);
             cMatch[j] = match[i].getRange(from, to);
-            cQueryTitles[j] = queryTitles[i];
+            cQueryLeftTitles[j] = queryLeftTitles[i];
+            cQueryRightTitles[j] = queryRightTitles[i];
             j++;
         }
 
         MultiAlignmentHelper result = new MultiAlignmentHelper(subject.substring(from, to), cQueries,
                 Arrays.copyOfRange(subjectPositions, from, to), cQueryPositions, cMatch,
-                subjectTitle, cQueryTitles);
+                subjectLeftTitle, cQueryLeftTitles, subjectRightTitle, cQueryRightTitles);
+
         for (int i = 0; i < annotationStrings.size(); i++)
             result.addAnnotationString(annotationStringTitles.get(i),
                     annotationStrings.get(i).substring(from, to));
@@ -207,12 +227,21 @@ public class MultiAlignmentHelper {
         return -1;
     }
 
-    private static int fixedWidth(String[] strings) {
+    private static int fixedWidthL(String[] strings) {
         int length = 0;
         for (String string : strings)
             length = Math.max(length, string.length());
         for (int i = 0; i < strings.length; i++)
             strings[i] = spaces(length - strings[i].length()) + strings[i];
+        return length;
+    }
+
+    private static int fixedWidthR(String[] strings) {
+        int length = 0;
+        for (String string : strings)
+            length = Math.max(length, string.length());
+        for (int i = 0; i < strings.length; i++)
+            strings[i] = strings[i] + spaces(length - strings[i].length());
         return length;
     }
 
@@ -237,35 +266,47 @@ public class MultiAlignmentHelper {
         int aCount = queries.length;
         int asSize = annotationStringTitles.size();
 
-        String[] leftColumn = new String[aCount + 1 + asSize];
+        String[] lines = new String[aCount + 1 + asSize];
 
         for (int i = 0; i < asSize; i++)
-            leftColumn[i] = "";
+            lines[i] = "";
 
-        leftColumn[asSize] = "" + getSubjectFrom();
+        lines[asSize] = "" + getSubjectFrom();
         for (int i = 0; i < aCount; i++)
-            leftColumn[i + 1 + asSize] = "" + getQueryFrom(i);
+            lines[i + 1 + asSize] = "" + getQueryFrom(i);
 
-        int leftWidth = fixedWidth(leftColumn);
+        int width = fixedWidthL(lines);
 
         for (int i = 0; i < asSize; i++)
-            leftColumn[i] = annotationStringTitles.get(i) + spaces(leftWidth + 1);
+            lines[i] = annotationStringTitles.get(i) + spaces(width + 1);
 
-        leftColumn[asSize] = (subjectTitle == null ? "" : subjectTitle) +
-                " " + leftColumn[asSize];
+        lines[asSize] = (subjectLeftTitle == null ? "" : subjectLeftTitle) +
+                " " + lines[asSize];
 
         for (int i = 0; i < aCount; i++)
-            leftColumn[i + 1 + asSize] = (queryTitles[i] == null ? "" : queryTitles[i]) +
-                    " " + leftColumn[i + 1 + asSize];
+            lines[i + 1 + asSize] = (queryLeftTitles[i] == null ? "" : queryLeftTitles[i]) +
+                    " " + lines[i + 1 + asSize];
 
-        leftWidth = fixedWidth(leftColumn);
+        width = fixedWidthL(lines);
+
+        for (int i = 0; i < asSize; i++)
+            lines[i] += " " + annotationStrings.get(i);
+        lines[asSize] += " " + subject + " " + getSubjectTo();
+        for (int i = 0; i < aCount; i++)
+            lines[i + 1 + asSize] += " " + queries[i] + " " + getQueryTo(i);
+
+        width = fixedWidthR(lines);
+
+        lines[asSize] += " " + subjectRightTitle;
+        for (int i = 0; i < aCount; i++)
+            if (queryRightTitles[i] != null)
+                lines[i + 1 + asSize] += " " + queryRightTitles[i];
 
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < asSize; i++)
-            result.append(leftColumn[i]).append(" ").append(annotationStrings.get(i)).append('\n');
-        result.append(leftColumn[asSize]).append(" ").append(subject).append(" ").append(getSubjectTo());
-        for (int i = 0; i < aCount; i++) {
-            result.append('\n').append(leftColumn[i + 1 + asSize]).append(" ").append(queries[i]).append(" ").append(getQueryTo(i));
+        for (int i = 0; i < lines.length; i++) {
+            if (i != 0)
+                result.append("\n");
+            result.append(lines[i]);
         }
         return result.toString();
     }
