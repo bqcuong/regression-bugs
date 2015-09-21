@@ -22,14 +22,6 @@ import java.util.Arrays;
 import static java.lang.Math.*;
 
 public final class OffsetPacksAccumulator {
-    /**
-     * FirstIndex  0    0
-     * LastIndex   0    1
-     * MinValue    100  100
-     * MaxValue    100  100
-     * (key) LastValue   100  100
-     * Score       10   20
-     */
     public static final int FIRST_INDEX = 0;
     public static final int LAST_INDEX = 1;
     public static final int MIN_VALUE = 2;
@@ -45,8 +37,20 @@ public final class OffsetPacksAccumulator {
     final int matchScore, mismatchScore, shiftScore, islandMinimalScore;
     final IntArrayList results = new IntArrayList(RECORD_SIZE * 2);
 
+    final int bitsForIndex, indexMask;
+
     public OffsetPacksAccumulator(int slotCount, int allowedDelta, int matchScore,
                                   int mismatchScore, int shiftScore, int islandMinimalScore) {
+        this(slotCount, allowedDelta, matchScore, mismatchScore, shiftScore, islandMinimalScore, 12);
+    }
+
+    public OffsetPacksAccumulator(int slotCount, int allowedDelta, int matchScore,
+                                  int mismatchScore, int shiftScore, int islandMinimalScore,
+                                  int bitsForIndex) {
+        //Bits
+        this.bitsForIndex = bitsForIndex;
+        this.indexMask = 0xFFFFFFFF >>> (32 - bitsForIndex);
+
         this.slotCount = slotCount;
         this.allowedDelta = allowedDelta;
         this.slidingArray = new int[RECORD_SIZE * slotCount];
@@ -56,65 +60,103 @@ public final class OffsetPacksAccumulator {
         this.islandMinimalScore = islandMinimalScore;
     }
 
-    public void reset() {
+    private void reset() {
         results.clear();
         Arrays.fill(slidingArray, Integer.MIN_VALUE);
     }
 
-    public void put(int offset, int index) {
-        // Matching existing records
-        for (int i = LAST_VALUE; i < slidingArray.length; i += RECORD_SIZE)
-            if (inDelta(slidingArray[i], offset)) {
-                int j = i - LAST_VALUE;
+    /**
+     * Accepts array with elements in the following format:
+     */
+    public void put(int[] data) {
+        reset();
 
-                if (index == slidingArray[j + LAST_INDEX]) {
+        int index, offset;
+        OUTER:
+        for (int recordId = 0; recordId < data.length; recordId++) {
+            int record = data[recordId];
+            offset = record >> bitsForIndex;
+            index = record & indexMask;
 
+            // Matching existing records
+            for (int i = LAST_VALUE; i < slidingArray.length; i += RECORD_SIZE)
+                if (inDelta(slidingArray[i], offset)) {
+                    // Processing exceptional cases for self-correlated K-Mers
+                    // {
 
+                    // If next record has same index and better offset
+                    // (closer to current island LAST_VALUE)
+                    if (recordId < data.length - 1
+                            && (indexMask & (record ^ data[recordId + 1])) == 0
+                            && abs(slidingArray[i] - offset) > abs(slidingArray[i] - (data[recordId + 1] >> bitsForIndex)))
+                        // Skip current record
+                        continue OUTER;
+
+                    // If previous record has same index and better offset
+                    // (closer to current island LAST_VALUE)
+                    if (recordId > 0
+                            && (indexMask & (record ^ data[recordId - 1])) == 0
+                            && abs(slidingArray[i] - offset) > abs(slidingArray[i] - (data[recordId - 1] >> bitsForIndex)))
+                        // Skip current record
+                        continue OUTER;
+
+                    // }
+
+                    int j = i - LAST_VALUE;
+
+                    assert index > slidingArray[j + LAST_INDEX];
+
+                    int scoreDelta = matchScore + (index - slidingArray[j + LAST_INDEX] - 1) * mismatchScore +
+                            abs(slidingArray[j + LAST_VALUE] - offset) * shiftScore;
+
+                    if (scoreDelta > 0) {
+                        slidingArray[j + LAST_INDEX] = index;
+                        slidingArray[j + MIN_VALUE] = min(slidingArray[j + MIN_VALUE], offset);
+                        slidingArray[j + MAX_VALUE] = max(slidingArray[j + MAX_VALUE], offset);
+                        slidingArray[j + LAST_VALUE] = offset;
+                        slidingArray[j + SCORE] += scoreDelta;
+                        continue OUTER;
+                    }
                 }
 
-                assert index > slidingArray[j + LAST_INDEX];
-
-                int scoreDelta = matchScore + (index - slidingArray[j + LAST_INDEX] - 1) * mismatchScore +
-                        abs(slidingArray[j + LAST_VALUE] - offset) * shiftScore;
-
-                if (scoreDelta > 0) {
-                    slidingArray[j + LAST_INDEX] = index;
-                    slidingArray[j + MIN_VALUE] = min(slidingArray[j + MIN_VALUE], offset);
-                    slidingArray[j + MAX_VALUE] = max(slidingArray[j + MAX_VALUE], offset);
-                    slidingArray[j + LAST_VALUE] = offset;
-                    slidingArray[j + SCORE] += scoreDelta;
-                    return;
+            int minimalIndex = -1;
+            int minimalValue = Integer.MAX_VALUE;
+            for (int i = LAST_INDEX; i < slidingArray.length; i += RECORD_SIZE) {
+                if (slidingArray[i] == Integer.MIN_VALUE) {
+                    minimalIndex = i;
+                    break;
+                } else if (slidingArray[i] < minimalValue) {
+                    minimalIndex = i;
+                    minimalValue = slidingArray[i];
                 }
             }
+            minimalIndex -= LAST_INDEX;
 
-        int minimalIndex = -1;
-        int minimalValue = Integer.MAX_VALUE;
-        for (int i = LAST_INDEX; i < slidingArray.length; i += RECORD_SIZE) {
-            if (slidingArray[i] == Integer.MIN_VALUE) {
-                minimalIndex = i;
-                break;
-            } else if (slidingArray[i] < minimalValue) {
-                minimalIndex = i;
-                minimalValue = slidingArray[i];
+            assert minimalIndex >= 0;
+
+            //finishing previous record
+            finished(minimalIndex);
+
+            //create new record
+            slidingArray[minimalIndex + FIRST_INDEX] = index;
+            slidingArray[minimalIndex + LAST_INDEX] = index;
+            slidingArray[minimalIndex + MIN_VALUE] = offset;
+            slidingArray[minimalIndex + MAX_VALUE] = offset;
+            //TODO move lower; don't copy
+            slidingArray[minimalIndex + LAST_VALUE] = offset;
+            slidingArray[minimalIndex + SCORE] = matchScore;
+
+            // If next record has same index
+            while(recordId < data.length - 1
+                    && (indexMask & (record ^ data[recordId + 1])) == 0
+                    &&  abs( - offset)) {
+
+                recordId++;
+                record = data[recordId];
+                //TODO offset index ???
             }
         }
-        minimalIndex -= LAST_INDEX;
 
-        assert minimalIndex >= 0;
-
-        //finishing previous record
-        finished(minimalIndex);
-
-        //create new record
-        slidingArray[minimalIndex + FIRST_INDEX] = index;
-        slidingArray[minimalIndex + LAST_INDEX] = index;
-        slidingArray[minimalIndex + MIN_VALUE] = offset;
-        slidingArray[minimalIndex + MAX_VALUE] = offset;
-        slidingArray[minimalIndex + LAST_VALUE] = offset;
-        slidingArray[minimalIndex + SCORE] = matchScore;
-    }
-
-    public void finish() {
         for (int i = 0; i < slidingArray.length; i += RECORD_SIZE)
             finished(i);
     }

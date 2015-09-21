@@ -12,10 +12,13 @@ import static com.milaboratory.core.alignment.kaligner2.OffsetPacksAccumulator.*
  * Created by poslavsky on 21/09/15.
  */
 public class OffsetPacksAccumulatorTest {
+    public static final int bitsForOffset = 18;
+    public static final int bitsForIndex = 32 - bitsForOffset;
+
     @Test
     public void test1() throws Exception {
         int[] data = {10, 10, 11, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(3, 4, 15, -4, -2, 30), data),
+        assertBunches(process(new OffsetPacksAccumulator(3, 4, 15, -4, -2, 30, bitsForIndex), data),
                 new Bunch(0, 3, 10, 12, 56),
                 new Bunch(5, 12, 31, 34, 110),
                 new Bunch(13, 16, 10, 10, 60));
@@ -24,7 +27,7 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void test2() throws Exception {
         int[] data = {10, 10, 11, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data),
                 new Bunch(0, 3, 10, 12, 56),
                 new Bunch(5, 12, 31, 34, 110),
                 new Bunch(13, 16, 10, 10, 60));
@@ -33,7 +36,7 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void test3() throws Exception {
         int[] data = {10, 10, 1, 11, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data),
                 new Bunch(0, 4, 10, 12, 52),
                 new Bunch(6, 13, 31, 34, 110),
                 new Bunch(14, 17, 10, 10, 60));
@@ -43,7 +46,7 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void test4() throws Exception {
         int[] data = {10, 10, 1, 11, 33, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data),
                 new Bunch(0, 5, 10, 12, 48),
                 new Bunch(4, 14, 31, 34, 117),
                 new Bunch(15, 18, 10, 10, 60));
@@ -54,7 +57,7 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 102, 10, 10};
         int[] indexes = {0, 1, 2, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
                 new Bunch(0, 3, 10, 10, 60));
     }
 
@@ -63,21 +66,38 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 102, 10, 10};
         int[] indexes = {0, 1, 1, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
                 new Bunch(0, 3, 10, 10, 60));
     }
 
     @Test
-    public void testaaaabajhbjhjhgjhasgdajshgdkasjdgasjhdgasjdhgaskjdhgaskdjgaskdjasgkdjhasgdkjhasgdjashgdkashjdgasdjhasgdjhasgdkjashdgkasjdgyh()
+    public void testSelfCorrelatedKMer1()
             throws Exception {
-        int[] data =    {10, 10, 12, 10, 10};
-        int[] indexes = { 0,  1,  2,  2,  3};
-        OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes);
+        int[] data = {10, 10, 12, 10, 10};
+        int[] indexes = {0, 1, 2, 2, 3};
+        OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes);
         System.out.println(of);
-//        assertBunches(of,
-//                new Bunch(0, 5, 10, 12, 48),
-//                new Bunch(4, 14, 31, 34, 117),
-//                new Bunch(15, 18, 10, 10, 60));
+        assertBunches(of, new Bunch(0, 3, 10, 10, 60));
+    }
+
+    @Test
+    public void testSelfCorrelatedKMer2()
+            throws Exception {
+        int[] data = {10, 10, 12, 10, 10};
+        int[] indexes = {0, 1, 1, 2, 3};
+        OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes);
+        System.out.println(of);
+        assertBunches(of, new Bunch(0, 3, 10, 10, 60));
+    }
+
+    @Test
+    public void testSelfCorrelatedKMer3()
+            throws Exception {
+        int[] data = {12, 10, 10, 10, 10};
+        int[] indexes = {0, 0, 1, 2, 3};
+        OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes);
+        System.out.println(of);
+        assertBunches(of, new Bunch(0, 3, 10, 10, 60));
     }
 
     static String verbose(OffsetPacksAccumulator of, int[] clouds) throws Exception {
@@ -125,18 +145,19 @@ public class OffsetPacksAccumulatorTest {
     private static OffsetPacksAccumulator process(OffsetPacksAccumulator of, int[] data, int[] indexes) {
         if (data.length != indexes.length)
             throw new IllegalArgumentException();
-        of.reset();
+        int[] packedData = new int[data.length];
         for (int i = 0; i < data.length; i++)
-            of.put(data[i], indexes[i]);
-        of.finish();
+            packedData[i] = (data[i] << bitsForIndex) | indexes[i];
+        of.put(packedData);
         return of;
     }
 
     private static OffsetPacksAccumulator process(OffsetPacksAccumulator of, int... data) {
-        of.reset();
+        int[] packedData = new int[data.length];
         for (int i = 0; i < data.length; i++)
-            of.put(data[i], i);
-        of.finish();
+            packedData[i] = (data[i] << bitsForIndex) | i;
+
+        of.put(packedData);
         return of;
     }
 
