@@ -355,13 +355,40 @@ public final class KMapper2 implements java.io.Serializable {
                 offset = candidates[i].get(k) >> (32 - bitsForOffset);
             }
 
-
             result.add(new KMappingHit2(seedOffsets.toArray(), boundaries.toArray(),
                     0, candidates[i].get(0), score, 0, 0));
             seedOffsets.clear();
             boundaries.clear();
         }
 
+/*
+
+   Match     = 10
+   Mismatch  = -10
+   Shift     = -9
+
+      FirstIndex  0    0
+      LastIndex   0    1
+      MinValue    100  100
+      MaxValue    100  100
+(key) LastValue   100  100
+      Score       10   20
+
+      FirstIndex  2
+      LastIndex   2
+      MinValue    50
+      MaxValue    50
+(key) LastValue   50
+      Score       10
+
+      FirstIndex  3
+      LastIndex   3
+      MinValue    70
+      MaxValue    70
+(key) LastValue   70
+      Score       10
+
+*/
 //        //Selecting best candidates (vote)
 //        //int resultId = 0;
 //        Info info = new Info();
@@ -569,6 +596,8 @@ public final class KMapper2 implements java.io.Serializable {
 //        return new KMappingResult2(seedPositions, result);
         return null;
     }
+
+    public static
 
     /**
      * Returns number of nucleotides in kMer (value of k)
