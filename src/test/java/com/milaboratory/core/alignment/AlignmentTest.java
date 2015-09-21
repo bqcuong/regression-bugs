@@ -30,7 +30,7 @@ import java.io.ByteArrayOutputStream;
 
 public class AlignmentTest {
 
-    static NucleotideSequence mutate(NucleotideSequence seq, int[] mut) {
+    public static NucleotideSequence mutate(NucleotideSequence seq, int[] mut) {
         return new Mutations<NucleotideSequence>(NucleotideSequence.ALPHABET, mut).mutate(seq);
     }
 

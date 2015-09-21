@@ -20,6 +20,7 @@ import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.generator.MutationModels;
 import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.sequence.NucleotideSequence;
+import com.milaboratory.util.RandomUtil;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.Well19937c;
 import org.junit.Assert;
