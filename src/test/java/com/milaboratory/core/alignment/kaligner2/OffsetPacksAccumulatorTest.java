@@ -75,9 +75,8 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 12, 10, 10};
         int[] indexes = {0, 1, 2, 2, 3};
-        OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes);
-        System.out.println(of);
-        assertBunches(of, new Bunch(0, 3, 10, 10, 60));
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
+                new Bunch(0, 3, 10, 10, 60));
     }
 
     @Test
@@ -85,22 +84,30 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 12, 10, 10};
         int[] indexes = {0, 1, 1, 2, 3};
-        OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes);
-        System.out.println(of);
-        assertBunches(of, new Bunch(0, 3, 10, 10, 60));
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
+                new Bunch(0, 3, 10, 10, 60));
     }
 
     @Test
     public void testSelfCorrelatedKMer3()
             throws Exception {
-        int[] data = {12, 10, 10, 10, 10};
+        int[] data = {8, 10, 10, 10, 10};
         int[] indexes = {0, 0, 1, 2, 3};
-        OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes);
-        System.out.println(of);
-        assertBunches(of, new Bunch(0, 3, 10, 10, 60));
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
+                new Bunch(0, 3, 10, 10, 60));
     }
 
-    static String verbose(OffsetPacksAccumulator of, int[] clouds) throws Exception {
+    @Test
+    public void testSelfCorrelatedKMer4()
+            throws Exception {
+        int[] data = {8, 10, 11, 50, 51, 52, 10, 10, 10, 50, 50, 50};
+        int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
+                new Bunch(0, 3, 10, 10, 60),
+                new Bunch(0, 6, 50, 50, 48));
+    }
+
+    private static String verbose(OffsetPacksAccumulator of, int[] clouds) throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("Number of clusters: " + of.numberOfIslands()).append("\n\n");
         int k = 0;

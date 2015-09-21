@@ -28,6 +28,8 @@ public final class OffsetPacksAccumulator {
     public static final int MAX_VALUE = 3;
     public static final int LAST_VALUE = 4;
     public static final int SCORE = 5;
+    public static final int STRETCH_INDEX_MARK = 0xA0000000;
+    public static final int STRETCH_INDEX_MASK = 0xE0000000;
 
     public static final int RECORD_SIZE = 6;
 
@@ -75,49 +77,79 @@ public final class OffsetPacksAccumulator {
         OUTER:
         for (int recordId = 0; recordId < data.length; recordId++) {
             int record = data[recordId];
-            offset = record >> bitsForIndex;
-            index = record & indexMask;
+            offset = offset(record);
+            index = index(record);
 
             // Matching existing records
-            for (int i = LAST_VALUE; i < slidingArray.length; i += RECORD_SIZE)
-                if (inDelta(slidingArray[i], offset)) {
+            for (int i = 0; i < slidingArray.length; i += RECORD_SIZE) {
+                if ((slidingArray[i + SCORE] & STRETCH_INDEX_MASK) == STRETCH_INDEX_MARK)
+                    if (slidingArray[i + MIN_VALUE] <= offset && offset <= slidingArray[i + MAX_VALUE]) {
+
+                        int pRecordId = slidingArray[i + SCORE] ^ STRETCH_INDEX_MARK,
+                                pOffset = offset(data[pRecordId]),
+                                pIndex = index(data[pRecordId]),
+                                minDelta = Integer.MAX_VALUE,
+                                minDeltaId = -1, temp;
+
+                        if (minDelta > (temp = abs(offset - offset(data[pRecordId])))) {
+                            minDeltaId = pRecordId;
+                            minDelta = temp;
+                        }
+
+                        while (pRecordId < data.length - 1
+                                && pIndex == index(data[pRecordId + 1])
+                                && abs(pOffset - offset(data[pRecordId + 1])) <= allowedDelta)
+                            if (minDelta > (temp = abs(offset - offset(data[++pRecordId])))) {
+                                minDeltaId = pRecordId;
+                                minDelta = temp;
+                            }
+
+                        pOffset = offset(data[minDeltaId]);
+                        slidingArray[i + LAST_VALUE] = pOffset;
+                        slidingArray[i + MIN_VALUE] = pOffset;
+                        slidingArray[i + MAX_VALUE] = pOffset;
+                        slidingArray[i + SCORE] = matchScore;
+                    }
+
+                if (inDelta(slidingArray[i + LAST_VALUE], offset)) {
                     // Processing exceptional cases for self-correlated K-Mers
                     // {
 
                     // If next record has same index and better offset
                     // (closer to current island LAST_VALUE)
                     if (recordId < data.length - 1
-                            && (indexMask & (record ^ data[recordId + 1])) == 0
-                            && abs(slidingArray[i] - offset) > abs(slidingArray[i] - (data[recordId + 1] >> bitsForIndex)))
+                            && index == index(data[recordId + 1])
+                            && abs(slidingArray[i + LAST_VALUE] - offset) > abs(slidingArray[i + LAST_VALUE] - offset(data[recordId + 1])))
                         // Skip current record
                         continue OUTER;
 
                     // If previous record has same index and better offset
                     // (closer to current island LAST_VALUE)
                     if (recordId > 0
-                            && (indexMask & (record ^ data[recordId - 1])) == 0
-                            && abs(slidingArray[i] - offset) > abs(slidingArray[i] - (data[recordId - 1] >> bitsForIndex)))
+                            && index == index(data[recordId - 1])
+                            && abs(slidingArray[i + LAST_VALUE] - offset) > abs(slidingArray[i + LAST_VALUE] - offset(data[recordId - 1])))
                         // Skip current record
                         continue OUTER;
 
                     // }
 
-                    int j = i - LAST_VALUE;
+//                    int j = i - LAST_VALUE;
 
-                    assert index > slidingArray[j + LAST_INDEX];
+                    assert index > slidingArray[i + LAST_INDEX];
 
-                    int scoreDelta = matchScore + (index - slidingArray[j + LAST_INDEX] - 1) * mismatchScore +
-                            abs(slidingArray[j + LAST_VALUE] - offset) * shiftScore;
+                    int scoreDelta = matchScore + (index - slidingArray[i + LAST_INDEX] - 1) * mismatchScore +
+                            abs(slidingArray[i + LAST_VALUE] - offset) * shiftScore;
 
                     if (scoreDelta > 0) {
-                        slidingArray[j + LAST_INDEX] = index;
-                        slidingArray[j + MIN_VALUE] = min(slidingArray[j + MIN_VALUE], offset);
-                        slidingArray[j + MAX_VALUE] = max(slidingArray[j + MAX_VALUE], offset);
-                        slidingArray[j + LAST_VALUE] = offset;
-                        slidingArray[j + SCORE] += scoreDelta;
+                        slidingArray[i + LAST_INDEX] = index;
+                        slidingArray[i + MIN_VALUE] = min(slidingArray[i + MIN_VALUE], offset);
+                        slidingArray[i + MAX_VALUE] = max(slidingArray[i + MAX_VALUE], offset);
+                        slidingArray[i + LAST_VALUE] = offset;
+                        slidingArray[i + SCORE] += scoreDelta;
                         continue OUTER;
                     }
                 }
+            }
 
             int minimalIndex = -1;
             int minimalValue = Integer.MAX_VALUE;
@@ -147,13 +179,18 @@ public final class OffsetPacksAccumulator {
             slidingArray[minimalIndex + SCORE] = matchScore;
 
             // If next record has same index
-            while(recordId < data.length - 1
-                    && (indexMask & (record ^ data[recordId + 1])) == 0
-                    &&  abs( - offset)) {
+            while (recordId < data.length - 1
+                    && index == index(data[recordId + 1])
+                    && abs(offset - offset(data[recordId + 1])) <= allowedDelta) {
+                //mark slot
+                if (slidingArray[minimalIndex + SCORE] > 0) {
+                    slidingArray[minimalIndex + SCORE] = STRETCH_INDEX_MARK | recordId;
+                    slidingArray[minimalIndex + LAST_VALUE] = Integer.MIN_VALUE;
+                }
 
-                recordId++;
-                record = data[recordId];
-                //TODO offset index ???
+                assert slidingArray[minimalIndex + MAX_VALUE] < offset(data[recordId + 1]);
+
+                slidingArray[minimalIndex + MAX_VALUE] = offset = offset(data[++recordId]);
             }
         }
 
@@ -170,11 +207,19 @@ public final class OffsetPacksAccumulator {
 
     private boolean inDelta(int a, int b) {
         int diff = a - b;
-        return diff <= allowedDelta && diff >= -allowedDelta;
+        return -allowedDelta <= diff && diff <= allowedDelta;
     }
 
     public int numberOfIslands() {
         return results.size() / RECORD_SIZE;
+    }
+
+    private int index(int record) {
+        return record & indexMask;
+    }
+
+    private int offset(int record) {
+        return record >> bitsForIndex;
     }
 
     @Override
