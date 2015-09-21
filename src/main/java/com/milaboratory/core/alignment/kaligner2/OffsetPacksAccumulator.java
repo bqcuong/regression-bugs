@@ -17,9 +17,9 @@ package com.milaboratory.core.alignment.kaligner2;
 
 import com.milaboratory.util.IntArrayList;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import java.util.Arrays;
+
+import static java.lang.Math.*;
 
 public final class OffsetPacksAccumulator {
     /**
@@ -42,48 +42,49 @@ public final class OffsetPacksAccumulator {
     final int[] slidingArray;
     final int slotCount;
     final int allowedDelta;
-    final int matchScore, mismatchScore, shiftScore;
+    final int matchScore, mismatchScore, shiftScore, islandMinimalScore;
     final IntArrayList results = new IntArrayList(RECORD_SIZE * 2);
 
     public OffsetPacksAccumulator(int slotCount, int allowedDelta, int matchScore,
-                                  int mismatchScore, int shiftScore) {
+                                  int mismatchScore, int shiftScore, int islandMinimalScore) {
         this.slotCount = slotCount;
         this.allowedDelta = allowedDelta;
         this.slidingArray = new int[RECORD_SIZE * slotCount];
         this.matchScore = matchScore;
         this.mismatchScore = mismatchScore;
         this.shiftScore = shiftScore;
+        this.islandMinimalScore = islandMinimalScore;
     }
 
     public void reset() {
-        for (int i = 0; i < slidingArray.length; i += RECORD_SIZE) {
-            slidingArray[i + FIRST_INDEX] = -1;
-            slidingArray[i + LAST_INDEX] = Integer.MIN_VALUE;
-            slidingArray[i + LAST_VALUE] = Integer.MIN_VALUE;
-        }
+        results.clear();
+        Arrays.fill(slidingArray, Integer.MIN_VALUE);
     }
 
     public void put(int offset, int index) {
         // Matching existing records
         for (int i = LAST_VALUE; i < slidingArray.length; i += RECORD_SIZE)
             if (inDelta(slidingArray[i], offset)) {
-                i -= LAST_VALUE;
+                int j = i - LAST_VALUE;
 
-                assert index > slidingArray[i + LAST_INDEX];
+                if (index == slidingArray[j + LAST_INDEX]) {
 
-                int scoreDelta = matchScore + (index - slidingArray[i + LAST_INDEX] - 1) * mismatchScore +
-                        abs(slidingArray[i + LAST_VALUE] - offset) * shiftScore;
 
-                if (scoreDelta > 0) {
-                    slidingArray[i + LAST_INDEX] = index;
-                    slidingArray[i + MIN_VALUE] = min(slidingArray[i + MIN_VALUE], offset);
-                    slidingArray[i + MAX_VALUE] = max(slidingArray[i + MAX_VALUE], offset);
-                    slidingArray[i + LAST_VALUE] = offset;
-                    slidingArray[i + SCORE] += scoreDelta;
-                    return;
                 }
 
-                break;
+                assert index > slidingArray[j + LAST_INDEX];
+
+                int scoreDelta = matchScore + (index - slidingArray[j + LAST_INDEX] - 1) * mismatchScore +
+                        abs(slidingArray[j + LAST_VALUE] - offset) * shiftScore;
+
+                if (scoreDelta > 0) {
+                    slidingArray[j + LAST_INDEX] = index;
+                    slidingArray[j + MIN_VALUE] = min(slidingArray[j + MIN_VALUE], offset);
+                    slidingArray[j + MAX_VALUE] = max(slidingArray[j + MAX_VALUE], offset);
+                    slidingArray[j + LAST_VALUE] = offset;
+                    slidingArray[j + SCORE] += scoreDelta;
+                    return;
+                }
             }
 
         int minimalIndex = -1;
@@ -97,18 +98,57 @@ public final class OffsetPacksAccumulator {
                 minimalValue = slidingArray[i];
             }
         }
+        minimalIndex -= LAST_INDEX;
 
-        assert minimalIndex != -1;
+        assert minimalIndex >= 0;
 
+        //finishing previous record
+        finished(minimalIndex);
 
+        //create new record
+        slidingArray[minimalIndex + FIRST_INDEX] = index;
+        slidingArray[minimalIndex + LAST_INDEX] = index;
+        slidingArray[minimalIndex + MIN_VALUE] = offset;
+        slidingArray[minimalIndex + MAX_VALUE] = offset;
+        slidingArray[minimalIndex + LAST_VALUE] = offset;
+        slidingArray[minimalIndex + SCORE] = matchScore;
     }
 
-    private void finished(int recordOffset) {
-        
+    public void finish() {
+        for (int i = 0; i < slidingArray.length; i += RECORD_SIZE)
+            finished(i);
+    }
+
+    private void finished(int indexOfFinished) {
+        if (slidingArray[indexOfFinished + SCORE] < islandMinimalScore)
+            return;//just drop
+
+        results.add(slidingArray, indexOfFinished, RECORD_SIZE);
     }
 
     private boolean inDelta(int a, int b) {
         int diff = a - b;
         return diff <= allowedDelta && diff >= -allowedDelta;
+    }
+
+    public int numberOfIslands() {
+        return results.size() / RECORD_SIZE;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Number of clusters: " + numberOfIslands()).append("\n\n");
+        int k = 0;
+        for (int i = 0; i < results.size(); i += RECORD_SIZE) {
+            sb.append(k++ + "th cloud:\n")
+                    .append("  first index:" + results.get(i + FIRST_INDEX)).append("\n")
+                    .append("  last index:" + results.get(i + LAST_INDEX)).append("\n")
+                    .append("  minimal index:" + results.get(i + MIN_VALUE)).append("\n")
+                    .append("  maximal index:" + results.get(i + MAX_VALUE)).append("\n")
+                    .append("  score:" + results.get(i + SCORE)).append("\n\n");
+        }
+
+        return sb.toString();
     }
 }

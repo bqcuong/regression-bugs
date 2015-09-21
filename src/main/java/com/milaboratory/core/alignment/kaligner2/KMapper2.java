@@ -597,8 +597,6 @@ public final class KMapper2 implements java.io.Serializable {
         return null;
     }
 
-    public static
-
     /**
      * Returns number of nucleotides in kMer (value of k)
      *
