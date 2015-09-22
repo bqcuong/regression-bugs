@@ -14,7 +14,7 @@ import com.milaboratory.util.GlobalObjectMappers;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
         getterVisibility = JsonAutoDetect.Visibility.NONE)
 @Serializable(asJson = true)
-public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
+public final class KAlignerParameters2 implements Cloneable, java.io.Serializable {
     private static final long serialVersionUID = 1L;
 //    /**
 //     * List of known parameters presets
@@ -38,6 +38,8 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
 //        knownParameters = map;
 //    }
 
+    /* MAPPER PARAMETERS BEGIN */
+
     /**
      * Nucleotides in kMer (value of k; kMer length)
      */
@@ -46,11 +48,14 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
      * Defines floating bounds of alignment
      */
     private boolean floatingLeftBound, floatingRightBound;
+
     /**
      * Minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper} to
      * consider hit as reliable candidate
      */
-    private float mapperAbsoluteMinScore,
+    private int mapperAbsoluteMinClusterScore,
+    //TODO
+    mapperExtraClusterScore,
     /**
      * Minimal allowed ratio between best hit score and other hits obtained by {@link
      * com.milaboratory.core.alignment.KMapper} to consider hit as reliable candidate
@@ -63,15 +68,20 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
     /**
      * Penalty for not mapped seed, must be < 0
      */
-    mapperMismatchPenalty,
+    mapperMismatchScore,
     /**
      * Penalty for different offset between adjacent seeds, must be < 0
      */
-    mapperOffsetShiftPenalty;
+    mapperOffsetShiftScore;
     /**
      * Minimal and maximal distance between kMer seed positions in target sequence
      */
     private int mapperMinSeedsDistance, mapperMaxSeedsDistance;
+
+    /* MAPPER PARAMETERS END */
+
+    /* ALIGNER PARAMETERS BEGIN */
+
     /**
      * Penalty score to stop alignment extension.
      */
@@ -92,54 +102,60 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
     /**
      * Scoring system
      */
+    //TODO Mixed.
     private LinearGapAlignmentScoring scoring;
+
+    /* ALIGNER PARAMETERS END */
 
     public KAlignerParameters2() {
     }
 
-    /**
-     * Creates new KAligner
-     *
-     * @param mapperKValue             length of k-mers (seeds) used by {@link com.milaboratory.core.alignment.KMapper}
-     * @param floatingLeftBound        {@code true} if left bound of alignment could be floating
-     * @param floatingRightBound       {@code true} if right bound of alignment could be floating
-     * @param mapperAbsoluteMinScore   minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper}
-     *                                 to consider hit as reliable candidate
-     * @param mapperRelativeMinScore   minimal allowed ratio between best hit score and scores of other hits obtained by
-     *                                 {@link com.milaboratory.core.alignment.KMapper} to consider hit as
-     *                                 reliable candidate
-     * @param mapperMatchScore         reward for successfully mapped seeds (used in {@link com.milaboratory.core.alignment.KMapper}),
-     *                                 must be > 0
-     * @param mapperMismatchPenalty    penalty for not mapped seed (used in {@link com.milaboratory.core.alignment.KMapper}),
-     *                                 must be < 0
-     * @param mapperOffsetShiftPenalty penalty for different offset between adjacent seeds (used in {@link
-     *                                 com.milaboratory.core.alignment.KMapper}), must be < 0
-     * @param mapperMinSeedsDistance   minimal distance between randomly chosen seeds during alignment in {@link
-     *                                 com.milaboratory.core.alignment.KMapper}
-     * @param mapperMaxSeedsDistance   maximal distance between randomly chosen seeds during alignment in {@link
-     *                                 com.milaboratory.core.alignment.KMapper}
-     * @param alignmentStopPenalty     penalty score defining when to stop alignment procedure performed by {@link
-     *                                 KAlignmentHit#calculateAlignment()}
-     * @param absoluteMinScore         minimal absolute score of a hit obtained by {@link com.milaboratory.core.alignment.KAligner}
-     * @param relativeMinScore         maximal ratio between best hit score and scores of other hits obtained by {@link
-     *                                 com.milaboratory.core.alignment.KAligner}
-     * @param maxHits                  maximal number of hits stored by {@link com.milaboratory.core.alignment.KAlignmentResult}
-     * @param scoring                  scoring system used for building alignments
-     */
+    ///**
+    // * Creates new KAligner
+    // *
+    // * @param mapperKValue             length of k-mers (seeds) used by {@link com.milaboratory.core.alignment.KMapper}
+    // * @param floatingLeftBound        {@code true} if left bound of alignment could be floating
+    // * @param floatingRightBound       {@code true} if right bound of alignment could be floating
+    // * @param mapperAbsoluteMinScore   minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper}
+    // *                                 to consider hit as reliable candidate
+    // * @param mapperRelativeMinScore   minimal allowed ratio between best hit score and scores of other hits obtained by
+    // *                                 {@link com.milaboratory.core.alignment.KMapper} to consider hit as
+    // *                                 reliable candidate
+    // * @param mapperMatchScore         reward for successfully mapped seeds (used in {@link com.milaboratory.core.alignment.KMapper}),
+    // *                                 must be > 0
+    // * @param mapperMismatchScore    penalty for not mapped seed (used in {@link com.milaboratory.core.alignment.KMapper}),
+    // *                                 must be < 0
+    // * @param mapperOffsetShiftScore penalty for different offset between adjacent seeds (used in {@link
+    // *                                 com.milaboratory.core.alignment.KMapper}), must be < 0
+    // * @param mapperMinSeedsDistance   minimal distance between randomly chosen seeds during alignment in {@link
+    // *                                 com.milaboratory.core.alignment.KMapper}
+    // * @param mapperMaxSeedsDistance   maximal distance between randomly chosen seeds during alignment in {@link
+    // *                                 com.milaboratory.core.alignment.KMapper}
+    // * @param alignmentStopPenalty     penalty score defining when to stop alignment procedure performed by {@link
+    // *                                 KAlignmentHit#calculateAlignment()}
+    // * @param absoluteMinScore         minimal absolute score of a hit obtained by {@link com.milaboratory.core.alignment.KAligner}
+    // * @param relativeMinScore         maximal ratio between best hit score and scores of other hits obtained by {@link
+    // *                                 com.milaboratory.core.alignment.KAligner}
+    // * @param maxHits                  maximal number of hits stored by {@link com.milaboratory.core.alignment.KAlignmentResult}
+    // * @param scoring                  scoring system used for building alignments
+    // */
     public KAlignerParameters2(int mapperKValue, boolean floatingLeftBound, boolean floatingRightBound,
-                               float mapperAbsoluteMinScore, float mapperRelativeMinScore,
-                               float mapperMatchScore, float mapperMismatchPenalty, float mapperOffsetShiftPenalty,
-                               int mapperMinSeedsDistance, int mapperMaxSeedsDistance,
-                               int alignmentStopPenalty, float absoluteMinScore,
-                               float relativeMinScore, int maxHits, LinearGapAlignmentScoring scoring) {
+                               int mapperAbsoluteMinClusterScore, int mapperExtraClusterScore, int mapperRelativeMinScore,
+                               int mapperMatchScore, int mapperMismatchScore, int mapperOffsetShiftScore, int mapperMinSeedsDistance,
+                               int mapperMaxSeedsDistance,
+                               int alignmentStopPenalty, float absoluteMinScore, float relativeMinScore,
+                               int maxHits, LinearGapAlignmentScoring scoring) {
+        if (scoring != null && !scoring.uniformBasicMatchScore())
+            throw new IllegalArgumentException("Use scoring with common match score.");
         this.mapperKValue = mapperKValue;
         this.floatingLeftBound = floatingLeftBound;
         this.floatingRightBound = floatingRightBound;
-        this.mapperAbsoluteMinScore = mapperAbsoluteMinScore;
+        this.mapperAbsoluteMinClusterScore = mapperAbsoluteMinClusterScore;
+        this.mapperExtraClusterScore = mapperExtraClusterScore;
         this.mapperRelativeMinScore = mapperRelativeMinScore;
         this.mapperMatchScore = mapperMatchScore;
-        this.mapperMismatchPenalty = mapperMismatchPenalty;
-        this.mapperOffsetShiftPenalty = mapperOffsetShiftPenalty;
+        this.mapperMismatchScore = mapperMismatchScore;
+        this.mapperOffsetShiftScore = mapperOffsetShiftScore;
         this.mapperMinSeedsDistance = mapperMinSeedsDistance;
         this.mapperMaxSeedsDistance = mapperMaxSeedsDistance;
         this.alignmentStopPenalty = alignmentStopPenalty;
@@ -147,9 +163,8 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
         this.relativeMinScore = relativeMinScore;
         this.maxHits = maxHits;
         this.scoring = scoring;
-        if (scoring != null && !scoring.uniformBasicMatchScore())
-            throw new IllegalArgumentException("Use scoring with common match score.");
     }
+
 
 //    /**
 //     * Returns parameters by specified preset name
@@ -199,8 +214,8 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
      *
      * @return minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper}
      */
-    public float getMapperAbsoluteMinScore() {
-        return mapperAbsoluteMinScore;
+    public int getMapperAbsoluteMinClusterScore() {
+        return mapperAbsoluteMinClusterScore;
     }
 
     /**
@@ -210,8 +225,8 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
      * @param mapperAbsoluteMinScore minimal allowed absolute hit score value
      * @return parameters object
      */
-    public KAlignerParameters2 setMapperAbsoluteMinScore(float mapperAbsoluteMinScore) {
-        this.mapperAbsoluteMinScore = mapperAbsoluteMinScore;
+    public KAlignerParameters2 setMapperAbsoluteMinClusterScore(int mapperAbsoluteMinScore) {
+        this.mapperAbsoluteMinClusterScore = mapperAbsoluteMinScore;
         return this;
     }
 
@@ -222,7 +237,7 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
      * @return minimal allowed ratio between best hit score and other hits obtained by {@link
      * com.milaboratory.core.alignment.KMapper}
      */
-    public float getMapperRelativeMinScore() {
+    public int getMapperRelativeMinScore() {
         return mapperRelativeMinScore;
     }
 
@@ -233,7 +248,7 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
      * @param mapperRelativeMinScore minimal allowed ratio between best hit score and other hits
      * @return parameters object
      */
-    public KAlignerParameters2 setMapperRelativeMinScore(float mapperRelativeMinScore) {
+    public KAlignerParameters2 setMapperRelativeMinScore(int mapperRelativeMinScore) {
         this.mapperRelativeMinScore = mapperRelativeMinScore;
         return this;
     }
@@ -243,7 +258,7 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
      *
      * @return reward score for mapped seed
      */
-    public float getMapperMatchScore() {
+    public int getMapperMatchScore() {
         return mapperMatchScore;
     }
 
@@ -254,7 +269,7 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
      *                         must be > 0
      * @return parameters object
      */
-    public KAlignerParameters2 setMapperMatchScore(float mapperMatchScore) {
+    public KAlignerParameters2 setMapperMatchScore(int mapperMatchScore) {
         this.mapperMatchScore = mapperMatchScore;
         return this;
     }
@@ -264,19 +279,50 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
      *
      * @return penalty score for not mapped seed
      */
-    public float getMapperMismatchPenalty() {
-        return mapperMismatchPenalty;
+    public int getMapperMismatchScore() {
+        return mapperMismatchScore;
     }
 
     /**
      * Sets penalty score for not mapped seed
      *
-     * @param mapperMismatchPenalty penalty for not mapped seed (used in {@link com.milaboratory.core.alignment.KMapper}),
-     *                              must be < 0
+     * @param mapperMismatchScore penalty for not mapped seed (used in {@link com.milaboratory.core.alignment.KMapper}),
+     *                            must be < 0
      * @return penalty for not mapped seed
      */
-    public KAlignerParameters2 setMapperMismatchPenalty(float mapperMismatchPenalty) {
-        this.mapperMismatchPenalty = mapperMismatchPenalty;
+    public KAlignerParameters2 setMapperMismatchScore(int mapperMismatchScore) {
+        this.mapperMismatchScore = mapperMismatchScore;
+        return this;
+    }
+
+    /**
+     * Returns penalty for different offset between adjacent seeds (used in {@link com.milaboratory.core.alignment.KMapper})
+     *
+     * @return penalty for different offset between adjacent seeds
+     */
+    public int getMapperOffsetShiftScore() {
+        return mapperOffsetShiftScore;
+    }
+
+    /**
+     * Sets penalty for different offset between adjacent seeds (used in {@link com.milaboratory.core.alignment.KMapper}),
+     *
+     * @param mapperOffsetShiftScore penalty for different offset between adjacent seeds, must be < 0
+     * @return parameters object
+     */
+    public KAlignerParameters2 setMapperOffsetShiftScore(int mapperOffsetShiftScore) {
+        this.mapperOffsetShiftScore = mapperOffsetShiftScore;
+        return this;
+    }
+
+    //TODO
+    public int getMapperExtraClusterScore() {
+        return mapperExtraClusterScore;
+    }
+
+    //TODO
+    public KAlignerParameters2 setMapperExtraClusterScore(int mapperExtraClusterScore) {
+        this.mapperExtraClusterScore = mapperExtraClusterScore;
         return this;
     }
 
@@ -409,26 +455,6 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
     }
 
     /**
-     * Returns penalty for different offset between adjacent seeds (used in {@link com.milaboratory.core.alignment.KMapper})
-     *
-     * @return penalty for different offset between adjacent seeds
-     */
-    public float getMapperOffsetShiftPenalty() {
-        return mapperOffsetShiftPenalty;
-    }
-
-    /**
-     * Sets penalty for different offset between adjacent seeds (used in {@link com.milaboratory.core.alignment.KMapper}),
-     *
-     * @param mapperOffsetShiftPenalty penalty for different offset between adjacent seeds, must be < 0
-     * @return parameters object
-     */
-    public KAlignerParameters2 setMapperOffsetShiftPenalty(float mapperOffsetShiftPenalty) {
-        this.mapperOffsetShiftPenalty = mapperOffsetShiftPenalty;
-        return this;
-    }
-
-    /**
      * Returns minimal absolute score of a hit obtained by {@link com.milaboratory.core.alignment.KAligner}
      *
      * @return minimal absolute score
@@ -509,20 +535,23 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
 
         KAlignerParameters2 that = (KAlignerParameters2) o;
 
+        if (mapperKValue != that.mapperKValue) return false;
         if (floatingLeftBound != that.floatingLeftBound) return false;
         if (floatingRightBound != that.floatingRightBound) return false;
-        if (Float.compare(that.mapperRelativeMinScore, mapperRelativeMinScore) != 0) return false;
-        if (mapperKValue != that.mapperKValue) return false;
-        if (Float.compare(that.mapperMatchScore, mapperMatchScore) != 0) return false;
-        if (mapperMaxSeedsDistance != that.mapperMaxSeedsDistance) return false;
-        if (Float.compare(that.mapperAbsoluteMinScore, mapperAbsoluteMinScore) != 0) return false;
+        if (mapperAbsoluteMinClusterScore != that.mapperAbsoluteMinClusterScore) return false;
+        if (mapperExtraClusterScore != that.mapperExtraClusterScore) return false;
+        if (mapperRelativeMinScore != that.mapperRelativeMinScore) return false;
+        if (mapperMatchScore != that.mapperMatchScore) return false;
+        if (mapperMismatchScore != that.mapperMismatchScore) return false;
+        if (mapperOffsetShiftScore != that.mapperOffsetShiftScore) return false;
         if (mapperMinSeedsDistance != that.mapperMinSeedsDistance) return false;
-        if (Float.compare(that.mapperMismatchPenalty, mapperMismatchPenalty) != 0) return false;
-        if (Float.compare(that.mapperOffsetShiftPenalty, mapperOffsetShiftPenalty) != 0) return false;
+        if (mapperMaxSeedsDistance != that.mapperMaxSeedsDistance) return false;
         if (alignmentStopPenalty != that.alignmentStopPenalty) return false;
-        if (!scoring.equals(that.scoring)) return false;
+        if (Float.compare(that.absoluteMinScore, absoluteMinScore) != 0) return false;
+        if (Float.compare(that.relativeMinScore, relativeMinScore) != 0) return false;
+        if (maxHits != that.maxHits) return false;
+        return !(scoring != null ? !scoring.equals(that.scoring) : that.scoring != null);
 
-        return true;
     }
 
     @Override
@@ -530,15 +559,19 @@ public class KAlignerParameters2 implements Cloneable, java.io.Serializable {
         int result = mapperKValue;
         result = 31 * result + (floatingLeftBound ? 1 : 0);
         result = 31 * result + (floatingRightBound ? 1 : 0);
-        result = 31 * result + (mapperAbsoluteMinScore != +0.0f ? Float.floatToIntBits(mapperAbsoluteMinScore) : 0);
-        result = 31 * result + (mapperRelativeMinScore != +0.0f ? Float.floatToIntBits(mapperRelativeMinScore) : 0);
-        result = 31 * result + (mapperMatchScore != +0.0f ? Float.floatToIntBits(mapperMatchScore) : 0);
-        result = 31 * result + (mapperMismatchPenalty != +0.0f ? Float.floatToIntBits(mapperMismatchPenalty) : 0);
-        result = 31 * result + (mapperOffsetShiftPenalty != +0.0f ? Float.floatToIntBits(mapperOffsetShiftPenalty) : 0);
+        result = 31 * result + mapperAbsoluteMinClusterScore;
+        result = 31 * result + mapperExtraClusterScore;
+        result = 31 * result + mapperRelativeMinScore;
+        result = 31 * result + mapperMatchScore;
+        result = 31 * result + mapperMismatchScore;
+        result = 31 * result + mapperOffsetShiftScore;
         result = 31 * result + mapperMinSeedsDistance;
         result = 31 * result + mapperMaxSeedsDistance;
         result = 31 * result + alignmentStopPenalty;
-        result = 31 * result + scoring.hashCode();
+        result = 31 * result + (absoluteMinScore != +0.0f ? Float.floatToIntBits(absoluteMinScore) : 0);
+        result = 31 * result + (relativeMinScore != +0.0f ? Float.floatToIntBits(relativeMinScore) : 0);
+        result = 31 * result + maxHits;
+        result = 31 * result + (scoring != null ? scoring.hashCode() : 0);
         return result;
     }
 

@@ -26,18 +26,19 @@ public final class OffsetPacksAccumulator {
     public static final int LAST_INDEX = 1;
     public static final int MIN_VALUE = 2;
     public static final int MAX_VALUE = 3;
-    public static final int LAST_VALUE = 4;
-    public static final int SCORE = 5;
+    public static final int SCORE = 4;
+    public static final int LAST_VALUE = 5;
     public static final int STRETCH_INDEX_MARK = 0xA0000000;
     public static final int STRETCH_INDEX_MASK = 0xE0000000;
 
     public static final int RECORD_SIZE = 6;
+    public static final int OUTPUT_RECORD_SIZE = RECORD_SIZE - 1;
 
     final int[] slidingArray;
     final int slotCount;
     final int allowedDelta;
     final int matchScore, mismatchScore, shiftScore, islandMinimalScore;
-    final IntArrayList results = new IntArrayList(RECORD_SIZE * 2);
+    final IntArrayList results = new IntArrayList(OUTPUT_RECORD_SIZE * 2);
 
     final int bitsForIndex, indexMask;
 
@@ -174,7 +175,6 @@ public final class OffsetPacksAccumulator {
             slidingArray[minimalIndex + LAST_INDEX] = index;
             slidingArray[minimalIndex + MIN_VALUE] = offset;
             slidingArray[minimalIndex + MAX_VALUE] = offset;
-            //TODO move lower; don't copy
             slidingArray[minimalIndex + LAST_VALUE] = offset;
             slidingArray[minimalIndex + SCORE] = matchScore;
 
@@ -200,9 +200,9 @@ public final class OffsetPacksAccumulator {
 
     private void finished(int indexOfFinished) {
         if (slidingArray[indexOfFinished + SCORE] < islandMinimalScore)
-            return;//just drop
+            return; //just drop
 
-        results.add(slidingArray, indexOfFinished, RECORD_SIZE);
+        results.add(slidingArray, indexOfFinished, OUTPUT_RECORD_SIZE);
     }
 
     private boolean inDelta(int a, int b) {
@@ -211,7 +211,7 @@ public final class OffsetPacksAccumulator {
     }
 
     public int numberOfIslands() {
-        return results.size() / RECORD_SIZE;
+        return results.size() / OUTPUT_RECORD_SIZE;
     }
 
     private int index(int record) {
@@ -227,7 +227,7 @@ public final class OffsetPacksAccumulator {
         StringBuilder sb = new StringBuilder();
         sb.append("Number of clusters: " + numberOfIslands()).append("\n\n");
         int k = 0;
-        for (int i = 0; i < results.size(); i += RECORD_SIZE) {
+        for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
             sb.append(k++ + "th cloud:\n")
                     .append("  first index:" + results.get(i + FIRST_INDEX)).append("\n")
                     .append("  last index:" + results.get(i + LAST_INDEX)).append("\n")
@@ -238,4 +238,7 @@ public final class OffsetPacksAccumulator {
 
         return sb.toString();
     }
+
+    // 0: fromSubject toSubject | fromQuery toQuery
+    // 1: fromSubject toSubject | fromQuery toQuery
 }

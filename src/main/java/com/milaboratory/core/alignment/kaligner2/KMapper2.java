@@ -75,7 +75,9 @@ public final class KMapper2 implements java.io.Serializable {
     /**
      * Minimal absolute score value
      */
-    private final float absoluteMinScore,
+    private final int absoluteMinClusterScore,
+    //TODO
+    mapperExtraClusterScore,
     /**
      * Minimal score in fractions of top score.
      */
@@ -87,11 +89,12 @@ public final class KMapper2 implements java.io.Serializable {
     /**
      * Penalty for kMer mismatch (not mapped kMer), must be < 0
      */
-    mismatchPenalty,
+    mismatchScore,
     /**
      * Penalty for different offset between adjacent seeds
      */
-    offsetShiftPenalty;
+    offsetShiftScore;
+
     /**
      * Determines boundaries type: floating(only part of sequence should be aligned) or fixed (whole sequence should be
      * aligned).
@@ -112,20 +115,21 @@ public final class KMapper2 implements java.io.Serializable {
     /**
      * Creates new KMer mapper.
      *
-     * @param kValue             nucleotides in kMer (value of k)
-     * @param minDistance        minimal distance between kMer seed positions in target sequence
-     * @param maxDistance        maximal distance between kMer seed positions in target sequence
-     * @param absoluteMinScore   minimal score
-     * @param relativeMinScore   maximal ratio between best hit score and other hits scores in returned result
-     * @param matchScore         reward for match (must be > 0)
-     * @param mismatchPenalty    penalty for mismatch (must be < 0)
-     * @param floatingLeftBound  true if left bound of alignment could be floating
-     * @param floatingRightBound true if right bound of alignment could be floating
+     * @param kValue                  nucleotides in kMer (value of k)
+     * @param minDistance             minimal distance between kMer seed positions in target sequence
+     * @param maxDistance             maximal distance between kMer seed positions in target sequence
+     * @param absoluteMinClusterScore minimal score
+     * @param relativeMinScore        maximal ratio between best hit score and other hits scores in returned result
+     * @param matchScore              reward for match (must be > 0)
+     * @param mismatchScore           penalty for mismatch (must be < 0)
+     * @param floatingLeftBound       true if left bound of alignment could be floating
+     * @param floatingRightBound      true if right bound of alignment could be floating
      */
     public KMapper2(int kValue,
                     int minDistance, int maxDistance,
-                    float absoluteMinScore, float relativeMinScore,
-                    float matchScore, float mismatchPenalty, float offsetShiftPenalty,
+                    int absoluteMinClusterScore, int mapperExtraClusterScore,
+                    int relativeMinScore,
+                    int matchScore, int mismatchScore, int offsetShiftScore,
                     boolean floatingLeftBound, boolean floatingRightBound) {
         this.kValue = kValue;
 
@@ -135,22 +139,21 @@ public final class KMapper2 implements java.io.Serializable {
 
         //Initialize base
         int maxNumberOfKmers = 1 << (kValue * 2);
+        // TODO lazy
         base = new int[maxNumberOfKmers][10];
         lengths = new int[maxNumberOfKmers];
 
         //Parameters
         this.minDistance = minDistance;
         this.maxDistance = maxDistance;
-        this.absoluteMinScore = absoluteMinScore;
+        this.absoluteMinClusterScore = absoluteMinClusterScore;
+        this.mapperExtraClusterScore = mapperExtraClusterScore;
         this.relativeMinScore = relativeMinScore;
         this.matchScore = matchScore;
-        this.mismatchPenalty = mismatchPenalty;
-        this.offsetShiftPenalty = offsetShiftPenalty;
+        this.mismatchScore = mismatchScore;
+        this.offsetShiftScore = offsetShiftScore;
         this.floatingLeftBound = floatingLeftBound;
         this.floatingRightBound = floatingRightBound;
-
-        //Initializing random with fixed seed for reproducible alignment results
-        //this.random = new RandomDataImpl(new Well19937c(12364785L));
     }
 
     /**
@@ -162,9 +165,11 @@ public final class KMapper2 implements java.io.Serializable {
      */
     public static KMapper2 createFromParameters(KAlignerParameters2 parameters) {
         return new KMapper2(parameters.getMapperKValue(), parameters.getMapperMinSeedsDistance(),
-                parameters.getMapperMaxSeedsDistance(), parameters.getMapperAbsoluteMinScore(), parameters.getMapperRelativeMinScore(),
-                parameters.getMapperMatchScore(), parameters.getMapperMismatchPenalty(),
-                parameters.getMapperOffsetShiftPenalty(),
+                parameters.getMapperMaxSeedsDistance(), parameters.getMapperAbsoluteMinClusterScore(),
+                parameters.getMapperExtraClusterScore(),
+                parameters.getMapperRelativeMinScore(),
+                parameters.getMapperMatchScore(), parameters.getMapperMismatchScore(),
+                parameters.getMapperOffsetShiftScore(),
                 parameters.isFloatingLeftBound(), parameters.isFloatingRightBound());
     }
 

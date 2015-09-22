@@ -111,7 +111,7 @@ public class OffsetPacksAccumulatorTest {
         StringBuilder sb = new StringBuilder();
         sb.append("Number of clusters: " + of.numberOfIslands()).append("\n\n");
         int k = 0;
-        for (int i = 0; i < of.results.size(); i += RECORD_SIZE) {
+        for (int i = 0; i < of.results.size(); i += OUTPUT_RECORD_SIZE) {
             sb.append(k++ + "-th cloud:\n")
                     .append("  first index: " + of.results.get(i + FIRST_INDEX)).append("\n")
                     .append("  last index: " + of.results.get(i + LAST_INDEX)).append("\n")
@@ -188,7 +188,7 @@ public class OffsetPacksAccumulatorTest {
     private static Bunch[] getBunches(OffsetPacksAccumulator of) {
         Bunch[] bunchs = new Bunch[of.numberOfIslands()];
         int k = 0;
-        for (int i = 0; i < of.results.size(); i += RECORD_SIZE)
+        for (int i = 0; i < of.results.size(); i += OUTPUT_RECORD_SIZE)
             bunchs[k++] = new Bunch(of.results.get(i + FIRST_INDEX),
                     of.results.get(i + LAST_INDEX),
                     of.results.get(i + MIN_VALUE),

@@ -20,86 +20,47 @@ package com.milaboratory.core.alignment.kaligner2;
  */
 public final class KMappingHit2 implements java.io.Serializable {
     /**
-     * Best offset value (most popular offset)
-     */
-    final int offset,
-    /**
      * Reference id (in storage)
      */
-    id;
+    final int id;
+
     /**
-     * Intersection range of target and reference sequences, where they are supposed to be aligned From and to are
-     * indices of seeds in seeds array of {@link KMappingResult2}
+     * Offset values for according seeds inside intersection.
+     *
+     * each record = (offset << bitsForIndex) | seedIndex
      */
-    int from, to;
+    final int[] seedRecords;
+
     /**
-     * Alignment score value
-     */
-    float score;
-    /**
-     * Offset values for according seeds inside intersection
-     */
-    final int[] seedOffsets;
-    /**
-     * Islands boundaries
+     * Islands boundaries.
+     *
+     * count = countOfIslands - 1
      */
     final int[] boundaries;
 
     /**
-     * Creates new KMappingHit
-     *
-     * @param seedOffsets offset values for according seeds inside intersection
-     * @param boundaries  boundaries of compact supports
-     * @param offset      best offset value (most popular offset)
-     * @param id          reference id (in {@link com.milaboratory.core.alignment.KMapper} storage)
-     * @param score       absolute alignment score value
-     * @param from        index of seed in seeds array of {@link KMappingResult2} from which intersection range of target and reference sequences starts
-     * @param to          index of seed in seeds array of {@link KMappingResult2} from which intersection range of target and reference sequences ends
+     * Mapping score value
      */
-    public KMappingHit2(int[] seedOffsets, int[] boundaries, int offset, int id, float score, int from, int to) {
-        this.seedOffsets = seedOffsets;
-        this.boundaries = boundaries;
-        this.offset = offset;
+    int score;
+
+
+    ///**
+    // * Creates new KMappingHit
+    // *
+    // * @param seedOffsets offset values for according seeds inside intersection
+    // * @param boundaries  boundaries of compact supports
+    // * @param offset      best offset value (most popular offset)
+    // * @param id          reference id (in {@link com.milaboratory.core.alignment.KMapper} storage)
+    // * @param score       absolute alignment score value
+    // * @param from        index of seed in seeds array of {@link KMappingResult2} from which intersection range of target and reference sequences starts
+    // * @param to          index of seed in seeds array of {@link KMappingResult2} from which intersection range of target and reference sequences ends
+    // */
+
+    public KMappingHit2(int id, int[] seedRecords, int[] boundaries, int score) {
         this.id = id;
+        this.seedRecords = seedRecords;
+        this.boundaries = boundaries;
         this.score = score;
-        this.from = from;
-        this.to = to;
     }
 
-    public int getFrom() {
-        return from;
-    }
-
-    public int getTo() {
-        return to;
-    }
-
-    @Override
-    public String toString() {
-        return "offset=" + offset +
-                ", id=" + id +
-                ", score=" + score;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        KMappingHit2 kMappingHit2 = (KMappingHit2) o;
-
-        if (id != kMappingHit2.id) return false;
-        if (offset != kMappingHit2.offset) return false;
-        if (Float.compare(kMappingHit2.score, score) != 0) return false;
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = offset;
-        result = 31 * result + id;
-        result = 31 * result + (score != +0.0f ? Float.floatToIntBits(score) : 0);
-        return result;
-    }
 }

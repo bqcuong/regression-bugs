@@ -132,12 +132,12 @@ public final class IntArrayList implements java.io.Serializable {
      *
      * @param src       - the source array.
      * @param fromIndex - starting position in the source array.
-     * @param lenght    - the number of array elements to be copied.
+     * @param length    - the number of array elements to be copied.
      */
-    public void add(int[] src, int fromIndex, int lenght) {
-        ensureCapacity(size + lenght);
-        System.arraycopy(src, fromIndex, data, size, lenght);
-        size = size + lenght;
+    public void add(int[] src, int fromIndex, int length) {
+        ensureCapacity(size + length);
+        System.arraycopy(src, fromIndex, data, size, length);
+        size = size + length;
     }
 
     public void reverse() {
