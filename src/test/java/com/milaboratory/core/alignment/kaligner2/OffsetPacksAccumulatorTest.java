@@ -6,19 +6,17 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import static com.milaboratory.core.alignment.kaligner2.KMapper2.record;
 import static com.milaboratory.core.alignment.kaligner2.OffsetPacksAccumulator.*;
 
 /**
  * Created by poslavsky on 21/09/15.
  */
 public class OffsetPacksAccumulatorTest {
-    public static final int bitsForOffset = 18;
-    public static final int bitsForIndex = 32 - bitsForOffset;
-
     @Test
     public void test1() throws Exception {
         int[] data = {10, 10, 11, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(3, 4, 15, -4, -2, 30, bitsForIndex), data),
+        assertBunches(process(new OffsetPacksAccumulator(3, 4, 15, -4, -2, 30), data),
                 new Bunch(0, 3, 10, 12, 56),
                 new Bunch(5, 12, 31, 34, 110),
                 new Bunch(13, 16, 10, 10, 60));
@@ -27,7 +25,7 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void test2() throws Exception {
         int[] data = {10, 10, 11, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
                 new Bunch(0, 3, 10, 12, 56),
                 new Bunch(5, 12, 31, 34, 110),
                 new Bunch(13, 16, 10, 10, 60));
@@ -36,7 +34,7 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void test3() throws Exception {
         int[] data = {10, 10, 1, 11, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
                 new Bunch(0, 4, 10, 12, 52),
                 new Bunch(6, 13, 31, 34, 110),
                 new Bunch(14, 17, 10, 10, 60));
@@ -46,7 +44,7 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void test4() throws Exception {
         int[] data = {10, 10, 1, 11, 33, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
                 new Bunch(0, 5, 10, 12, 48),
                 new Bunch(4, 14, 31, 34, 117),
                 new Bunch(15, 18, 10, 10, 60));
@@ -57,7 +55,7 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 102, 10, 10};
         int[] indexes = {0, 1, 2, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
                 new Bunch(0, 3, 10, 10, 60));
     }
 
@@ -66,7 +64,7 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 102, 10, 10};
         int[] indexes = {0, 1, 1, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
                 new Bunch(0, 3, 10, 10, 60));
     }
 
@@ -75,7 +73,7 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 12, 10, 10};
         int[] indexes = {0, 1, 2, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
                 new Bunch(0, 3, 10, 10, 60));
     }
 
@@ -84,7 +82,7 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 12, 10, 10};
         int[] indexes = {0, 1, 1, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
                 new Bunch(0, 3, 10, 10, 60));
     }
 
@@ -93,8 +91,8 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {8, 10, 10, 10, 10};
         int[] indexes = {0, 0, 1, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
-                new Bunch(0, 3, 10, 10, 60));
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+                new Bunch(1, 3, 10, 10, 60));
     }
 
     @Test
@@ -102,9 +100,9 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {8, 10, 11, 50, 51, 52, 10, 10, 10, 50, 50, 50};
         int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30, bitsForIndex), data, indexes),
-                new Bunch(0, 3, 10, 10, 60),
-                new Bunch(0, 6, 50, 50, 48));
+        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+                new Bunch(1, 3, 10, 10, 60),
+                new Bunch(3, 6, 50, 50, 48));
     }
 
     private static String verbose(OffsetPacksAccumulator of, int[] clouds) throws Exception {
@@ -113,14 +111,14 @@ public class OffsetPacksAccumulatorTest {
         int k = 0;
         for (int i = 0; i < of.results.size(); i += OUTPUT_RECORD_SIZE) {
             sb.append(k++ + "-th cloud:\n")
-                    .append("  first index: " + of.results.get(i + FIRST_INDEX)).append("\n")
+                    .append("  first index: " + of.results.get(i + FIRST_RECORD_ID)).append("\n")
                     .append("  last index: " + of.results.get(i + LAST_INDEX)).append("\n")
                     .append("  minimal index: " + of.results.get(i + MIN_VALUE)).append("\n")
                     .append("  maximal index: " + of.results.get(i + MAX_VALUE)).append("\n")
                     .append("  score: " + of.results.get(i + SCORE)).append("\n");
 
             int[] arr = new int[clouds.length];
-            for (int j = of.results.get(i + FIRST_INDEX); j <= of.results.get(i + LAST_INDEX); ++j)
+            for (int j = of.results.get(i + FIRST_RECORD_ID); j <= of.results.get(i + LAST_INDEX); ++j)
                 arr[j] = 1;
             sb.append(p2a("  clouds: ", "  result: ", clouds, arr)).append("\n\n");
         }
@@ -154,17 +152,17 @@ public class OffsetPacksAccumulatorTest {
             throw new IllegalArgumentException();
         int[] packedData = new int[data.length];
         for (int i = 0; i < data.length; i++)
-            packedData[i] = (data[i] << bitsForIndex) | indexes[i];
-        of.put(packedData);
+            packedData[i] = record(data[i], indexes[i]);
+        of.calculateInitialPartitioning(packedData);
         return of;
     }
 
     private static OffsetPacksAccumulator process(OffsetPacksAccumulator of, int... data) {
         int[] packedData = new int[data.length];
         for (int i = 0; i < data.length; i++)
-            packedData[i] = (data[i] << bitsForIndex) | i;
+            packedData[i] = record(data[i], i);
 
-        of.put(packedData);
+        of.calculateInitialPartitioning(packedData);
         return of;
     }
 
@@ -189,7 +187,7 @@ public class OffsetPacksAccumulatorTest {
         Bunch[] bunchs = new Bunch[of.numberOfIslands()];
         int k = 0;
         for (int i = 0; i < of.results.size(); i += OUTPUT_RECORD_SIZE)
-            bunchs[k++] = new Bunch(of.results.get(i + FIRST_INDEX),
+            bunchs[k++] = new Bunch(of.results.get(i + FIRST_RECORD_ID),
                     of.results.get(i + LAST_INDEX),
                     of.results.get(i + MIN_VALUE),
                     of.results.get(i + MAX_VALUE),

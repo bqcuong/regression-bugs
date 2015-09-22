@@ -19,10 +19,12 @@ import com.milaboratory.util.IntArrayList;
 
 import java.util.Arrays;
 
+import static com.milaboratory.core.alignment.kaligner2.KMapper2.*;
 import static java.lang.Math.*;
 
+//TODO remove minmax record fields
 public final class OffsetPacksAccumulator {
-    public static final int FIRST_INDEX = 0;
+    public static final int FIRST_RECORD_ID = 0;
     public static final int LAST_INDEX = 1;
     public static final int MIN_VALUE = 2;
     public static final int MAX_VALUE = 3;
@@ -36,26 +38,14 @@ public final class OffsetPacksAccumulator {
 
     final int[] slidingArray;
     final int slotCount;
-    final int allowedDelta;
+    final int maxAllowedDelta;
     final int matchScore, mismatchScore, shiftScore, islandMinimalScore;
     final IntArrayList results = new IntArrayList(OUTPUT_RECORD_SIZE * 2);
 
-    final int bitsForIndex, indexMask;
-
-    public OffsetPacksAccumulator(int slotCount, int allowedDelta, int matchScore,
+    public OffsetPacksAccumulator(int slotCount, int maxAllowedDelta, int matchScore,
                                   int mismatchScore, int shiftScore, int islandMinimalScore) {
-        this(slotCount, allowedDelta, matchScore, mismatchScore, shiftScore, islandMinimalScore, 12);
-    }
-
-    public OffsetPacksAccumulator(int slotCount, int allowedDelta, int matchScore,
-                                  int mismatchScore, int shiftScore, int islandMinimalScore,
-                                  int bitsForIndex) {
-        //Bits
-        this.bitsForIndex = bitsForIndex;
-        this.indexMask = 0xFFFFFFFF >>> (32 - bitsForIndex);
-
         this.slotCount = slotCount;
-        this.allowedDelta = allowedDelta;
+        this.maxAllowedDelta = maxAllowedDelta;
         this.slidingArray = new int[RECORD_SIZE * slotCount];
         this.matchScore = matchScore;
         this.mismatchScore = mismatchScore;
@@ -68,15 +58,23 @@ public final class OffsetPacksAccumulator {
         Arrays.fill(slidingArray, Integer.MIN_VALUE);
     }
 
+    public void calculateInitialPartitioning(IntArrayList list) {
+        calculateInitialPartitioning(IntArrayList.getArrayReference(list), 0, list.size());
+    }
+
+    public void calculateInitialPartitioning(int[] data) {
+        calculateInitialPartitioning(data, 0, data.length);
+    }
+
     /**
      * Accepts array with elements in the following format:
      */
-    public void put(int[] data) {
+    public void calculateInitialPartitioning(int[] data, int dataFrom, int dataTo) {
         reset();
 
         int index, offset;
         OUTER:
-        for (int recordId = 0; recordId < data.length; recordId++) {
+        for (int recordId = dataFrom; recordId < dataTo; recordId++) {
             int record = data[recordId];
             offset = offset(record);
             index = index(record);
@@ -97,15 +95,16 @@ public final class OffsetPacksAccumulator {
                             minDelta = temp;
                         }
 
-                        while (pRecordId < data.length - 1
+                        while (pRecordId < dataTo - 1
                                 && pIndex == index(data[pRecordId + 1])
-                                && abs(pOffset - offset(data[pRecordId + 1])) <= allowedDelta)
+                                && abs(pOffset - offset(data[pRecordId + 1])) <= maxAllowedDelta)
                             if (minDelta > (temp = abs(offset - offset(data[++pRecordId])))) {
                                 minDeltaId = pRecordId;
                                 minDelta = temp;
                             }
 
                         pOffset = offset(data[minDeltaId]);
+                        slidingArray[i + FIRST_RECORD_ID] = minDeltaId;
                         slidingArray[i + LAST_VALUE] = pOffset;
                         slidingArray[i + MIN_VALUE] = pOffset;
                         slidingArray[i + MAX_VALUE] = pOffset;
@@ -118,7 +117,7 @@ public final class OffsetPacksAccumulator {
 
                     // If next record has same index and better offset
                     // (closer to current island LAST_VALUE)
-                    if (recordId < data.length - 1
+                    if (recordId < dataTo - 1
                             && index == index(data[recordId + 1])
                             && abs(slidingArray[i + LAST_VALUE] - offset) > abs(slidingArray[i + LAST_VALUE] - offset(data[recordId + 1])))
                         // Skip current record
@@ -126,7 +125,7 @@ public final class OffsetPacksAccumulator {
 
                     // If previous record has same index and better offset
                     // (closer to current island LAST_VALUE)
-                    if (recordId > 0
+                    if (recordId > dataFrom
                             && index == index(data[recordId - 1])
                             && abs(slidingArray[i + LAST_VALUE] - offset) > abs(slidingArray[i + LAST_VALUE] - offset(data[recordId - 1])))
                         // Skip current record
@@ -171,7 +170,7 @@ public final class OffsetPacksAccumulator {
             finished(minimalIndex);
 
             //create new record
-            slidingArray[minimalIndex + FIRST_INDEX] = index;
+            slidingArray[minimalIndex + FIRST_RECORD_ID] = recordId;
             slidingArray[minimalIndex + LAST_INDEX] = index;
             slidingArray[minimalIndex + MIN_VALUE] = offset;
             slidingArray[minimalIndex + MAX_VALUE] = offset;
@@ -179,9 +178,9 @@ public final class OffsetPacksAccumulator {
             slidingArray[minimalIndex + SCORE] = matchScore;
 
             // If next record has same index
-            while (recordId < data.length - 1
+            while (recordId < dataTo - 1
                     && index == index(data[recordId + 1])
-                    && abs(offset - offset(data[recordId + 1])) <= allowedDelta) {
+                    && abs(offset - offset(data[recordId + 1])) <= maxAllowedDelta) {
                 //mark slot
                 if (slidingArray[minimalIndex + SCORE] > 0) {
                     slidingArray[minimalIndex + SCORE] = STRETCH_INDEX_MARK | recordId;
@@ -207,19 +206,11 @@ public final class OffsetPacksAccumulator {
 
     private boolean inDelta(int a, int b) {
         int diff = a - b;
-        return -allowedDelta <= diff && diff <= allowedDelta;
+        return -maxAllowedDelta <= diff && diff <= maxAllowedDelta;
     }
 
     public int numberOfIslands() {
         return results.size() / OUTPUT_RECORD_SIZE;
-    }
-
-    private int index(int record) {
-        return record & indexMask;
-    }
-
-    private int offset(int record) {
-        return record >> bitsForIndex;
     }
 
     @Override
@@ -229,7 +220,7 @@ public final class OffsetPacksAccumulator {
         int k = 0;
         for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
             sb.append(k++ + "th cloud:\n")
-                    .append("  first index:" + results.get(i + FIRST_INDEX)).append("\n")
+                    .append("  first index:" + results.get(i + FIRST_RECORD_ID)).append("\n")
                     .append("  last index:" + results.get(i + LAST_INDEX)).append("\n")
                     .append("  minimal index:" + results.get(i + MIN_VALUE)).append("\n")
                     .append("  maximal index:" + results.get(i + MAX_VALUE)).append("\n")

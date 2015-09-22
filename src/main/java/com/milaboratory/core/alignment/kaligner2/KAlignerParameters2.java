@@ -57,11 +57,6 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     //TODO
     mapperExtraClusterScore,
     /**
-     * Minimal allowed ratio between best hit score and other hits obtained by {@link
-     * com.milaboratory.core.alignment.KMapper} to consider hit as reliable candidate
-     */
-    mapperRelativeMinScore,
-    /**
      * Reward for mapped seed, must be > 0
      */
     mapperMatchScore,
@@ -72,7 +67,18 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     /**
      * Penalty for different offset between adjacent seeds, must be < 0
      */
-    mapperOffsetShiftScore;
+    mapperOffsetShiftScore,
+
+    mapperSlotCount,
+
+    mapperMaxClusterIndels;
+
+    /**
+     * Minimal allowed ratio between best hit score and other hits obtained by {@link
+     * com.milaboratory.core.alignment.KMapper} to consider hit as reliable candidate
+     */
+    private float mapperRelativeMinScore;
+
     /**
      * Minimal and maximal distance between kMer seed positions in target sequence
      */
@@ -140,9 +146,9 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     // * @param scoring                  scoring system used for building alignments
     // */
     public KAlignerParameters2(int mapperKValue, boolean floatingLeftBound, boolean floatingRightBound,
-                               int mapperAbsoluteMinClusterScore, int mapperExtraClusterScore, int mapperRelativeMinScore,
+                               int mapperAbsoluteMinClusterScore, int mapperExtraClusterScore, float mapperRelativeMinScore,
                                int mapperMatchScore, int mapperMismatchScore, int mapperOffsetShiftScore, int mapperMinSeedsDistance,
-                               int mapperMaxSeedsDistance,
+                               int mapperMaxSeedsDistance, int mapperSlotCount, int mapperMaxClusterIndels,
                                int alignmentStopPenalty, float absoluteMinScore, float relativeMinScore,
                                int maxHits, LinearGapAlignmentScoring scoring) {
         if (scoring != null && !scoring.uniformBasicMatchScore())
@@ -158,6 +164,8 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
         this.mapperOffsetShiftScore = mapperOffsetShiftScore;
         this.mapperMinSeedsDistance = mapperMinSeedsDistance;
         this.mapperMaxSeedsDistance = mapperMaxSeedsDistance;
+        this.mapperSlotCount = mapperSlotCount;
+        this.mapperMaxClusterIndels = mapperMaxClusterIndels;
         this.alignmentStopPenalty = alignmentStopPenalty;
         this.absoluteMinScore = absoluteMinScore;
         this.relativeMinScore = relativeMinScore;
@@ -237,7 +245,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      * @return minimal allowed ratio between best hit score and other hits obtained by {@link
      * com.milaboratory.core.alignment.KMapper}
      */
-    public int getMapperRelativeMinScore() {
+    public float getMapperRelativeMinScore() {
         return mapperRelativeMinScore;
     }
 
@@ -248,7 +256,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      * @param mapperRelativeMinScore minimal allowed ratio between best hit score and other hits
      * @return parameters object
      */
-    public KAlignerParameters2 setMapperRelativeMinScore(int mapperRelativeMinScore) {
+    public KAlignerParameters2 setMapperRelativeMinScore(float mapperRelativeMinScore) {
         this.mapperRelativeMinScore = mapperRelativeMinScore;
         return this;
     }
@@ -367,6 +375,28 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      */
     public KAlignerParameters2 setMapperMaxSeedsDistance(int mapperMaxSeedsDistance) {
         this.mapperMaxSeedsDistance = mapperMaxSeedsDistance;
+        return this;
+    }
+
+    //TODO
+    public int getMapperSlotCount() {
+        return mapperSlotCount;
+    }
+
+    //TODO
+    public KAlignerParameters2 setMapperSlotCount(int mapperSlotCount) {
+        this.mapperSlotCount = mapperSlotCount;
+        return this;
+    }
+
+    //TODO
+    public int getMapperMaxClusterIndels() {
+        return mapperMaxClusterIndels;
+    }
+
+    //TODO
+    public KAlignerParameters2 setMapperMaxClusterIndels(int mapperMaxClusterIndels) {
+        this.mapperMaxClusterIndels = mapperMaxClusterIndels;
         return this;
     }
 
@@ -540,10 +570,12 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
         if (floatingRightBound != that.floatingRightBound) return false;
         if (mapperAbsoluteMinClusterScore != that.mapperAbsoluteMinClusterScore) return false;
         if (mapperExtraClusterScore != that.mapperExtraClusterScore) return false;
-        if (mapperRelativeMinScore != that.mapperRelativeMinScore) return false;
         if (mapperMatchScore != that.mapperMatchScore) return false;
         if (mapperMismatchScore != that.mapperMismatchScore) return false;
         if (mapperOffsetShiftScore != that.mapperOffsetShiftScore) return false;
+        if (mapperSlotCount != that.mapperSlotCount) return false;
+        if (mapperMaxClusterIndels != that.mapperMaxClusterIndels) return false;
+        if (Float.compare(that.mapperRelativeMinScore, mapperRelativeMinScore) != 0) return false;
         if (mapperMinSeedsDistance != that.mapperMinSeedsDistance) return false;
         if (mapperMaxSeedsDistance != that.mapperMaxSeedsDistance) return false;
         if (alignmentStopPenalty != that.alignmentStopPenalty) return false;
@@ -561,10 +593,12 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
         result = 31 * result + (floatingRightBound ? 1 : 0);
         result = 31 * result + mapperAbsoluteMinClusterScore;
         result = 31 * result + mapperExtraClusterScore;
-        result = 31 * result + mapperRelativeMinScore;
         result = 31 * result + mapperMatchScore;
         result = 31 * result + mapperMismatchScore;
         result = 31 * result + mapperOffsetShiftScore;
+        result = 31 * result + mapperSlotCount;
+        result = 31 * result + mapperMaxClusterIndels;
+        result = 31 * result + (mapperRelativeMinScore != +0.0f ? Float.floatToIntBits(mapperRelativeMinScore) : 0);
         result = 31 * result + mapperMinSeedsDistance;
         result = 31 * result + mapperMaxSeedsDistance;
         result = 31 * result + alignmentStopPenalty;

@@ -243,4 +243,8 @@ public final class IntArrayList implements java.io.Serializable {
             b.append(", ");
         }
     }
+
+    public static int[] getArrayReference(IntArrayList list) {
+        return list.data;
+    }
 }

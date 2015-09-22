@@ -1,16 +1,18 @@
 package com.milaboratory.core.alignment.kaligner2;
 
-import com.milaboratory.core.alignment.KAlignerParameters;
-import com.milaboratory.core.alignment.LinearGapAlignmentScoring;
+import com.milaboratory.core.sequence.NucleotideSequence;
+import com.milaboratory.test.TestUtil;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.List;
 
 /**
  * Created by poslavsky on 15/09/15.
  */
 public class KMapper2Test {
-    public static final KAlignerParameters gParams = new KAlignerParameters(5, false, false,
-            1.5f, 0.75f, 1.0f, -0.1f, -0.3f, 4, 10, 15, 2, -10,
-            40.0f, 0.87f, 7,
-            LinearGapAlignmentScoring.getNucleotideBLASTScoring());
+    public static final KAlignerParameters2 gParams = new KAlignerParameters2(5, false, false, 15, -20, 0.87f, 10, -7,
+            -8, 4, 10, 4, 3, 0, 0, 0, 0, null);
 //
 //    @Test
 //    public void testBestOffset1() throws Exception {
@@ -36,22 +38,51 @@ public class KMapper2Test {
 //
 //    }
 
-//    @Test
-//    public void test1() throws Exception {
-//        com.milaboratory.core.alignment.KMapper aligner = com.milaboratory.core.alignment.KMapper.createFromParameters(gParams);
-//        aligner.addReference(new NucleotideSequence("ATTAGACACAATATATCTATGATCCTCTATTAGCTACGTACGGCTGATGCTAGTGTCGAT"));
-//        aligner.addReference(new NucleotideSequence("ACTAGCTGAGCTGTGTAGCTAGTATCTCGATATGCTACATCGTGGGTCGATTAGCTACGT"));
-//        aligner.addReference(new NucleotideSequence("GCTGTCGGCCTAGGCGCGATCGAACGCGCTGCGCGATGATATATCGCGATAATTCTCTGA"));
-//
-//        for (int i = 0; i < its(1000, 50000); ++i) {
-//            List<KMappingHit2> hits =
-//                    aligner.align(new NucleotideSequence("GAACGCGCTGCGCGATGATATATCGCGATAATTCTCTGAAGTAGATGATGATGCAGCGTATG")).hits;
-//
-//            assertEquals("On i = " + i, 1, hits.size());
-//            assertEquals(-21, hits.get(0).offset);
-//            assertEquals(2, hits.get(0).id);
-//        }
-//    }
+    @Test
+    public void test1() throws Exception {
+        KMapper2 aligner = KMapper2.createFromParameters(gParams);
+        aligner.addReference(new NucleotideSequence("ATTAGACACAATATATCTATGATCCTCTATTAGCTACGTACGGCTGATGCTAGTGTCGAT"));
+        aligner.addReference(new NucleotideSequence("ACTAGCTGAGCTGTGTAGCTAGTATCTCGATATGCTACATCGTGGGTCGATTAGCTACGT"));
+        aligner.addReference(new NucleotideSequence("GCTGTCGGCCTAGGCGCGATCGAACGCGCTGCGCGATGATATATCGCGATAATTCTCTGA"));
+
+        for (int i = 0; i < TestUtil.its(1000, 50000); ++i) {            //GAACGCGCTGCGCGATGATATATCGCGATAATTCTCTGA
+            KMappingResult2 result = aligner.align(new NucleotideSequence("GAACGCGCTGCGCGATGATATATCGCGATAATTCTCTGAAGTAGATGATGATGCAGCGTATG"));
+
+            printResult(result);
+
+            List<KMappingHit2> hits = result.hits;
+
+            Assert.assertEquals("On i = " + i, 1, hits.size());
+            Assert.assertEquals(-21, KMapper2.offset(hits.get(0).seedRecords[0]));
+            Assert.assertEquals(2, hits.get(0).id);
+        }
+    }
+
+    public static void printResult(KMappingResult2 result) {
+        int i = 0;
+        for (KMappingHit2 hit : result.getHits()) {
+            System.out.println("Hit " + (i++) + ":");
+            printHit(result, hit);
+        }
+    }
+
+    public static void printHit(KMappingResult2 result, KMappingHit2 hit) {
+        System.out.println("  ID: " + hit.id);
+        System.out.println("  Island 0:");
+        int boundaryI = 0;
+        int[] seedRecords = hit.seedRecords;
+        int i = 0;
+        for (int seedRecord : seedRecords) {
+            if (boundaryI < hit.boundaries.length && hit.boundaries[boundaryI] == i) {
+                boundaryI++;
+                System.out.println("  Island " + boundaryI + ":");
+            }
+            int index = KMapper2.index(seedRecord);
+            int offset = KMapper2.offset(seedRecord);
+            System.out.println("    " + result.getSeedPosition(index) + " : " + (result.getSeedPosition(index) - offset) + "  -  " + offset);
+            i++;
+        }
+    }
 //
 //    @Test
 //    public void test2() throws Exception {

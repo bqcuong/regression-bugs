@@ -22,9 +22,9 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 
+import static com.milaboratory.core.alignment.kaligner2.OffsetPacksAccumulator.*;
+import static java.lang.Math.abs;
 import static java.lang.Math.max;
 import static java.util.Arrays.copyOf;
 
@@ -39,6 +39,7 @@ import static java.util.Arrays.copyOf;
  * <p><b>Algorithm inspired by:</b> <i>Liao Y et al.</i> The Subread aligner: fast, accurate and scalable read mapping
  * by seed-and-vote. <i>Nucleic Acids Res. 2013 May 1;41(10):e108. doi: 10.1093/nar/gkt214. Epub 2013 Apr 4.</i></p>
  */
+//TODO visuzlization for hits
 public final class KMapper2 implements java.io.Serializable {
     public static final int SEED_NOT_FOUND_OFFSET = Integer.MIN_VALUE + 1;
 
@@ -52,11 +53,15 @@ public final class KMapper2 implements java.io.Serializable {
     /**
      * Number of bits in base record for offset value
      */
-    private final int bitsForOffset;
+    private static final int bitsForIndex = 13;
     /**
-     * Mask to extract offset value (= 0xFFFFFFFF >>> (32 - bitsForOffset))
+     * Index mask (= 0xFFFFFFFF << (32 - bitsForIndex))
      */
-    private final int offsetMask;
+    private static final int indexMask = 0xFFFFFFFF >>> (32 - bitsForIndex);
+    /**
+     * Mask to extract offset value (= 0xFFFFFFFF >>> bitsForIndex)
+     */
+    private static final int offsetMask = 0xFFFFFFFF >>> bitsForIndex;
 
     /*           Parameters             */
 
@@ -77,11 +82,7 @@ public final class KMapper2 implements java.io.Serializable {
      */
     private final int absoluteMinClusterScore,
     //TODO
-    mapperExtraClusterScore,
-    /**
-     * Minimal score in fractions of top score.
-     */
-    relativeMinScore,
+    extraClusterScore,
     /**
      * Reward for match (must be > 0)
      */
@@ -93,7 +94,17 @@ public final class KMapper2 implements java.io.Serializable {
     /**
      * Penalty for different offset between adjacent seeds
      */
-    offsetShiftScore;
+    offsetShiftScore,
+
+    slotCount,
+
+    maxClusterIndels;
+
+    /**
+     * Minimal score in fractions of top score.
+     */
+    private final float relativeMinScore;
+
 
     /**
      * Determines boundaries type: floating(only part of sequence should be aligned) or fixed (whole sequence should be
@@ -110,7 +121,7 @@ public final class KMapper2 implements java.io.Serializable {
     private int[] refFrom = new int[10], refLength = new int[10];
     private int maxReferenceLength = 0, minReferenceLength = Integer.MAX_VALUE;
     private int sequencesInBase = 0;
-    private final float terminationThreshold = 6.6e6f;
+    //private final float terminationThreshold = 6.6e6f;
 
     /**
      * Creates new KMer mapper.
@@ -127,18 +138,21 @@ public final class KMapper2 implements java.io.Serializable {
      */
     public KMapper2(int kValue,
                     int minDistance, int maxDistance,
-                    int absoluteMinClusterScore, int mapperExtraClusterScore,
-                    int relativeMinScore,
+                    int absoluteMinClusterScore, int extraClusterScore,
+                    float relativeMinScore,
                     int matchScore, int mismatchScore, int offsetShiftScore,
+                    int slotCount, int maxClusterIndels,
                     boolean floatingLeftBound, boolean floatingRightBound) {
         this.kValue = kValue;
 
         //Bits
-        this.bitsForOffset = 18;
-        this.offsetMask = 0xFFFFFFFF >>> (32 - bitsForOffset);
+        //this.bitsForIndex = 14;
+        //this.offsetMask = 0xFFFFFFFF >>> bitsForIndex;
+        //this.indexMask = 0xFFFFFFFF >>> (32 - bitsForIndex);
 
         //Initialize base
         int maxNumberOfKmers = 1 << (kValue * 2);
+
         // TODO lazy
         base = new int[maxNumberOfKmers][10];
         lengths = new int[maxNumberOfKmers];
@@ -147,11 +161,13 @@ public final class KMapper2 implements java.io.Serializable {
         this.minDistance = minDistance;
         this.maxDistance = maxDistance;
         this.absoluteMinClusterScore = absoluteMinClusterScore;
-        this.mapperExtraClusterScore = mapperExtraClusterScore;
+        this.extraClusterScore = extraClusterScore;
         this.relativeMinScore = relativeMinScore;
         this.matchScore = matchScore;
         this.mismatchScore = mismatchScore;
         this.offsetShiftScore = offsetShiftScore;
+        this.slotCount = slotCount;
+        this.maxClusterIndels = maxClusterIndels;
         this.floatingLeftBound = floatingLeftBound;
         this.floatingRightBound = floatingRightBound;
     }
@@ -169,7 +185,8 @@ public final class KMapper2 implements java.io.Serializable {
                 parameters.getMapperExtraClusterScore(),
                 parameters.getMapperRelativeMinScore(),
                 parameters.getMapperMatchScore(), parameters.getMapperMismatchScore(),
-                parameters.getMapperOffsetShiftScore(),
+                parameters.getMapperOffsetShiftScore(), parameters.getMapperSlotCount(),
+                parameters.getMapperMaxClusterIndels(),
                 parameters.isFloatingLeftBound(), parameters.isFloatingRightBound());
     }
 
@@ -183,7 +200,7 @@ public final class KMapper2 implements java.io.Serializable {
         if ((offset & offsetMask) != offset)
             throw new IllegalArgumentException("Record is too long.");
 
-        base[kmer][lengths[kmer]++] = (id << bitsForOffset) | (offset);
+        base[kmer][lengths[kmer]++] = record(offset, id);
     }
 
     /**
@@ -209,6 +226,13 @@ public final class KMapper2 implements java.io.Serializable {
      * @return index assigned to the sequence
      */
     public int addReference(NucleotideSequence sequence, int offset, int length) {
+        // Checking parameters
+        if (sequencesInBase >= (1 << bitsForIndex))
+            throw new IllegalArgumentException("Maximum number of records reached.");
+
+        if (length + offset >= (1 << (32 - bitsForIndex)))
+            throw new IllegalArgumentException("Sequence is too long.");
+
         //Resetting built flag
         built = false;
 
@@ -313,7 +337,7 @@ public final class KMapper2 implements java.io.Serializable {
         final IntArrayList[] candidates = new IntArrayList[sequencesInBase];
 
         //Building candidates arrays (seed)
-        int id, offset;
+        int id, positionInTarget;
         for (int i = 0; i < seedPositions.size(); ++i) {
             kmer = 0;
             for (int j = seedPositions.get(i); j < seedPositions.get(i) + kValue; ++j)
@@ -323,77 +347,32 @@ public final class KMapper2 implements java.io.Serializable {
                 continue;
 
             for (int record : base[kmer]) {
-                id = record >>> bitsForOffset;
-                offset = record & offsetMask;
+                id = index(record);
+                positionInTarget = offset(record);
 
-                if (candidates[id] == null) {
+                if (candidates[id] == null)
                     candidates[id] = new IntArrayList();
-                    candidates[id].add(id);
-                }
 
-                candidates[id].add((seedPositions.get(i) - offset) << (32 - bitsForOffset) | i);
+                candidates[id].add(record(seedPositions.get(i) - positionInTarget, i));
             }
         }
 
-        Arrays.sort(candidates, new Comparator<IntArrayList>() {
-            @Override
-            public int compare(IntArrayList o1, IntArrayList o2) {
-                return Integer.compare(o2 == null ? 0 : o2.size(),
-                        o1 == null ? 0 : o1.size());
-            }
-        });
+        final int possibleMinKmers = (int) Math.ceil(absoluteMinClusterScore / matchScore);
 
-        final int possibleMinKmers = (int) Math.ceil(absoluteMinScore / matchScore);
-        IntArrayList seedOffsets = new IntArrayList(),
-                boundaries = new IntArrayList();
-        float score;
-        int alRegionStart, alRegionEnd;
+        OffsetPacksAccumulator accumulator = new OffsetPacksAccumulator(slotCount, maxClusterIndels, matchScore,
+                mismatchScore, offsetShiftScore, absoluteMinClusterScore);
+
         for (int i = 0; i < candidates.length; i++) {
             if (candidates[i] == null)
-                break;
+                continue;
             if (candidates[i].size() - 1 < possibleMinKmers)
-                break;
+                continue;
 
-            score = 0;
-            for (int k = 1; k < candidates[i].size(); k++) {
-                alRegionStart = k;
-                offset = candidates[i].get(k) >> (32 - bitsForOffset);
-            }
+            accumulator.calculateInitialPartitioning(candidates[i]);
 
-            result.add(new KMappingHit2(seedOffsets.toArray(), boundaries.toArray(),
-                    0, candidates[i].get(0), score, 0, 0));
-            seedOffsets.clear();
-            boundaries.clear();
+            result.add(calculateHit(accumulator.results, i, candidates[i], seedPositions));
         }
 
-/*
-
-   Match     = 10
-   Mismatch  = -10
-   Shift     = -9
-
-      FirstIndex  0    0
-      LastIndex   0    1
-      MinValue    100  100
-      MaxValue    100  100
-(key) LastValue   100  100
-      Score       10   20
-
-      FirstIndex  2
-      LastIndex   2
-      MinValue    50
-      MaxValue    50
-(key) LastValue   50
-      Score       10
-
-      FirstIndex  3
-      LastIndex   3
-      MinValue    70
-      MaxValue    70
-(key) LastValue   70
-      Score       10
-
-*/
 //        //Selecting best candidates (vote)
 //        //int resultId = 0;
 //        Info info = new Info();
@@ -598,8 +577,7 @@ public final class KMapper2 implements java.io.Serializable {
 //
 //        //Removing seed conflicts
 //
-//        return new KMappingResult2(seedPositions, result);
-        return null;
+        return new KMappingResult2(seedPositions, result);
     }
 
     /**
@@ -613,12 +591,16 @@ public final class KMapper2 implements java.io.Serializable {
     }
 
     /**
-     * Returns minimal score
+     * Returns minimal score for the cluster
      *
-     * @return minimal score
+     * @return minimal score for the cluster
      */
-    public float getAbsoluteMinScore() {
-        return absoluteMinScore;
+    public int getAbsoluteMinClusterScore() {
+        return absoluteMinClusterScore;
+    }
+
+    public int getExtraClusterScore() {
+        return extraClusterScore;
     }
 
     /**
@@ -646,6 +628,79 @@ public final class KMapper2 implements java.io.Serializable {
      */
     public float getRelativeMinScore() {
         return relativeMinScore;
+    }
+
+    public KMappingHit2 calculateHit(IntArrayList results, int id, IntArrayList data, IntArrayList seedPositions) {
+        return calculateHit(results, id, IntArrayList.getArrayReference(data), 0, data.size(), seedPositions);
+    }
+
+    public KMappingHit2 calculateHit(IntArrayList results, int id, int[] data, int dataFrom, int dataTo, IntArrayList seedPositions) {
+        IntArrayList seedRecords = new IntArrayList(); // TODO initialize with rational length
+        IntArrayList packBoundaries = new IntArrayList();
+
+        // .....
+
+        int score = 0;
+        for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
+            if (i != 0) {
+                packBoundaries.add(seedRecords.size());
+                score += extraClusterScore;
+            }
+
+            int recordId = results.get(i + FIRST_RECORD_ID);
+
+            assert recordId >= dataFrom;
+
+            int lastIndex = results.get(i + LAST_INDEX);
+
+            int record, index, offset, delta;
+            score += matchScore;
+
+            int previousIndex = index = index(record = data[recordId]);
+            seedRecords.add(record);
+
+            int previousOffset = offset(record);
+
+            while (++recordId < dataTo && index(data[recordId]) == index) ;
+
+            while (recordId < dataTo && (index = index(record = data[recordId++])) <= lastIndex) {
+                offset = offset(record);
+                int minRecord = record;
+                int minDelta = abs(offset - previousOffset);
+
+                if (minDelta > maxClusterIndels)
+                    continue;
+
+                while (recordId < dataTo && index(record = data[recordId++]) == index) {
+                    if ((delta = abs(offset(record) - previousOffset)) < minDelta) {
+                        minDelta = delta;
+                        minRecord = record;
+                    }
+                }
+                --recordId;
+
+                score += matchScore + (index - previousIndex - 1) * mismatchScore +
+                        minDelta * offsetShiftScore;
+
+                seedRecords.add(minRecord);
+                previousIndex = index;
+            }
+        }
+
+        return new KMappingHit2(id, seedRecords.toArray(), packBoundaries.toArray(), score);
+    }
+
+
+    static int index(int record) {
+        return record & indexMask;
+    }
+
+    static int offset(int record) {
+        return record >> bitsForIndex;
+    }
+
+    static int record(int offset, int index) {
+        return (offset << bitsForIndex) | index;
     }
 
     /**
