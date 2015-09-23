@@ -58,6 +58,13 @@ public class KMapper2Test {
         }
     }
 
+    public static void assertGoodSequenceOfIndices(KMappingHit2 hit) {
+        int[] seedRecords = hit.seedRecords;
+        for (int i = 1; i < seedRecords.length; i++)
+            if (KMapper2.index(seedRecords[i - 1]) >= KMapper2.index(seedRecords[i]))
+                throw new AssertionError("Wrong sequence of seeds.");
+    }
+
     public static void printResult(KMappingResult2 result) {
         int i = 0;
         for (KMappingHit2 hit : result.getHits()) {
