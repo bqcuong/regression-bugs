@@ -62,21 +62,25 @@ public class CrossTest {
 
     public static void go(UntanglingAlgorithm algorithm, int N, int K, RandomGenerator rg) {
         long start, time;
-        long meanTime = 0, maxTime = 0, errors = 0;
+        long meanTime = 0, maxTime = 0, errors = 0, fails = 0;
         for (int z = 0; z < K; z++) {
             Line[] lines = randomData(N, rg);
 
             Line[] correctAnswer = bruteForce(lines);
             start = System.nanoTime();
             Line[] algorithmResult = algorithm.calculate(lines);
+            if (hasCrosses(algorithmResult))
+                ++fails;
             time = System.nanoTime() - start;
             maxTime = Math.max(maxTime, time);
             meanTime += time;
+            Arrays.sort(correctAnswer);
+            Arrays.sort(algorithmResult);
             if (!Arrays.equals(correctAnswer, algorithmResult))
                 errors++;
         }
         meanTime /= K;
-        System.out.println("N=" + N + "  Errors=" + TestUtil.DECIMAL_FORMAT.format(100.0 * errors / K) + "%  Mean=" + TestUtil.time(meanTime) + "   Max=" + TestUtil.time(maxTime));
+        System.out.println("N=" + N + "  Errors=" + TestUtil.DECIMAL_FORMAT.format(100.0 * errors / K) + "%  Failed=" + TestUtil.DECIMAL_FORMAT.format(100.0 * fails / K) + " Mean=" + TestUtil.time(meanTime) + "   Max=" + TestUtil.time(maxTime));
     }
 
     public static Line[] randomData(int N, RandomGenerator rg) {
@@ -213,11 +217,20 @@ public class CrossTest {
         return best.toArray(new Line[best.size()]);
     }
 
-
     @Test
     public void testName() throws Exception {
-        Line[] ls = randomData(10, new Well19937c());
-        System.out.println(hasCrosses(ls));
+        System.out.println(Arrays.toString(
+                alg3(new Line[]{new Line(10, 20, 100), new Line(20, 15, 200)})));
+    }
+
+    @Test
+    public void testAlg() throws Exception {
+        go(new UntanglingAlgorithm() {
+            @Override
+            public Line[] calculate(Line[] lines) {
+                return alg2(lines.clone());
+            }
+        }, 12, 10000, new Well19937c());
     }
 
     public static boolean hasCrosses(final Line[] set) {
@@ -250,6 +263,35 @@ public class CrossTest {
         return res.toArray(new Line[res.size()]);
     }
 
+    public static Line[] alg3(final Line[] set) {
+        int pos = -1, delScore = Integer.MIN_VALUE;
+        for (int i = 0; i < set.length; ++i) {
+            if (set[i] == null)
+                continue;
+            int ds = -set[i].score;
+            for (int j = 0; j < set.length; ++j) {
+                if (i == j) continue;
+                if (set[j] != null && set[i].crosses(set[j]))
+                    ds += set[j].score;
+            }
+            if (ds != -set[i].score && ds > delScore) {
+                pos = i;
+                delScore = ds;
+            }
+        }
+
+        if (pos == -1) {
+            ArrayList<Line> res = new ArrayList<>();
+            for (Line line : set) {
+                if (line != null)
+                    res.add(line);
+            }
+            return res.toArray(new Line[res.size()]);
+        }
+        set[pos] = null;
+        return alg3(set);
+    }
+
     public static final class Line implements Comparable<Line> {
         final int a, b;
         final int score;
@@ -267,6 +309,27 @@ public class CrossTest {
 
         public boolean crosses(Line l) {
             return Integer.compare(a, l.a) * Integer.compare(b, l.b) < 0;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Line line = (Line) o;
+
+            if (a != line.a) return false;
+            if (b != line.b) return false;
+            return score == line.score;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = a;
+            result = 31 * result + b;
+            result = 31 * result + score;
+            return result;
         }
 
         @Override
