@@ -40,7 +40,7 @@ public class CrossTest {
     public void testCHeckAlgorithm() throws Exception {
         RandomGenerator rg = new Well19937c();
 
-        final UntanglingAlgorithm algorithm = BRUTE_FORCE;
+        final UntanglingAlgorithm algorithm = SUBSUM_ALGORITHM;
 
         int K = 10000;
         System.out.println("Burning JVM...");
@@ -135,9 +135,47 @@ public class CrossTest {
     public static final UntanglingAlgorithm SUBSUM_ALGORITHM = new UntanglingAlgorithm() {
         @Override
         public Line[] calculate(Line[] lines) {
-            return new Line[0];
+            Arrays.sort(lines);
+            LineWrapper1[] wrappers = new LineWrapper1[lines.length];
+            for (int i = 0; i < lines.length; i++)
+                wrappers[i] = new LineWrapper1(lines[i]);
+            for (int i = 0; i < lines.length; i++) {
+                wrappers[i].score = lines[i].score;
+                for (int j = i + 1; j < lines.length; j++) {
+                    if (lines[i].crosses(lines[j]))
+                        wrappers[i].score -= lines[j].score;
+                }
+            }
+
+            Arrays.sort(wrappers);
+
+            List<Line> result = new ArrayList<>(lines.length);
+
+            for (int i = 0; i < wrappers.length; i++) {
+                for (Line fromResult : result) {
+                    if(fromResult.crosses(wrappers[i].line))
+                        continue;
+                    result.add(wrappers[i].line);
+                }
+            }
+
+            return result.toArray(new Line[result.size()]);
         }
     };
+
+    public static final class LineWrapper1 implements Comparable<LineWrapper1> {
+        final Line line;
+        int score;
+
+        public LineWrapper1(Line line) {
+            this.line = line;
+        }
+
+        @Override
+        public int compareTo(LineWrapper1 o) {
+            return Integer.compare(o.score, score);
+        }
+    }
 
     public static final UntanglingAlgorithm BRUTE_FORCE = new UntanglingAlgorithm() {
         @Override
