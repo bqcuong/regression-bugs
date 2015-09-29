@@ -161,6 +161,35 @@ public class CrossTest {
     }
 
 
+    @Test
+    public void testName() throws Exception {
+
+        Line[] ls = {new Line(10, 20, 100), new Line(20, 15, 200)};
+        System.out.println(Arrays.toString(alg2(ls)));
+    }
+
+    public static Line[] alg2(final Line[] set) {
+        for (int i = 0; i < set.length; ++i) {
+            if (set[i] == null)
+                continue;
+            int delScore = 0;
+            for (int j = 0; j < set.length; ++j) {
+                if (i == j) continue;
+                if (set[j] != null && set[i].crosses(set[j]))
+                    delScore += set[j].score;
+            }
+            if (delScore > set[i].score)
+                set[i] = null;
+        }
+
+        ArrayList<Line> res = new ArrayList<>();
+        for (Line line : set) {
+            if (line != null)
+                res.add(line);
+        }
+        return res.toArray(new Line[res.size()]);
+    }
+
     public static final class Line implements Comparable<Line> {
         final int a, b;
         final int score;
