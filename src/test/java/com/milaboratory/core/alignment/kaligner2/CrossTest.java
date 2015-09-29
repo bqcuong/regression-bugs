@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public class CrossTest {
     public void testCHeckAlgorithm() throws Exception {
         RandomGenerator rg = new Well19937c();
 
-        final UntanglingAlgorithm algorithm = SUBSUM_ALGORITHM;
+        final UntanglingAlgorithm algorithm = SUBSUM_ADD_ALGORITHM;
 
         int K = 10000;
         System.out.println("Burning JVM...");
@@ -69,8 +70,9 @@ public class CrossTest {
             Line[] correctAnswer = bruteForce(lines);
             start = System.nanoTime();
             Line[] algorithmResult = algorithm.calculate(lines);
-            if (hasCrosses(algorithmResult))
-                ++fails;
+
+            Assert.assertFalse(hasCrosses(algorithmResult));
+
             time = System.nanoTime() - start;
             maxTime = Math.max(maxTime, time);
             meanTime += time;
@@ -136,34 +138,82 @@ public class CrossTest {
         Line[] calculate(Line[] lines);
     }
 
-    public static final UntanglingAlgorithm SUBSUM_ALGORITHM = new UntanglingAlgorithm() {
+    public static final UntanglingAlgorithm SUBSUM_ADD_ALGORITHM = new UntanglingAlgorithm() {
         @Override
         public Line[] calculate(Line[] lines) {
             Arrays.sort(lines);
             LineWrapper1[] wrappers = new LineWrapper1[lines.length];
+
             for (int i = 0; i < lines.length; i++)
                 wrappers[i] = new LineWrapper1(lines[i]);
-            for (int i = 0; i < lines.length; i++) {
+
+            for (int i = 0; i < lines.length; i++)
                 wrappers[i].score = lines[i].score;
+
+            for (int i = 0; i < lines.length; i++)
                 for (int j = i + 1; j < lines.length; j++) {
-                    if (lines[i].crosses(lines[j]))
-                        wrappers[i].score -= lines[j].score;
+                    if (lines[i].crosses(lines[j])) {
+                        wrappers[i].score -= lines[j].score / 2;
+                        wrappers[j].score -= lines[i].score / 2;
+                    }
                 }
-            }
 
             Arrays.sort(wrappers);
 
             List<Line> result = new ArrayList<>(lines.length);
 
+            OUTER:
             for (int i = 0; i < wrappers.length; i++) {
                 for (Line fromResult : result) {
-                    if(fromResult.crosses(wrappers[i].line))
-                        continue;
-                    result.add(wrappers[i].line);
+                    if (fromResult.crosses(wrappers[i].line))
+                        continue OUTER;
                 }
+                result.add(wrappers[i].line);
             }
 
             return result.toArray(new Line[result.size()]);
+        }
+    };
+
+    public static final UntanglingAlgorithm SUBSUM_REMOVE_ALGORITHM = new UntanglingAlgorithm() {
+        @Override
+        public Line[] calculate(Line[] lines) {
+            Arrays.sort(lines);
+            List<LineWrapper1> wrappers = new ArrayList<>();
+
+            for (int i = 0; i < lines.length; i++)
+                wrappers.add(new LineWrapper1(lines[i]));
+
+            OUTER:
+            while (true) {
+                for (int i = 0; i < wrappers.size(); i++)
+                    wrappers.get(i).score = wrappers.get(i).line.score;
+
+                for (int i = 0; i < wrappers.size(); i++)
+                    for (int j = i + 1; j < wrappers.size(); j++) {
+                        if (wrappers.get(i).line.crosses(wrappers.get(j).line)) {
+                            wrappers.get(i).score -= wrappers.get(j).line.score / 2;
+                            wrappers.get(j).score -= wrappers.get(i).line.score / 2;
+                        }
+                    }
+
+                Collections.sort(wrappers);
+
+                for (int i = wrappers.size() - 1; i >= 0; i--) {
+                    for (int j = i - 1; j >= 0; --j)
+                        if (wrappers.get(i).line.crosses(wrappers.get(j).line)) {
+                            wrappers.remove(i);
+                            continue OUTER;
+                        }
+                }
+
+                Line[] result = new Line[wrappers.size()];
+                for (int i = 0; i < wrappers.size(); i++) {
+                    result[i] = wrappers.get(i).line;
+                }
+
+                return result;
+            }
         }
     };
 
