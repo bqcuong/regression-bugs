@@ -62,18 +62,21 @@ public class CrossTest {
 
     public static void go(UntanglingAlgorithm algorithm, int N, int K, RandomGenerator rg) {
         long start, time;
-        long meanTime = 0, maxTime = 0;
+        long meanTime = 0, maxTime = 0, errors = 0;
         for (int z = 0; z < K; z++) {
             Line[] lines = randomData(N, rg);
 
+            Line[] correctAnswer = bruteForce(lines);
             start = System.nanoTime();
-            Line[] answer = bruteForce(lines);
+            Line[] algorithmResult = algorithm.calculate(lines);
             time = System.nanoTime() - start;
             maxTime = Math.max(maxTime, time);
             meanTime += time;
+            if (!Arrays.equals(correctAnswer, algorithmResult))
+                errors++;
         }
         meanTime /= K;
-        System.out.println("N=" + N + "  Mean=" + TestUtil.time(meanTime) + "   Max=" + TestUtil.time(maxTime));
+        System.out.println("N=" + N + "  Errors=" + TestUtil.DECIMAL_FORMAT.format(100.0 * errors / K) + "%  Mean=" + TestUtil.time(meanTime) + "   Max=" + TestUtil.time(maxTime));
     }
 
     public static Line[] randomData(int N, RandomGenerator rg) {
@@ -130,7 +133,10 @@ public class CrossTest {
     }
 
     public static final UntanglingAlgorithm SUBSUM_ALGORITHM = new UntanglingAlgorithm() {
-
+        @Override
+        public Line[] calculate(Line[] lines) {
+            return new Line[0];
+        }
     };
 
     public static final UntanglingAlgorithm BRUTE_FORCE = new UntanglingAlgorithm() {
