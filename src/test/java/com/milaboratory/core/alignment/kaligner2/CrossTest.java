@@ -37,6 +37,55 @@ public class CrossTest {
     }
 
     @Test
+    public void testCHeckAlgorithm() throws Exception {
+        RandomGenerator rg = new Well19937c();
+
+        final UntanglingAlgorithm algorithm = BRUTE_FORCE;
+
+        int K = 10000;
+        System.out.println("Burning JVM...");
+        System.out.print("BF: ");
+        go(BRUTE_FORCE, 5, K, rg);
+        System.out.print("ALG: ");
+        go(algorithm, 5, K, rg);
+        System.out.println();
+        System.out.println("Run.");
+        System.out.println();
+        for (int N = 2; N < 14; N++) {
+            System.out.print("BF: ");
+            go(BRUTE_FORCE, N, K, rg);
+            System.out.print("ALG: ");
+            go(algorithm, N, K, rg);
+            System.out.println();
+        }
+    }
+
+    public static void go(UntanglingAlgorithm algorithm, int N, int K, RandomGenerator rg) {
+        long start, time;
+        long meanTime = 0, maxTime = 0;
+        for (int z = 0; z < K; z++) {
+            TIntHashSet generated = new TIntHashSet();
+            Line[] lines = new Line[N];
+
+            int[] limits = {300, 300, 700};
+            for (int i = 0; i < N; i++) {
+                int numbers[] = new int[3];
+                for (int j = 0; j < 3; j++)
+                    while (!generated.add(numbers[j] = rg.nextInt(limits[j]))) ;
+                lines[i] = new Line(numbers[0], numbers[1], numbers[2]);
+            }
+
+            start = System.nanoTime();
+            Line[] answer = bruteForce(lines);
+            time = System.nanoTime() - start;
+            maxTime = Math.max(maxTime, time);
+            meanTime += time;
+        }
+        meanTime /= K;
+        System.out.println("N=" + N + "  Mean=" + TestUtil.time(meanTime) + "   Max=" + TestUtil.time(maxTime));
+    }
+
+    @Test
     public void testRandom() throws Exception {
         RandomGenerator rg = new Well19937c();
 
@@ -63,7 +112,7 @@ public class CrossTest {
             //System.out.println("-----");
 
             long start = System.nanoTime();
-            Line[] answer = answer(lines);
+            Line[] answer = bruteForce(lines);
             System.out.println(TestUtil.time(System.nanoTime() - start));
             //for (Line bestLine : answer) {
             //    System.out.println(bestLine);
@@ -71,7 +120,18 @@ public class CrossTest {
         }
     }
 
-    public Line[] answer(Line[] lines) {
+    interface UntanglingAlgorithm {
+        Line[] calculate(Line[] lines);
+    }
+
+    public static final UntanglingAlgorithm BRUTE_FORCE = new UntanglingAlgorithm() {
+        @Override
+        public Line[] calculate(Line[] lines) {
+            return bruteForce(lines);
+        }
+    };
+
+    public static Line[] bruteForce(Line[] lines) {
         List<Line> best = null;
         int bestScore = 0;
         List<Line> current = new ArrayList<>(lines.length);
