@@ -168,8 +168,12 @@ public class CrossTest {
 
     @Test
     public void testName() throws Exception {
-        Line[] ls = randomData(10, new Well19937c());
-        System.out.println(hasCrosses(ls));
+        go(new UntanglingAlgorithm() {
+            @Override
+            public Line[] calculate(Line[] lines) {
+                return alg2(lines);
+            }
+        }, 20, 12, new Well19937c());
     }
 
     public static boolean hasCrosses(final Line[] set) {
@@ -199,7 +203,8 @@ public class CrossTest {
             if (line != null)
                 res.add(line);
         }
-        return res.toArray(new Line[res.size()]);
+        Line[] rr = res.toArray(new Line[res.size()]);
+        return rr;
     }
 
     public static final class Line implements Comparable<Line> {
