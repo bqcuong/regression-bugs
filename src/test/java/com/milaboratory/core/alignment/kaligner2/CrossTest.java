@@ -153,8 +153,8 @@ public class CrossTest {
             for (int i = 0; i < lines.length; i++)
                 for (int j = i + 1; j < lines.length; j++) {
                     if (lines[i].crosses(lines[j])) {
-                        wrappers[i].score -= lines[j].score / 2;
-                        wrappers[j].score -= lines[i].score / 2;
+                        wrappers[i].score -= lines[j].score;
+                        wrappers[j].score -= lines[i].score;
                     }
                 }
 
@@ -192,8 +192,8 @@ public class CrossTest {
                 for (int i = 0; i < wrappers.size(); i++)
                     for (int j = i + 1; j < wrappers.size(); j++) {
                         if (wrappers.get(i).line.crosses(wrappers.get(j).line)) {
-                            wrappers.get(i).score -= wrappers.get(j).line.score / 2;
-                            wrappers.get(j).score -= wrappers.get(i).line.score / 2;
+                            wrappers.get(i).score -= wrappers.get(j).line.score;
+                            wrappers.get(j).score -= wrappers.get(i).line.score;
                         }
                     }
 
