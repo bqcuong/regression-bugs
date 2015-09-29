@@ -178,6 +178,10 @@ public final class IntArrayList implements java.io.Serializable {
         return replaced;
     }
 
+    public int last() {
+        return data[size - 1];
+    }
+
     public int[] toArray() {
         return Arrays.copyOfRange(data, 0, size);
     }
