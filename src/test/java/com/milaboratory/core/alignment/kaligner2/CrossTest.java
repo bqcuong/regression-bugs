@@ -64,16 +64,7 @@ public class CrossTest {
         long start, time;
         long meanTime = 0, maxTime = 0;
         for (int z = 0; z < K; z++) {
-            TIntHashSet generated = new TIntHashSet();
-            Line[] lines = new Line[N];
-
-            int[] limits = {300, 300, 700};
-            for (int i = 0; i < N; i++) {
-                int numbers[] = new int[3];
-                for (int j = 0; j < 3; j++)
-                    while (!generated.add(numbers[j] = rg.nextInt(limits[j]))) ;
-                lines[i] = new Line(numbers[0], numbers[1], numbers[2]);
-            }
+            Line[] lines = randomData(N, rg);
 
             start = System.nanoTime();
             Line[] answer = bruteForce(lines);
@@ -83,6 +74,20 @@ public class CrossTest {
         }
         meanTime /= K;
         System.out.println("N=" + N + "  Mean=" + TestUtil.time(meanTime) + "   Max=" + TestUtil.time(maxTime));
+    }
+
+    public static Line[] randomData(int N, RandomGenerator rg) {
+        TIntHashSet generated = new TIntHashSet();
+        Line[] lines = new Line[N];
+
+        int[] limits = {300, 300, 700};
+        for (int i = 0; i < N; i++) {
+            int numbers[] = new int[3];
+            for (int j = 0; j < 3; j++)
+                while (!generated.add(numbers[j] = rg.nextInt(limits[j]))) ;
+            lines[i] = new Line(numbers[0], numbers[1], numbers[2]);
+        }
+        return lines;
     }
 
     @Test
@@ -163,9 +168,16 @@ public class CrossTest {
 
     @Test
     public void testName() throws Exception {
+        Line[] ls = randomData(10, new Well19937c());
+        System.out.println(hasCrosses(ls));
+    }
 
-        Line[] ls = {new Line(10, 20, 100), new Line(20, 15, 200)};
-        System.out.println(Arrays.toString(alg2(ls)));
+    public static boolean hasCrosses(final Line[] set) {
+        for (int i = 0; i < set.length; ++i)
+            for (int j = 0; j < set.length; ++j)
+                if (i != j && set[i].crosses(set[j]))
+                    return true;
+        return false;
     }
 
     public static Line[] alg2(final Line[] set) {
