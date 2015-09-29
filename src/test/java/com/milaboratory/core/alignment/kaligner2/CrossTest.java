@@ -190,7 +190,7 @@ public class CrossTest {
         go(new UntanglingAlgorithm() {
             @Override
             public Line[] calculate(Line[] lines) {
-                return alg2(lines.clone());
+                return alg3(lines.clone());
             }
         }, 12, 10000, new Well19937c());
     }
@@ -226,22 +226,20 @@ public class CrossTest {
     }
 
     public static Line[] alg3(final Line[] set) {
-        int pos = -1, delScore = Integer.MIN_VALUE;
+        int pos = -1, delScore = Integer.MIN_VALUE, ds;
         for (int i = 0; i < set.length; ++i) {
             if (set[i] == null)
                 continue;
-            int ds = -set[i].score;
-            for (int j = 0; j < set.length; ++j) {
-                if (i == j) continue;
-                if (set[j] != null && set[i].crosses(set[j]))
+            ds = -set[i].score;
+            for (int j = 0; j < set.length; ++j)
+                if (i != j && set[j] != null && set[i].crosses(set[j]))
                     ds += set[j].score;
-            }
+
             if (ds != -set[i].score && ds > delScore) {
                 pos = i;
                 delScore = ds;
             }
         }
-
         if (pos == -1) {
             ArrayList<Line> res = new ArrayList<>();
             for (Line line : set) {
@@ -252,6 +250,63 @@ public class CrossTest {
         }
         set[pos] = null;
         return alg3(set);
+    }
+
+    public static Line[] alg4(final Line[] set) {
+        alg40(set);
+        ArrayList<Line> res = new ArrayList<>();
+        for (Line line : set) {
+            if (line != null)
+                res.add(line);
+        }
+        return res.toArray(new Line[res.size()]);
+    }
+
+    public static void alg40(final Line[] set) {
+        int pos = -1, delScore = Integer.MIN_VALUE, prevPos = -1, ds;
+        for (int i = 0; i < set.length; ++i) {
+            if (set[i] == null)
+                continue;
+            ds = -set[i].score;
+            for (int j = 0; j < set.length; ++j)
+                if (i != j && set[j] != null && set[i].crosses(set[j]))
+                    ds += set[j].score;
+
+            if (ds != -set[i].score && ds > delScore) {
+                prevPos = pos;
+                pos = i;
+                delScore = ds;
+            }
+        }
+        if (pos == -1)
+            return;
+        else if (prevPos != -1) {
+            Line[] tempA = set.clone();
+            tempA[prevPos] = null;
+            alg40(tempA);
+            int scoreA = score(tempA);
+
+            Line[] tempB = set;
+            tempB[pos] = null;
+            alg40(tempB);
+            int scoreB = score(tempB);
+
+            if (scoreA > scoreB)
+                System.arraycopy(tempA, 0, set, 0, set.length);
+//            else
+//                System.arraycopy(tempB, 0, set, 0, set.length);
+        } else {
+            set[pos] = null;
+            alg40(set);
+        }
+    }
+
+    public static int score(final Line[] set) {
+        int score = 0;
+        for (Line line : set)
+            if (line != null)
+                score += line.score;
+        return score;
     }
 
     public static final class Line implements Comparable<Line> {
