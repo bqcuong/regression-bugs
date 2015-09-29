@@ -22,6 +22,8 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import static com.milaboratory.core.alignment.kaligner2.OffsetPacksAccumulator.*;
 import static java.lang.Math.abs;
@@ -200,6 +202,9 @@ public final class KMapper2 implements java.io.Serializable {
         if ((offset & offsetMask) != offset)
             throw new IllegalArgumentException("Record is too long.");
 
+        assert lengths[kmer] == 0 || index(base[kmer][lengths[kmer] - 1]) != id
+                || offset(base[kmer][lengths[kmer] - 1]) < offset;
+
         base[kmer][lengths[kmer]++] = record(offset, id);
     }
 
@@ -353,7 +358,10 @@ public final class KMapper2 implements java.io.Serializable {
                 if (candidates[id] == null)
                     candidates[id] = new IntArrayList();
 
-                candidates[id].add(record(seedPositions.get(i) - positionInTarget, i));
+                assert candidates[id].isEmpty() || index(candidates[id].last()) != i
+                        || offset(candidates[id].last()) < positionInTarget - seedPositions.get(i);
+
+                candidates[id].add(record(positionInTarget - seedPositions.get(i), i));
             }
         }
 
@@ -373,211 +381,79 @@ public final class KMapper2 implements java.io.Serializable {
             result.add(calculateHit(accumulator.results, i, candidates[i], seedPositions));
         }
 
-//        //Selecting best candidates (vote)
-//        //int resultId = 0;
-//        Info info = new Info();
-//        int cFrom, cTo, siFrom, siTo;
-//        int maxRawScore = 0, j, i;
-//        double preScore;
-//        double maxScore = Float.MIN_VALUE;
-//        for (i = candidates.length - 1; i >= 0; --i) {
-//            //TODO reconsider conditions:
-//            if (candidates[i] != null &&
-//                    candidates[i].size() >= ((minAlignmentLength - kValue + 1) / maxDistance) &&
-//                    candidates[i].size() * matchScore >= maxScore * relativeMinScore) {
-//
-//                //Sorting (important)
-//                candidates[i].sort();
-//                //Calculating best score and offset values
-//                getScoreFromOffsets(candidates[i], info);
-//
-//                //Theoretical range of target and reference sequence intersection
-//                cFrom = max(info.offset, from);
-//                cTo = min(info.offset + refLength[i], to) - kValue;
-//
-//                //Calculating number of seeds in this range
-//                siTo = siFrom = -1;
-//                for (j = seedPositions.size() - 1; j >= 0; --j)
-//                    if ((seedPosition = seedPositions.get(j)) <= cTo) {
-//                        if (siTo == -1)
-//                            siTo = j + 1;
-//                        if (seedPosition < cFrom) {
-//                            siFrom = j + 1;
-//                            break;
-//                        }
-//                    }
-//
-//                //If siFrom not set, first seed is inside the range of target and
-//                //reference sequence intersection
-//                if (siFrom == -1)
-//                    siFrom = 0;
-//
-//                //Calculating score without penalty
-//                preScore = matchScore * info.score; //+ max(siTo - siFrom - info.score, 0) * mismatchScore;
-//
-//                //Selecting candidates
-//                if (preScore >= absoluteMinScore) {
-//                    result.add(new KMappingHit2(info.offset, i, (float) preScore, siFrom, siTo));
-//
-//                    if (maxRawScore < info.score)
-//                        maxRawScore = info.score;
-//
-//                    if (maxScore < preScore)
-//                        maxScore = preScore;
-//                }
-//            }
-//        }
-//
-//        int c, seedIndex, seedIndexMask = (0xFFFFFFFF >>> (bitsForOffset)),
-//                offsetDelta, currentSeedPosition, prev;
-//        float score;
-//
-//        KMappingHit2 hit;
-//        maxScore = 0.0;
-//        for (j = result.size() - 1; j >= 0; --j) {
-//            hit = result.get(j);
-//
-//            //Fulfilling the seed positions array
-//            //getting seed positions in intersection of target and reference sequences
-//            hit.seedOffsets = new int[hit.to - hit.from];
-//            Arrays.fill(hit.seedOffsets, SEED_NOT_FOUND_OFFSET);
-//            for (int k = candidates[hit.id].size() - 1; k >= 0; --k) {
-//                //  offset value | seed index
-//                c = candidates[hit.id].get(k);
-//                seedIndex = c & seedIndexMask;
-//
-//                //filling seed position array with actual positions of seeds inside intersection
-//                if (seedIndex >= result.get(j).from && seedIndex < result.get(j).to) {
-//                    seedIndex -= hit.from;
-//                    offsetDelta = abs((c >> (32 - bitsForOffset)) - hit.offset);
-//
-//                    //check if offset difference is less than max allowed and better seed position is found
-//                    if (offsetDelta <= maxIndels &&
-//                            (hit.seedOffsets[seedIndex] == SEED_NOT_FOUND_OFFSET ||
-//                                    abs(hit.seedOffsets[seedIndex] - hit.offset) > offsetDelta))
-//                        hit.seedOffsets[seedIndex] = (c >> (32 - bitsForOffset));
-//                }
-//            }
-//
-//            //Previous seed position
-//            prev = -1;
-//            c = -1;
-//            for (i = hit.seedOffsets.length - 1; i >= 0; --i)
-//                if (hit.seedOffsets[i] != SEED_NOT_FOUND_OFFSET) {
-//                    if (c != -1)
-//                        //check for situation like: seedsOffset = [25,25,25,25,  28  ,25]
-//                        //we have to remove such offsets because it's most likely wrong mapping
-//                        //c - most left index, prev - middle index and i - right most index
-//                        //but we iterate in reverse direction
-//                        if (hit.seedOffsets[c] != hit.seedOffsets[prev] && hit.seedOffsets[prev] != hit.seedOffsets[i] &&
-//                                ((hit.seedOffsets[c] < hit.seedOffsets[prev])
-//                                        != (hit.seedOffsets[prev] < hit.seedOffsets[i]))) {
-//                            hit.seedOffsets[prev] = SEED_NOT_FOUND_OFFSET;
-//                            prev = -1;
-//                        }
-//                    c = prev;
-//                    prev = i;
-//                }
-//
-//
-//            //Calculating score
-//            score = 0.0f;
-//            for (int off : hit.seedOffsets)
-//                if (off != SEED_NOT_FOUND_OFFSET)
-//                    score += matchScore;
-//                else
-//                    score += mismatchPenalty;
-//
-//            //Floating bounds reward
-//            if (floatingLeftBound) {
-//                prev = -1;
-//                for (i = 0; i < hit.seedOffsets.length; ++i)
-//                    if (hit.seedOffsets[i] != SEED_NOT_FOUND_OFFSET) {
-//                        if (prev == -1) {
-//                            prev = i;
-//                            continue;
-//                        }
-//
-//                        //Calculating score gain for deleting first kMer
-//                        if (matchScore + abs(hit.seedOffsets[i] - hit.seedOffsets[prev]) * offsetShiftPenalty + (i - prev - 1) * mismatchPenalty <= 0.0f) {
-//                            //Bad kMer
-//                            hit.seedOffsets[prev] = SEED_NOT_FOUND_OFFSET;
-//                            prev = i;
-//                            continue;
-//                        }
-//
-//                        score -= prev * mismatchPenalty;
-//                        break;
-//                    }
-//            }
-//
-//            //Floating bounds reward
-//            if (floatingRightBound) {
-//                prev = -1;
-//                for (i = hit.seedOffsets.length - 1; i >= 0; --i)
-//                    if (hit.seedOffsets[i] != SEED_NOT_FOUND_OFFSET) {
-//                        if (prev == -1) {
-//                            prev = i;
-//                            continue;
-//                        }
-//
-//                        //Calculating score gain for deleting first kMer
-//                        if (matchScore + abs(hit.seedOffsets[i] - hit.seedOffsets[prev]) * offsetShiftPenalty + (prev - 1 - i) * mismatchPenalty <= 0.0f) {
-//                            //Bad kMer
-//                            hit.seedOffsets[prev] = SEED_NOT_FOUND_OFFSET;
-//                            prev = i;
-//                            continue;
-//                        }
-//
-//                        score -= (hit.seedOffsets.length - 1 - prev) * mismatchPenalty;
-//                    }
-//            }
-//
-//            c = -1;
-//            prev = -1;
-//            //totalIndels = 0;
-//            for (i = hit.seedOffsets.length - 1; i >= 0; --i) {
-//                if (hit.seedOffsets[i] != SEED_NOT_FOUND_OFFSET) {
-//                    currentSeedPosition = seedPositions.get(i + hit.from) - hit.seedOffsets[i];
-//                    if (c == -1) {
-//                        c = currentSeedPosition;
-//                        prev = i;
-//                    } else if (c <= currentSeedPosition)
-//                        //Removing paradoxical kMer offsets
-//                        hit.seedOffsets[i] = SEED_NOT_FOUND_OFFSET;
-//                    else {
-//                        //totalIndels += abs(hit.seedOffsets[i] - hit.seedOffsets[prev]);
-//                        score += abs(hit.seedOffsets[i] - hit.seedOffsets[prev]) * offsetShiftPenalty;
-//                        c = currentSeedPosition;
-//                        prev = i;
-//                    }
-//                }
-//            }
-//
-//            hit.score = score;
-//
-//            if (score < absoluteMinScore)
-//                result.remove(j);
-//
-//            if (maxScore < score)
-//                maxScore = score;
-//
-//            //if (totalIndels > maxIndels * 2) {
-//            //    result.remove(j);
-//            //}
-//        }
-//
-//        //Removing candidates with score < maxScore * hitsRange
-//        maxScore *= relativeMinScore;
-//        for (j = result.size() - 1; j >= 0; --j) {
-//            hit = result.get(j);
-//            if (hit.score < maxScore)
-//                result.remove(j);
-//        }
-//
-//        //Removing seed conflicts
-//
+        Collections.sort(result, new Comparator<KMappingHit2>() {
+            @Override
+            public int compare(KMappingHit2 o1, KMappingHit2 o2) {
+                return Integer.compare(o2.score, o1.score);
+            }
+        });
         return new KMappingResult2(seedPositions, result);
+    }
+
+    public KMappingHit2 calculateHit(IntArrayList results, int id, IntArrayList data, IntArrayList seedPositions) {
+        return calculateHit(results, id, IntArrayList.getArrayReference(data), 0, data.size(), seedPositions);
+    }
+
+    public KMappingHit2 calculateHit(IntArrayList results, int id, int[] data, int dataFrom, int dataTo, IntArrayList seedPositions) {
+        IntArrayList seedRecords = new IntArrayList(); // TODO initialize with rational length
+        IntArrayList packBoundaries = new IntArrayList();
+
+        for (int i = 0; i < results.size() / 2; i++) {
+
+        }
+
+
+        int score = 0;
+        for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
+            if (i != 0) {
+                packBoundaries.add(seedRecords.size());
+                score += extraClusterScore;
+            }
+
+            int recordId = results.get(i + FIRST_RECORD_ID);
+
+            assert recordId >= dataFrom;
+
+            int lastIndex = results.get(i + LAST_INDEX);
+
+            int record, index, offset, delta;
+            score += matchScore;
+
+            int previousIndex = index = index(record = data[recordId]);
+            seedRecords.add(record);
+
+            int previousOffset = offset(record);
+
+            while (++recordId < dataTo && index(data[recordId]) == index) ;
+
+            while (recordId < dataTo && (index = index(record = data[recordId++])) <= lastIndex) {
+                offset = offset(record);
+                int minRecord = record;
+                int minDelta = abs(offset - previousOffset);
+
+                if (minDelta > maxClusterIndels)
+                    continue;
+
+                boolean $ = false;
+                while (recordId < dataTo && index(record = data[recordId++]) == index) {
+                    if ((delta = abs(offset(record) - previousOffset)) < minDelta) {
+                        minDelta = delta;
+                        minRecord = record;
+                    }
+                    $ = true;
+                }
+                if ($)
+                    --recordId;
+
+                score += matchScore + (index - previousIndex - 1) * mismatchScore +
+                        minDelta * offsetShiftScore;
+
+                seedRecords.add(minRecord);
+                previousIndex = index;
+            }
+        }
+
+        return new KMappingHit2(id, seedRecords.toArray(), packBoundaries.toArray(), score);
     }
 
     /**
@@ -629,67 +505,6 @@ public final class KMapper2 implements java.io.Serializable {
     public float getRelativeMinScore() {
         return relativeMinScore;
     }
-
-    public KMappingHit2 calculateHit(IntArrayList results, int id, IntArrayList data, IntArrayList seedPositions) {
-        return calculateHit(results, id, IntArrayList.getArrayReference(data), 0, data.size(), seedPositions);
-    }
-
-    public KMappingHit2 calculateHit(IntArrayList results, int id, int[] data, int dataFrom, int dataTo, IntArrayList seedPositions) {
-        IntArrayList seedRecords = new IntArrayList(); // TODO initialize with rational length
-        IntArrayList packBoundaries = new IntArrayList();
-
-        // .....
-
-        int score = 0;
-        for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
-            if (i != 0) {
-                packBoundaries.add(seedRecords.size());
-                score += extraClusterScore;
-            }
-
-            int recordId = results.get(i + FIRST_RECORD_ID);
-
-            assert recordId >= dataFrom;
-
-            int lastIndex = results.get(i + LAST_INDEX);
-
-            int record, index, offset, delta;
-            score += matchScore;
-
-            int previousIndex = index = index(record = data[recordId]);
-            seedRecords.add(record);
-
-            int previousOffset = offset(record);
-
-            while (++recordId < dataTo && index(data[recordId]) == index) ;
-
-            while (recordId < dataTo && (index = index(record = data[recordId++])) <= lastIndex) {
-                offset = offset(record);
-                int minRecord = record;
-                int minDelta = abs(offset - previousOffset);
-
-                if (minDelta > maxClusterIndels)
-                    continue;
-
-                while (recordId < dataTo && index(record = data[recordId++]) == index) {
-                    if ((delta = abs(offset(record) - previousOffset)) < minDelta) {
-                        minDelta = delta;
-                        minRecord = record;
-                    }
-                }
-                --recordId;
-
-                score += matchScore + (index - previousIndex - 1) * mismatchScore +
-                        minDelta * offsetShiftScore;
-
-                seedRecords.add(minRecord);
-                previousIndex = index;
-            }
-        }
-
-        return new KMappingHit2(id, seedRecords.toArray(), packBoundaries.toArray(), score);
-    }
-
 
     static int index(int record) {
         return record & indexMask;

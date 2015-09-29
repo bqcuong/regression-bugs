@@ -19,22 +19,22 @@ import com.milaboratory.util.IntArrayList;
 
 import java.util.Arrays;
 
-import static com.milaboratory.core.alignment.kaligner2.KMapper2.*;
+import static com.milaboratory.core.alignment.kaligner2.KMapper2.index;
+import static com.milaboratory.core.alignment.kaligner2.KMapper2.offset;
 import static java.lang.Math.*;
 
-//TODO remove minmax record fields
 public final class OffsetPacksAccumulator {
     public static final int FIRST_RECORD_ID = 0;
     public static final int LAST_INDEX = 1;
-    public static final int MIN_VALUE = 2;
-    public static final int MAX_VALUE = 3;
-    public static final int SCORE = 4;
+    public static final int SCORE = 2;
+    public static final int MIN_VALUE = 3;
+    public static final int MAX_VALUE = 4;
     public static final int LAST_VALUE = 5;
     public static final int STRETCH_INDEX_MARK = 0xA0000000;
     public static final int STRETCH_INDEX_MASK = 0xE0000000;
 
     public static final int RECORD_SIZE = 6;
-    public static final int OUTPUT_RECORD_SIZE = RECORD_SIZE - 1;
+    public static final int OUTPUT_RECORD_SIZE = RECORD_SIZE - 3;
 
     final int[] slidingArray;
     final int slotCount;
@@ -216,15 +216,15 @@ public final class OffsetPacksAccumulator {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Number of clusters: " + numberOfIslands()).append("\n\n");
+        sb.append("Number of clusters: ").append(numberOfIslands()).append("\n\n");
         int k = 0;
         for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
             sb.append(k++ + "th cloud:\n")
-                    .append("  first index:" + results.get(i + FIRST_RECORD_ID)).append("\n")
-                    .append("  last index:" + results.get(i + LAST_INDEX)).append("\n")
-                    .append("  minimal index:" + results.get(i + MIN_VALUE)).append("\n")
-                    .append("  maximal index:" + results.get(i + MAX_VALUE)).append("\n")
-                    .append("  score:" + results.get(i + SCORE)).append("\n\n");
+                    .append("  first record id:").append(results.get(i + FIRST_RECORD_ID)).append("\n")
+                    .append("  last index:").append(results.get(i + LAST_INDEX)).append("\n")
+//                    .append("  minimal index:").append(results.get(i + MIN_VALUE)).append("\n")
+//                    .append("  maximal index:").append(results.get(i + MAX_VALUE)).append("\n")
+                    .append("  score:").append(results.get(i + SCORE)).append("\n\n");
         }
 
         return sb.toString();

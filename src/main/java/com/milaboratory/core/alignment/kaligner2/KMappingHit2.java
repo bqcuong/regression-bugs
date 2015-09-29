@@ -43,6 +43,7 @@ public final class KMappingHit2 implements java.io.Serializable {
      */
     int score;
 
+    KMappingResult2 result;
 
     ///**
     // * Creates new KMappingHit
@@ -63,4 +64,23 @@ public final class KMappingHit2 implements java.io.Serializable {
         this.score = score;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("  ID: ").append(id).append("\n")
+                .append("  Cluster 0:\n");
+        int boundaryI = 0;
+        int i = 0;
+        for (int seedRecord : seedRecords) {
+            if (boundaryI < boundaries.length && boundaries[boundaryI] == i) {
+                boundaryI++;
+                sb.append("  Cluster ").append(boundaryI).append(":\n");
+            }
+            int index = KMapper2.index(seedRecord);
+            int offset = KMapper2.offset(seedRecord);
+            sb.append("    ").append(result.getSeedPosition(index)).append(" : ").append(offset + result.getSeedPosition(index)).append("  -  ").append(offset).append("\n");
+            i++;
+        }
+        return sb.toString();
+    }
 }

@@ -26,7 +26,7 @@ import java.util.List;
  * methods. <p>It contains seeds used for aligning by {@link com.milaboratory.core.alignment.KMapper} and list
  * of hits found in target sequence.</p>
  */
-public class KMappingResult2 implements java.io.Serializable {
+public final class KMappingResult2 implements java.io.Serializable {
     /**
      * Seeds used to align target sequence
      */
@@ -45,6 +45,8 @@ public class KMappingResult2 implements java.io.Serializable {
     public KMappingResult2(IntArrayList seeds, List<KMappingHit2> hits) {
         this.seeds = seeds;
         this.hits = hits;
+        for (KMappingHit2 hit : hits)
+            hit.result = this;
     }
 
     public int getSeedsCount() {
