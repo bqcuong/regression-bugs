@@ -124,6 +124,10 @@ public class CrossTest {
         Line[] calculate(Line[] lines);
     }
 
+    public static final UntanglingAlgorithm SUBSUM_ALGORITHM = new UntanglingAlgorithm() {
+
+    };
+
     public static final UntanglingAlgorithm BRUTE_FORCE = new UntanglingAlgorithm() {
         @Override
         public Line[] calculate(Line[] lines) {
