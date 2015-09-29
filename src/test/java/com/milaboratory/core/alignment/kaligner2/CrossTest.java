@@ -31,17 +31,24 @@ import java.util.List;
  * Created by dbolotin on 29/09/15.
  */
 public class CrossTest {
-    @Test
-    public void test1() throws Exception {
-        Line l1 = new Line(10, 20, 100), l2 = new Line(20, 15, 200);
-        Assert.assertTrue(l1.crosses(l2));
-    }
+    //@Test
+    //public void test1() throws Exception {
+    //    Line l1 = new Line(10, 20, 100), l2 = new Line(20, 15, 200);
+    //    Assert.assertTrue(l1.crosses(l2));
+    //}
 
     @Test
     public void testCHeckAlgorithm() throws Exception {
         RandomGenerator rg = new Well19937c();
 
-        final UntanglingAlgorithm algorithm = SUBSUM_ADD_ALGORITHM;
+        final UntanglingAlgorithm algorithm = BRUTE_FORCE_2;
+
+        //final UntanglingAlgorithm algorithm = new UntanglingAlgorithm() {
+        //    @Override
+        //    public Line[] calculate(Line[] lines) {
+        //        return alg4(lines.clone());
+        //    }
+        //};
 
         int K = 10000;
         System.out.println("Burning JVM...");
@@ -52,7 +59,7 @@ public class CrossTest {
         System.out.println();
         System.out.println("Run.");
         System.out.println();
-        for (int N = 2; N < 14; N++) {
+        for (int N = 2; N < 13; N++) {
             System.out.print("BF: ");
             go(BRUTE_FORCE, N, K, rg);
             System.out.print("ALG: ");
@@ -61,28 +68,42 @@ public class CrossTest {
         }
     }
 
+    @Test
+    public void test111() throws Exception {
+        go(SUBSUM_ADD_ALGORITHM, 15, 10000, new Well19937c());
+    }
+
     public static void go(UntanglingAlgorithm algorithm, int N, int K, RandomGenerator rg) {
         long start, time;
-        long meanTime = 0, maxTime = 0, errors = 0, fails = 0;
+        long meanTime = 0, maxTime = 0, errors = 0, fails = 0, delta = 0, ascore = 0;
         for (int z = 0; z < K; z++) {
             Line[] lines = randomData(N, rg);
 
-            Line[] correctAnswer = bruteForce(lines);
+            Line[] correctAnswer = BRUTE_FORCE.calculate(lines);
+            Assert.assertFalse(hasCrosses(correctAnswer));
             start = System.nanoTime();
             Line[] algorithmResult = algorithm.calculate(lines);
-
-            Assert.assertFalse(hasCrosses(algorithmResult));
-
             time = System.nanoTime() - start;
+            Assert.assertFalse(hasCrosses(algorithmResult));
             maxTime = Math.max(maxTime, time);
             meanTime += time;
             Arrays.sort(correctAnswer);
             Arrays.sort(algorithmResult);
-            if (!Arrays.equals(correctAnswer, algorithmResult))
+            ascore += score(correctAnswer);
+            if (!Arrays.equals(correctAnswer, algorithmResult)) {
                 errors++;
+                delta += score(correctAnswer) - score(algorithmResult);
+            }
         }
         meanTime /= K;
-        System.out.println("N=" + N + "  Errors=" + TestUtil.DECIMAL_FORMAT.format(100.0 * errors / K) + "%  Failed=" + TestUtil.DECIMAL_FORMAT.format(100.0 * fails / K) + " Mean=" + TestUtil.time(meanTime) + "   Max=" + TestUtil.time(maxTime));
+        if (errors > 0)
+            delta /= errors;
+        ascore /= K;
+        System.out.println("N=" + N + "  Errors=" + TestUtil.DECIMAL_FORMAT.format(100.0 * errors / K) +
+                "%  Failed=" + TestUtil.DECIMAL_FORMAT.format(100.0 * fails / K) +
+                "   Mean=" + TestUtil.time(meanTime) +
+                "   Max=" + TestUtil.time(maxTime) +
+                "   Delta=" + TestUtil.DECIMAL_FORMAT.format(100.0 * delta / ascore) + "%");
     }
 
     public static Line[] randomData(int N, RandomGenerator rg) {
@@ -94,7 +115,7 @@ public class CrossTest {
             int numbers[] = new int[3];
             for (int j = 0; j < 3; j++)
                 while (!generated.add(numbers[j] = rg.nextInt(limits[j]))) ;
-            lines[i] = new Line(numbers[0], numbers[1], numbers[2]);
+            lines[i] = new Line(numbers[0], numbers[1], numbers[2], i);
         }
         return lines;
     }
@@ -115,7 +136,7 @@ public class CrossTest {
                 int numbers[] = new int[3];
                 for (int j = 0; j < 3; j++)
                     while (!generated.add(numbers[j] = rg.nextInt(limits[j]))) ;
-                lines[i] = new Line(numbers[0], numbers[1], numbers[2]);
+                lines[i] = new Line(numbers[0], numbers[1], numbers[2], i);
             }
 
             Arrays.sort(lines);
@@ -138,42 +159,156 @@ public class CrossTest {
         Line[] calculate(Line[] lines);
     }
 
+    public static final UntanglingAlgorithm BRUTE_FORCE_2 = new UntanglingAlgorithm() {
+        @Override
+        public final Line[] calculate(final Line[] lines) {
+            List<Line> best = null;
+            int bestScore = 0;
+            List<Line> current = new ArrayList<>(lines.length);
+            int currentScore;
+            long badCombination = 0xFFFFFFFFFFFFFFFFL, add = 0;
+            OUTER:
+            for (long it = 0, size = (1 << lines.length); it < size; ++it) {
+                if ((it & badCombination) == badCombination) {
+                    it += add;
+                    continue;
+                }
+                current.clear();
+                currentScore = 0;
+                for (int i = lines.length - 1; i >= 0; --i) {
+                    if (((it >> i) & 1) == 1) {
+                        Line l = lines[i];
+                        for (Line cLine : current)
+                            if (l.crosses(cLine)) {
+                                long a = ((1 << i) - 1);
+                                it += a;
+                                long newBadComp = (1 << i) | (1 << cLine.index);
+                                if (badCombination == 0xFFFFFFFFFFFFFFFFL || badCombination < newBadComp) {
+                                    badCombination = newBadComp;
+                                    add = a;
+                                }
+                                continue OUTER;
+                            }
+                        current.add(l);
+                        currentScore += l.score;
+                    }
+                }
+                if (bestScore < currentScore) {
+                    best = current;
+                    current = new ArrayList<>(lines.length);
+                    bestScore = currentScore;
+                }
+            }
+
+            return best.toArray(new Line[best.size()]);
+        }
+    };
+
     public static final UntanglingAlgorithm SUBSUM_ADD_ALGORITHM = new UntanglingAlgorithm() {
         @Override
         public Line[] calculate(Line[] lines) {
             Arrays.sort(lines);
             LineWrapper1[] wrappers = new LineWrapper1[lines.length];
 
-            for (int i = 0; i < lines.length; i++)
+            for (int i = 0; i < lines.length; i++) {
                 wrappers[i] = new LineWrapper1(lines[i]);
-
-            for (int i = 0; i < lines.length; i++)
                 wrappers[i].score = lines[i].score;
+            }
 
             for (int i = 0; i < lines.length; i++)
                 for (int j = i + 1; j < lines.length; j++) {
                     if (lines[i].crosses(lines[j])) {
                         wrappers[i].score -= lines[j].score;
                         wrappers[j].score -= lines[i].score;
+                        //for (int k = j + 1; k < lines.length; k++) {
+                        //    if (lines[j].crosses(lines[k]) & lines[i].crosses(lines[k])) {
+                        //        wrappers[k].score += lines[i].score;
+                        //        wrappers[i].score += lines[k].score;
+                        //        wrappers[k].score += lines[j].score;
+                        //        wrappers[j].score += lines[k].score;
+                        //    }
+                        //}
                     }
                 }
 
+            //for (int i = 0; i < lines.length; i++)
+            //    for (int j = i + 1; j < lines.length; j++) {
+            //        if (lines[i].crosses(lines[j])) {
+            //            //if(wrappers[i].score > wrappers[j].score)
+            //                wrappers[i].score *= wrappers[j].score;
+            //            //else
+            //                wrappers[j].score *= wrappers[i].score;
+            //        }
+            //    }
+
             Arrays.sort(wrappers);
 
-            List<Line> result = new ArrayList<>(lines.length);
+            List<Line> best, result = new ArrayList<>(lines.length);
+
+            int previousScore = 0;
+            int b1 = -1, b2 = -1;
 
             OUTER:
             for (int i = 0; i < wrappers.length; i++) {
-                for (Line fromResult : result) {
-                    if (fromResult.crosses(wrappers[i].line))
+                for (int j = 0; j < result.size(); j++) {
+                    Line fromResult = result.get(j);
+                    if (fromResult.crosses(wrappers[i].line)) {
+                        if (b1 == -1) {
+                            b1 = i;
+                            b2 = j;
+                        }
                         continue OUTER;
+                    }
                 }
                 result.add(wrappers[i].line);
             }
 
-            return result.toArray(new Line[result.size()]);
+            if (b1 == -1)
+                return result.toArray(new Line[result.size()]);
+
+            int score = score(result);
+
+            best = result;
+
+            result = new ArrayList<>();
+
+            swap(wrappers, b1, b2);
+            //swap(wrappers, 0, 1);
+
+            OUTER:
+            for (int i = 0; i < wrappers.length; i++) {
+                for (int j = 0; j < result.size(); j++) {
+                    Line fromResult = result.get(j);
+                    if (fromResult.crosses(wrappers[i].line)) {
+                        if (b1 == -1) {
+                            b1 = i;
+                            b2 = j;
+                        }
+                        continue OUTER;
+                    }
+                }
+                result.add(wrappers[i].line);
+            }
+
+            if (score(result) > score)
+                best = result;
+
+            return best.toArray(new Line[best.size()]);
         }
     };
+
+    public static void swap(final Object[] arr, final int i, final int j) {
+        Object a = arr[i];
+        arr[i] = arr[j];
+        arr[j] = a;
+    }
+
+    public static int score(final List<Line> set) {
+        int score = 0;
+        for (Line line : set)
+            score += line.score;
+        return score;
+    }
 
     public static final UntanglingAlgorithm SUBSUM_REMOVE_ALGORITHM = new UntanglingAlgorithm() {
         @Override
@@ -243,10 +378,10 @@ public class CrossTest {
         int bestScore = 0;
         List<Line> current = new ArrayList<>(lines.length);
         int currentScore;
+        OUTER:
         for (long it = (1 << lines.length) - 1; it >= 0; --it) {
             current.clear();
             currentScore = 0;
-            OUTER:
             for (int i = 0; i < lines.length; i++) {
                 if (((it >> i) & 1) == 1) {
                     Line l = lines[i];
@@ -267,11 +402,11 @@ public class CrossTest {
         return best.toArray(new Line[best.size()]);
     }
 
-    @Test
-    public void testName() throws Exception {
-        System.out.println(Arrays.toString(
-                alg3(new Line[]{new Line(10, 20, 100), new Line(20, 15, 200)})));
-    }
+    //@Test
+    //public void testName() throws Exception {
+    //    System.out.println(Arrays.toString(
+    //            alg3(new Line[]{new Line(10, 20, 100), new Line(20, 15, 200)})));
+    //}
 
     @Test
     public void testAlg() throws Exception {
@@ -400,11 +535,13 @@ public class CrossTest {
     public static final class Line implements Comparable<Line> {
         final int a, b;
         final int score;
+        final int index;
 
-        public Line(int a, int b, int score) {
+        public Line(int a, int b, int score, int index) {
             this.a = a;
             this.b = b;
             this.score = score;
+            this.index = index;
         }
 
         @Override
