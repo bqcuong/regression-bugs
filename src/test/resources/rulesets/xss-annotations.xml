@@ -34,7 +34,7 @@
          <property name="sanitizers">
          	<value>org.apache.commons.lang3.StringEscapeUtils.escapeHtml4</value>
          </property>
-         <property name="search-annotattions-in-packages">
+         <property name="search-annotations-in-packages">
          	<value>resources</value>
          </property>
          <property name="sink-annotations">

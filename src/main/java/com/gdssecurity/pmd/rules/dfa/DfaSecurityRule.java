@@ -104,7 +104,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			new String[] { "" }, 1.0f, '|');
 
 	private final PropertyDescriptor<String[]> annotationsPackagesDescriptor = new StringMultiProperty(
-			"search-annotattions-in-packages", "TODO", new String[] {}, 1.0f, '|');
+			"search-annotations-in-packages", "TODO", new String[] {}, 1.0f, '|');
 
 	private final PropertyDescriptor<String[]> generatorAnnotationsDescriptor = new StringMultiProperty("generator-annotations",
 			"TODO", new String[] {  }, 1.0f, '|');
