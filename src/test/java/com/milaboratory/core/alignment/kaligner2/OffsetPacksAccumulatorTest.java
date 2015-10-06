@@ -53,10 +53,10 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void test5()
             throws Exception {
-        int[] data = {10, 10, 102, 10, 10};
-        int[] indexes = {0, 1, 2, 2, 3};
+        int[]   data = {10, 10, 102, 10, 10};
+        int[] indexes = {0,  1,  2,  2,  3};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(0, 3, 60));
+                new Bunch(0, 4, 60));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class OffsetPacksAccumulatorTest {
         int[] data = {10, 10, 102, 10, 10};
         int[] indexes = {0, 1, 1, 2, 3};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(0, 3, 60));
+                new Bunch(0, 4, 60));
     }
 
     @Test
@@ -74,7 +74,7 @@ public class OffsetPacksAccumulatorTest {
         int[] data = {10, 10, 12, 10, 10};
         int[] indexes = {0, 1, 2, 2, 3};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(0, 3, 60));
+                new Bunch(0, 4, 60));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class OffsetPacksAccumulatorTest {
         int[] data = {10, 10, 12, 10, 10};
         int[] indexes = {0, 1, 1, 2, 3};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(0, 3, 60));
+                new Bunch(0, 4, 60));
     }
 
     @Test
@@ -92,17 +92,19 @@ public class OffsetPacksAccumulatorTest {
         int[] data = {8, 10, 10, 10, 10};
         int[] indexes = {0, 0, 1, 2, 3};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(1, 3, 60));
+                new Bunch(1, 4, 60));
     }
 
     @Test
     public void testSelfCorrelatedKMer4()
             throws Exception {
-        int[] data = {8, 10, 11, 50, 51, 52, 10, 10, 10, 50, 50, 50};
-        int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
+//        int[] data =    {8, 10, 11, 50, 51, 52, 10, 10, 10, 50, 50, 50};
+//        int[] indexes = {0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6};
+        int[] data =    {8, 10, 11, 50, 51, 52, 10, 10, 10, 50, 50, 50};
+        int[] indexes = {0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(1, 3, 60),
-                new Bunch(3, 6, 48));
+                new Bunch(1, 8, 60),
+                new Bunch(3, 11, 48));
     }
 
     @Test
@@ -113,20 +115,20 @@ public class OffsetPacksAccumulatorTest {
             data[i] -= 1000;
         int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(1, 3, 60),
-                new Bunch(3, 6, 48));
+                new Bunch(1, 8, 60),
+                new Bunch(3, 11, 48));
     }
 
     @Test
     public void testSelfCorrelatedKMer6()
             throws Exception {
-//        int[] data =    {-50, -50, -50, -10, -10, -10, -52, -51, -50, -11, -10, -8};
-//        int[] indexes = {  0,   0,   0,   0,   0,   0,   1,   2,   3,   4,   5,  6};
+//        int[] data =    {-50, -49, -48, -10, -8, -6, -52, -51, -50, -11, -10, -8};
+//        int[] indexes = {  0,   0,   0,   0,  0,  0,   1,   2,   3,   4,   5,  6};
 
-        int[] data = {-50, -49, -48, -10, -8, -6, -52, -51, -50, -11, -10, -8};
-        int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
+        int[] data =    {-50, -49, -48, -10, -8, -6, -52, -51, -50, -11, -10, -8};
+        int[] indexes = {  0,   0,   0,   0,  0,  0,   1,   2,   3,   4,   5,  6};
         OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes);
-        assertBunches(of, new Bunch(6, 3, 39), new Bunch(9, 6, 39));
+        assertBunches(of, new Bunch(0, 8, 52), new Bunch(3, 11, 40));
     }
 
     private static String verbose(OffsetPacksAccumulator of, int[] clouds) throws Exception {
@@ -212,7 +214,7 @@ public class OffsetPacksAccumulatorTest {
         int k = 0;
         for (int i = 0; i < of.results.size(); i += OUTPUT_RECORD_SIZE)
             bunchs[k++] = new Bunch(of.results.get(i + FIRST_RECORD_ID),
-                    of.results.get(i + LAST_INDEX),
+                    of.results.get(i + LAST_RECORD_ID),
                     of.results.get(i + SCORE));
         return bunchs;
     }

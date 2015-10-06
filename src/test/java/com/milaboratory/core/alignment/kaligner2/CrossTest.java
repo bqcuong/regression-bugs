@@ -169,10 +169,10 @@ public class CrossTest {
             long badCombination = 0xFFFFFFFFFFFFFFFFL, add = 0;
             OUTER:
             for (long it = 0, size = (1 << lines.length); it < size; ++it) {
-                if ((it & badCombination) == badCombination) {
-                    it += add;
-                    continue;
-                }
+//                if ((it & badCombination) == badCombination) {
+//                    it += add;
+//                    continue;
+//                }
                 current.clear();
                 currentScore = 0;
                 for (int i = lines.length - 1; i >= 0; --i) {
@@ -182,11 +182,11 @@ public class CrossTest {
                             if (l.crosses(cLine)) {
                                 long a = ((1 << i) - 1);
                                 it += a;
-                                long newBadComp = (1 << i) | (1 << cLine.index);
-                                if (badCombination == 0xFFFFFFFFFFFFFFFFL || badCombination < newBadComp) {
-                                    badCombination = newBadComp;
-                                    add = a;
-                                }
+//                                long newBadComp = (1 << i) | (1 << cLine.index);
+//                                if (badCombination == 0xFFFFFFFFFFFFFFFFL || badCombination < newBadComp) {
+//                                    badCombination = newBadComp;
+//                                    add = a;
+//                                }
                                 continue OUTER;
                             }
                         current.add(l);

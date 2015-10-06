@@ -19,22 +19,23 @@ import com.milaboratory.util.IntArrayList;
 
 import java.util.Arrays;
 
-import static com.milaboratory.core.alignment.kaligner2.KMapper2.index;
-import static com.milaboratory.core.alignment.kaligner2.KMapper2.offset;
+import static com.milaboratory.core.alignment.kaligner2.KMapper2.*;
 import static java.lang.Math.*;
 
 public final class OffsetPacksAccumulator {
+    public static final int DROPPED_CLUSTER = -274653;
     public static final int FIRST_RECORD_ID = 0;
-    public static final int LAST_INDEX = 1;
+    public static final int LAST_RECORD_ID = 1;
     public static final int SCORE = 2;
     public static final int MIN_VALUE = 3;
     public static final int MAX_VALUE = 4;
     public static final int LAST_VALUE = 5;
+    public static final int LAST_INDEX = 6;
     public static final int STRETCH_INDEX_MARK = 0xA0000000;
     public static final int STRETCH_INDEX_MASK = 0xE0000000;
 
-    public static final int RECORD_SIZE = 6;
-    public static final int OUTPUT_RECORD_SIZE = RECORD_SIZE - 3;
+    public static final int RECORD_SIZE = 7;
+    public static final int OUTPUT_RECORD_SIZE = 3;
 
     final int[] slidingArray;
     final int slotCount;
@@ -82,7 +83,7 @@ public final class OffsetPacksAccumulator {
             // Matching existing records
             for (int i = 0; i < slidingArray.length; i += RECORD_SIZE) {
                 if ((slidingArray[i + SCORE] & STRETCH_INDEX_MASK) == STRETCH_INDEX_MARK)
-                    if (slidingArray[i + MIN_VALUE] <= offset && offset <= slidingArray[i + MAX_VALUE]) {
+                    if (slidingArray[i + MIN_VALUE] - maxAllowedDelta <= offset && offset <= slidingArray[i + MAX_VALUE] + maxAllowedDelta) {
 
                         int pRecordId = slidingArray[i + SCORE] ^ STRETCH_INDEX_MARK,
                                 pOffset = offset(data[pRecordId]),
@@ -105,15 +106,15 @@ public final class OffsetPacksAccumulator {
 
                         pOffset = offset(data[minDeltaId]);
                         slidingArray[i + FIRST_RECORD_ID] = minDeltaId;
+                        slidingArray[i + LAST_RECORD_ID] = recordId;
                         slidingArray[i + LAST_VALUE] = pOffset;
                         slidingArray[i + MIN_VALUE] = pOffset;
                         slidingArray[i + MAX_VALUE] = pOffset;
                         slidingArray[i + SCORE] = matchScore;
                     }
 
-                if (inDelta(slidingArray[i + LAST_VALUE], offset)) {
+                if (inDelta(slidingArray[i + LAST_VALUE], offset, maxAllowedDelta)) {
                     // Processing exceptional cases for self-correlated K-Mers
-                    // {
 
                     // If next record has same index and better offset
                     // (closer to current island LAST_VALUE)
@@ -131,10 +132,6 @@ public final class OffsetPacksAccumulator {
                         // Skip current record
                         continue OUTER;
 
-                    // }
-
-//                    int j = i - LAST_VALUE;
-
                     assert index > slidingArray[i + LAST_INDEX];
 
                     int scoreDelta = matchScore + (index - slidingArray[i + LAST_INDEX] - 1) * mismatchScore +
@@ -142,6 +139,7 @@ public final class OffsetPacksAccumulator {
 
                     if (scoreDelta > 0) {
                         slidingArray[i + LAST_INDEX] = index;
+                        slidingArray[i + LAST_RECORD_ID] = recordId;
                         slidingArray[i + MIN_VALUE] = min(slidingArray[i + MIN_VALUE], offset);
                         slidingArray[i + MAX_VALUE] = max(slidingArray[i + MAX_VALUE], offset);
                         slidingArray[i + LAST_VALUE] = offset;
@@ -171,18 +169,19 @@ public final class OffsetPacksAccumulator {
 
             //create new record
             slidingArray[minimalIndex + FIRST_RECORD_ID] = recordId;
-            slidingArray[minimalIndex + LAST_INDEX] = index;
+            slidingArray[minimalIndex + LAST_RECORD_ID] = recordId;
+            slidingArray[minimalIndex + SCORE] = matchScore;
             slidingArray[minimalIndex + MIN_VALUE] = offset;
             slidingArray[minimalIndex + MAX_VALUE] = offset;
             slidingArray[minimalIndex + LAST_VALUE] = offset;
-            slidingArray[minimalIndex + SCORE] = matchScore;
+            slidingArray[minimalIndex + LAST_INDEX] = index;
 
             // If next record has same index
             while (recordId < dataTo - 1
                     && index == index(data[recordId + 1])
-                    && abs(offset - offset(data[recordId + 1])) <= maxAllowedDelta) {
-                //mark slot
-                if (slidingArray[minimalIndex + SCORE] > 0) {
+                    && inDelta(offset, offset(data[recordId + 1]), maxAllowedDelta)) {
+                //mark slot on first iteration
+                if ((slidingArray[minimalIndex + SCORE] & STRETCH_INDEX_MARK) != STRETCH_INDEX_MARK) {
                     slidingArray[minimalIndex + SCORE] = STRETCH_INDEX_MARK | recordId;
                     slidingArray[minimalIndex + LAST_VALUE] = Integer.MIN_VALUE;
                 }
@@ -204,11 +203,6 @@ public final class OffsetPacksAccumulator {
         results.add(slidingArray, indexOfFinished, OUTPUT_RECORD_SIZE);
     }
 
-    private boolean inDelta(int a, int b) {
-        int diff = a - b;
-        return -maxAllowedDelta <= diff && diff <= maxAllowedDelta;
-    }
-
     public int numberOfIslands() {
         return results.size() / OUTPUT_RECORD_SIZE;
     }
@@ -221,7 +215,7 @@ public final class OffsetPacksAccumulator {
         for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
             sb.append(k++ + "th cloud:\n")
                     .append("  first record id:").append(results.get(i + FIRST_RECORD_ID)).append("\n")
-                    .append("  last index:").append(results.get(i + LAST_INDEX)).append("\n")
+                    .append("  last record id:").append(results.get(i + LAST_RECORD_ID)).append("\n")
 //                    .append("  minimal index:").append(results.get(i + MIN_VALUE)).append("\n")
 //                    .append("  maximal index:").append(results.get(i + MAX_VALUE)).append("\n")
                     .append("  score:").append(results.get(i + SCORE)).append("\n\n");

@@ -394,13 +394,141 @@ public final class KMapper2 implements java.io.Serializable {
         return calculateHit(results, id, IntArrayList.getArrayReference(data), 0, data.size(), seedPositions);
     }
 
-    public KMappingHit2 calculateHit(IntArrayList results, int id, int[] data, int dataFrom, int dataTo, IntArrayList seedPositions) {
+    private void truncateClusterFromRightAndRebuild(
+            final IntArrayList results, final int[] data,
+            final int dataTo, final int clusterId, final int indexTo) {
+        int lastRecordId,
+                record = data[lastRecordId = results.get(clusterId + FIRST_RECORD_ID)],
+                prevOffset = offset(record),
+                prevIndex = index(record),
+                score = matchScore;
+
+        //roll right in stretch
+        int i = results.get(clusterId + FIRST_RECORD_ID) + 1;
+        while (i < dataTo && prevIndex == index(data[i++])) ;
+
+        //calculate score
+        int offset, index = prevIndex;
+        OUTER:
+        for (; i < dataTo && index < indexTo; ++i) {
+            offset = offset(data[i]);
+            index = index(data[i]);
+            if (inDelta(prevOffset, offset, maxClusterIndels)) {
+                // Processing exceptional cases for self-correlated K-Mers
+
+                // If next record has same index and better offset
+                // (closer to current island LAST_VALUE)
+                if (i < dataTo - 1
+                        && index == index(data[i + 1])
+                        && abs(prevOffset - offset) > abs(prevOffset - offset(data[i + 1])))
+                    // Skip current record
+                    continue OUTER;
+
+                int scoreDelta = matchScore + (index - prevIndex - 1) * mismatchScore +
+                        abs(prevOffset - offset) * offsetShiftScore;
+
+                if (scoreDelta > 0) {
+                    score += scoreDelta;
+                    prevOffset = offset;
+                    prevIndex = index;
+                    lastRecordId = i;
+                }
+            }
+        }
+        results.set(clusterId + LAST_RECORD_ID, lastRecordId);
+        results.set(clusterId + SCORE, score);
+    }
+
+    private void truncateClusterFromLeftAndRebuild(
+            final IntArrayList results, final int[] data,
+            final int dataFrom, final int clusterId, final int indexFrom) {
+        int lastRecordId,
+                record = data[lastRecordId = results.get(clusterId + FIRST_RECORD_ID)],
+                prevOffset = offset(record),
+                prevIndex = index(record),
+                score = matchScore;
+
+        //roll right in stretch
+        int i = results.get(clusterId + LAST_RECORD_ID) - 1;
+        while (i >= dataFrom && prevIndex == index(data[i--])) ;
+
+        //calculate score
+        int offset, index = prevIndex;
+        OUTER:
+        for (; i >= dataFrom && index > indexFrom; --i) {
+            offset = offset(data[i]);
+            index = index(data[i]);
+            if (inDelta(prevOffset, offset, maxClusterIndels)) {
+                // Processing exceptional cases for self-correlated K-Mers
+
+                // If next record has same index and better offset
+                // (closer to current island LAST_VALUE)
+                if (i > dataFrom
+                        && index == index(data[i - 1])
+                        && abs(prevOffset - offset) > abs(prevOffset - offset(data[i - 1])))
+                    // Skip current record
+                    continue OUTER;
+
+                int scoreDelta = matchScore + (index - prevIndex - 1) * mismatchScore +
+                        abs(prevOffset - offset) * offsetShiftScore;
+
+                if (scoreDelta > 0) {
+                    score += scoreDelta;
+                    prevOffset = offset;
+                    prevIndex = index;
+                    lastRecordId = i;
+                }
+            }
+        }
+        results.set(clusterId + FIRST_RECORD_ID, lastRecordId);
+        results.set(clusterId + SCORE, score);
+    }
+
+    private KMappingHit2 calculateHit(final IntArrayList results, final int id, final int[] data,
+                                      final int dataFrom, final int dataTo,
+                                      final IntArrayList seedPositions) {
         IntArrayList seedRecords = new IntArrayList(); // TODO initialize with rational length
         IntArrayList packBoundaries = new IntArrayList();
 
-        for (int i = 0; i < results.size() / 2; i++) {
+        for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE)
+            if (results.get(i + FIRST_RECORD_ID) != DROPPED_CLUSTER)
+                for (int j = i + OUTPUT_RECORD_SIZE; j < results.size(); j += OUTPUT_RECORD_SIZE) {
+                    if (results.get(j + FIRST_RECORD_ID) == DROPPED_CLUSTER)
+                        continue;
+                    //intersecting clusters in query
+                    int a = i, b = j;
+                    int aStartIndex = index(data[results.get(a + FIRST_RECORD_ID)]);
+                    int aEndIndex = index(data[results.get(a + LAST_RECORD_ID)]);
+                    int bStartIndex = index(data[results.get(b + FIRST_RECORD_ID)]);
+                    int bEndIndex = index(data[results.get(b + LAST_RECORD_ID)]);
 
-        }
+                    if (aStartIndex > bStartIndex) {
+                        //swap by xor
+                        aStartIndex ^= bStartIndex;
+                        bStartIndex ^= aStartIndex;
+                        aStartIndex ^= bStartIndex;
+                        aEndIndex ^= bEndIndex;
+                        bEndIndex ^= aEndIndex;
+                        aEndIndex ^= bEndIndex;
+                        a ^= b;
+                        b ^= a;
+                        a ^= b;
+                    }
+
+                    if (aEndIndex >= bStartIndex) {
+                        if (bEndIndex <= aEndIndex) {
+                            if (results.get(a + SCORE) < results.get(b + SCORE))
+                                results.set(a + FIRST_RECORD_ID, DROPPED_CLUSTER);
+                            else
+                                results.set(b + FIRST_RECORD_ID, DROPPED_CLUSTER);
+                        } else {
+                            if (results.get(a + SCORE) < results.get(b + SCORE))
+                                truncateClusterFromRightAndRebuild(results, data, dataTo, a, results.get(b + LAST_RECORD_ID));
+                            else
+                                truncateClusterFromLeftAndRebuild(results, data, dataFrom, b, results.get(a + FIRST_RECORD_ID));
+                        }
+                    }
+                }
 
 
         int score = 0;
@@ -516,6 +644,11 @@ public final class KMapper2 implements java.io.Serializable {
 
     static int record(int offset, int index) {
         return (offset << bitsForIndex) | index;
+    }
+
+    static boolean inDelta(int a, int b, int maxAllowedDelta) {
+        int diff = a - b;
+        return -maxAllowedDelta <= diff && diff <= maxAllowedDelta;
     }
 
     /**
