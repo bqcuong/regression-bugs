@@ -150,7 +150,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		return this.generators.contains(objectType + "." + objectMethod);
 	}
 
-	private boolean isGenerator(Node node) {
+	private boolean isGeneratorThisMethodDeclaration(Node node) {
 		Class<?> type = getJavaType(node);
 		if (type == null) {
 			return false;
@@ -162,13 +162,13 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				return false;
 			}
 			methodName = declarator.getImage();
-			populateCache(type, type.getCanonicalName());
+			
 			return isGenerator(type.getCanonicalName(), methodName);
 		}
 
 		return false;
 	}
-	private boolean isSink(Node node) {
+	private boolean isSinkThisMethodDeclaration(Node node) {
 		Class<?> type = getJavaType(node);
 		if (type == null) {
 			return false;
@@ -179,8 +179,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			if (declarator == null) {
 				return false;
 			}
-			methodName = declarator.getImage();
-			populateCache(type, type.getCanonicalName());
+			methodName = declarator.getImage();			
 			return isSink(type.getCanonicalName(), methodName);
 
 		}
@@ -288,8 +287,8 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				Node node = iDataFlowNode.getNode();
 				if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
 					this.currentPathTaintedVariables = new HashSet<String>();
-					this.generator = isGenerator(node);
-					if (!isSink(node)) {
+					this.generator = isGeneratorThisMethodDeclaration(node);
+					if (!isSinkThisMethodDeclaration(node)) {
 						addMethodParamsToTaintedVariables(node);
 					}
 					addClassFieldsToTaintedVariables(node);
@@ -425,7 +424,6 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		if (type == null) {
 			return false;
 		}
-		populateCache(type, type.getCanonicalName());
 		return isSink(type.getCanonicalName(), methodName);
 
 	}
@@ -777,6 +775,9 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			type = ((ASTName) node).getType();
 		} else if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
 			type = getContainingType(node);
+		}
+		if (type != null) {
+			populateCache(type, type.getCanonicalName());
 		}
 		return type;
 
