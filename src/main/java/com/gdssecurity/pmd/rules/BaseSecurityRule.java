@@ -76,10 +76,16 @@ public class BaseSecurityRule extends AbstractJavaRule {
             	"java.lang.Short",            	
             	"java.lang.Integer", 
             	"java.lang.Long",
+            	"java.lang.Float",
+            	"java.lang.Double",
+            	"java.lang.Boolean",
             	"byte",
             	"short",
             	"int",
-            	"long"
+            	"long",
+            	"float",
+            	"double",
+            	"boolean"
             },
             1.0f, 
             '|');
