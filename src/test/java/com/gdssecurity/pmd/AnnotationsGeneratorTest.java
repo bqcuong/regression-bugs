@@ -28,4 +28,13 @@ public class AnnotationsGeneratorTest {
 	public void testGeneratorStaticCaller() throws Exception {
 		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorStaticCaller.java", RULESET_ANNOTATIONS));
 	}
+	
+	@Test
+	public void testGeneratorPrivateCallOk() throws Exception {
+		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorPrivateCallOk.java", RULESET_ANNOTATIONS));
+	}
+	@Test
+	public void testGeneratorPrivateCallBad() throws Exception {
+		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorPrivateCallBad.java", RULESET_ANNOTATIONS));
+	}
 }

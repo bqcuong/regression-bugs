@@ -26,15 +26,15 @@ package com.gdssecurity.pmd;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.apache.commons.lang3.StringUtils;
 
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.ast.Node;
@@ -43,6 +43,8 @@ import net.sourceforge.pmd.lang.java.ast.ASTExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTName;
 import net.sourceforge.pmd.lang.java.ast.ASTPrimaryExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTPrimaryPrefix;
+
+import org.apache.commons.lang3.StringUtils;
 
 
 public final class Utils {
@@ -123,6 +125,13 @@ public final class Utils {
 			}
 		}
 		return hashSet;
+	}
+	
+	public static Method[] getMethods (Class<?> clazz) {
+		Set<Method> set = new HashSet<Method>();
+		set.addAll(Arrays.asList(clazz.getDeclaredMethods()));
+		set.addAll(Arrays.asList(clazz.getMethods()));		
+		return set.toArray(new Method[set.size()]);
 	}
 
 }

@@ -599,11 +599,12 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				clazz = Class.forName(realType, false, this.getClass().getClassLoader());
 			}
 			if (clazz != null) {
-				for (Method method : clazz.getMethods()) {
+				
+				for (Method method : Utils.getMethods(clazz)) {
 					Class<?> returnType = method.getReturnType();
 					String methodName = method.getName();
 					String key = clazz.getCanonicalName() + "." + methodName;
-
+					
 					String returnTypeName = UNKNOWN_TYPE;
 					if (returnType != null) {
 						returnTypeName = returnType.getCanonicalName();
