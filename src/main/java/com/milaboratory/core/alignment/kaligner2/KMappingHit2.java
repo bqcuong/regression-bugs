@@ -78,7 +78,7 @@ public final class KMappingHit2 implements java.io.Serializable {
             }
             int index = KMapper2.index(seedRecord);
             int offset = KMapper2.offset(seedRecord);
-            sb.append("    ").append(result.getSeedPosition(index)).append(" : ").append(offset + result.getSeedPosition(index)).append("  -  ").append(offset).append("\n");
+            sb.append("  Q ").append(result.getSeedPosition(index)).append(" -> T ").append(offset + result.getSeedPosition(index)).append(" - ").append(offset).append("\n");
             i++;
         }
         return sb.toString();

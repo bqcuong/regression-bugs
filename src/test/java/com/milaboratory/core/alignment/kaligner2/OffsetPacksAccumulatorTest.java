@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import static com.milaboratory.core.alignment.kaligner2.KMapper2.record;
+import static com.milaboratory.core.alignment.kaligner2.KMapper2.*;
 import static com.milaboratory.core.alignment.kaligner2.OffsetPacksAccumulator.*;
 
 /**
@@ -53,8 +53,8 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void test5()
             throws Exception {
-        int[]   data = {10, 10, 102, 10, 10};
-        int[] indexes = {0,  1,  2,  2,  3};
+        int[] data = {10, 10, 102, 10, 10};
+        int[] indexes = {0, 1, 2, 2, 3};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
                 new Bunch(0, 4, 60));
     }
@@ -80,8 +80,10 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void testSelfCorrelatedKMer2()
             throws Exception {
-        int[] data = {10, 10, 12, 10, 10};
-        int[] indexes = {0, 1, 1, 2, 3};
+//        int[] data =    {10, 10, 12, 10, 10};
+//        int[] indexes = { 0,  1,  1,  2,  3};
+        int[] data =    {10, 10, 12, 10, 10};
+        int[] indexes = { 0,  1,  1,  2,  3};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
                 new Bunch(0, 4, 60));
     }
@@ -100,8 +102,8 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
 //        int[] data =    {8, 10, 11, 50, 51, 52, 10, 10, 10, 50, 50, 50};
 //        int[] indexes = {0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6};
-        int[] data =    {8, 10, 11, 50, 51, 52, 10, 10, 10, 50, 50, 50};
-        int[] indexes = {0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6};
+        int[] data = {8, 10, 11, 50, 51, 52, 10, 10, 10, 50, 50, 50};
+        int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
         assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
                 new Bunch(1, 8, 60),
                 new Bunch(3, 11, 48));
@@ -125,10 +127,22 @@ public class OffsetPacksAccumulatorTest {
 //        int[] data =    {-50, -49, -48, -10, -8, -6, -52, -51, -50, -11, -10, -8};
 //        int[] indexes = {  0,   0,   0,   0,  0,  0,   1,   2,   3,   4,   5,  6};
 
-        int[] data =    {-50, -49, -48, -10, -8, -6, -52, -51, -50, -11, -10, -8};
-        int[] indexes = {  0,   0,   0,   0,  0,  0,   1,   2,   3,   4,   5,  6};
+        int[] data = {-50, -49, -48, -10, -8, -6, -52, -51, -50, -11, -10, -8};
+        int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
         OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes);
         assertBunches(of, new Bunch(0, 8, 52), new Bunch(3, 11, 40));
+    }
+
+    @Test
+    public void test222() throws Exception {
+        int data[] = {73729, 73730, 81923, 81924, 180231, 1769479, 180232, 704520, 1933320, 458762, 106507, 122891, 139275, 368651, 73740, 90124, 106508, 335884, 106509, 106510, 106511, -155632, -139248, -122864, 106512};
+        for (int i = 0; i < data.length; ++i)
+            System.out.println(i + "     " + index(data[i]) + "    " + offset(data[i]));
+
+        OffsetPacksAccumulator of = new OffsetPacksAccumulator(4, 3, 10, -7, -8, 15);
+        of.calculateInitialPartitioning(data);
+        System.out.println(of);
+
     }
 
     private static String verbose(OffsetPacksAccumulator of, int[] clouds) throws Exception {

@@ -103,10 +103,13 @@ public final class KMapper2 implements java.io.Serializable {
     maxClusterIndels;
 
     /**
+     * Minimal absolute score.
+     */
+    private final int absoluteMinScore;
+    /**
      * Minimal score in fractions of top score.
      */
     private final float relativeMinScore;
-
 
     /**
      * Determines boundaries type: floating(only part of sequence should be aligned) or fixed (whole sequence should be
@@ -141,7 +144,7 @@ public final class KMapper2 implements java.io.Serializable {
     public KMapper2(int kValue,
                     int minDistance, int maxDistance,
                     int absoluteMinClusterScore, int extraClusterScore,
-                    float relativeMinScore,
+                    int absoluteMinScore, float relativeMinScore,
                     int matchScore, int mismatchScore, int offsetShiftScore,
                     int slotCount, int maxClusterIndels,
                     boolean floatingLeftBound, boolean floatingRightBound) {
@@ -164,6 +167,7 @@ public final class KMapper2 implements java.io.Serializable {
         this.maxDistance = maxDistance;
         this.absoluteMinClusterScore = absoluteMinClusterScore;
         this.extraClusterScore = extraClusterScore;
+        this.absoluteMinScore = absoluteMinScore;
         this.relativeMinScore = relativeMinScore;
         this.matchScore = matchScore;
         this.mismatchScore = mismatchScore;
@@ -185,6 +189,7 @@ public final class KMapper2 implements java.io.Serializable {
         return new KMapper2(parameters.getMapperKValue(), parameters.getMapperMinSeedsDistance(),
                 parameters.getMapperMaxSeedsDistance(), parameters.getMapperAbsoluteMinClusterScore(),
                 parameters.getMapperExtraClusterScore(),
+                parameters.getMapperAbsoluteMinScore(),
                 parameters.getMapperRelativeMinScore(),
                 parameters.getMapperMatchScore(), parameters.getMapperMismatchScore(),
                 parameters.getMapperOffsetShiftScore(), parameters.getMapperSlotCount(),
@@ -322,7 +327,7 @@ public final class KMapper2 implements java.io.Serializable {
     public KMappingResult2 align(final NucleotideSequence sequence, final int from, final int to) {
         ensureBuilt();
 
-        final ArrayList<KMappingHit2> result = new ArrayList<>();
+        final ArrList<KMappingHit2> result = new ArrList<>();
 
         if (to - from <= kValue)
             return new KMappingResult2(null, result);
@@ -367,7 +372,8 @@ public final class KMapper2 implements java.io.Serializable {
 
         final int possibleMinKmers = (int) Math.ceil(absoluteMinClusterScore / matchScore);
 
-        OffsetPacksAccumulator accumulator = new OffsetPacksAccumulator(slotCount, maxClusterIndels, matchScore,
+        OffsetPacksAccumulator accumulator = new OffsetPacksAccumulator(
+                slotCount, maxClusterIndels, matchScore,
                 mismatchScore, offsetShiftScore, absoluteMinClusterScore);
 
         for (int i = 0; i < candidates.length; i++) {
@@ -387,6 +393,15 @@ public final class KMapper2 implements java.io.Serializable {
                 return Integer.compare(o2.score, o1.score);
             }
         });
+
+        if (!result.isEmpty()) {
+            int threshold = max((int) (result.get(0).score * relativeMinScore), absoluteMinScore);
+            int i = 0;
+            for (; i < result.size(); ++i)
+                if (result.get(i).score <= threshold)
+                    break;
+            result.removeRange(i, result.size());
+        }
         return new KMappingResult2(seedPositions, result);
     }
 
@@ -394,35 +409,39 @@ public final class KMapper2 implements java.io.Serializable {
         return calculateHit(results, id, IntArrayList.getArrayReference(data), 0, data.size(), seedPositions);
     }
 
-    private void truncateClusterFromRightAndRebuild(
+    private boolean truncateClusterFromRight(
+            boolean byIndex,
+            final IntArrayList seedPositions,
             final IntArrayList results, final int[] data,
-            final int dataTo, final int clusterId, final int indexTo) {
-        int lastRecordId,
-                record = data[lastRecordId = results.get(clusterId + FIRST_RECORD_ID)],
+            final int dataTo, final int clusterPointer, final int truncationPoint) {
+        int lastRecordId = results.get(clusterPointer + FIRST_RECORD_ID),
+                record = data[lastRecordId],
                 prevOffset = offset(record),
                 prevIndex = index(record),
                 score = matchScore;
 
         //roll right in stretch
-        int i = results.get(clusterId + FIRST_RECORD_ID) + 1;
-        while (i < dataTo && prevIndex == index(data[i++])) ;
+        int i = lastRecordId;
+        while (++i < dataTo && prevIndex == index(data[i])) ;
 
         //calculate score
-        int offset, index = prevIndex;
-        OUTER:
-        for (; i < dataTo && index < indexTo; ++i) {
-            offset = offset(data[i]);
+        int offset, index;
+        for (; i < dataTo &&
+                byIndex ?
+                index(data[i]) < truncationPoint :
+                (positionInTarget(seedPositions, data, i) < truncationPoint);
+             ++i) {
             index = index(data[i]);
+            offset = offset(data[i]);
             if (inDelta(prevOffset, offset, maxClusterIndels)) {
                 // Processing exceptional cases for self-correlated K-Mers
-
                 // If next record has same index and better offset
                 // (closer to current island LAST_VALUE)
                 if (i < dataTo - 1
                         && index == index(data[i + 1])
                         && abs(prevOffset - offset) > abs(prevOffset - offset(data[i + 1])))
                     // Skip current record
-                    continue OUTER;
+                    continue;
 
                 int scoreDelta = matchScore + (index - prevIndex - 1) * mismatchScore +
                         abs(prevOffset - offset) * offsetShiftScore;
@@ -435,29 +454,39 @@ public final class KMapper2 implements java.io.Serializable {
                 }
             }
         }
-        results.set(clusterId + LAST_RECORD_ID, lastRecordId);
-        results.set(clusterId + SCORE, score);
+        results.set(clusterPointer + LAST_RECORD_ID, lastRecordId);
+        results.set(clusterPointer + SCORE, score);
+        if (score < absoluteMinClusterScore) {
+            results.set(clusterPointer + FIRST_RECORD_ID, DROPPED_CLUSTER);
+            return false;
+        }
+        return true;
     }
 
-    private void truncateClusterFromLeftAndRebuild(
+    private boolean truncateClusterFromLeft(
+            boolean byIndex,
+            final IntArrayList seedPositions,
             final IntArrayList results, final int[] data,
-            final int dataFrom, final int clusterId, final int indexFrom) {
-        int lastRecordId,
-                record = data[lastRecordId = results.get(clusterId + FIRST_RECORD_ID)],
+            final int dataFrom, final int clusterPointer, final int truncationPoint) {
+        int lastRecordId = results.get(clusterPointer + FIRST_RECORD_ID),
+                record = data[lastRecordId],
                 prevOffset = offset(record),
                 prevIndex = index(record),
                 score = matchScore;
 
         //roll right in stretch
-        int i = results.get(clusterId + LAST_RECORD_ID) - 1;
-        while (i >= dataFrom && prevIndex == index(data[i--])) ;
+        int i = lastRecordId;
+        while (--i >= dataFrom && prevIndex == index(data[i])) ;
 
         //calculate score
-        int offset, index = prevIndex;
-        OUTER:
-        for (; i >= dataFrom && index > indexFrom; --i) {
-            offset = offset(data[i]);
+        int offset, index;
+        for (; i >= dataFrom &&
+                byIndex ?
+                index(data[i]) > truncationPoint :
+                (positionInTarget(seedPositions, data, i) > truncationPoint);
+             --i) {
             index = index(data[i]);
+            offset = offset(data[i]);
             if (inDelta(prevOffset, offset, maxClusterIndels)) {
                 // Processing exceptional cases for self-correlated K-Mers
 
@@ -467,9 +496,10 @@ public final class KMapper2 implements java.io.Serializable {
                         && index == index(data[i - 1])
                         && abs(prevOffset - offset) > abs(prevOffset - offset(data[i - 1])))
                     // Skip current record
-                    continue OUTER;
+                    continue;
 
-                int scoreDelta = matchScore + (index - prevIndex - 1) * mismatchScore +
+                assert prevIndex - index - 1 >= 0;
+                int scoreDelta = matchScore + (prevIndex - index - 1) * mismatchScore +
                         abs(prevOffset - offset) * offsetShiftScore;
 
                 if (scoreDelta > 0) {
@@ -480,19 +510,26 @@ public final class KMapper2 implements java.io.Serializable {
                 }
             }
         }
-        results.set(clusterId + FIRST_RECORD_ID, lastRecordId);
-        results.set(clusterId + SCORE, score);
+        results.set(clusterPointer + FIRST_RECORD_ID, lastRecordId);
+        results.set(clusterPointer + SCORE, score);
+        if (score < absoluteMinClusterScore) {
+            results.set(clusterPointer + FIRST_RECORD_ID, DROPPED_CLUSTER);
+            return false;
+        }
+        return true;
     }
 
     private KMappingHit2 calculateHit(final IntArrayList results, final int id, final int[] data,
                                       final int dataFrom, final int dataTo,
                                       final IntArrayList seedPositions) {
-        IntArrayList seedRecords = new IntArrayList(); // TODO initialize with rational length
-        IntArrayList packBoundaries = new IntArrayList();
 
+        //A1: correcting intersections, step 1
+        OUT:
         for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE)
             if (results.get(i + FIRST_RECORD_ID) != DROPPED_CLUSTER)
                 for (int j = i + OUTPUT_RECORD_SIZE; j < results.size(); j += OUTPUT_RECORD_SIZE) {
+                    if (results.get(i + FIRST_RECORD_ID) == DROPPED_CLUSTER)
+                        continue OUT;
                     if (results.get(j + FIRST_RECORD_ID) == DROPPED_CLUSTER)
                         continue;
                     //intersecting clusters in query
@@ -517,35 +554,116 @@ public final class KMapper2 implements java.io.Serializable {
 
                     if (aEndIndex >= bStartIndex) {
                         if (bEndIndex <= aEndIndex) {
+                            if (results.get(a + SCORE) < results.get(b + SCORE)) {
+                                results.set(a + FIRST_RECORD_ID, DROPPED_CLUSTER);
+                                continue;
+                            } else {
+                                results.set(b + FIRST_RECORD_ID, DROPPED_CLUSTER);
+                                continue;
+                            }
+                        } else {
+                            if (results.get(a + SCORE) < results.get(b + SCORE)) {
+                                if (!truncateClusterFromRight(true, null, results, data, dataTo, a, bStartIndex))
+                                    continue;
+                            } else if (!truncateClusterFromLeft(true, null, results, data, dataFrom, b, aEndIndex))
+                                continue;
+                        }
+                    }
+
+                    //intersecting clusters in target
+                    a = i;
+                    b = j;
+                    int aStart = positionInTarget(seedPositions, data, results.get(a + FIRST_RECORD_ID));
+                    int aEnd = positionInTarget(seedPositions, data, results.get(a + LAST_RECORD_ID));
+                    int bStart = positionInTarget(seedPositions, data, results.get(b + FIRST_RECORD_ID));
+                    int bEnd = positionInTarget(seedPositions, data, results.get(b + LAST_RECORD_ID));
+
+                    if (aStart > bStart) {
+                        //swap by xor
+                        aStart ^= bStart;
+                        bStart ^= aStart;
+                        aStart ^= bStart;
+                        aEnd ^= bEnd;
+                        bEnd ^= aEnd;
+                        aEnd ^= bEnd;
+                        a ^= b;
+                        b ^= a;
+                        a ^= b;
+                    }
+
+
+                    if (aEnd >= bStart) {
+                        if (bEnd <= aEnd) {
                             if (results.get(a + SCORE) < results.get(b + SCORE))
                                 results.set(a + FIRST_RECORD_ID, DROPPED_CLUSTER);
                             else
                                 results.set(b + FIRST_RECORD_ID, DROPPED_CLUSTER);
                         } else {
                             if (results.get(a + SCORE) < results.get(b + SCORE))
-                                truncateClusterFromRightAndRebuild(results, data, dataTo, a, results.get(b + LAST_RECORD_ID));
+                                truncateClusterFromRight(false, seedPositions, results, data, dataTo, a, bStart);
                             else
-                                truncateClusterFromLeftAndRebuild(results, data, dataFrom, b, results.get(a + FIRST_RECORD_ID));
+                                truncateClusterFromLeft(false, seedPositions, results, data, dataFrom, b, aEnd);
                         }
                     }
                 }
 
+        //A2: correcting intersections, step 2 untangling
+        int bestScore = 0, currentScore;
+        int numberOfClusters = results.size() / OUTPUT_RECORD_SIZE;
+        IntArrayList untangled = new IntArrayList(numberOfClusters),
+                current = new IntArrayList(numberOfClusters);
+        OUTER:
+        for (long it = 0, size = (1 << numberOfClusters); it < size; ++it) {
+            current.clear();
+            currentScore = 0;
+            for (int ai = numberOfClusters - 1; ai >= 0; --ai) {
+                int a = ai * OUTPUT_RECORD_SIZE;
+                if (results.get(a + FIRST_RECORD_ID) == DROPPED_CLUSTER) {
+                    it += ((1 << ai) - 1);
+                    continue OUTER;
+                }
+                if (((it >> ai) & 1) == 1) {
+                    for (int i = 0; i < current.size(); i++) {
+                        int b = current.get(i);
+                        if (results.get(b + FIRST_RECORD_ID) == DROPPED_CLUSTER)
+                            continue;
+                        if (crosses(seedPositions, data, results.get(a + FIRST_RECORD_ID), results.get(b + FIRST_RECORD_ID))) {
+                            assert crosses(seedPositions, data, results.get(a + LAST_RECORD_ID), results.get(b + LAST_RECORD_ID));
+                            it += ((1 << ai) - 1);
+                            continue OUTER;
+                        }
+                    }
+                    current.add(a);
+                    currentScore += results.get(a + SCORE);
+                }
+            }
+            if (bestScore < currentScore) {
+                untangled.copyFrom(current);
+                bestScore = currentScore;
+            }
+        }
 
+        current.clear();//economy
+        IntArrayList seedRecords = current;
+        IntArrayList packBoundaries = new IntArrayList();
+//        untangled.sort();
         int score = 0;
-        for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
+
+        for (int i = 0; i < untangled.size(); ++i) {
+            int pointer = untangled.get(i);
             if (i != 0) {
                 packBoundaries.add(seedRecords.size());
                 score += extraClusterScore;
             }
 
-            int recordId = results.get(i + FIRST_RECORD_ID);
-
+            int recordId = results.get(pointer + FIRST_RECORD_ID);
             assert recordId >= dataFrom;
 
-            int lastIndex = results.get(i + LAST_INDEX);
+            int lastRecordId = results.get(pointer + LAST_RECORD_ID);
+            assert lastRecordId < dataTo;
 
             int record, index, offset, delta;
-            score += matchScore;
+            int clusterScore = matchScore;
 
             int previousIndex = index = index(record = data[recordId]);
             seedRecords.add(record);
@@ -554,8 +672,12 @@ public final class KMapper2 implements java.io.Serializable {
 
             while (++recordId < dataTo && index(data[recordId]) == index) ;
 
-            while (recordId < dataTo && (index = index(record = data[recordId++])) <= lastIndex) {
+            --recordId;
+            while (++recordId <= lastRecordId) {
+                record = data[recordId];
+                index = index(record);
                 offset = offset(record);
+
                 int minRecord = record;
                 int minDelta = abs(offset - previousOffset);
 
@@ -563,25 +685,42 @@ public final class KMapper2 implements java.io.Serializable {
                     continue;
 
                 boolean $ = false;
-                while (recordId < dataTo && index(record = data[recordId++]) == index) {
+                while (recordId < lastRecordId && index(record = data[recordId + 1]) == index) {
+                    ++recordId;
                     if ((delta = abs(offset(record) - previousOffset)) < minDelta) {
                         minDelta = delta;
                         minRecord = record;
+                        $ = true;
                     }
-                    $ = true;
                 }
-                if ($)
-                    --recordId;
+                if ($) offset = offset(minRecord);
 
-                score += matchScore + (index - previousIndex - 1) * mismatchScore +
+                int scoreDelta = matchScore + (index - previousIndex - 1) * mismatchScore +
                         minDelta * offsetShiftScore;
-
-                seedRecords.add(minRecord);
-                previousIndex = index;
+                if (scoreDelta > 0) {
+                    clusterScore += scoreDelta;
+                    seedRecords.add(minRecord);
+                    previousIndex = index;
+                    previousOffset = offset;
+                }
             }
+            assert clusterScore == results.get(pointer + SCORE)
+                    : "Actual: " + clusterScore + " expected: " + results.get(pointer + SCORE);
+            score += clusterScore;
         }
 
         return new KMappingHit2(id, seedRecords.toArray(), packBoundaries.toArray(), score);
+    }
+
+    private static boolean crosses(final IntArrayList seedPositions, final int[] data, final int a, final int b) {
+        return (index(data[a]) < index(data[b])) ^
+                (positionInTarget(seedPositions, data, a) < positionInTarget(seedPositions, data, b));
+    }
+
+    private static int positionInTarget(final IntArrayList seedPositions,
+                                        final int[] data,
+                                        final int index) {
+        return seedPositions.get(index(data[index])) + offset(data[index]);
     }
 
     /**
@@ -667,10 +806,13 @@ public final class KMapper2 implements java.io.Serializable {
         return "K=" + kValue + "; Avr=" + ss.getMean() + "; SD=" + ss.getStandardDeviation();
     }
 
-    /**
-     * Used to store preliminary information about hit.
-     */
-    private static class Info {
-        int offset, score;
+    private static final class ArrList<T> extends ArrayList<T> {
+        public ArrList() {
+        }
+
+        @Override
+        public void removeRange(int fromIndex, int toIndex) {
+            super.removeRange(fromIndex, toIndex);
+        }
     }
 }

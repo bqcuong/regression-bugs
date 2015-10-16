@@ -40,18 +40,18 @@ public final class OffsetPacksAccumulator {
     final int[] slidingArray;
     final int slotCount;
     final int maxAllowedDelta;
-    final int matchScore, mismatchScore, shiftScore, islandMinimalScore;
+    final int matchScore, mismatchScore, shiftScore, absoluteMinClusterScore;
     final IntArrayList results = new IntArrayList(OUTPUT_RECORD_SIZE * 2);
 
     public OffsetPacksAccumulator(int slotCount, int maxAllowedDelta, int matchScore,
-                                  int mismatchScore, int shiftScore, int islandMinimalScore) {
+                                  int mismatchScore, int shiftScore, int absoluteMinClusterScore) {
         this.slotCount = slotCount;
         this.maxAllowedDelta = maxAllowedDelta;
         this.slidingArray = new int[RECORD_SIZE * slotCount];
         this.matchScore = matchScore;
         this.mismatchScore = mismatchScore;
         this.shiftScore = shiftScore;
-        this.islandMinimalScore = islandMinimalScore;
+        this.absoluteMinClusterScore = absoluteMinClusterScore;
     }
 
     private void reset() {
@@ -82,9 +82,8 @@ public final class OffsetPacksAccumulator {
 
             // Matching existing records
             for (int i = 0; i < slidingArray.length; i += RECORD_SIZE) {
-                if ((slidingArray[i + SCORE] & STRETCH_INDEX_MASK) == STRETCH_INDEX_MARK)
+                if ((slidingArray[i + SCORE] & STRETCH_INDEX_MASK) == STRETCH_INDEX_MARK) {
                     if (slidingArray[i + MIN_VALUE] - maxAllowedDelta <= offset && offset <= slidingArray[i + MAX_VALUE] + maxAllowedDelta) {
-
                         int pRecordId = slidingArray[i + SCORE] ^ STRETCH_INDEX_MARK,
                                 pOffset = offset(data[pRecordId]),
                                 pIndex = index(data[pRecordId]),
@@ -112,7 +111,7 @@ public final class OffsetPacksAccumulator {
                         slidingArray[i + MAX_VALUE] = pOffset;
                         slidingArray[i + SCORE] = matchScore;
                     }
-
+                }
                 if (inDelta(slidingArray[i + LAST_VALUE], offset, maxAllowedDelta)) {
                     // Processing exceptional cases for self-correlated K-Mers
 
@@ -197,7 +196,7 @@ public final class OffsetPacksAccumulator {
     }
 
     private void finished(int indexOfFinished) {
-        if (slidingArray[indexOfFinished + SCORE] < islandMinimalScore)
+        if (slidingArray[indexOfFinished + SCORE] < absoluteMinClusterScore)
             return; //just drop
 
         results.add(slidingArray, indexOfFinished, OUTPUT_RECORD_SIZE);

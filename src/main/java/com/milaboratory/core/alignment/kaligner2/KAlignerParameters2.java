@@ -73,6 +73,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
 
     mapperMaxClusterIndels;
 
+    private int mapperAbsoluteMinScore;
     /**
      * Minimal allowed ratio between best hit score and other hits obtained by {@link
      * com.milaboratory.core.alignment.KMapper} to consider hit as reliable candidate
@@ -146,7 +147,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     // * @param scoring                  scoring system used for building alignments
     // */
     public KAlignerParameters2(int mapperKValue, boolean floatingLeftBound, boolean floatingRightBound,
-                               int mapperAbsoluteMinClusterScore, int mapperExtraClusterScore, float mapperRelativeMinScore,
+                               int mapperAbsoluteMinClusterScore, int mapperExtraClusterScore, int mapperAbsoluteMinScore, float mapperRelativeMinScore,
                                int mapperMatchScore, int mapperMismatchScore, int mapperOffsetShiftScore, int mapperMinSeedsDistance,
                                int mapperMaxSeedsDistance, int mapperSlotCount, int mapperMaxClusterIndels,
                                int alignmentStopPenalty, float absoluteMinScore, float relativeMinScore,
@@ -158,6 +159,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
         this.floatingRightBound = floatingRightBound;
         this.mapperAbsoluteMinClusterScore = mapperAbsoluteMinClusterScore;
         this.mapperExtraClusterScore = mapperExtraClusterScore;
+        this.mapperAbsoluteMinScore = mapperAbsoluteMinScore;
         this.mapperRelativeMinScore = mapperRelativeMinScore;
         this.mapperMatchScore = mapperMatchScore;
         this.mapperMismatchScore = mapperMismatchScore;
@@ -481,6 +483,15 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      */
     public KAlignerParameters2 setFloatingRightBound(boolean floatingRightBound) {
         this.floatingRightBound = floatingRightBound;
+        return this;
+    }
+
+    public int getMapperAbsoluteMinScore() {
+        return mapperAbsoluteMinScore;
+    }
+
+    public KAlignerParameters2 setMapperAbsoluteMinScore(int mapperAbsoluteMinScore) {
+        this.mapperAbsoluteMinScore = mapperAbsoluteMinScore;
         return this;
     }
 

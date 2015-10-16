@@ -95,6 +95,11 @@ public final class IntArrayList implements java.io.Serializable {
         data[position] = num;
     }
 
+    public void copyFrom(IntArrayList other){
+        clear();
+        addAll(other);
+    }
+
     public void sort() {
         Arrays.sort(data, 0, size);
     }
@@ -155,7 +160,7 @@ public final class IntArrayList implements java.io.Serializable {
 
     public int get(int i) {
         if (i < 0 || i >= size)
-            throw new IndexOutOfBoundsException();
+            throw new IndexOutOfBoundsException("Size: " + size + " index: " + i);
         return data[i];
     }
 
