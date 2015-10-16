@@ -13,6 +13,12 @@ public class AnnotationsGeneratorBadExample {
 		return "ok-" + bad;
 	}
 	
+	@HTMLGenerator
+	public String generateCodeWithParenthesis(String bad) {
+		String badString = "ok-" + bad;
+		return (badString);
+	}
+	
 	public void generate (JspWriter out, String bad) throws IOException{
 		out.write(generateCode(bad));
 	}

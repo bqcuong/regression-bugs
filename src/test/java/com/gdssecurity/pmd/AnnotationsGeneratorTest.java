@@ -17,7 +17,7 @@ public class AnnotationsGeneratorTest {
 	}
 	@Test
 	public void testGeneratorBad () throws Exception {
-		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorBadExample.java", RULESET_ANNOTATIONS));	
+		Assert.assertEquals(2, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorBadExample.java", RULESET_ANNOTATIONS));	
 	}
 	
 	@Test

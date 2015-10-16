@@ -115,6 +115,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	private List<DataFlowNode> additionalDataFlowNodes = new ArrayList<DataFlowNode>();
 
 	private static final int MAX_DATAFLOWS = 1000;
+	private boolean generator = false;
 
 	public DfaSecurityRule() {
 		super();
@@ -137,6 +138,44 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		this.searchAnnotationsInPackagesArray = this.searchAnnotationsInPackages
 				.toArray(new String[this.searchAnnotationsInPackages.size()]);
 		this.generators = new HashSet<String>();
+	}
+	@Override
+	public void execute(CurrentPath currentPath) {
+
+		this.methodDataFlowCount++;
+		this.currentPathTaintedVariables = new HashSet<String>();
+		this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
+		this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
+
+		if (this.methodDataFlowCount < MAX_DATAFLOWS) {
+			for (Iterator<DataFlowNode> iterator = currentPath.iterator(); iterator.hasNext();) {
+				DataFlowNode iDataFlowNode = iterator.next();
+				Node node = iDataFlowNode.getNode();
+				if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
+					this.currentPathTaintedVariables = new HashSet<String>();
+					this.generator = isGeneratorThisMethodDeclaration(node);
+					if (!isSinkThisMethodDeclaration(node)) {
+						addMethodParamsToTaintedVariables(node);
+					}
+					addClassFieldsToTaintedVariables(node);
+					this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
+					this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
+				} else if (node instanceof ASTVariableDeclarator || node instanceof ASTStatementExpression) {
+					handleDataFlowNode(iDataFlowNode);
+				}
+				else if (node instanceof ASTReturnStatement) {
+					handeReturnNode(node, iDataFlowNode);
+				}
+			}
+
+			if (!this.additionalDataFlowNodes.isEmpty()) {
+				DataFlowNode additionalRootNode = this.additionalDataFlowNodes.remove(0);
+				DAAPathFinder daaPathFinder = new DAAPathFinder(additionalRootNode, this, MAX_DATAFLOWS);
+				this.methodDataFlowCount = 0;
+				daaPathFinder.run();
+			}
+
+		}
 	}
 
 	protected boolean isSanitizerMethod(String type, String method) {
@@ -271,46 +310,8 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		}
 	}
 	
-	boolean generator = false;
 
-	@Override
-	public void execute(CurrentPath currentPath) {
 
-		this.methodDataFlowCount++;
-		this.currentPathTaintedVariables = new HashSet<String>();
-		this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
-		this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
-
-		if (this.methodDataFlowCount < MAX_DATAFLOWS) {
-			for (Iterator<DataFlowNode> iterator = currentPath.iterator(); iterator.hasNext();) {
-				DataFlowNode iDataFlowNode = iterator.next();
-				Node node = iDataFlowNode.getNode();
-				if (node instanceof ASTMethodDeclaration || node instanceof ASTConstructorDeclaration) {
-					this.currentPathTaintedVariables = new HashSet<String>();
-					this.generator = isGeneratorThisMethodDeclaration(node);
-					if (!isSinkThisMethodDeclaration(node)) {
-						addMethodParamsToTaintedVariables(node);
-					}
-					addClassFieldsToTaintedVariables(node);
-					this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
-					this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
-				} else if (node instanceof ASTVariableDeclarator || node instanceof ASTStatementExpression) {
-					handleDataFlowNode(iDataFlowNode);
-				}
-				else if (node instanceof ASTReturnStatement) {
-					handeReturnNode(node, iDataFlowNode);
-				}
-			}
-
-			if (!this.additionalDataFlowNodes.isEmpty()) {
-				DataFlowNode additionalRootNode = this.additionalDataFlowNodes.remove(0);
-				DAAPathFinder daaPathFinder = new DAAPathFinder(additionalRootNode, this, MAX_DATAFLOWS);
-				this.methodDataFlowCount = 0;
-				daaPathFinder.run();
-			}
-
-		}
-	}
 
 	private void handeReturnNode(Node node, DataFlowNode iDataFlowNode) {
 		
@@ -406,6 +407,10 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				astMethod = simpleNode.getFirstDescendantOfType(ASTExpression.class);
 			}
 			method = getMethod(astMethod);
+			if (StringUtils.isBlank(method)) {
+				astMethod = astMethod.getFirstDescendantOfType(ASTPrimaryExpression.class);
+				method = getMethod(astMethod);
+			}
 			type = getJavaType(astMethod);
 
 			if ((type == StringBuilder.class || type == StringBuffer.class)
@@ -656,6 +661,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	}
 
 	private List<ASTPrimaryExpression> getExp(Node node2) {
+		// TODO Performance removing instanceof
 		List<ASTPrimaryExpression> expressions = new ArrayList<ASTPrimaryExpression>();
 		int numChildren = node2.jjtGetNumChildren();
 		for (int i = 0; i < numChildren; i++) {
