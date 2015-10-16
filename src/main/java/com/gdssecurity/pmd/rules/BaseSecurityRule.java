@@ -177,22 +177,22 @@ public class BaseSecurityRule extends AbstractJavaRule {
         Report rpt = ctx.getReport();       
         boolean isNewSecurityViolation = true;
     	
-        if (rpt.getViolationTree().size() > 0) {
-            for (Iterator<RuleViolation> i = rpt.iterator(); i.hasNext();) {
-                RuleViolation ruleViolation = i.next();
-	    		
-                if (ruleViolation instanceof SecurityRuleViolation) {
-                    SecurityRuleViolation secRuleViolation = (SecurityRuleViolation) ruleViolation;	    		
-			        	
-                    if (rule.getName().equals(secRuleViolation.getRule().getName())
-                            && ctx.getSourceCodeFilename().equals(secRuleViolation.getJavaFileName())
-                            && simpleNode.getBeginLine() == secRuleViolation.getJavaBeginLine()
-                            && simpleNode.getEndLine()  == secRuleViolation.getJavaEndLine()) {
-                        isNewSecurityViolation = false;
-                    }
+
+        for (Iterator<RuleViolation> i = rpt.iterator(); i.hasNext();) {
+            RuleViolation ruleViolation = i.next();
+    		
+            if (ruleViolation != null && ruleViolation.getClass() == SecurityRuleViolation.class) {
+                SecurityRuleViolation secRuleViolation = (SecurityRuleViolation) ruleViolation;	    		
+		        	
+                if (rule.getName().equals(secRuleViolation.getRule().getName())
+                        && ctx.getSourceCodeFilename().equals(secRuleViolation.getJavaFileName())
+                        && simpleNode.getBeginLine() == secRuleViolation.getJavaBeginLine()
+                        && simpleNode.getEndLine()  == secRuleViolation.getJavaEndLine()) {
+                    isNewSecurityViolation = false;
                 }
-            }   
-        }
+            }
+        }   
+
     	
         if (isNewSecurityViolation) {            
             rpt.addRuleViolation(new SecurityRuleViolation(rule, ctx, simpleNode, message, variableName));

@@ -159,29 +159,29 @@ public class SecurityRuleViolation implements Comparator<RuleViolation>, RuleVio
             List<Node> parentTypes = new ArrayList<Node>(
                     node.getParentsOfType(ASTTypeDeclaration.class));
 
-            if (node instanceof ASTTypeDeclaration) {
+            if (node.getClass() ==  ASTTypeDeclaration.class) {
                 parentTypes.add(node);
             }
             parentTypes.addAll(
                     node.getParentsOfType(
                             ASTClassOrInterfaceBodyDeclaration.class));
-            if (node instanceof ASTClassOrInterfaceBodyDeclaration) {
+            if (node.getClass() == ASTClassOrInterfaceBodyDeclaration.class) {
                 parentTypes.add(node);
             }
             parentTypes.addAll(node.getParentsOfType(ASTFormalParameter.class));
-            if (node instanceof ASTFormalParameter) {
+            if (node.getClass() == ASTFormalParameter.class) {
                 parentTypes.add(node);
             }
             parentTypes.addAll(
                     node.getParentsOfType(ASTLocalVariableDeclaration.class));
-            if (node instanceof ASTLocalVariableDeclaration) {
+            if (node.getClass() ==  ASTLocalVariableDeclaration.class) {
                 parentTypes.add(node);
             }
-            if (node instanceof ASTCompilationUnit) {
+            if (node.getClass() == ASTCompilationUnit.class) {
                 for (int i = 0; i < node.jjtGetNumChildren(); i++) {
                     Node n = node.jjtGetChild(i);
 
-                    if (n instanceof ASTTypeDeclaration) {
+                    if (n != null && n.getClass() == ASTTypeDeclaration.class) {
                         parentTypes.add(n);
                     }
                 }

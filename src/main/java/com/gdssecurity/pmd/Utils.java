@@ -78,11 +78,14 @@ public final class Utils {
 		
         String cannonicalName = "";
         Class<? extends Object> type = null;
-		
+		if (node == null) {
+			return "UNKNOWN_TYPE";
+		}
         try {
-            if (node instanceof ASTExpression) {				
+        	Class<?> nodeClass = node.getClass();
+            if (nodeClass == ASTExpression.class) {				
                 type = node.getFirstChildOfType(ASTPrimaryExpression.class).getFirstChildOfType(ASTName.class).getType();
-            } else if (node instanceof ASTPrimaryExpression) {
+            } else if (nodeClass == ASTPrimaryExpression.class) {
                 if (node.hasDescendantOfType(ASTClassOrInterfaceType.class)) {					
                     type = node.getFirstDescendantOfType(ASTClassOrInterfaceType.class).getType();
                 } else {	
@@ -92,7 +95,7 @@ public final class Utils {
                 		type = node.getFirstDescendantOfType(ASTName.class).getType();
                 	}                    
                 }
-            } else if (node instanceof ASTName) {
+            } else if (nodeClass == ASTName.class) {
                 type = ((ASTName) node).getType();
             }            
 			if (type != null) {
