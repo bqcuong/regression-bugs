@@ -533,6 +533,10 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			}
 			if (isMethodCall(node)) {
 				String method = getMethod(node);
+				if(StringUtils.isBlank(method)) {
+					// It's a method call but cannot determinate method name, strange
+					continue;
+				}
 				String type = getType(node);
 				if (isSanitizerMethod(type, method) || isGenerator(type, method)) {
 					continue;
