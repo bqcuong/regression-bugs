@@ -10,4 +10,9 @@ public class TernaryAsParameterTest {
 	public void testTernary () throws Exception {
 		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/TernaryAsParameter.java", PMDRunner.RULESET_XSS));
 	}
+	
+	@Test
+	public void testTernaryWithParenthesis () throws Exception {
+		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/TernaryAsParameterWithParenthesis.java", PMDRunner.RULESET_XSS));
+	}
 }
