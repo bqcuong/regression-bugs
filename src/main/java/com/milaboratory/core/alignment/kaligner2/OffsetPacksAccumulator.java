@@ -193,6 +193,62 @@ public final class OffsetPacksAccumulator {
 
         for (int i = 0; i < slidingArray.length; i += RECORD_SIZE)
             finished(i);
+
+        recalculateScores(data, dataFrom, dataTo);
+    }
+
+    private void recalculateScores(int[] data, int dataFrom, int dataTo) {
+        for (int i = 0, size = results.size(); i < size; i += OUTPUT_RECORD_SIZE) {
+            int recordId = results.get(i + FIRST_RECORD_ID);
+            assert recordId >= dataFrom;
+
+            int lastRecordId = results.get(i + LAST_RECORD_ID);
+            assert lastRecordId < dataTo;
+
+            int record, index, offset, delta;
+            int clusterScore = matchScore;
+
+            int previousIndex = index = index(record = data[recordId]);
+
+            int previousOffset = offset(record);
+
+            while (++recordId < dataTo && index(data[recordId]) == index) ;
+
+            --recordId;
+            while (++recordId <= lastRecordId) {
+                record = data[recordId];
+                index = index(record);
+                offset = offset(record);
+
+                int minRecord = record;
+                int minDelta = abs(offset - previousOffset);
+
+                if (minDelta > maxAllowedDelta)
+                    continue;
+
+                boolean $ = false;
+                while (recordId < lastRecordId && index(record = data[recordId + 1]) == index) {
+                    ++recordId;
+                    if ((delta = abs(offset(record) - previousOffset)) < minDelta) {
+                        minDelta = delta;
+                        minRecord = record;
+                        $ = true;
+                    }
+                }
+                if ($) offset = offset(minRecord);
+
+                int scoreDelta = matchScore + (index - previousIndex - 1) * mismatchScore +
+                        minDelta * shiftScore;
+
+                if (scoreDelta > 0) {
+                    clusterScore += scoreDelta;
+                    previousIndex = index;
+                    previousOffset = offset;
+                }
+            }
+
+            results.set(i + SCORE, max(clusterScore, results.get(i + SCORE)));
+        }
     }
 
     private void finished(int indexOfFinished) {
@@ -202,14 +258,14 @@ public final class OffsetPacksAccumulator {
         results.add(slidingArray, indexOfFinished, OUTPUT_RECORD_SIZE);
     }
 
-    public int numberOfIslands() {
+    public int numberOfClusters() {
         return results.size() / OUTPUT_RECORD_SIZE;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Number of clusters: ").append(numberOfIslands()).append("\n\n");
+        sb.append("Number of clusters: ").append(numberOfClusters()).append("\n\n");
         int k = 0;
         for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
             sb.append(k++ + "th cloud:\n")

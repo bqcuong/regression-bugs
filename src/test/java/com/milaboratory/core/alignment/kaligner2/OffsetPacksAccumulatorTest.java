@@ -16,38 +16,38 @@ public class OffsetPacksAccumulatorTest {
     @Test
     public void test1() throws Exception {
         int[] data = {10, 10, 11, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(3, 4, 15, -4, -2, 30), data),
-                new Bunch(0, 3, 56),
-                new Bunch(5, 12, 110),
-                new Bunch(13, 16, 60));
+        assertClusters(process(new OffsetPacksAccumulator(3, 4, 15, -4, -2, 30), data),
+                new Cluster(0, 3, 56),
+                new Cluster(5, 12, 110),
+                new Cluster(13, 16, 60));
     }
 
     @Test
     public void test2() throws Exception {
         int[] data = {10, 10, 11, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
-                new Bunch(0, 3, 56),
-                new Bunch(5, 12, 110),
-                new Bunch(13, 16, 60));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
+                new Cluster(0, 3, 56),
+                new Cluster(5, 12, 110),
+                new Cluster(13, 16, 60));
     }
 
     @Test
     public void test3() throws Exception {
         int[] data = {10, 10, 1, 11, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
-                new Bunch(0, 4, 52),
-                new Bunch(6, 13, 110),
-                new Bunch(14, 17, 60));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
+                new Cluster(0, 4, 52),
+                new Cluster(6, 13, 110),
+                new Cluster(14, 17, 60));
     }
 
 
     @Test
     public void test4() throws Exception {
         int[] data = {10, 10, 1, 11, 33, 12, 23, 33, 33, 34, 33, 33, 31, 32, 32, 10, 10, 10, 10};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
-                new Bunch(0, 5, 48),
-                new Bunch(4, 14, 117),
-                new Bunch(15, 18, 60));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data),
+                new Cluster(0, 5, 48),
+                new Cluster(4, 14, 117),
+                new Cluster(15, 18, 60));
     }
 
     @Test
@@ -55,8 +55,8 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 102, 10, 10};
         int[] indexes = {0, 1, 2, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(0, 4, 60));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+                new Cluster(0, 4, 60));
     }
 
     @Test
@@ -64,8 +64,8 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 102, 10, 10};
         int[] indexes = {0, 1, 1, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(0, 4, 60));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+                new Cluster(0, 4, 60));
     }
 
     @Test
@@ -73,8 +73,8 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {10, 10, 12, 10, 10};
         int[] indexes = {0, 1, 2, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(0, 4, 60));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+                new Cluster(0, 4, 60));
     }
 
     @Test
@@ -84,8 +84,8 @@ public class OffsetPacksAccumulatorTest {
 //        int[] indexes = { 0,  1,  1,  2,  3};
         int[] data =    {10, 10, 12, 10, 10};
         int[] indexes = { 0,  1,  1,  2,  3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(0, 4, 60));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+                new Cluster(0, 4, 60));
     }
 
     @Test
@@ -93,8 +93,8 @@ public class OffsetPacksAccumulatorTest {
             throws Exception {
         int[] data = {8, 10, 10, 10, 10};
         int[] indexes = {0, 0, 1, 2, 3};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(1, 4, 60));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+                new Cluster(1, 4, 60));
     }
 
     @Test
@@ -104,9 +104,9 @@ public class OffsetPacksAccumulatorTest {
 //        int[] indexes = {0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6};
         int[] data = {8, 10, 11, 50, 51, 52, 10, 10, 10, 50, 50, 50};
         int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(1, 8, 60),
-                new Bunch(3, 11, 48));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+                new Cluster(1, 8, 60),
+                new Cluster(3, 11, 48));
     }
 
     @Test
@@ -116,9 +116,9 @@ public class OffsetPacksAccumulatorTest {
         for (int i = 0; i < data.length; i++)
             data[i] -= 1000;
         int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
-        assertBunches(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
-                new Bunch(1, 8, 60),
-                new Bunch(3, 11, 48));
+        assertClusters(process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes),
+                new Cluster(1, 8, 60),
+                new Cluster(3, 11, 48));
     }
 
     @Test
@@ -130,24 +130,65 @@ public class OffsetPacksAccumulatorTest {
         int[] data = {-50, -49, -48, -10, -8, -6, -52, -51, -50, -11, -10, -8};
         int[] indexes = {0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6};
         OffsetPacksAccumulator of = process(new OffsetPacksAccumulator(4, 4, 15, -4, -2, 30), data, indexes);
-        assertBunches(of, new Bunch(0, 8, 52), new Bunch(3, 11, 40));
+        assertClusters(of, new Cluster(0, 8, 52), new Cluster(3, 11, 40));
     }
 
     @Test
-    public void test222() throws Exception {
-        int data[] = {73729, 73730, 81923, 81924, 180231, 1769479, 180232, 704520, 1933320, 458762, 106507, 122891, 139275, 368651, 73740, 90124, 106508, 335884, 106509, 106510, 106511, -155632, -139248, -122864, 106512};
+    public void testScoreCorrection1() throws Exception {
+        int data[] = {73729, 73730, 81923, 81924, 180231, 1769479,
+                180232, 704520, 1933320, 458762, 106507, 122891, 139275,
+                368651, 73740, 90124, 106508, 335884, 106509, 106510,
+                106511, -155632, -139248, -122864, 106512};
+
+        //for (int i = 0; i < data.length; ++i)
+        //    System.out.println(i + "     " + index(data[i]) + "    " + offset(data[i]));
+
+        OffsetPacksAccumulator of = new OffsetPacksAccumulator(4, 3, 10, -7, -8, 15);
+        of.calculateInitialPartitioning(data);
+        assertClusters(of, new Cluster(0, 3, 32), new Cluster(4, 6, 20), new Cluster(10, 24, 60));
+
+    }
+
+    @Test
+    public void testScoreCorrection2() throws Exception {
+        int data[] = {114690, 1245186, 1892354, 2056194, -49147, 1605637, 1744901, -40954, -122872,
+                -196598, -196597, -196596, -49139, -57330, -49137, -57328, -40944, 1597456, -40943,
+                1196050, 1318931, -229355, -229354, -229353, -229351, 1318937, -229350, -1687521, -425953,
+                1368095, -425952, -425951, -425949, -917468, -425948, -425947, 335909, -425946};
+
         for (int i = 0; i < data.length; ++i)
             System.out.println(i + "     " + index(data[i]) + "    " + offset(data[i]));
 
         OffsetPacksAccumulator of = new OffsetPacksAccumulator(4, 3, 10, -7, -8, 15);
         of.calculateInitialPartitioning(data);
         System.out.println(of);
+        //assertClusters(of, new Cluster(0, 3, 32), new Cluster(4, 6, 20), new Cluster(10, 24, 60));
+        /*
+        0th cloud:
+          first record id:9
+          last record id:11
+          score:30
 
+        1th cloud:
+          first record id:12
+          last record id:18
+          score:16 (26 before correction)  <======
+
+        2th cloud:
+          first record id:21
+          last record id:26
+          score:43
+
+        3th cloud:
+          first record id:28
+          last record id:37
+          score:63
+         */
     }
 
     private static String verbose(OffsetPacksAccumulator of, int[] clouds) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append("Number of clusters: " + of.numberOfIslands()).append("\n\n");
+        sb.append("Number of clusters: " + of.numberOfClusters()).append("\n\n");
         int k = 0;
         for (int i = 0; i < of.results.size(); i += OUTPUT_RECORD_SIZE) {
             sb.append(k++ + "-th cloud:\n")
@@ -214,33 +255,33 @@ public class OffsetPacksAccumulatorTest {
         return process(createWithDefaultParams(), data);
     }
 
-    private static void assertBunches(int[] clouds, Bunch... expected) {
-        assertBunches(process(clouds), expected);
+    private static void assertClusters(int[] clouds, Cluster... expected) {
+        assertClusters(process(clouds), expected);
     }
 
-    private static void assertBunches(OffsetPacksAccumulator of, Bunch... expected) {
+    private static void assertClusters(OffsetPacksAccumulator of, Cluster... expected) {
         Assert.assertEquals(new HashSet<>(Arrays.asList(expected)),
                 new HashSet<>(Arrays.asList(getBunches(of))));
     }
 
-    private static Bunch[] getBunches(OffsetPacksAccumulator of) {
-        Bunch[] bunchs = new Bunch[of.numberOfIslands()];
+    private static Cluster[] getBunches(OffsetPacksAccumulator of) {
+        Cluster[] clusters = new Cluster[of.numberOfClusters()];
         int k = 0;
         for (int i = 0; i < of.results.size(); i += OUTPUT_RECORD_SIZE)
-            bunchs[k++] = new Bunch(of.results.get(i + FIRST_RECORD_ID),
+            clusters[k++] = new Cluster(of.results.get(i + FIRST_RECORD_ID),
                     of.results.get(i + LAST_RECORD_ID),
                     of.results.get(i + SCORE));
-        return bunchs;
+        return clusters;
     }
 
-    private static final class Bunch {
+    private static final class Cluster {
         final int start, end, score;
 
-        public Bunch(int start, int end) {
+        public Cluster(int start, int end) {
             this(start, end, -1);
         }
 
-        public Bunch(int start, int end, int score) {
+        public Cluster(int start, int end, int score) {
             this.start = start;
             this.end = end;
             this.score = score;
@@ -251,11 +292,11 @@ public class OffsetPacksAccumulatorTest {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            Bunch bunch = (Bunch) o;
+            Cluster cluster = (Cluster) o;
 
-            if (start != bunch.start) return false;
-            if (end != bunch.end) return false;
-            return score == bunch.score;
+            if (start != cluster.start) return false;
+            if (end != cluster.end) return false;
+            return score == cluster.score;
 //            return true;
         }
 

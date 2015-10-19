@@ -22,12 +22,14 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
 import static com.milaboratory.core.alignment.kaligner2.OffsetPacksAccumulator.*;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static java.util.Arrays.copyOf;
 
 /**
@@ -101,6 +103,8 @@ public final class KMapper2 implements java.io.Serializable {
     slotCount,
 
     maxClusterIndels;
+
+    private static final int maxClusters = 10;
 
     /**
      * Minimal absolute score.
@@ -384,6 +388,9 @@ public final class KMapper2 implements java.io.Serializable {
 
             accumulator.calculateInitialPartitioning(candidates[i]);
 
+            if (accumulator.results.size() == 0)
+                continue;
+
             result.add(calculateHit(accumulator.results, i, candidates[i], seedPositions));
         }
 
@@ -427,9 +434,9 @@ public final class KMapper2 implements java.io.Serializable {
         //calculate score
         int offset, index;
         for (; i < dataTo &&
-                byIndex ?
-                index(data[i]) < truncationPoint :
-                (positionInTarget(seedPositions, data, i) < truncationPoint);
+                (byIndex ?
+                        index(data[i]) < truncationPoint :
+                        (positionInTarget(seedPositions, data[i]) < truncationPoint));
              ++i) {
             index = index(data[i]);
             offset = offset(data[i]);
@@ -481,9 +488,9 @@ public final class KMapper2 implements java.io.Serializable {
         //calculate score
         int offset, index;
         for (; i >= dataFrom &&
-                byIndex ?
-                index(data[i]) > truncationPoint :
-                (positionInTarget(seedPositions, data, i) > truncationPoint);
+                (byIndex ?
+                        index(data[i]) > truncationPoint :
+                        (positionInTarget(seedPositions, data[i]) > truncationPoint));
              --i) {
             index = index(data[i]);
             offset = offset(data[i]);
@@ -573,10 +580,10 @@ public final class KMapper2 implements java.io.Serializable {
                     //intersecting clusters in target
                     a = i;
                     b = j;
-                    int aStart = positionInTarget(seedPositions, data, results.get(a + FIRST_RECORD_ID));
-                    int aEnd = positionInTarget(seedPositions, data, results.get(a + LAST_RECORD_ID));
-                    int bStart = positionInTarget(seedPositions, data, results.get(b + FIRST_RECORD_ID));
-                    int bEnd = positionInTarget(seedPositions, data, results.get(b + LAST_RECORD_ID));
+                    int aStart = positionInTarget(seedPositions, data[results.get(a + FIRST_RECORD_ID)]);
+                    int aEnd = positionInTarget(seedPositions, data[results.get(a + LAST_RECORD_ID)]);
+                    int bStart = positionInTarget(seedPositions, data[results.get(b + FIRST_RECORD_ID)]);
+                    int bEnd = positionInTarget(seedPositions, data[results.get(b + LAST_RECORD_ID)]);
 
                     if (aStart > bStart) {
                         //swap by xor
@@ -610,26 +617,36 @@ public final class KMapper2 implements java.io.Serializable {
         //A2: correcting intersections, step 2 untangling
         int bestScore = 0, currentScore;
         int numberOfClusters = results.size() / OUTPUT_RECORD_SIZE;
+
+        final long[] forPreFiltering = new long[numberOfClusters];
+        for (int i = 0; i < numberOfClusters; i++)
+            forPreFiltering[i] = (i * OUTPUT_RECORD_SIZE) | (((long) (-results.get(i * OUTPUT_RECORD_SIZE + SCORE))) << 33);
+        Arrays.sort(forPreFiltering);
+
+        numberOfClusters = min(numberOfClusters, maxClusters);
+
         IntArrayList untangled = new IntArrayList(numberOfClusters),
                 current = new IntArrayList(numberOfClusters);
         OUTER:
-        for (long it = 0, size = (1 << numberOfClusters); it < size; ++it) {
+        for (long it = 0, size = (1L << numberOfClusters); it < size; ++it) {
             current.clear();
             currentScore = 0;
             for (int ai = numberOfClusters - 1; ai >= 0; --ai) {
-                int a = ai * OUTPUT_RECORD_SIZE;
-                if (results.get(a + FIRST_RECORD_ID) == DROPPED_CLUSTER) {
-                    it += ((1 << ai) - 1);
-                    continue OUTER;
-                }
+                //int a = ai * OUTPUT_RECORD_SIZE;
+                int a = (int) forPreFiltering[ai];
                 if (((it >> ai) & 1) == 1) {
+                    if (results.get(a + FIRST_RECORD_ID) == DROPPED_CLUSTER) {
+                        it += ((1 << ai) - 1);
+                        continue OUTER;
+                    }
+
                     for (int i = 0; i < current.size(); i++) {
                         int b = current.get(i);
                         if (results.get(b + FIRST_RECORD_ID) == DROPPED_CLUSTER)
                             continue;
                         if (crosses(seedPositions, data, results.get(a + FIRST_RECORD_ID), results.get(b + FIRST_RECORD_ID))) {
                             assert crosses(seedPositions, data, results.get(a + LAST_RECORD_ID), results.get(b + LAST_RECORD_ID));
-                            it += ((1 << ai) - 1);
+                            //it += ((1 << ai) - 1);
                             continue OUTER;
                         }
                     }
@@ -649,8 +666,15 @@ public final class KMapper2 implements java.io.Serializable {
 //        untangled.sort();
         int score = 0;
 
+        final long[] untangledForSort = new long[untangled.size()];
         for (int i = 0; i < untangled.size(); ++i) {
             int pointer = untangled.get(i);
+            untangledForSort[i] = pointer | (((long) index(data[results.get(pointer + FIRST_RECORD_ID)])) << 32);
+        }
+        Arrays.sort(untangledForSort);
+
+        for (int i = 0; i < untangledForSort.length; ++i) {
+            int pointer = (int) (untangledForSort[i]);
             if (i != 0) {
                 packBoundaries.add(seedRecords.size());
                 score += extraClusterScore;
@@ -695,6 +719,9 @@ public final class KMapper2 implements java.io.Serializable {
                 }
                 if ($) offset = offset(minRecord);
 
+                if (positionInTarget(seedPositions, record) <= positionInTarget(seedPositions, seedRecords.last()))
+                    continue;
+
                 int scoreDelta = matchScore + (index - previousIndex - 1) * mismatchScore +
                         minDelta * offsetShiftScore;
                 if (scoreDelta > 0) {
@@ -704,8 +731,9 @@ public final class KMapper2 implements java.io.Serializable {
                     previousOffset = offset;
                 }
             }
-            assert clusterScore == results.get(pointer + SCORE)
-                    : "Actual: " + clusterScore + " expected: " + results.get(pointer + SCORE);
+
+            // TODO point for counter : clusterScore == results.get(pointer + SCORE)
+            clusterScore = max(clusterScore, results.get(pointer + SCORE));
             score += clusterScore;
         }
 
@@ -714,13 +742,12 @@ public final class KMapper2 implements java.io.Serializable {
 
     private static boolean crosses(final IntArrayList seedPositions, final int[] data, final int a, final int b) {
         return (index(data[a]) < index(data[b])) ^
-                (positionInTarget(seedPositions, data, a) < positionInTarget(seedPositions, data, b));
+                (positionInTarget(seedPositions, data[a]) < positionInTarget(seedPositions, data[b]));
     }
 
-    private static int positionInTarget(final IntArrayList seedPositions,
-                                        final int[] data,
-                                        final int index) {
-        return seedPositions.get(index(data[index])) + offset(data[index]);
+    public static int positionInTarget(final IntArrayList seedPositions,
+                                       final int record) {
+        return seedPositions.get(index(record)) + offset(record);
     }
 
     /**

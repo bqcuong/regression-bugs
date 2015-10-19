@@ -11,7 +11,6 @@ import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.RandomUtil;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.Well1024a;
-import org.apache.commons.math3.random.Well19937c;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,8 +23,9 @@ import java.util.List;
  */
 public class KMapper2Test {
     public static final KAlignerParameters2 gParams = new KAlignerParameters2(5, false, false,
-            15, -20, 15, 0.87f, 10, -7,
-            -8, 4, 10, 4, 3, 0, 0, 0, 0, null);
+            15, -20, 15, 0.87f, 13, -7,
+            -3, 3, 6, 4, 3, 0, 0, 0, 0, null);
+
 //
 //    @Test
 //    public void testBestOffset1() throws Exception {
@@ -84,60 +84,133 @@ public class KMapper2Test {
         }
     }
 
-    public static void assertGoodSequenceOfIndices(KMappingResult2 result2) {
+    public static void assertGoodSequenceOfKInQuery(KMappingResult2 result2) {
         for (KMappingHit2 hit : result2.hits)
-            assertGoodSequenceOfIndices(hit);
+            assertGoodSequenceOfKInQuery(hit);
     }
 
-    public static void assertGoodSequenceOfIndices(KMappingHit2 hit) {
+    public static void assertGoodSequenceOfKInQuery(KMappingHit2 hit) {
         int[] seedRecords = hit.seedRecords;
         for (int i = 1; i < seedRecords.length; i++)
             if (KMapper2.index(seedRecords[i - 1]) > KMapper2.index(seedRecords[i]))
                 throw new AssertionError("Wrong sequence of seeds:\n" + hit);
     }
 
+    public static void assertGoodSequenceOfKInTarget(KMappingResult2 result) {
+        for (KMappingHit2 hit : result.hits)
+            assertGoodSequenceOfKInTarget(hit);
+    }
+
+    public static void assertGoodSequenceOfKInTarget(KMappingHit2 hit) {
+        KMappingResult2 result = hit.result;
+        int[] seedRecords = hit.seedRecords;
+        for (int i = 1; i < seedRecords.length; i++)
+            if (KMapper2.positionInTarget(result.seeds, seedRecords[i - 1]) >
+                    KMapper2.positionInTarget(result.seeds, seedRecords[i]))
+                throw new AssertionError("Wrong sequence of seeds:\n" + hit);
+    }
+
     @Test
     public void testRandom1() throws Exception {
+        // MicroCross: dbS: 3799493385881316089L ; S: -542603821215745096L
+
         ChallengeParameters cp = DEFAULT;
-
+        long noHits = 0, noHits2 = 0, noHits3 = 0, wrongTopHit = 0, wrongTopHitS = 0, noCorrectHitInList = 0;
         DescriptiveStatistics timing = new DescriptiveStatistics(),
-                clusters = new DescriptiveStatistics();
-        long noHits = 0, wrongHit = 0;
-        for (int i = 0; i < 10_000; ++i) {
-            long seed = 2962492667364009269L;//RandomUtil.getThreadLocalRandom().nextLong(Long.MAX_VALUE);
-            cp.mutationModel.reseed(seed);
-            RandomUtil.getThreadLocalRandom().setSeed(seed);
-            RandomDataGenerator generator = new RandomDataGenerator(RandomUtil.getThreadLocalRandom());
-            NucleotideSequence[] db = generateDB(generator, cp);
-            KMapper2 kMapper = KMapper2.createFromParameters(gParams);
-            for (NucleotideSequence ns : db)
-                kMapper.addReference(ns);
+                clusters = new DescriptiveStatistics(), topDelta = new DescriptiveStatistics();
+        long seed = 0, dbSeed = 0;
 
-            System.out.println(seed);
-            System.out.println(i);
-            Challenge challenge = createChallenge(cp, generator, db);
-            long start = System.nanoTime();
-            KMappingResult2 result = kMapper.align(challenge.query);
-            timing.addValue(System.nanoTime() - start);
+        try {
+            for (int dbI = 0; dbI < 10; ++dbI) {
+                dbSeed = RandomUtil.reseedThreadLocal();
+                //System.out.println("DBSeed: " + dbSeed);
+                cp.mutationModel.reseed(dbSeed);
+                NucleotideSequence[] db = generateDB(RandomUtil.getThreadLocalRandomData(), cp);
+                KMapper2 kMapper = KMapper2.createFromParameters(gParams);
+                for (NucleotideSequence ns : db)
+                    kMapper.addReference(ns);
 
-//            assertGoodSequenceOfIndices(result);
+                for (int i = 0; i < 10_000; ++i) {
+                    seed = RandomUtil.reseedThreadLocal();
+                    //System.out.println("" + i + ": " + seed);
+                    cp.mutationModel.reseed(seed);
+                    Challenge challenge = createChallenge(cp, RandomUtil.getThreadLocalRandomData(), db);
+                    long start = System.nanoTime();
+                    KMappingResult2 result = kMapper.align(challenge.query);
+                    timing.addValue(System.nanoTime() - start);
 
-            if (result.getHits().size() == 0) {
-                ++noHits;
-                continue;
+                    assertGoodSequenceOfKInQuery(result);
+                    assertGoodSequenceOfKInTarget(result);
+
+                    if (result.getHits().size() == 0) {
+                        ++noHits;
+                        continue;
+                        //result = kMapper.align(challenge.query);
+                        //if (result.getHits().size() == 0) {
+                        //    ++noHits2;
+                        //    result = kMapper.align(challenge.query);
+                        //    if (result.getHits().size() == 0) {
+                        //        ++noHits3;
+                        //        continue;
+                        //    }
+                        //}
+                    }
+
+                    KMappingHit2 top = result.getHits().get(0);
+
+                    boolean containCorrect = false;
+                    for (KMappingHit2 hit2 : result.getHits())
+                        if (hit2.id == challenge.targetId) {
+                            containCorrect = true;
+                            topDelta.addValue(hit2.score - top.score);
+                        }
+                    if (!containCorrect) {
+                        //System.out.println(seed);
+                        //System.out.println(dbSeed);
+                        //System.out.println(challenge.query);
+                        //NucleotideSequence target = db[challenge.targetId];
+                        //System.out.println(target);
+                        //for (int ii = 0; ii < challenge.mutationsInTarget.size(); ii++) {
+                        //    System.out.println(new Alignment<>(target, challenge.mutationsInTarget.get(ii),
+                        //            challenge.targetClusters.get(ii),
+                        //            challenge.queryClusters.get(ii), 0.0f).getAlignmentHelper());
+                        //    System.out.println(challenge.mutationsInTarget.get(ii));
+                        //}
+                        //System.out.println("===================");
+                        ++noCorrectHitInList;
+                    }
+
+                    if (top.id != challenge.targetId) {
+                        ++wrongTopHit;
+                        boolean topContainCorrect = false;
+                        for (KMappingHit2 hit : result.hits) {
+                            if (hit.score < top.score)
+                                break;
+                            topContainCorrect |= (hit.id == challenge.targetId);
+                        }
+                        if (!topContainCorrect) {
+                            //for (KMappingHit2 hit : result.getHits()) {
+                            //    System.out.println(db[hit.id]);
+                            //    System.out.println(hit);
+                            //}
+                            ++wrongTopHitS;
+                        }
+                        continue;
+                    }
+
+                    clusters.addValue(top.boundaries.length + 1);
+                }
             }
-
-            KMappingHit2 top = result.getHits().get(0);
-            if (top.id != challenge.targetId) {
-                ++wrongHit;
-                continue;
-            }
-
-            clusters.addValue(top.boundaries.length);
+        } catch (Throwable t) {
+            throw new RuntimeException("DBSeed: " + dbSeed + "L Seed:" + seed + "L", t);
         }
 
         System.out.println("noHits: " + noHits);
-        System.out.println("wrongHit: " + wrongHit);
+        System.out.println("noHits2: " + noHits2);
+        System.out.println("noHits3: " + noHits3);
+        System.out.println("wrongTopHit: " + wrongTopHit);
+        System.out.println("wrongTopHitS: " + wrongTopHitS);
+        System.out.println("noCorrectHitInList: " + noCorrectHitInList);
 
         System.out.println("\n\n\n");
         System.out.println("Timings:");
@@ -146,6 +219,63 @@ public class KMapper2Test {
         System.out.println("\n\n\n");
         System.out.println("Clusters count");
         System.out.println(clusters);
+
+        System.out.println("\n\n\n");
+        System.out.println("Top Delta");
+        System.out.println(topDelta);
+    }
+
+    @Test
+    public void test1111() throws Exception {
+        KMapper2 kMapper = KMapper2.createFromParameters(gParams);
+        kMapper.addReference(new NucleotideSequence("TCGACCACTTAAGATGTCATCCTTGTGGTGAGTGCTGATGACCCAAGTCTAGCTTTCGGAGAGCC" +
+                "AAATTAGTTCCCTACTAGCATACAATCTTCGACATTCTGCAATGTGTCTGGGTGAAGAACTTGCCCACCGTACATTCTGTGGTCGGCTCCTTTCCGGATCGT" +
+                "GGTGCCAGTGGGACAGAATACAAGCCTATACCGGTGGTTCACATTTTTCCGCGCGCCAGGCTGTGTCTTTCTTTTGATTGCTCGACATAGAA"));
+        KMappingResult2 result = kMapper.align(new NucleotideSequence("CCATTAAGTGTCATCCTTGTGGTGAGTGCTGATGACCCAAGCTATT" +
+                "AGTCCTAACTTCCAGCTTTCGGAAGCCAAATTAAGTTCCCTACTAGCATTCAACTGTTTATGTACGACGAGATGGACATCTTCGACATTCTGCAATGTCGT" +
+                "CTGGTGAAGAACGGTTTACCCACGTACATTCTGTGGTCGGCCCCTTTC"));
+        System.out.println(result.getHits().get(0));
+    }
+
+    @Test
+    public void test11112() throws Exception {
+        KMapper2 kMapper = KMapper2.createFromParameters(gParams);
+        kMapper.addReference(new NucleotideSequence("CGATAGAGAACGAGAACGCATGTATCAGGCAAGGAGCGGAGAAGGATGGTAAGAGCGGCGCTATGTT" +
+                "TATATCGGCAATGTAACTGCACCGTCTAGCAGATTAGGTCAACCTTAGCGCAGACAGTACCTCATCTGGCGTTTGCGCTATGGGATTTTTAAGAACGTATTAG" +
+                "CTCAAGATTGGTATATCAAGTGCTTCCCAGCGCCTAGCATGTGGCCGTATGCTATTCTCCTGTTTTCGGAGTTCTTGTAACTTCTCTCCTTTTATGGTGGCTA" +
+                "ACTGCGTAAGACGCACTGTTGTTTATGTGGTAGTTGAAGCACAGAGGTCAATAAGGATTAGCAACTCGTCCTCGGCCACTTGCTTTGTTAAGAGTCGCGCCAGT" +
+                "TTCAAGTGATGATTGCGCGTCTGGTACGGAA"));
+        KMappingResult2 result = kMapper.align(new NucleotideSequence("ACTTTTTTGGCCTTGGGTAACACTAACACGCATGTATCGGCAAGGAGCG" +
+                "GAGAAGGATGGTTGAAGATTATATGGTCGTGCATTAAGAGCGGCGCTATGTTTATATCGGAATTAACTGCACCGTCGTAAAACAAGGAAGACGGCGGGAAAGT" +
+                "AGCAGATTAGGTCAACCTAGCTCAGACACCCACAACCCACACCTAAACTGTACCTCATCTGGCGTTGCGCTATGGGATTATTTAAGAACGTATTAGGTATATC" +
+                "AAGTGCTTCCCAGCGCC"));
+        System.out.println(result.getHits().get(0));
+    }
+
+    @Test
+    public void test11111() throws Exception {
+        KMapper2 kMapper = KMapper2.createFromParameters(gParams);
+
+        kMapper.addReference(new NucleotideSequence("TCGACCACTTAAGATGTCATCCTTGTGGTGAGTGCTGATGACCCAAGTCTAGCTTTCGGAGAGCC" +
+                "AAATTAGTTCCCTACTAGCATACAATCTTCGACATTCTGCAATGTGTCTGGGTGAAGAACTTGCCCACCGTACATTCTGTGGTCGGCTCCTTTCCGGATCGT" +
+                "GGTGCCAGTGGGACAGAATACAAGCCTATACCGGTGGTTCACATTTTTCCGCGCGCCAGGCTGTGTCTTTCTTTTGATTGCTCGACATAGAA"));
+
+        kMapper.addReference(new NucleotideSequence("AATCTCTATTCTCACATAGAGCGTAATTGTCCGCGATGGTTCAGTGGTGAAACAGGACGCCTCCA" +
+                "AAGCGACAGGTATAACCGTTGAAGCTTGAGGTGGTCCTACTTGCAATATACGTTCATTCCGGCACCTTGTCTGTTCCGTCAATTCACCTCTCTTGGGGTAAC" +
+                "GTGGATACCCATTCCATAGCTAGCGAATACCTTCGATCTCTGGGTTTACTATTAACAGATATGCTCGGCGGTGCCTTTTCCCATAGGAGGATGATATAGGGC" +
+                "TGAGCTTCACTGCTCGAACATACTGAGGGACCTATTCCGTGGAATTGGCCCTGTTGTTTCGACCTCATTTTCAGGAGTTTACGGGAGCAGAAGTCGAGGGCCT" +
+                "TTCGCTAGTTTTAGTTATCG"));
+
+        kMapper.addReference(new NucleotideSequence("CAAATACCAGGTCCGAGTCTGTCAACCAGAATCTGTACTATGTGAGATCCGAGAGTCACCACCTTC" +
+                "TGGATCGAGAAATAGTCAGTACCACATCTGATTGTAAGCGAGGAAAATGTTTCCATCTGAAGACCGTGGTATCGTACTTGGGGGGCGAGTGCTGCACAACTGC" +
+                "ATGGGGCAATTTCAAGGGCAATCTCCGTTTATATATCCCTTATATGTACTCGCACGGGGACGGCAAAAA"));
+        for (int i = 0; i < 1000; ++i) {
+            KMappingResult2 result = kMapper.align(new NucleotideSequence("CCATTAAGTGTCATCCTTGTGGTGAGTGCTGATGACCCAAGCTATT" +
+                    "AGTCCTAACTTCCAGCTTTCGGAAGCCAAATTAAGTTCCCTACTAGCATTCAACTGTTTATGTACGACGAGATGGACATCTTCGACATTCTGCAATGTCGT" +
+                    "CTGGTGAAGAACGGTTTACCCACGTACATTCTGTGGTCGGCCCCTTTC"));
+
+            System.out.println(result.getHits().get(0).score);
+        }
     }
 
     public static NucleotideSequence[] generateDB(RandomDataGenerator generator, ChallengeParameters params) {
