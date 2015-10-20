@@ -1,5 +1,6 @@
 package com.milaboratory.core.alignment;
 
+import com.milaboratory.core.Range;
 import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.NucleotideSequence;
 
@@ -93,11 +94,11 @@ public class BandedAffineAligner {
         return main.get(length1, length2);
     }
 
-    public static BandedSemiLocalResult semiLocalRight(AffineGapAlignmentScoring<NucleotideSequence> scoring,
-                                                       NucleotideSequence seq1, NucleotideSequence seq2,
-                                                       int offset1, int length1, int offset2, int length2,
-                                                       int width, MutationsBuilder<NucleotideSequence> mutations,
-                                                       MatrixCache cache) {
+    public static BandedSemiLocalResult semiLocalRight0(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                        NucleotideSequence seq1, NucleotideSequence seq2,
+                                                        int offset1, int length1, int offset2, int length2,
+                                                        int width, MutationsBuilder<NucleotideSequence> mutations,
+                                                        MatrixCache cache) {
         int minLength = Math.min(length1, length2) + width;
         length1 = Math.min(length1, minLength);
         length2 = Math.min(length2, minLength);
@@ -171,11 +172,11 @@ public class BandedAffineAligner {
         return new BandedSemiLocalResult(offset1 + maxI, offset2 + maxJ, maxScore);
     }
 
-    public static BandedSemiLocalResult semiLocalLeft(AffineGapAlignmentScoring<NucleotideSequence> scoring,
-                                                      NucleotideSequence seq1, NucleotideSequence seq2,
-                                                      int offset1, int length1, int offset2, int length2,
-                                                      int width, MutationsBuilder<NucleotideSequence> mutations,
-                                                      MatrixCache cache) {
+    public static BandedSemiLocalResult semiLocalLeft0(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                       NucleotideSequence seq1, NucleotideSequence seq2,
+                                                       int offset1, int length1, int offset2, int length2,
+                                                       int width, MutationsBuilder<NucleotideSequence> mutations,
+                                                       MatrixCache cache) {
         offset1 += length1;
         offset2 += length2;
 
@@ -243,7 +244,7 @@ public class BandedAffineAligner {
             } else if (j >= 0 &&
                     main.get(i + 1, j + 1) ==
                             gapIn1.get(i + 1, j + 1)) {
-                mutations.appendInsertion(offset1 + length1 - i, seq2.codeAt(offset2 + length2 - 1 - j));
+                mutations.appendInsertion(offset1 + length1 - 1 - i, seq2.codeAt(offset2 + length2 - 1 - j));
                 --j;
             } else
                 throw new RuntimeException();
@@ -252,16 +253,12 @@ public class BandedAffineAligner {
         return new BandedSemiLocalResult(offset1 + length1 - 1 - maxI, offset2 + length2 - 1 - maxJ, maxScore);
     }
 
-    public static BandedSemiLocalResult semiGlobalRight(AffineGapAlignmentScoring<NucleotideSequence> scoring,
-                                                        NucleotideSequence seq1, NucleotideSequence seq2,
-                                                        int offset1, int length1, int addedNucleotides1,
-                                                        int offset2, int length2, int addedNucleotides2,
-                                                        int width, MutationsBuilder<NucleotideSequence> mutations,
-                                                        MatrixCache cache) {
-        int minLength = Math.min(length1, length2) + width;
-        length1 = Math.min(length1, minLength);
-        length2 = Math.min(length2, minLength);
-
+    public static BandedSemiLocalResult semiGlobalRight0(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                         NucleotideSequence seq1, NucleotideSequence seq2,
+                                                         int offset1, int length1, int addedNucleotides1,
+                                                         int offset2, int length2, int addedNucleotides2,
+                                                         int width, MutationsBuilder<NucleotideSequence> mutations,
+                                                         MatrixCache cache) {
         int size1 = length1 + 1,
                 size2 = length2 + 1;
 
@@ -339,6 +336,144 @@ public class BandedAffineAligner {
 
         return new BandedSemiLocalResult(offset1 + maxI, offset2 + maxJ, maxScore);
     }
+
+    public static BandedSemiLocalResult semiGlobalLeft0(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                        NucleotideSequence seq1, NucleotideSequence seq2,
+                                                        int offset1, int length1, int addedNucleotides1,
+                                                        int offset2, int length2, int addedNucleotides2,
+                                                        int width, MutationsBuilder<NucleotideSequence> mutations,
+                                                        MatrixCache cache) {
+        int size1 = length1 + 1,
+                size2 = length2 + 1;
+
+        cache.prepareMatrices(size1, size2, width, scoring);
+
+        BandedMatrix main = cache.main;
+        BandedMatrix gapIn1 = cache.gapIn1;
+        BandedMatrix gapIn2 = cache.gapIn2;
+
+        int i, j;
+
+        int match, gap1, gap2, to;
+
+        for (i = 0; i < length1; ++i) {
+            to = Math.min(i + main.getRowFactor() - main.getColumnDelta() + 1, length2);
+            for (j = Math.max(0, i - main.getColumnDelta()); j < to; ++j) {
+                match = main.get(i, j) +
+                        scoring.getScore(seq1.codeAt(offset1 + length1 - 1 - i), seq2.codeAt(offset2 + length2 - 1 - j));
+
+                gap1 = Math.max(main.get(i + 1, j) + scoring.getGapOpenPenalty(), gapIn1.get(i + 1, j) + scoring.getGapExtensionPenalty());
+                gap2 = Math.max(main.get(i, j + 1) + scoring.getGapOpenPenalty(), gapIn2.get(i, j + 1) + scoring.getGapExtensionPenalty());
+
+                gapIn1.set(i + 1, j + 1, gap1);
+                gapIn2.set(i + 1, j + 1, gap2);
+                main.set(i + 1, j + 1, Math.max(match, Math.max(gap1, gap2)));
+            }
+        }
+
+        int maxI = 0, maxJ = 0, maxScore = Integer.MIN_VALUE;
+
+        j = length2;
+        for (i = length1 - addedNucleotides1; i < size1; ++i)
+            if (maxScore < main.get(i, j)) {
+                maxScore = main.get(i, j);
+                maxI = i - 1;
+                maxJ = j - 1;
+            }
+
+        i = length1;
+        for (j = length2 - addedNucleotides2; j < size2; ++j)
+            if (maxScore < main.get(i, j)) {
+                maxScore = main.get(i, j);
+                maxI = i - 1;
+                maxJ = j - 1;
+            }
+
+
+        i = maxI;
+        j = maxJ;
+        byte c1, c2;
+        while (i >= 0 || j >= 0) {
+            if (i >= 0 && j >= 0 &&
+                    main.get(i + 1, j + 1) == main.get(i, j) +
+                            scoring.getScore(c1 = seq1.codeAt(offset1 + length1 - 1 - i),
+                                    c2 = seq2.codeAt(offset2 + length2 - 1 - j))) {
+                if (c1 != c2)
+                    mutations.appendSubstitution(offset1 + length1 - 1 - i, c1, c2);
+                --i;
+                --j;
+            } else if (i >= 0 &&
+                    main.get(i + 1, j + 1) ==
+                            gapIn2.get(i + 1, j + 1)) {
+                mutations.appendDeletion(offset1 + length1 - 1 - i, seq1.codeAt(offset1 + length1 - 1 - i));
+                --i;
+            } else if (j >= 0 &&
+                    main.get(i + 1, j + 1) ==
+                            gapIn1.get(i + 1, j + 1)) {
+                mutations.appendInsertion(offset1 + length1 - 1 - i, seq2.codeAt(offset2 + length2 - 1 - j));
+                --j;
+            } else
+                throw new RuntimeException();
+        }
+
+        return new BandedSemiLocalResult(offset1 + length1 - 1 - maxI, offset2 + length2 - 1 - maxJ, maxScore);
+    }
+
+
+    public static Alignment<NucleotideSequence> semiLocalRight(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                               NucleotideSequence seq1, NucleotideSequence seq2,
+                                                               int offset1, int length1, int offset2, int length2,
+                                                               int width) {
+        MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+        BandedSemiLocalResult res = semiLocalRight0(scoring, seq1, seq2, offset1, length1, offset2, length2, width,
+                mutations, new MatrixCache());
+        return new Alignment<>(seq1, mutations.createAndDestroy(),
+                new Range(offset1, res.sequence1Stop + 1),
+                new Range(offset2, res.sequence2Stop + 1), res.score);
+    }
+
+    public static Alignment<NucleotideSequence> semiLocalLeft(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                              NucleotideSequence seq1, NucleotideSequence seq2,
+                                                              int offset1, int length1, int offset2, int length2,
+                                                              int width) {
+        MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+        BandedSemiLocalResult res = semiLocalLeft0(scoring, seq1, seq2, offset1, length1, offset2, length2, width,
+                mutations, new MatrixCache());
+        return new Alignment<>(seq1, mutations.createAndDestroy(),
+                new Range(res.sequence1Stop, offset1 + length1),
+                new Range(res.sequence2Stop, offset2 + length2), res.score);
+    }
+
+    public static Alignment<NucleotideSequence> semiGlobalRight(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                                NucleotideSequence seq1, NucleotideSequence seq2,
+                                                                int offset1, int length1, int addedNucleotides1,
+                                                                int offset2, int length2, int addedNucleotides2,
+                                                                int width) {
+        MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+        BandedSemiLocalResult res = semiGlobalRight0(scoring, seq1, seq2,
+                offset1, length1, addedNucleotides1,
+                offset2, length2, addedNucleotides2,
+                width, mutations, new MatrixCache());
+        return new Alignment<>(seq1, mutations.createAndDestroy(),
+                new Range(offset1, res.sequence1Stop + 1),
+                new Range(offset2, res.sequence2Stop + 1), res.score);
+    }
+
+    public static Alignment<NucleotideSequence> semiGlobalLeft(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                               NucleotideSequence seq1, NucleotideSequence seq2,
+                                                               int offset1, int length1, int addedNucleotides1,
+                                                               int offset2, int length2, int addedNucleotides2,
+                                                               int width) {
+        MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+        BandedSemiLocalResult res = semiGlobalLeft0(scoring, seq1, seq2,
+                offset1, length1, addedNucleotides1,
+                offset2, length2, addedNucleotides2,
+                width, mutations, new MatrixCache());
+        return new Alignment<>(seq1, mutations.createAndDestroy(),
+                new Range(res.sequence1Stop, offset1 + length1),
+                new Range(res.sequence2Stop, offset2 + length2), res.score);
+    }
+
 
     public static final class MatrixCache {
         private final CachedIntArray mainCache, gapIn1Cache, gapIn2Cache;
