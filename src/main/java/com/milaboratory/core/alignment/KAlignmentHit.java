@@ -132,14 +132,14 @@ public final class KAlignmentHit<P> implements java.io.Serializable, AlignmentHi
             }
 
             if (parameters.isFloatingLeftBound()) {
-                br = BandedAligner.alignSemiLocalRight0(parameters.getScoring(), reference, target,
+                br = BandedLinearAligner.alignSemiLocalRight0(parameters.getScoring(), reference, target,
                         refFrom, refLength, seqFrom, seqLength,
                         maxIndels, parameters.getAlignmentStopPenalty(), mutations, array);
 
                 gRefFrom = br.sequence1Stop;
                 gSeqFrom = br.sequence2Stop;
             } else {
-                br = BandedAligner.alignLeftAdded0(parameters.getScoring(), reference, target,
+                br = BandedLinearAligner.alignLeftAdded0(parameters.getScoring(), reference, target,
                         refFrom, refLength, refAdded, seqFrom, seqLength, seqAdded,
                         maxIndels, mutations, array);
 
@@ -168,7 +168,7 @@ public final class KAlignmentHit<P> implements java.io.Serializable, AlignmentHi
                         }
 
                         if (refLength > 0 || seqLength > 0)
-                            BandedAligner.align0(parameters.getScoring(), reference, target,
+                            BandedLinearAligner.align0(parameters.getScoring(), reference, target,
                                     refFrom, refLength, seqFrom, seqLength, parameters.getMaxAdjacentIndels(), mutations, array);
 
                         gSeqTo = currentSeedPosition + kValue;
@@ -207,13 +207,13 @@ public final class KAlignmentHit<P> implements java.io.Serializable, AlignmentHi
             }
 
             if (parameters.isFloatingRightBound()) {
-                br = BandedAligner.alignSemiLocalLeft0(parameters.getScoring(), reference, target,
+                br = BandedLinearAligner.alignSemiLocalLeft0(parameters.getScoring(), reference, target,
                         refFrom, refLength, seqFrom, seqLength,
                         maxIndels, parameters.getAlignmentStopPenalty(), mutations, array);
                 gRefTo = br.sequence1Stop + 1;
                 gSeqTo = br.sequence2Stop + 1;
             } else {
-                br = BandedAligner.alignRightAdded0(parameters.getScoring(), reference, target,
+                br = BandedLinearAligner.alignRightAdded0(parameters.getScoring(), reference, target,
                         refFrom, refLength, refAdded, seqFrom, seqLength, seqAdded,
                         maxIndels, mutations, array);
                 gRefTo = br.sequence1Stop + 1;
