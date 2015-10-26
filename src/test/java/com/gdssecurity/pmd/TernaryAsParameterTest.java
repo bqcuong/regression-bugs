@@ -15,4 +15,9 @@ public class TernaryAsParameterTest {
 	public void testTernaryWithParenthesis () throws Exception {
 		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/TernaryAsParameterWithParenthesis.java", PMDRunner.RULESET_XSS));
 	}
+	
+	@Test
+	public void testTernaryInStringConcatenation () throws Exception {
+		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/TernaryAsParameterWithParenthesis.java", PMDRunner.RULESET_SQL_INJECTION));
+	}
 }
