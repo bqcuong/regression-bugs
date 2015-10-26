@@ -2,6 +2,9 @@ package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
 import com.milaboratory.core.mutations.MutationsBuilder;
+import com.milaboratory.core.mutations.generator.MutationModels;
+import com.milaboratory.core.mutations.generator.MutationsGenerator;
+import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.Sequence;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -9,8 +12,11 @@ import org.apache.commons.math3.random.Well19937c;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static com.milaboratory.test.TestUtil.its;
 import static com.milaboratory.test.TestUtil.randomSequence;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -188,6 +194,8 @@ public class BandedAffineAlignerTest {
             assertTrue(la.getSequence2Range().getTo() >= offset2 + length2 - added2);
 
             assertAlignment(la, seq2);
+            int score = AlignmentUtils.calculateScore(scoring, la.getSequence1Range().length(), la.mutations);
+            assertEquals(score, (int) la.score);
         }
     }
 
@@ -219,6 +227,9 @@ public class BandedAffineAlignerTest {
             assertTrue(la.getSequence2Range().getFrom() <= offset2 + added2);
 
             assertAlignment(la, seq2);
+
+            int score = AlignmentUtils.calculateScore(scoring, la.getSequence1Range().length(), la.mutations);
+            assertEquals(score, (int) la.score);
         }
     }
 
@@ -238,26 +249,62 @@ public class BandedAffineAlignerTest {
         Assert.assertEquals(168, (int) al.score);
     }
 
-
     @Test
-    public void testScore1() throws Exception {
+    public void testAffineScoreRandom() throws Exception {
         AffineGapAlignmentScoring<NucleotideSequence> scoring =
                 new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -5, -11, -7);
 
-        NucleotideSequence s1 = new NucleotideSequence("ACAGTTCAG");
-        NucleotideSequence s2 = new NucleotideSequence("ACTATG");
+        NucleotideSequence s1, s2a, s2b;
+        RandomDataGenerator gen = new RandomDataGenerator();
+        NucleotideMutationModel nm = MutationModels.getEmpiricalNucleotideMutationModel().multiplyProbabilities(10);
 
-        Alignment<NucleotideSequence> al = BandedAffineAligner.align(scoring, s1, s2, 0, s1.size(), 0, s2.size(), 50);
-        System.out.println(al);
-        System.out.println();
-        System.out.println(Aligner.alignGlobal(scoring, s1, s2));
-        Assert.assertEquals(168, (int) al.score);
+        int c = its(10000, 200000);
+        for (int i = 0; i < c; ++i) {
+            s1 = randomSequence(NucleotideSequence.ALPHABET, gen, 50, 100);
+            s2a = randomSequence(NucleotideSequence.ALPHABET, gen, 50, 100);
+            s2b = MutationsGenerator.generateMutations(s1, nm).mutate(s1);
+            for (NucleotideSequence s2 : Arrays.asList(s2a, s2b)) {
+                Alignment<NucleotideSequence> la;
 
+                la = BandedAffineAligner.align(scoring, s1, s2, 0, s1.size(), 0, s2.size(), 0);
+                int score = AlignmentUtils.calculateScore(scoring, s1.size(), la.mutations);
+                Assert.assertEquals((int) la.score, score);
+                assertAlignment(la, s2);
 
-        al = BandedAffineAligner.align(scoring, s2, s1, 0, s2.size(), 0, s1.size(), 0);
-        Assert.assertEquals(168, (int) al.score);
+                la = BandedAffineAligner.semiGlobalLeft(scoring, s1, s2,
+                        0, s1.size(), 10,
+                        0, s2.size(), 10,
+                        10);
+                score = AlignmentUtils.calculateScore(scoring, la.getSequence1Range().length(), la.mutations);
+                Assert.assertEquals((int) la.score, score);
+                assertAlignment(la, s2);
+
+                la = BandedAffineAligner.semiLocalLeft(scoring, s1, s2,
+                        0, s1.size(),
+                        0, s2.size(),
+                        10);
+                score = AlignmentUtils.calculateScore(scoring, la.getSequence1Range().length(), la.mutations);
+                Assert.assertEquals((int) la.score, score);
+                assertAlignment(la, s2);
+
+                la = BandedAffineAligner.semiGlobalRight(scoring, s1, s2,
+                        0, s1.size(), 10,
+                        0, s2.size(), 10,
+                        10);
+                score = AlignmentUtils.calculateScore(scoring, la.getSequence1Range().length(), la.mutations);
+                Assert.assertEquals((int) la.score, score);
+                assertAlignment(la, s2);
+
+                la = BandedAffineAligner.semiLocalRight(scoring, s1, s2,
+                        0, s1.size(),
+                        0, s2.size(),
+                        10);
+                score = AlignmentUtils.calculateScore(scoring, la.getSequence1Range().length(), la.mutations);
+                Assert.assertEquals((int) la.score, score);
+                assertAlignment(la, s2);
+            }
+        }
     }
-
 
     static <T extends Sequence<T>> void assertAlignment(Alignment<T> alignment, T s2) {
         Assert.assertEquals(

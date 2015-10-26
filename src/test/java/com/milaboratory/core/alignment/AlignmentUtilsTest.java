@@ -62,24 +62,4 @@ public class AlignmentUtilsTest {
         score = AlignmentUtils.calculateScore(scoring, s2.size(), al.mutations);
         Assert.assertEquals((int) al.score, score);
     }
-
-
-    @Test
-    public void testAffineScoreRandom() throws Exception {
-        AffineGapAlignmentScoring<NucleotideSequence> scoring =
-                new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -5, -11, -7);
-
-        NucleotideSequence s1, s2;
-        RandomDataGenerator gen = new RandomDataGenerator();
-        for (int i = 0; i < 1000; ++i) {
-            s1 = randomSequence(NucleotideSequence.ALPHABET, gen, 5, 10);
-            s2 = randomSequence(NucleotideSequence.ALPHABET, gen, 5, 10);
-            System.out.println(s1);
-            System.out.println(s2);
-            Alignment<NucleotideSequence> al = BandedAffineAligner.align(scoring, s1, s2, 0, s1.size(), 0, s2.size(), 0);
-//            Alignment<NucleotideSequence> al = Aligner.alignGlobal(scoring, s1, s2);
-            int score = AlignmentUtils.calculateScore(scoring, s1.size(), al.mutations);
-            Assert.assertEquals((int) al.score, score);
-        }
-    }
 }
