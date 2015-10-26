@@ -2,8 +2,9 @@ package com.milaboratory.core.alignment.kaligner2;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.alignment.KAlignmentHit;
-import com.milaboratory.core.alignment.LinearGapAlignmentScoring;
+import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.primitivio.annotations.Serializable;
 import com.milaboratory.util.GlobalObjectMappers;
 
@@ -109,8 +110,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     /**
      * Scoring system
      */
-    //TODO Mixed.
-    private LinearGapAlignmentScoring scoring;
+    private AffineGapAlignmentScoring<NucleotideSequence> scoring;
 
     /* ALIGNER PARAMETERS END */
 
@@ -151,7 +151,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
                                int mapperMatchScore, int mapperMismatchScore, int mapperOffsetShiftScore, int mapperMinSeedsDistance,
                                int mapperMaxSeedsDistance, int mapperSlotCount, int mapperMaxClusterIndels,
                                int alignmentStopPenalty, float absoluteMinScore, float relativeMinScore,
-                               int maxHits, LinearGapAlignmentScoring scoring) {
+                               int maxHits, AffineGapAlignmentScoring scoring) {
         if (scoring != null && !scoring.uniformBasicMatchScore())
             throw new IllegalArgumentException("Use scoring with common match score.");
         this.mapperKValue = mapperKValue;
@@ -429,7 +429,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      *
      * @return scoring system
      */
-    public LinearGapAlignmentScoring getScoring() {
+    public AffineGapAlignmentScoring<NucleotideSequence> getScoring() {
         return scoring;
     }
 
@@ -439,7 +439,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      * @param scoring scoring system
      * @return parameters object
      */
-    public KAlignerParameters2 setScoring(LinearGapAlignmentScoring scoring) {
+    public KAlignerParameters2 setScoring(AffineGapAlignmentScoring<NucleotideSequence> scoring) {
         if (scoring != null && !scoring.uniformBasicMatchScore())
             throw new IllegalArgumentException("Use scoring with common match score.");
         this.scoring = scoring;

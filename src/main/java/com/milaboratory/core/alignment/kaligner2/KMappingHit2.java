@@ -64,6 +64,14 @@ public final class KMappingHit2 implements java.io.Serializable {
         this.score = score;
     }
 
+    public int indexById(int recordId) {
+        return KMapper2.index(seedRecords[recordId]);
+    }
+
+    public int offsetById(int recordId) {
+        return KMapper2.offset(seedRecords[recordId]);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
