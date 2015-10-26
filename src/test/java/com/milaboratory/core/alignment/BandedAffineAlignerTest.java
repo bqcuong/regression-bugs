@@ -222,6 +222,43 @@ public class BandedAffineAlignerTest {
         }
     }
 
+    @Test
+    public void testScore() throws Exception {
+        AffineGapAlignmentScoring<NucleotideSequence> scoring =
+                new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -5, -11, -7);
+
+        NucleotideSequence s1 = new NucleotideSequence("atcgcgatcgactgcatgca");
+        NucleotideSequence s2 = new NucleotideSequence("atcgcgatcgactgactgcatgca");
+
+        Alignment<NucleotideSequence> al = BandedAffineAligner.align(scoring, s1, s2, 0, s1.size(), 0, s2.size(), 0);
+        Assert.assertEquals(168, (int) al.score);
+
+
+        al = BandedAffineAligner.align(scoring, s2, s1, 0, s2.size(), 0, s1.size(), 0);
+        Assert.assertEquals(168, (int) al.score);
+    }
+
+
+    @Test
+    public void testScore1() throws Exception {
+        AffineGapAlignmentScoring<NucleotideSequence> scoring =
+                new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -5, -11, -7);
+
+        NucleotideSequence s1 = new NucleotideSequence("ACAGTTCAG");
+        NucleotideSequence s2 = new NucleotideSequence("ACTATG");
+
+        Alignment<NucleotideSequence> al = BandedAffineAligner.align(scoring, s1, s2, 0, s1.size(), 0, s2.size(), 50);
+        System.out.println(al);
+        System.out.println();
+        System.out.println(Aligner.alignGlobal(scoring, s1, s2));
+        Assert.assertEquals(168, (int) al.score);
+
+
+        al = BandedAffineAligner.align(scoring, s2, s1, 0, s2.size(), 0, s1.size(), 0);
+        Assert.assertEquals(168, (int) al.score);
+    }
+
+
     static <T extends Sequence<T>> void assertAlignment(Alignment<T> alignment, T s2) {
         Assert.assertEquals(
                 alignment.getRelativeMutations().mutate(alignment.sequence1.getRange(

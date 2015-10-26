@@ -126,8 +126,8 @@ public final class KMapper2 implements java.io.Serializable {
     private final int minDistance, maxDistance;
 
     /*                  Utility fields                   */
-    private boolean built = false;
-    private int[] refFrom = new int[10], refLength = new int[10];
+    private volatile boolean built = false;
+    int[] refFrom = new int[10], refLength = new int[10];
     private int maxReferenceLength = 0, minReferenceLength = Integer.MAX_VALUE;
     private int sequencesInBase = 0;
     //private final float terminationThreshold = 6.6e6f;
@@ -257,7 +257,7 @@ public final class KMapper2 implements java.io.Serializable {
         }
         int id = sequencesInBase++;
         refFrom[id] = offset;
-        refLength[id] = sequence.size();
+        refLength[id] = length;//sequence.size();
 
         //Calculating min and max reference sequences lengths
         maxReferenceLength = max(maxReferenceLength, sequence.size());
