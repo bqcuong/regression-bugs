@@ -2,9 +2,11 @@ package com.milaboratory.core.alignment.kaligner2;
 
 import com.milaboratory.core.Range;
 import com.milaboratory.core.alignment.Alignment;
+import com.milaboratory.core.alignment.AlignmentUtils;
 import com.milaboratory.core.alignment.BandedAffineAligner;
 import com.milaboratory.core.alignment.BandedSemiLocalResult;
 import com.milaboratory.core.alignment.batch.BatchAlignerWithBase;
+import com.milaboratory.core.alignment.kaligner2.KMapper2.ArrList;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.NucleotideSequence;
@@ -12,6 +14,8 @@ import com.milaboratory.util.IntArrayList;
 import gnu.trove.map.hash.TIntObjectHashMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -42,30 +46,15 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
     }
 
     /**
-     * Adds new reference sequence to the base of this aligner and returns index assigned to it.
+     * Adds new reference sequence to the base of this mapper and returns index assigned to it.
      *
      * @param sequence sequence
      * @return index assigned to the sequence
      */
     public int addReference(NucleotideSequence sequence) {
-        return addReference(sequence, 0, sequence.size());
-    }
-
-    /**
-     * Adds new reference sequence to the base of this mapper and returns index assigned to it.
-     * <p/>
-     * <p>User can specify a part of a sequence to be indexed by {@link com.milaboratory.core.alignment.KMapper},
-     * but {@link com.milaboratory.core.alignment.KAligner} stores whole adding sequences.</p>
-     *
-     * @param sequence sequence
-     * @param offset   offset of subsequence to be indexed by {@link com.milaboratory.core.alignment.KMapper}
-     * @param length   length of subsequence to be indexed by {@link com.milaboratory.core.alignment.KMapper}
-     * @return index assigned to the sequence
-     */
-    public int addReference(NucleotideSequence sequence, int offset, int length) {
         if (sequence.containWildcards())
             throw new IllegalArgumentException("Reference sequences with wildcards not supported.");
-        int id = mapper.addReference(sequence, offset, length);
+        int id = mapper.addReference(sequence);
         assert sequences.size() == id;
         sequences.add(sequence);
         return id;
@@ -97,10 +86,14 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
         final KMappingResult2 mapping = mapper.align(query, from, to);
         final IntArrayList seeds = mapping.seeds;
 
-        List<KAlignmentHit2<P>> hits = new ArrayList<>();
+        ArrList<KAlignmentHit2<P>> hits = new ArrList<>();
 
         final int maxIndels = parameters.getMapperMaxClusterIndels();
         final int kValue = mapper.getKValue();
+
+        KAlignmentResult2<P> kAlignmentResult = new KAlignmentResult2<>(mapping, hits, query, from, to);
+        if (mapping.getHits().isEmpty())
+            return kAlignmentResult;
 
         // 1 - target
         // 2 - query
@@ -131,13 +124,13 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
         // added2 = maxIndels + delta
 
         int length1, length2, added1, added2, offset1, offset2, delta;
-        int targetFrom, targetTo, queryFrom, queryTo;
+        int seq1From, seq1To, seq2From, seq2To;
 
         for (int hitIndex = 0; hitIndex < mapping.getHits().size(); hitIndex++) {
             final KMappingHit2 mappingHit = mapping.getHits().get(hitIndex);
             final NucleotideSequence target = sequences.get(mappingHit.id);
             final MutationsBuilder<NucleotideSequence> mutations =
-                    new MutationsBuilder<NucleotideSequence>(NucleotideSequence.ALPHABET);
+                    new MutationsBuilder<>(NucleotideSequence.ALPHABET);
             //Left edge alignment
 
             int seedPosition2 = seeds.get(mappingHit.indexById(0));
@@ -176,59 +169,48 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
                         offset2, length2, added2,
                         maxIndels, mutations, cache);
             }
-            targetFrom = br.sequence1Stop;
-            queryFrom = br.sequence2Stop;
+            seq1From = br.sequence1Stop;
+            seq2From = br.sequence2Stop;
 
 
-            int previousSeedPosition1 = -1,
-                    previousSeedPosition2 = -1;
+            int previousSeedPosition2 = seeds.get(mappingHit.indexById(0)),
+                    previousSeedPosition1 = previousSeedPosition2 + mappingHit.offsetById(0);
 
-            int boundaryPointer = 0;
-            // for each cluster
-            for (int seedId = 0; seedId < mappingHit.seedRecords.length; seedId++) {
-                if (seedId == mappingHit.boundaries[boundaryPointer]) {
-                    //todo
+            for (int seedId = 1; seedId < mappingHit.seedRecords.length; seedId++) {
+                seedPosition2 = seeds.get(mappingHit.indexById(seedId));
+                seedPosition1 = seedPosition2 + mappingHit.offsetById(seedId);
 
-//                    previousSeedPosition1 = -1;
-//                    previousSeedPosition2 = -1;
-//                    ++boundaryPointer;
-//                    continue;
+                offset1 = previousSeedPosition1 + kValue;
+                length1 = seedPosition1 - offset1;
+
+                offset2 = previousSeedPosition2 + kValue;
+                length2 = seedPosition2 - offset2;
+
+                assert target.getRange(offset1 - kValue, offset1).equals(query.getRange(offset2 - kValue, offset2));
+
+                if (length2 < 0 || length1 < 0) {
+                    offset1 -= kValue;
+                    offset2 -= kValue;
+                    length1 += 2 * kValue;
+                    length2 += 2 * kValue;
                 }
-                if (previousSeedPosition1 != -1) {
-                    seedPosition2 = seeds.get(mappingHit.indexById(seedId));
-                    seedPosition1 = seedPosition2 + mappingHit.offsetById(seedId);
 
-                    offset1 = previousSeedPosition1 + kValue;
-                    length1 = seedPosition1 - previousSeedPosition1;
+                assert length1 >= 0 && length2 >= 0;
 
-                    offset2 = previousSeedPosition2 + kValue;
-                    length2 = seedPosition2 - previousSeedPosition2;
+                BandedAffineAligner.align0(parameters.getScoring(), target, query,
+                        offset1, length1,
+                        offset2, length2,
+                        maxIndels, mutations, cache);
 
-//                if (refLength < 0 || seqLength < 0) {
-//                    seqFrom -= kValue;
-//                    refFrom -= kValue;
-//                    seqLength += kValue;
-//                    refLength += kValue;
-//                }
-
-                    assert target.getRange(offset1 - kValue, offset1).equals(query.getRange(offset2 - kValue, offset2));
-
-                    if (length1 > 0 || length2 > 0)
-                        BandedAffineAligner.align0(parameters.getScoring(), target, query,
-                                offset1, length1,
-                                offset2, length2,
-                                maxIndels, mutations, cache);
-                }
                 previousSeedPosition1 = seedPosition1;
                 previousSeedPosition2 = seedPosition2;
             }
 
-
             //Right edge
-            offset2 = seeds.get(mappingHit.indexById(mappingHit.seedRecords.length - 1));
+            offset2 = seeds.get(mappingHit.indexById(mappingHit.seedRecords.length - 1)) + kValue;
             offset1 = offset2 + mappingHit.offsetById(mappingHit.seedRecords.length - 1);
 
-            length1 = mapper.refLength[mappingHit.id] - offset1;
+            length1 = target.size() - offset1;
             length2 = query.size() - offset2;
 
             if (length1 >= length2) {
@@ -257,22 +239,36 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
                         maxIndels, mutations, cache);
             }
 
-            targetTo = br.sequence1Stop + 1;
-            queryTo = br.sequence2Stop + 1;
+            seq1To = br.sequence1Stop + 1;
+            seq2To = br.sequence2Stop + 1;
 
             Mutations<NucleotideSequence> muts = mutations.createAndDestroy();
-            hits.add(new KAlignmentHit2<P>(null, mappingHit.id,
-                    new Alignment<>(target,
-                            muts,
-                            new Range(targetFrom, targetTo),
-                            new Range(queryFrom, queryTo),
-                            0//todo!!!, nu
-                    ), null));
+            hits.add(new KAlignmentHit2<>(kAlignmentResult, mappingHit.id,
+                    new Alignment<>(target, muts,
+                            new Range(seq1From, seq1To),
+                            new Range(seq2From, seq2To),
+                            AlignmentUtils.calculateScore(parameters.getScoring(), seq1To - seq1From, muts)),
+                    payloads.get(mappingHit.id)));
         }
 
-        return new KAlignmentResult2<>(mapping, hits, query, from, to);
+        Collections.sort(hits, SCORE_COMPARATOR);
+        int threshold = (int) Math.max(parameters.getAbsoluteMinScore(),
+                parameters.getRelativeMinScore() * hits.get(0).getAlignment().getScore());
+        int i = 0;
+        for (; i < parameters.getMaxHits() && i < hits.size(); ++i)
+            if (hits.get(i).getAlignment().getScore() < threshold)
+                break;
+        if (i < hits.size())
+            hits.removeRange(i, hits.size());
+        return kAlignmentResult;
     }
 
+    private static final Comparator<KAlignmentHit2> SCORE_COMPARATOR = new Comparator<KAlignmentHit2>() {
+        @Override
+        public int compare(KAlignmentHit2 o1, KAlignmentHit2 o2) {
+            return Double.compare(o2.alignment.getScore(), o1.alignment.getScore());
+        }
+    };
     //@Override
     //public <Q> OutputPort<? extends PipedAlignmentResult<KAlignmentHit2<P>, Q>> align(OutputPort<Q> input, SequenceExtractor<Q, NucleotideSequence> extractor) {
     //    return null;

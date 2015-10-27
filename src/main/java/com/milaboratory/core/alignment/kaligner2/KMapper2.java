@@ -27,9 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import static com.milaboratory.core.alignment.kaligner2.OffsetPacksAccumulator.*;
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 import static java.util.Arrays.copyOf;
 
 /**
@@ -127,7 +125,6 @@ public final class KMapper2 implements java.io.Serializable {
 
     /*                  Utility fields                   */
     private volatile boolean built = false;
-    int[] refFrom = new int[10], refLength = new int[10];
     private int maxReferenceLength = 0, minReferenceLength = Integer.MAX_VALUE;
     private int sequencesInBase = 0;
     //private final float terminationThreshold = 6.6e6f;
@@ -217,6 +214,7 @@ public final class KMapper2 implements java.io.Serializable {
         base[kmer][lengths[kmer]++] = record(offset, id);
     }
 
+
     /**
      * Adds new reference sequence to the base of this mapper and returns index assigned to it.
      *
@@ -224,40 +222,14 @@ public final class KMapper2 implements java.io.Serializable {
      * @return index assigned to the sequence
      */
     public int addReference(NucleotideSequence sequence) {
-        return addReference(sequence, 0, sequence.size());
-    }
-
-    /**
-     * Adds new reference sequence to the base of this mapper and returns index assigned to it.
-     *
-     * <p>User can specify a part of a sequence to be indexed (only this part will be identified during the alignment
-     * procedure). The offset returned by alignment procedure will be in global sequence coordinates, relative to the
-     * beginning of the sequence (not to the specified offset).</p>
-     *
-     * @param sequence sequence
-     * @param offset   offset of subsequence to be indexed
-     * @param length   length of subsequence to be indexed
-     * @return index assigned to the sequence
-     */
-    public int addReference(NucleotideSequence sequence, int offset, int length) {
         // Checking parameters
         if (sequencesInBase >= (1 << bitsForIndex))
             throw new IllegalArgumentException("Maximum number of records reached.");
 
-        if (length + offset >= (1 << (32 - bitsForIndex)))
-            throw new IllegalArgumentException("Sequence is too long.");
-
         //Resetting built flag
         built = false;
 
-        //Next id.
-        if (refLength.length == sequencesInBase) {
-            refLength = copyOf(refLength, sequencesInBase * 3 / 2 + 1);
-            refFrom = copyOf(refFrom, sequencesInBase * 3 / 2 + 1);
-        }
         int id = sequencesInBase++;
-        refFrom[id] = offset;
-        refLength[id] = length;//sequence.size();
 
         //Calculating min and max reference sequences lengths
         maxReferenceLength = max(maxReferenceLength, sequence.size());
@@ -267,21 +239,21 @@ public final class KMapper2 implements java.io.Serializable {
         int kmerMask = 0xFFFFFFFF >>> (32 - kValue * 2);
         int tMask = 0xFFFFFFFF >>> (34 - kValue * 2);
 
-        int to = length - kValue;
+        int to = sequence.size() - kValue;
         for (int j = 0; j < kValue; ++j)
-            kmer = kmer << 2 | sequence.codeAt(j + offset);
-        addKmer(kmer, id, offset);
+            kmer = kmer << 2 | sequence.codeAt(j);
+        addKmer(kmer, id, 0);
 
         for (int i = 1; i <= to; ++i) {
             //Next kMer
-            kmer = kmerMask & (kmer << 2 | sequence.codeAt(offset + i + kValue - 1));
+            kmer = kmerMask & (kmer << 2 | sequence.codeAt(i + kValue - 1));
 
             //Detecting homopolymeric kMers and dropping them
             if (((kmer ^ (kmer >>> 2)) & tMask) == 0 &&
                     ((kmer ^ (kmer << 2)) & (tMask << 2)) == 0)
                 continue;
 
-            addKmer(kmer, id, i + offset);
+            addKmer(kmer, id, i);
         }
 
         return id;
@@ -297,8 +269,6 @@ public final class KMapper2 implements java.io.Serializable {
                 if (!built) {
                     for (int i = 0; i < base.length; ++i)
                         base[i] = copyOf(base[i], lengths[i]);
-                    refLength = copyOf(refLength, sequencesInBase);
-                    refFrom = copyOf(refFrom, sequencesInBase);
                     built = true;
                 }
             }
@@ -394,12 +364,7 @@ public final class KMapper2 implements java.io.Serializable {
             result.add(calculateHit(accumulator.results, i, candidates[i], seedPositions));
         }
 
-        Collections.sort(result, new Comparator<KMappingHit2>() {
-            @Override
-            public int compare(KMappingHit2 o1, KMappingHit2 o2) {
-                return Integer.compare(o2.score, o1.score);
-            }
-        });
+        Collections.sort(result, SCORE_COMPARATOR);
 
         if (!result.isEmpty()) {
             int threshold = max((int) (result.get(0).score * relativeMinScore), absoluteMinScore);
@@ -411,6 +376,13 @@ public final class KMapper2 implements java.io.Serializable {
         }
         return new KMappingResult2(seedPositions, result);
     }
+
+    private static final Comparator<KMappingHit2> SCORE_COMPARATOR = new Comparator<KMappingHit2>() {
+        @Override
+        public int compare(KMappingHit2 o1, KMappingHit2 o2) {
+            return Integer.compare(o2.score, o1.score);
+        }
+    };
 
     public KMappingHit2 calculateHit(IntArrayList results, int id, IntArrayList data, IntArrayList seedPositions) {
         return calculateHit(results, id, IntArrayList.getArrayReference(data), 0, data.size(), seedPositions);
@@ -833,7 +805,7 @@ public final class KMapper2 implements java.io.Serializable {
         return "K=" + kValue + "; Avr=" + ss.getMean() + "; SD=" + ss.getStandardDeviation();
     }
 
-    private static final class ArrList<T> extends ArrayList<T> {
+    static final class ArrList<T> extends ArrayList<T> {
         public ArrList() {
         }
 

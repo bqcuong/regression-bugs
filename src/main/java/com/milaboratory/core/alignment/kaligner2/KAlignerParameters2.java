@@ -97,12 +97,12 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     /**
      * Minimal allowed score value to consider hit as reliable candidate
      */
-    private float absoluteMinScore,
+    private int absoluteMinScore;
     /**
      * Maximal ratio between best hit score and other hits scores in returned result to consider hit as reliable
      * candidate
      */
-    relativeMinScore;
+    private float relativeMinScore;
     /**
      * Maximal number of hits to be stored as result
      */
@@ -150,7 +150,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
                                int mapperAbsoluteMinClusterScore, int mapperExtraClusterScore, int mapperAbsoluteMinScore, float mapperRelativeMinScore,
                                int mapperMatchScore, int mapperMismatchScore, int mapperOffsetShiftScore, int mapperMinSeedsDistance,
                                int mapperMaxSeedsDistance, int mapperSlotCount, int mapperMaxClusterIndels,
-                               int alignmentStopPenalty, float absoluteMinScore, float relativeMinScore,
+                               int alignmentStopPenalty, int absoluteMinScore, float relativeMinScore,
                                int maxHits, AffineGapAlignmentScoring scoring) {
         if (scoring != null && !scoring.uniformBasicMatchScore())
             throw new IllegalArgumentException("Use scoring with common match score.");
@@ -500,7 +500,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      *
      * @return minimal absolute score
      */
-    public float getAbsoluteMinScore() {
+    public int getAbsoluteMinScore() {
         return absoluteMinScore;
     }
 
@@ -510,7 +510,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      * @param absoluteMinScore minimal absolute score of a hit
      * @return parameters object
      */
-    public KAlignerParameters2 setAbsoluteMinScore(float absoluteMinScore) {
+    public KAlignerParameters2 setAbsoluteMinScore(int absoluteMinScore) {
         this.absoluteMinScore = absoluteMinScore;
         return this;
     }
@@ -613,7 +613,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
         result = 31 * result + mapperMinSeedsDistance;
         result = 31 * result + mapperMaxSeedsDistance;
         result = 31 * result + alignmentStopPenalty;
-        result = 31 * result + (absoluteMinScore != +0.0f ? Float.floatToIntBits(absoluteMinScore) : 0);
+        result = 31 * result + absoluteMinScore;
         result = 31 * result + (relativeMinScore != +0.0f ? Float.floatToIntBits(relativeMinScore) : 0);
         result = 31 * result + maxHits;
         result = 31 * result + (scoring != null ? scoring.hashCode() : 0);

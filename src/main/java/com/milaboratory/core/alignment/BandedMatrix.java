@@ -66,7 +66,8 @@ public final class BandedMatrix implements java.io.Serializable {
     }
 
     public void set(int i, int j, int value) {
-        assert !(j - i < -columnDelta || j - i > rowFactor - columnDelta);
+        assert !(j - i < -columnDelta || j - i > rowFactor - columnDelta)
+                : String.format("i: %s, j: %s, columnDelta: %s, rowFactor: %s", i, j, columnDelta, rowFactor);
 
         matrix[i * rowFactor + j + columnDelta] = value;
     }
