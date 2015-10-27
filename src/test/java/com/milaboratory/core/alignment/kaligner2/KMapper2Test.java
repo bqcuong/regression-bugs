@@ -15,8 +15,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by poslavsky on 15/09/15.
@@ -26,7 +26,6 @@ public class KMapper2Test {
             15, -20, 15, 0.87f, 13, -7,
             -3, 3, 6, 4, 3, 0, 0, 0, 0, null);
 
-//
 //    @Test
 //    public void testBestOffset1() throws Exception {
 //        assertEquals(4, getBestOffset(new IntArrayList(-1, 2, 3, 3, 4, 4, 4), 10, 0, 0));
@@ -50,7 +49,6 @@ public class KMapper2Test {
 //        System.out.println(v >> 14);
 //
 //    }
-
 
     @Test
     public void testRecord() throws Exception {
@@ -487,111 +485,111 @@ public class KMapper2Test {
 //    }
 
 
-    @Test
-    public void testArrList() throws Exception {
-        Random random = new Random();
+    //@Test
+    //public void testArrList() throws Exception {
+    //    Random random = new Random();
+    //
+    //
+    //    Comparator<Integer> comp = new Comparator<Integer>() {
+    //        @Override
+    //        public int compare(Integer o1, Integer o2) {
+    //            return Integer.compare(o1, o2);
+    //        }
+    //    };
+    //
+    //    for (int c = 0; c < 100000; ++c) {
+    //        ArrayList<Integer> arrayList = new ArrayList<>();
+    //        ArrList<Integer> arrList = new ArrList<>();
+    //        for (int i = 0; i < 100; ++i) {
+    //            int r = random.nextInt();
+    //            arrayList.add(r);
+    //            arrList.add(r);
+    //        }
+    //
+    //        long start;
+    //        start = System.nanoTime();
+    //        Collections.sort(arrayList, comp);
+    //        long arrayListTiming = System.nanoTime() - start;
+    //
+    //        start = System.nanoTime();
+    //        arrList.sort(comp);
+    //        long arrListTiming = System.nanoTime() - start;
+    //    }
+    //
+    //    DescriptiveStatistics statistics = new DescriptiveStatistics();
+    //    DescriptiveStatistics arrStatistics = new DescriptiveStatistics();
+    //    DescriptiveStatistics llStatistics = new DescriptiveStatistics();
+    //    for (int c = 0; c < 100000; ++c) {
+    //        ArrayList<Integer> arrayList = new ArrayList<>();
+    //        ArrList<Integer> arrList = new ArrList<>();
+    //        for (int i = 0; i < 1000; ++i) {
+    //            int r = random.nextInt();
+    //            arrayList.add(r);
+    //            arrList.add(r);
+    //        }
+    //
+    //        long start;
+    //        start = System.nanoTime();
+    //        Collections.sort(arrayList, comp);
+    //        long arrayListTiming = System.nanoTime() - start;
+    //
+    //        start = System.nanoTime();
+    //        arrList.sort(comp);
+    //        long arrListTiming = System.nanoTime() - start;
+    //
+    //        llStatistics.addValue(arrayListTiming);
+    //        arrStatistics.addValue(arrListTiming);
+    //        statistics.addValue(arrayListTiming - arrListTiming);
+    //    }
+    //
+    //    System.out.println("ArrayList:");
+    //    System.out.println(llStatistics);
+    //
+    //    System.out.println("ArrList:");
+    //    System.out.println(arrStatistics);
+    //
+    //    System.out.println("ArrayList-ArrList:");
+    //    System.out.println(statistics);
+    //}
 
-
-        Comparator<Integer> comp = new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return Integer.compare(o1, o2);
-            }
-        };
-
-        for (int c = 0; c < 100000; ++c) {
-            ArrayList<Integer> arrayList = new ArrayList<>();
-            ArrList<Integer> arrList = new ArrList<>();
-            for (int i = 0; i < 100; ++i) {
-                int r = random.nextInt();
-                arrayList.add(r);
-                arrList.add(r);
-            }
-
-            long start;
-            start = System.nanoTime();
-            Collections.sort(arrayList, comp);
-            long arrayListTiming = System.nanoTime() - start;
-
-            start = System.nanoTime();
-            arrList.sort(comp);
-            long arrListTiming = System.nanoTime() - start;
-        }
-
-        DescriptiveStatistics statistics = new DescriptiveStatistics();
-        DescriptiveStatistics arrStatistics = new DescriptiveStatistics();
-        DescriptiveStatistics llStatistics = new DescriptiveStatistics();
-        for (int c = 0; c < 100000; ++c) {
-            ArrayList<Integer> arrayList = new ArrayList<>();
-            ArrList<Integer> arrList = new ArrList<>();
-            for (int i = 0; i < 1000; ++i) {
-                int r = random.nextInt();
-                arrayList.add(r);
-                arrList.add(r);
-            }
-
-            long start;
-            start = System.nanoTime();
-            Collections.sort(arrayList, comp);
-            long arrayListTiming = System.nanoTime() - start;
-
-            start = System.nanoTime();
-            arrList.sort(comp);
-            long arrListTiming = System.nanoTime() - start;
-
-            llStatistics.addValue(arrayListTiming);
-            arrStatistics.addValue(arrListTiming);
-            statistics.addValue(arrayListTiming - arrListTiming);
-        }
-
-        System.out.println("ArrayList:");
-        System.out.println(llStatistics);
-
-        System.out.println("ArrList:");
-        System.out.println(arrStatistics);
-
-        System.out.println("ArrayList-ArrList:");
-        System.out.println(statistics);
-    }
-
-    static final class ArrList<T> extends ArrayList<T> {
-        public ArrList() {
-        }
-
-        final Field elementData;
-
-        {
-            try {
-                elementData = ArrayList.class.getDeclaredField("elementData");
-                elementData.setAccessible(true);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        Object[] arr;
-
-        @Override
-        public boolean add(T t) {
-            ensure();
-            return super.add(t);
-        }
-
-        private void ensure() {
-            try {
-                arr = (Object[]) elementData.get(this);
-            } catch (Throwable e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        @Override
-        public void removeRange(int fromIndex, int toIndex) {
-            super.removeRange(fromIndex, toIndex);
-        }
-
-        private void sort(Comparator<T> comp) {
-            Arrays.sort(arr, 0, size(), (Comparator) comp);
-        }
-    }
+    //static final class ArrList<T> extends ArrayList<T> {
+    //    public ArrList() {
+    //    }
+    //
+    //    final Field elementData;
+    //
+    //    {
+    //        try {
+    //            elementData = ArrayList.class.getDeclaredField("elementData");
+    //            elementData.setAccessible(true);
+    //        } catch (Throwable e) {
+    //            throw new RuntimeException(e);
+    //        }
+    //    }
+    //
+    //    Object[] arr;
+    //
+    //    @Override
+    //    public boolean add(T t) {
+    //        ensure();
+    //        return super.add(t);
+    //    }
+    //
+    //    private void ensure() {
+    //        try {
+    //            arr = (Object[]) elementData.get(this);
+    //        } catch (Throwable e) {
+    //            throw new RuntimeException(e);
+    //        }
+    //    }
+    //
+    //    @Override
+    //    public void removeRange(int fromIndex, int toIndex) {
+    //        super.removeRange(fromIndex, toIndex);
+    //    }
+    //
+    //    private void sort(Comparator<T> comp) {
+    //        Arrays.sort(arr, 0, size(), (Comparator) comp);
+    //    }
+    //}
 }

@@ -93,8 +93,9 @@ public final class MutationsBuilder<S extends Sequence<S>> {
         if (m.length > 1)
             for (int i = 1; i < m.length; ++i)
                 if (getPosition(m[i - 1]) > getPosition(m[i]))
-                    throw new IllegalArgumentException("Mutations must be appended in descending/ascending order (position)" +
-                            "depending on the value of reverse flag.");
+                    throw new IllegalArgumentException("Mutations must be appended in descending/ascending order (position) " +
+                            "depending on the value of reverse flag. Problem " + Mutation.encode(m[i - 1], alphabet) + ":"
+                            + Mutation.encode(m[i], alphabet) + " in " + MutationsUtil.encode(m, alphabet) + ".");
 
         return new Mutations<>(alphabet, m, true);
     }

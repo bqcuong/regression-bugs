@@ -114,6 +114,28 @@ public final class AffineGapAlignmentScoring<S extends Sequence<S>> extends Abst
         return gapExtensionPenalty;
     }
 
+    public AffineGapAlignmentScoring<S> setMatchScore(int matchScore) {
+        return new AffineGapAlignmentScoring<>(alphabet,
+                ScoringUtils.setMatchScore(alphabet, subsMatrix, matchScore),
+                gapOpenPenalty, gapExtensionPenalty);
+    }
+
+    public AffineGapAlignmentScoring<S> setMismatchScore(int mismatchScore) {
+        return new AffineGapAlignmentScoring<>(alphabet,
+                ScoringUtils.setMismatchScore(alphabet, subsMatrix, mismatchScore),
+                gapOpenPenalty, gapExtensionPenalty);
+    }
+
+    public AffineGapAlignmentScoring<S> setGapOpenScore(int gapOpenPenalty) {
+        return new AffineGapAlignmentScoring<>(alphabet,
+                subsMatrix.clone(), gapOpenPenalty, gapExtensionPenalty);
+    }
+
+    public AffineGapAlignmentScoring<S> setGapExtensionScore(int gapExtensionPenalty) {
+        return new AffineGapAlignmentScoring<>(alphabet,
+                subsMatrix.clone(), gapOpenPenalty, gapExtensionPenalty);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

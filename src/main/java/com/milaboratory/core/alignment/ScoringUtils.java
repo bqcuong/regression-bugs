@@ -45,6 +45,30 @@ public final class ScoringUtils {
         return fillWildcardScores(matrix, alphabet);
     }
 
+    public static int[] setMismatchScore(Alphabet<?> alphabet, int[] matrix, int mismatch) {
+        int size = (int) Math.round(Math.sqrt(matrix.length));
+        if (size * size != matrix.length || alphabet.size() != size)
+            throw new IllegalArgumentException();
+        int[] result = matrix.clone();
+        int basicSize = alphabet.basicSize();
+        for (int i = 0; i < basicSize; ++i)
+            for (int j = 0; j < basicSize; ++j)
+                if (i != j)
+                    result[i + size * j] = mismatch;
+        return fillWildcardScores(result, alphabet);
+    }
+
+    public static int[] setMatchScore(Alphabet<?> alphabet, int[] matrix, int match) {
+        int size = (int) Math.round(Math.sqrt(matrix.length));
+        if (size * size != matrix.length || alphabet.size() != size)
+            throw new IllegalArgumentException();
+        int[] result = matrix.clone();
+        int basicSize = alphabet.basicSize();
+        for (int i = 0; i < basicSize; ++i)
+            result[i + size * i] = match;
+        return fillWildcardScores(result, alphabet);
+    }
+
     /**
      * Fills up scores for wildcards by averaging scores for all their matching scores combinations.
      *

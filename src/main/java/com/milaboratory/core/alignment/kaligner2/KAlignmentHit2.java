@@ -33,6 +33,10 @@ public final class KAlignmentHit2<P> implements AlignmentHit<NucleotideSequence,
         this.payload = payload;
     }
 
+    public int getTargetId() {
+        return result.mappingResult.hits.get(indexOfMappingHit).id;
+    }
+
     @Override
     public Alignment<NucleotideSequence> getAlignment() {
         return alignment;

@@ -586,11 +586,12 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
         if (mapperOffsetShiftScore != that.mapperOffsetShiftScore) return false;
         if (mapperSlotCount != that.mapperSlotCount) return false;
         if (mapperMaxClusterIndels != that.mapperMaxClusterIndels) return false;
+        if (mapperAbsoluteMinScore != that.mapperAbsoluteMinScore) return false;
         if (Float.compare(that.mapperRelativeMinScore, mapperRelativeMinScore) != 0) return false;
         if (mapperMinSeedsDistance != that.mapperMinSeedsDistance) return false;
         if (mapperMaxSeedsDistance != that.mapperMaxSeedsDistance) return false;
         if (alignmentStopPenalty != that.alignmentStopPenalty) return false;
-        if (Float.compare(that.absoluteMinScore, absoluteMinScore) != 0) return false;
+        if (absoluteMinScore != that.absoluteMinScore) return false;
         if (Float.compare(that.relativeMinScore, relativeMinScore) != 0) return false;
         if (maxHits != that.maxHits) return false;
         return !(scoring != null ? !scoring.equals(that.scoring) : that.scoring != null);
@@ -609,6 +610,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
         result = 31 * result + mapperOffsetShiftScore;
         result = 31 * result + mapperSlotCount;
         result = 31 * result + mapperMaxClusterIndels;
+        result = 31 * result + mapperAbsoluteMinScore;
         result = 31 * result + (mapperRelativeMinScore != +0.0f ? Float.floatToIntBits(mapperRelativeMinScore) : 0);
         result = 31 * result + mapperMinSeedsDistance;
         result = 31 * result + mapperMaxSeedsDistance;
