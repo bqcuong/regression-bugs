@@ -198,6 +198,15 @@ public final class KMapper2 implements java.io.Serializable {
                 parameters.isFloatingLeftBound(), parameters.isFloatingRightBound());
     }
 
+    final ThreadLocal<OffsetPacksAccumulator> threadLocalAccumulator = new ThreadLocal<OffsetPacksAccumulator>() {
+        @Override
+        protected OffsetPacksAccumulator initialValue() {
+            return new OffsetPacksAccumulator(
+                    slotCount, maxClusterIndels, matchScore,
+                    mismatchScore, offsetShiftScore, absoluteMinClusterScore);
+        }
+    };
+
     /**
      * Encodes and adds individual kMer to the base.
      */
@@ -311,10 +320,8 @@ public final class KMapper2 implements java.io.Serializable {
         seedPositions.add(seedPosition);
 
         RandomGenerator random = RandomUtil.getThreadLocalRandom();
-
         while ((seedPosition += random.nextInt(maxDistance + 1 - minDistance) + minDistance) < to - kValue)
             seedPositions.add(seedPosition);
-
         seedPositions.add(to - kValue);
 
         int kmer;
@@ -346,10 +353,7 @@ public final class KMapper2 implements java.io.Serializable {
 
         final int possibleMinKmers = (int) Math.ceil(absoluteMinClusterScore / matchScore);
 
-        OffsetPacksAccumulator accumulator = new OffsetPacksAccumulator(
-                slotCount, maxClusterIndels, matchScore,
-                mismatchScore, offsetShiftScore, absoluteMinClusterScore);
-
+        OffsetPacksAccumulator accumulator = threadLocalAccumulator.get();
         for (int i = 0; i < candidates.length; i++) {
             if (candidates[i] == null)
                 continue;
@@ -365,7 +369,6 @@ public final class KMapper2 implements java.io.Serializable {
         }
 
         Collections.sort(result, SCORE_COMPARATOR);
-
         if (!result.isEmpty()) {
             int threshold = max((int) (result.get(0).score * relativeMinScore), absoluteMinScore);
             int i = 0;
@@ -379,7 +382,7 @@ public final class KMapper2 implements java.io.Serializable {
 
     private static final Comparator<KMappingHit2> SCORE_COMPARATOR = new Comparator<KMappingHit2>() {
         @Override
-        public int compare(KMappingHit2 o1, KMappingHit2 o2) {
+        public int compare(final KMappingHit2 o1, final KMappingHit2 o2) {
             return Integer.compare(o2.score, o1.score);
         }
     };
@@ -635,7 +638,6 @@ public final class KMapper2 implements java.io.Serializable {
         current.clear();//economy
         IntArrayList seedRecords = current;
         IntArrayList packBoundaries = new IntArrayList();
-//        untangled.sort();
         int score = 0;
 
         final long[] untangledForSort = new long[untangled.size()];
@@ -772,19 +774,19 @@ public final class KMapper2 implements java.io.Serializable {
         return relativeMinScore;
     }
 
-    static int index(int record) {
+    static int index(final int record) {
         return record & indexMask;
     }
 
-    static int offset(int record) {
+    static int offset(final int record) {
         return record >> bitsForIndex;
     }
 
-    static int record(int offset, int index) {
+    static int record(final int offset, final int index) {
         return (offset << bitsForIndex) | index;
     }
 
-    static boolean inDelta(int a, int b, int maxAllowedDelta) {
+    static boolean inDelta(final int a, final int b, final int maxAllowedDelta) {
         int diff = a - b;
         return -maxAllowedDelta <= diff && diff <= maxAllowedDelta;
     }
