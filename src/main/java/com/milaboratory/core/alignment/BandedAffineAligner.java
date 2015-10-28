@@ -493,6 +493,11 @@ public class BandedAffineAligner {
                 new Range(offset2, offset2 + length2), score);
     }
 
+    public static Alignment<NucleotideSequence> align(final AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                      final NucleotideSequence seq1, final NucleotideSequence seq2,
+                                                      final int width) {
+        return align(scoring, seq1, seq2, 0, seq1.size(), 0, seq2.size(), width);
+    }
 
     public static Alignment<NucleotideSequence> semiLocalRight(final AffineGapAlignmentScoring<NucleotideSequence> scoring,
                                                                final NucleotideSequence seq1, final NucleotideSequence seq2,
@@ -506,6 +511,12 @@ public class BandedAffineAligner {
                 new Range(offset2, res.sequence2Stop + 1), res.score);
     }
 
+    public static Alignment<NucleotideSequence> semiLocalRight(final AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                               final NucleotideSequence seq1, final NucleotideSequence seq2,
+                                                               final int width) {
+        return semiLocalRight(scoring, seq1, seq2, 0, seq1.size(), 0, seq2.size(), width);
+    }
+
     public static Alignment<NucleotideSequence> semiLocalLeft(final AffineGapAlignmentScoring<NucleotideSequence> scoring,
                                                               final NucleotideSequence seq1, final NucleotideSequence seq2,
                                                               final int offset1, final int length1, final int offset2, final int length2,
@@ -516,6 +527,12 @@ public class BandedAffineAligner {
         return new Alignment<>(seq1, mutations.createAndDestroy(),
                 new Range(res.sequence1Stop, offset1 + length1),
                 new Range(res.sequence2Stop, offset2 + length2), res.score);
+    }
+
+    public static Alignment<NucleotideSequence> semiLocalLeft(final AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                              final NucleotideSequence seq1, final NucleotideSequence seq2,
+                                                              final int width) {
+        return semiLocalLeft(scoring, seq1, seq2, 0, seq1.size(), 0, seq2.size(), width);
     }
 
     public static Alignment<NucleotideSequence> semiGlobalRight(final AffineGapAlignmentScoring<NucleotideSequence> scoring,
