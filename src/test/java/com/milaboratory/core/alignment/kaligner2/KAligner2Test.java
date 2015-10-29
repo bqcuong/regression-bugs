@@ -2,7 +2,6 @@ package com.milaboratory.core.alignment.kaligner2;
 
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.alignment.Alignment;
-import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.GlobalObjectMappers;
 import com.milaboratory.util.RandomUtil;
@@ -74,8 +73,9 @@ public class KAligner2Test {
         NucleotideSequence reference = new NucleotideSequence("GATACTAACATTGGGTATCAAACAGCGTAGTCACTTAAAATGGCGCCTCCTCAGATCAATGAGCAATAGTACGGTCGTTCACTACCTGCCTCAAAGGCAATGTTT");
 
         KAlignerParameters2 params = GlobalObjectMappers.ONE_LINE.readValue("{\"mapperKValue\":4,\"floatingLeftBound\":true,\"floatingRightBound\":true,\"mapperAbsoluteMinClusterScore\":80,\"mapperExtraClusterScore\":-30,\"mapperMatchScore\":40,\"mapperMismatchScore\":-50,\"mapperOffsetShiftScore\":-10,\"mapperSlotCount\":3,\"mapperMaxClusterIndels\":4,\"mapperAbsoluteMinScore\":220,\"mapperRelativeMinScore\":0.0,\"mapperMinSeedsDistance\":2,\"mapperMaxSeedsDistance\":2,\"alignmentStopPenalty\":0,\"absoluteMinScore\":80,\"relativeMinScore\":0.8,\"maxHits\":5,\"scoring\":{\"type\":\"affine\",\"subsMatrix\":\"raw(4, -3, -3, -3, -1, 0, -3, -3, 0, -3, 0, -3, 0, 0, 0, -3, 4, -3, -3, -1, 0, -3, 0, -3, 0, -3, 0, 0, -3, 0, -3, -3, 4, -3, -1, -3, 0, 0, -3, -3, 0, 0, -3, 0, 0, -3, -3, -3, 4, -1, -3, 0, -3, 0, 0, -3, 0, 0, 0, -3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -3, -3, -1, 0, -3, -1, -1, -1, -1, -1, 0, -1, 0, -3, -3, 0, 0, -1, -3, 0, -1, -1, -1, -1, 0, -1, 0, -1, -3, 0, 0, -3, -1, -1, -1, 0, -3, -1, -1, 0, -1, -1, 0, 0, -3, -3, 0, -1, -1, -1, -3, 0, -1, -1, -1, 0, 0, -1, -3, 0, -3, 0, -1, -1, -1, -1, -1, 0, -3, 0, 0, -1, -1, 0, -3, 0, -3, -1, -1, -1, -1, -1, -3, 0, -1, -1, 0, 0, -3, 0, 0, 0, -1, -1, 0, 0, -1, 0, -1, 0, -1, -1, -1, 0, 0, -3, 0, -1, 0, -1, -1, 0, 0, -1, -1, 0, -1, -1, 0, -3, 0, 0, -1, -1, 0, -1, 0, -1, 0, -1, -1, 0, -1, 0, 0, 0, -3, -1, 0, -1, 0, -1, -1, 0, -1, -1, -1, 0)\",\"gapOpenPenalty\":-17,\"gapExtensionPenalty\":-1,\"uniformBasicMatch\":true}}", KAlignerParameters2.class);
-        params.setMapperAbsoluteMinScore(-1000);
-
+        params.setMapperAbsoluteMinScore(-10000);
+        params.setAbsoluteMinScore(-10000);
+        params.setMapperAbsoluteMinClusterScore(-10000);
 
 //        ID: 0
 //        Score: 140
@@ -91,6 +91,6 @@ public class KAligner2Test {
         KAligner2 aligner = new KAligner2(params);
         aligner.addReference(reference);
         KAlignmentResult2<NucleotideSequence> align = aligner.align(query);
-        System.out.println(align.getHits().get(0).alignment);
+        System.out.println(align.getHits().size());
     }
 }
