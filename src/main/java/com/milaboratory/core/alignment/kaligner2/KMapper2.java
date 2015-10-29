@@ -312,54 +312,78 @@ public final class KMapper2 implements java.io.Serializable {
 
         final ArrList<KMappingHit2> result = new ArrList<>();
 
+        // Sequence is shorter than k values
         if (to - from <= kValue)
             return new KMappingResult2(null, result);
 
+        // Positions of first nucleotides of seed k-mers in query sequence
         final IntArrayList seedPositions = new IntArrayList((to - from) / minDistance + 2);
         int seedPosition = from;
+
+        // Adding firs possible position
         seedPositions.add(seedPosition);
 
+        // Generating random positions of seeds
         RandomGenerator random = RandomUtil.getThreadLocalRandom();
         while ((seedPosition += random.nextInt(maxDistance + 1 - minDistance) + minDistance) < to - kValue)
             seedPositions.add(seedPosition);
+
+        // Adding last possible position to the lis of seed positions
         seedPositions.add(to - kValue);
 
         int kmer;
         final IntArrayList[] candidates = new IntArrayList[sequencesInBase];
 
-        //Building candidates arrays (seed)
+        // Building list of records for all target sequences
+        // By querying db for each seed kmer from query sequence
         int id, positionInTarget;
         for (int i = 0; i < seedPositions.size(); ++i) {
             kmer = 0;
             for (int j = seedPositions.get(i); j < seedPositions.get(i) + kValue; ++j)
                 kmer = kmer << 2 | sequence.codeAt(j);
 
+            // DB contains no records for this kMer
             if (base[kmer].length == 0)
                 continue;
 
+            // Adding each records for it's corresponding candidate
             for (int record : base[kmer]) {
+                // Id of target sequence, where the kMer was found
                 id = index(record);
+                // Position of the kMer in target sequence
                 positionInTarget = offset(record);
 
+                // Lazy initialization of candidate lists
                 if (candidates[id] == null)
                     candidates[id] = new IntArrayList();
 
+                // Records for the same target in DB are sorted in descending order by positions
                 assert candidates[id].isEmpty() || index(candidates[id].last()) != i
                         || offset(candidates[id].last()) < positionInTarget - seedPositions.get(i);
 
+                // Adding restructured record to candidate list
                 candidates[id].add(record(positionInTarget - seedPositions.get(i), i));
             }
         }
 
+        // Minimal number of records that can possible give scoring above threshold
         final int possibleMinKmers = (int) Math.ceil(absoluteMinClusterScore / matchScore);
 
+        // Calculating hits for each candidate
+        // Truncation & Untangling of clusters happens here
         for (int i = 0; i < candidates.length; i++) {
+            // No records
             if (candidates[i] == null)
                 continue;
+
+            // Early termination of calculations for this candidate
             if (candidates[i].size() - 1 < possibleMinKmers)
                 continue;
 
+            // Performing main algorithms on records extracted from DB
             KMappingHit2 e = calculateHit(i, candidates[i], seedPositions);
+
+            // Adding result to hits list if it was successful
             if (e != null)
                 result.add(e);
         }
@@ -383,10 +407,29 @@ public final class KMapper2 implements java.io.Serializable {
         }
     };
 
+    /**
+     * Array list wrapper for {@link #calculateHit(int, int[], int, int, IntArrayList)}.
+     */
     public KMappingHit2 calculateHit(int id, IntArrayList data, IntArrayList seedPositions) {
         return calculateHit(id, IntArrayList.getArrayReference(data), 0, data.size(), seedPositions);
     }
 
+    /**
+     * Performs truncation of cluster from the right side.
+     *
+     * - if byIndex = true  : till the index of last cluster record will be < truncationPoint
+     * - if byIndex = false : till the positionInTarget of last cluster record will be < truncationPoint
+     *
+     * @param byIndex         determine truncation type
+     * @param seedPositions   seed positions
+     * @param results         cluster data
+     * @param data            records data
+     * @param dataTo          use only [0..dataTo] records from data
+     * @param clusterPointer  pointer to target cluster
+     * @param truncationPoint main truncation threshold
+     * @return {@literal true} if cluster remains to have score above the threshold (absoluteMinClusterScore);
+     * {@literal false} if cluster was removed due to too low score
+     */
     private boolean truncateClusterFromRight(
             boolean byIndex,
             final IntArrayList seedPositions,
@@ -421,9 +464,11 @@ public final class KMapper2 implements java.io.Serializable {
                     // Skip current record
                     continue;
 
+                // Score for this point
                 int scoreDelta = matchScore + (index - prevIndex - 1) * mismatchScore +
                         abs(prevOffset - offset) * offsetShiftScore;
 
+                // Count record only if it adds score to this cluster
                 if (scoreDelta > 0) {
                     score += scoreDelta;
                     prevOffset = offset;
@@ -432,15 +477,39 @@ public final class KMapper2 implements java.io.Serializable {
                 }
             }
         }
+
+        // Adjusting cluster data
         results.set(clusterPointer + LAST_RECORD_ID, lastRecordId);
         results.set(clusterPointer + SCORE, score);
+
+        // Testing if cluster still have enough score
         if (score < absoluteMinClusterScore) {
+            // dropping cluster if not
             results.set(clusterPointer + FIRST_RECORD_ID, DROPPED_CLUSTER);
+            // and returning false
             return false;
         }
+
+        // Score is still above the threshold
         return true;
     }
 
+    /**
+     * Performs truncation of cluster from the left side.
+     *
+     * - if byIndex = true  : till the index of last cluster record will be < truncationPoint
+     * - if byIndex = false : till the positionInTarget of last cluster record will be < truncationPoint
+     *
+     * @param byIndex         determine truncation type
+     * @param seedPositions   seed positions
+     * @param results         cluster data
+     * @param data            records data
+     * @param dataFrom        use only [dataFrom..] records from data
+     * @param clusterPointer  pointer to target cluster
+     * @param truncationPoint main truncation threshold
+     * @return {@literal true} if cluster remains to have score above the threshold (absoluteMinClusterScore);
+     * {@literal false} if cluster was removed due to too low score
+     */
     private boolean truncateClusterFromLeft(
             boolean byIndex,
             final IntArrayList seedPositions,
@@ -476,10 +545,14 @@ public final class KMapper2 implements java.io.Serializable {
                     // Skip current record
                     continue;
 
+                // Indices are sorted in ascending order
                 assert prevIndex - index - 1 >= 0;
+
+                // Score for this point
                 int scoreDelta = matchScore + (prevIndex - index - 1) * mismatchScore +
                         abs(prevOffset - offset) * offsetShiftScore;
 
+                // Count record only if it adds score to this cluster
                 if (scoreDelta > 0) {
                     score += scoreDelta;
                     prevOffset = offset;
@@ -488,12 +561,20 @@ public final class KMapper2 implements java.io.Serializable {
                 }
             }
         }
+
+        // Adjusting cluster data
         results.set(clusterPointer + FIRST_RECORD_ID, lastRecordId);
         results.set(clusterPointer + SCORE, score);
+
+        // Testing if cluster still have enough score
         if (score < absoluteMinClusterScore) {
+            // dropping cluster if not
             results.set(clusterPointer + FIRST_RECORD_ID, DROPPED_CLUSTER);
+            // and returning false
             return false;
         }
+
+        // Score is still above the threshold
         return true;
     }
 
