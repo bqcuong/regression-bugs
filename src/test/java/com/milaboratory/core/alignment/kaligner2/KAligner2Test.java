@@ -2,6 +2,7 @@ package com.milaboratory.core.alignment.kaligner2;
 
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.alignment.Alignment;
+import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.GlobalObjectMappers;
 import com.milaboratory.util.RandomUtil;
@@ -89,7 +90,7 @@ public class KAligner2Test {
 
         KAligner2 aligner = new KAligner2(params);
         aligner.addReference(reference);
-        KAlignmentResult2 align = aligner.align(query);
-        System.out.println(align.mappingResult.getHits().size());
+        KAlignmentResult2<NucleotideSequence> align = aligner.align(query);
+        System.out.println(align.getHits().get(0).alignment);
     }
 }

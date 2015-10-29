@@ -353,19 +353,15 @@ public final class KMapper2 implements java.io.Serializable {
 
         final int possibleMinKmers = (int) Math.ceil(absoluteMinClusterScore / matchScore);
 
-        OffsetPacksAccumulator accumulator = threadLocalAccumulator.get();
         for (int i = 0; i < candidates.length; i++) {
             if (candidates[i] == null)
                 continue;
             if (candidates[i].size() - 1 < possibleMinKmers)
                 continue;
 
-            accumulator.calculateInitialPartitioning(candidates[i]);
-
-            if (accumulator.results.size() == 0)
-                continue;
-
-            result.add(calculateHit(accumulator.results, i, candidates[i], seedPositions));
+            KMappingHit2 e = calculateHit(i, candidates[i], seedPositions);
+            if (e != null)
+                result.add(e);
         }
 
         Collections.sort(result, SCORE_COMPARATOR);
@@ -387,8 +383,8 @@ public final class KMapper2 implements java.io.Serializable {
         }
     };
 
-    public KMappingHit2 calculateHit(IntArrayList results, int id, IntArrayList data, IntArrayList seedPositions) {
-        return calculateHit(results, id, IntArrayList.getArrayReference(data), 0, data.size(), seedPositions);
+    public KMappingHit2 calculateHit(int id, IntArrayList data, IntArrayList seedPositions) {
+        return calculateHit(id, IntArrayList.getArrayReference(data), 0, data.size(), seedPositions);
     }
 
     private boolean truncateClusterFromRight(
@@ -501,9 +497,15 @@ public final class KMapper2 implements java.io.Serializable {
         return true;
     }
 
-    private KMappingHit2 calculateHit(final IntArrayList results, final int id, final int[] data,
+    private KMappingHit2 calculateHit(final int id, final int[] data,
                                       final int dataFrom, final int dataTo,
                                       final IntArrayList seedPositions) {
+        OffsetPacksAccumulator accumulator = threadLocalAccumulator.get();
+        accumulator.calculateInitialPartitioning(data, dataFrom, dataTo);
+
+        IntArrayList results = accumulator.results;
+        if (accumulator.results.size() == 0)
+            return null;
 
         //A1: correcting intersections, step 1
         OUT:
@@ -693,8 +695,12 @@ public final class KMapper2 implements java.io.Serializable {
                 }
                 if ($) offset = offset(minRecord);
 
-                if (positionInTarget(seedPositions, record) <= positionInTarget(seedPositions, seedRecords.last()))
-                    continue;
+                if (positionInTarget(seedPositions, minRecord) <= positionInTarget(seedPositions, seedRecords.last())) {
+                    int minRecordId = recordId + 1;
+                    while (data[--minRecordId] != minRecord) ;
+                    System.arraycopy(data, minRecordId + 1, data, minRecordId, dataTo - minRecordId - 1);
+                    return calculateHit(id, data, dataFrom, dataTo - 1, seedPositions);
+                }
 
                 int scoreDelta = matchScore + (index - previousIndex - 1) * mismatchScore +
                         minDelta * offsetShiftScore;
