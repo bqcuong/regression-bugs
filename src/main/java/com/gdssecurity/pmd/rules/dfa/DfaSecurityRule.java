@@ -79,7 +79,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 	private static final String UNKNOWN_TYPE = "UNKNOWN_TYPE";
 	private Map<String, String> cacheReturnTypes = new HashMap<String, String>();
-	private Set<String> generators = new HashSet<String>();
+	private Set<String> annotatedGenerators = new HashSet<String>();
 	private Set<String> annotatedSinks = new HashSet<String>();
 	private Set<String> currentPathTaintedVariables;
 	private Set<String> functionParameterTainted = new HashSet<String>();
@@ -199,10 +199,10 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		return isSink(objectType + "." + objectMethod);
 	}
 	private boolean isGenerator(String objectTypeAndMethod) {
-		return this.generators.contains(objectTypeAndMethod);
+		return this.annotatedGenerators.contains(objectTypeAndMethod);
 	}
 	private boolean isGenerator(String objectType, String objectMethod) {
-		return this.generators.contains(objectType + "." + objectMethod);
+		return this.annotatedGenerators.contains(objectType + "." + objectMethod);
 	}
 
 	private boolean isGeneratorThisMethodDeclaration(Node node) {
@@ -655,7 +655,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 								this.annotatedSinks.add(key);
 							}
 							if (this.generatorAnnotations.contains(annotation.annotationType().getCanonicalName())) {
-								this.generators.add(key);
+								this.annotatedGenerators.add(key);
 							}
 						}
 					}
