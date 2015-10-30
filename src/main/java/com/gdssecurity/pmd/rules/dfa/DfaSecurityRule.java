@@ -202,7 +202,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		return this.annotatedGenerators.contains(objectTypeAndMethod);
 	}
 	private boolean isGenerator(String objectType, String objectMethod) {
-		return this.annotatedGenerators.contains(objectType + "." + objectMethod);
+		return isGenerator(objectType + "." + objectMethod);
 	}
 
 	private boolean isGeneratorThisMethodDeclaration(Node node) {
