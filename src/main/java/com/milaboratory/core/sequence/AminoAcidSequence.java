@@ -15,6 +15,9 @@
  */
 package com.milaboratory.core.sequence;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 /**
  * Representation of amino acid sequences. Methods for translating nucleotide to amino acid and vice versa are placed
  * in {@link GeneticCode}
@@ -25,6 +28,8 @@ package com.milaboratory.core.sequence;
  * @see com.milaboratory.core.sequence.AminoAcidAlphabet
  * @see GeneticCode
  */
+@JsonSerialize(using = IO.AASeqSerializer.class)
+@JsonDeserialize(using = IO.AASeqDeserializer.class)
 public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequence> {
     /**
      * Empty sequence

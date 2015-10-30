@@ -199,4 +199,17 @@ public class MutationsTest {
         System.out.println(mutsABnAB);
         System.out.println(alignment0.getAlignmentHelper());
     }
+
+    @Test
+    public void testSerialize1() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("ATTAGACA"),
+                seq2 = new NucleotideSequence("CATTACCA"),
+                seq3 = new NucleotideSequence("CATAGCCA");
+
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations(),
+                m2 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq2, seq3).getAbsoluteMutations();
+
+        TestUtil.assertJson(m1);
+        TestUtil.assertJson(m2);
+    }
 }

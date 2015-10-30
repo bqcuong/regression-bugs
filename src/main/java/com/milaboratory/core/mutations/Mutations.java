@@ -15,6 +15,9 @@
  */
 package com.milaboratory.core.mutations;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.milaboratory.core.Range;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
@@ -30,6 +33,8 @@ import static com.milaboratory.core.mutations.Mutation.*;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
+        getterVisibility = JsonAutoDetect.Visibility.NONE)
 @Serializable(by = IO.MutationsSerializer.class)
 public final class Mutations<S extends Sequence<S>>
         implements java.io.Serializable {
@@ -38,6 +43,12 @@ public final class Mutations<S extends Sequence<S>>
 
     public Mutations(Alphabet alphabet, IntArrayList mutations) {
         this(alphabet, mutations.toArray(), true);
+    }
+
+    @JsonCreator
+    public Mutations(@JsonProperty("alphabet") Alphabet alphabet,
+                     @JsonProperty("mutations") String encodedMutations) {
+        this(alphabet, MutationsUtil.decode(encodedMutations, alphabet), true);
     }
 
     public Mutations(Alphabet alphabet, int... mutations) {
@@ -56,6 +67,11 @@ public final class Mutations<S extends Sequence<S>>
 
     public int size() {
         return mutations.length;
+    }
+
+    @JsonProperty("alphabet")
+    public Alphabet<S> getAlphabet() {
+        return alphabet;
     }
 
     public int getMutation(int index) {
@@ -474,6 +490,7 @@ public final class Mutations<S extends Sequence<S>>
         return builder.toString();
     }
 
+    @JsonProperty("mutations")
     public String encode() {
         return MutationsUtil.encode(mutations, alphabet);
     }
@@ -483,7 +500,7 @@ public final class Mutations<S extends Sequence<S>>
     }
 
     public static <S extends Sequence<S>> Mutations<S> decode(String string, Alphabet<S> alphabet) {
-        return new Mutations<S>(alphabet, MutationsUtil.decode(string, alphabet), true);
+        return new Mutations<>(alphabet, MutationsUtil.decode(string, alphabet), true);
     }
 
     @Override

@@ -17,6 +17,7 @@ package com.milaboratory.core.sequence;
 
 import com.milaboratory.core.io.util.IOTestUtil;
 import com.milaboratory.core.sequence.AminoAcidSequence.AminoAcidSequencePosition;
+import com.milaboratory.test.TestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -173,5 +174,11 @@ public class AminoAcidSequenceTest {
     public void test4() throws Exception {
         AminoAcidSequence se = new AminoAcidSequence("ATTAGACAN");
         IOTestUtil.assertJavaSerialization(se);
+    }
+
+    @Test
+    public void test5() throws Exception {
+        AminoAcidSequence se = new AminoAcidSequence("ATTAGACAN");
+        TestUtil.assertJson(se);
     }
 }

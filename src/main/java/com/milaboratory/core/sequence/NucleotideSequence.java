@@ -15,6 +15,8 @@
  */
 package com.milaboratory.core.sequence;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.milaboratory.core.Range;
 
 /**
@@ -25,6 +27,8 @@ import com.milaboratory.core.Range;
  * @see com.milaboratory.core.sequence.Sequence
  * @see com.milaboratory.core.sequence.NucleotideAlphabet
  */
+@JsonSerialize(using = IO.NSeqSerializer.class)
+@JsonDeserialize(using = IO.NSeqDeserializer.class)
 public final class NucleotideSequence extends AbstractArraySequence<NucleotideSequence>
         implements NSeq<NucleotideSequence>, java.io.Serializable {
     private static final long serialVersionUID = 2L;
