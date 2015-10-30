@@ -21,12 +21,14 @@ public class KAligner2Test {
 
     @Test
     public void test1() throws Exception {
-        KAligner2<Object> aligner = new KAligner2<>(gParams);
+        KAligner2Statistics stat = new KAligner2Statistics();
+        KAligner2<Object> aligner = new KAligner2<>(gParams, stat);
         aligner.addReference(new NucleotideSequence("atgcgtcgatcgtagctagctgatcgatcgactgactagcataggatgtagagctagctagctac"));
         aligner.addReference(new NucleotideSequence("atgcgtcgatcgtagctagctgatcgatcgactgactagcatcagcatcaggatgtagagctagctagctac"));
         aligner.addReference(new NucleotideSequence("atgcgtcgatcgtagctagctgtagtagatgatgatagtagatagtagtagtgatgacgatcgactgaatgtagagctagctagctac"));
 
         KAlignmentResult2<Object> al = aligner.align(new NucleotideSequence("atgcgtcgatcgtagctagctgtcgatcgactgaatgtagagctagctagctac"));
+        System.out.println(GlobalObjectMappers.PRETTY.writeValueAsString(stat));
         System.out.println(al.hasHits());
         Alignment<NucleotideSequence> val = al.getHits().get(0).getAlignment();
         System.out.println(val.getScore());
@@ -86,7 +88,6 @@ public class KAligner2Test {
 //        Q 20 -> T 3 - -17
 //        Q 22 -> T 2 - -20
 //        Q 24 -> T 4 - -20
-
 
         KAligner2 aligner = new KAligner2(params);
         aligner.addReference(reference);

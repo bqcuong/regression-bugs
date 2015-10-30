@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
+import static com.milaboratory.core.alignment.kaligner2.KAligner2Statistics.ClusterTrimmingType.*;
 import static com.milaboratory.core.alignment.kaligner2.OffsetPacksAccumulator.*;
 import static java.lang.Math.*;
 import static java.util.Arrays.copyOf;
@@ -127,6 +128,10 @@ public final class KMapper2 implements java.io.Serializable {
     private volatile boolean built = false;
     private int maxReferenceLength = 0, minReferenceLength = Integer.MAX_VALUE;
     private int sequencesInBase = 0;
+    /**
+     * Statistics aggregator
+     */
+    private final KAligner2Statistics stat;
     //private final float terminationThreshold = 6.6e6f;
 
     /**
@@ -149,6 +154,31 @@ public final class KMapper2 implements java.io.Serializable {
                     int matchScore, int mismatchScore, int offsetShiftScore,
                     int slotCount, int maxClusterIndels,
                     boolean floatingLeftBound, boolean floatingRightBound) {
+        this(kValue, minDistance, maxDistance, absoluteMinClusterScore, extraClusterScore, absoluteMinScore, relativeMinScore, matchScore, mismatchScore, offsetShiftScore, slotCount, maxClusterIndels, floatingLeftBound, floatingRightBound, null);
+    }
+
+    /**
+     * Creates new KMer mapper.
+     *
+     * @param kValue                  nucleotides in kMer (value of k)
+     * @param minDistance             minimal distance between kMer seed positions in target sequence
+     * @param maxDistance             maximal distance between kMer seed positions in target sequence
+     * @param absoluteMinClusterScore minimal score
+     * @param relativeMinScore        maximal ratio between best hit score and other hits scores in returned result
+     * @param matchScore              reward for match (must be > 0)
+     * @param mismatchScore           penalty for mismatch (must be < 0)
+     * @param floatingLeftBound       true if left bound of alignment could be floating
+     * @param floatingRightBound      true if right bound of alignment could be floating
+     * @param stat                    stat
+     */
+    public KMapper2(int kValue,
+                    int minDistance, int maxDistance,
+                    int absoluteMinClusterScore, int extraClusterScore,
+                    int absoluteMinScore, float relativeMinScore,
+                    int matchScore, int mismatchScore, int offsetShiftScore,
+                    int slotCount, int maxClusterIndels,
+                    boolean floatingLeftBound, boolean floatingRightBound,
+                    KAligner2Statistics stat) {
         this.kValue = kValue;
 
         //Bits
@@ -177,10 +207,11 @@ public final class KMapper2 implements java.io.Serializable {
         this.maxClusterIndels = maxClusterIndels;
         this.floatingLeftBound = floatingLeftBound;
         this.floatingRightBound = floatingRightBound;
+        this.stat = stat;
     }
 
     /**
-     * Factory method to create KMapper using parametners specified in the {@link KAlignerParameters2}
+     * Factory method to create KMapper2 using parameters specified in the {@link KAlignerParameters2}
      * object.
      *
      * @param parameters parameters instance
@@ -196,6 +227,26 @@ public final class KMapper2 implements java.io.Serializable {
                 parameters.getMapperOffsetShiftScore(), parameters.getMapperSlotCount(),
                 parameters.getMapperMaxClusterIndels(),
                 parameters.isFloatingLeftBound(), parameters.isFloatingRightBound());
+    }
+
+    /**
+     * Factory method to create KMapper2 using parameters specified in the {@link KAlignerParameters2}
+     * object.
+     *
+     * @param parameters parameters instance
+     * @param stat       stat
+     * @return new KMapper
+     */
+    public static KMapper2 createFromParameters(KAlignerParameters2 parameters, KAligner2Statistics stat) {
+        return new KMapper2(parameters.getMapperKValue(), parameters.getMapperMinSeedsDistance(),
+                parameters.getMapperMaxSeedsDistance(), parameters.getMapperAbsoluteMinClusterScore(),
+                parameters.getMapperExtraClusterScore(),
+                parameters.getMapperAbsoluteMinScore(),
+                parameters.getMapperRelativeMinScore(),
+                parameters.getMapperMatchScore(), parameters.getMapperMismatchScore(),
+                parameters.getMapperOffsetShiftScore(), parameters.getMapperSlotCount(),
+                parameters.getMapperMaxClusterIndels(),
+                parameters.isFloatingLeftBound(), parameters.isFloatingRightBound(), stat);
     }
 
     final ThreadLocal<OffsetPacksAccumulator> threadLocalAccumulator = new ThreadLocal<OffsetPacksAccumulator>() {
@@ -313,8 +364,15 @@ public final class KMapper2 implements java.io.Serializable {
         final ArrList<KMappingHit2> result = new ArrList<>();
 
         // Sequence is shorter than k values
-        if (to - from <= kValue)
-            return new KMappingResult2(null, result);
+        if (to - from <= kValue){
+            KMappingResult2 kMappingResult2 = new KMappingResult2(null, result);
+
+            // Collecting statistics
+            if (stat != null)
+                stat.kMappingResults(kMappingResult2);
+
+            return kMappingResult2;
+        }
 
         // Positions of first nucleotides of seed k-mers in query sequence
         final IntArrayList seedPositions = new IntArrayList((to - from) / minDistance + 2);
@@ -366,6 +424,10 @@ public final class KMapper2 implements java.io.Serializable {
             }
         }
 
+        // If stat object is set write statistics
+        if (stat != null)
+            stat.afterCandidatesArrayDone(candidates);
+
         // Minimal number of records that can possible give scoring above threshold
         final int possibleMinKmers = (int) Math.ceil(absoluteMinClusterScore / matchScore);
 
@@ -389,6 +451,7 @@ public final class KMapper2 implements java.io.Serializable {
         }
 
         Collections.sort(result, SCORE_COMPARATOR);
+
         if (!result.isEmpty()) {
             int threshold = max((int) (result.get(0).score * relativeMinScore), absoluteMinScore);
             int i = 0;
@@ -397,7 +460,14 @@ public final class KMapper2 implements java.io.Serializable {
                     break;
             result.removeRange(i, result.size());
         }
-        return new KMappingResult2(seedPositions, result);
+
+        KMappingResult2 kMappingResult2 = new KMappingResult2(seedPositions, result);
+
+        // Collecting statistics
+        if (stat != null)
+            stat.kMappingResults(kMappingResult2);
+
+        return kMappingResult2;
     }
 
     private static final Comparator<KMappingHit2> SCORE_COMPARATOR = new Comparator<KMappingHit2>() {
@@ -435,6 +505,10 @@ public final class KMapper2 implements java.io.Serializable {
             final IntArrayList seedPositions,
             final IntArrayList results, final int[] data,
             final int dataTo, final int clusterPointer, final int truncationPoint) {
+        // Collecting stat
+        if (stat != null)
+            stat.trimmingEvent(byIndex ? TrimRightQuery : TrimRightTarget);
+
         int lastRecordId = results.get(clusterPointer + FIRST_RECORD_ID),
                 record = data[lastRecordId],
                 prevOffset = offset(record),
@@ -515,6 +589,10 @@ public final class KMapper2 implements java.io.Serializable {
             final IntArrayList seedPositions,
             final IntArrayList results, final int[] data,
             final int dataFrom, final int clusterPointer, final int truncationPoint) {
+        // Collecting stat
+        if (stat != null)
+            stat.trimmingEvent(byIndex ? TrimLeftQuery : TrimLeftTarget);
+
         int lastRecordId = results.get(clusterPointer + FIRST_RECORD_ID),
                 record = data[lastRecordId],
                 prevOffset = offset(record),
@@ -587,6 +665,10 @@ public final class KMapper2 implements java.io.Serializable {
         IntArrayList results = accumulator.results;
         if (accumulator.results.size() == 0)
             return null;
+
+        // Collecting statistics
+        if (stat != null)
+            stat.initialClusters(id, results);
 
         //A1: correcting intersections, step 1
         OUT:
@@ -672,6 +754,10 @@ public final class KMapper2 implements java.io.Serializable {
                     }
                 }
 
+        // Collecting statistics
+        if (stat != null)
+            stat.afterTrimming(id, results);
+
         //A2: correcting intersections, step 2 untangling
         int bestScore = 0, currentScore;
         int numberOfClusters = results.size() / OUTPUT_RECORD_SIZE;
@@ -722,6 +808,10 @@ public final class KMapper2 implements java.io.Serializable {
         IntArrayList seedRecords = current;
         IntArrayList packBoundaries = new IntArrayList();
         int score = 0;
+
+        // Collecting statistics
+        if (stat != null)
+            stat.afterUntangling(untangled);
 
         final long[] untangledForSort = new long[untangled.size()];
         for (int i = 0; i < untangled.size(); ++i) {
@@ -776,10 +866,18 @@ public final class KMapper2 implements java.io.Serializable {
                 }
                 if ($) offset = offset(minRecord);
 
+                // Detection of micro-tangling (between adjacent seeds)
                 if (positionInTarget(seedPositions, minRecord) <= positionInTarget(seedPositions, seedRecords.last())) {
+                    // Removing right seed from micro-tangle
                     int minRecordId = recordId + 1;
                     while (data[--minRecordId] != minRecord) ;
                     System.arraycopy(data, minRecordId + 1, data, minRecordId, dataTo - minRecordId - 1);
+
+                    // Collecting statistics about rerun event
+                    if (stat != null)
+                        stat.reRunBecauseOfMicroTangling();
+
+                    // Restarting whole algorithm
                     return calculateHit(id, data, dataFrom, dataTo - 1, seedPositions);
                 }
 

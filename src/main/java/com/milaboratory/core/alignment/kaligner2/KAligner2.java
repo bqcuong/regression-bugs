@@ -39,10 +39,19 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
      * Record payloads.
      */
     final TIntObjectHashMap<P> payloads = new TIntObjectHashMap<>();
+    /**
+     * Statistics aggregator
+     */
+    private final KAligner2Statistics stat;
 
     public KAligner2(KAlignerParameters2 parameters) {
+        this(parameters, null);
+    }
+
+    public KAligner2(KAlignerParameters2 parameters, KAligner2Statistics stat) {
         this.parameters = parameters;
-        this.mapper = KMapper2.createFromParameters(parameters);
+        this.mapper = KMapper2.createFromParameters(parameters, stat);
+        this.stat = stat;
     }
 
     /**
@@ -81,8 +90,12 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
     }
 
     public KAlignmentResult2<P> align(final NucleotideSequence query, final int from, final int to) {
+        if (stat != null)
+            stat.nextQuery();
+
         final BandedAffineAligner.MatrixCache cache = new BandedAffineAligner.MatrixCache();
 
+        // Saving to local variables for performance
         final KMappingResult2 mapping = mapper.align(query, from, to);
         final IntArrayList seeds = mapping.seeds;
 
@@ -92,36 +105,12 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
         final int kValue = mapper.getKValue();
 
         KAlignmentResult2<P> kAlignmentResult = new KAlignmentResult2<>(mapping, hits, query, from, to);
-        if (mapping.getHits().isEmpty())
+        if (mapping.getHits().isEmpty()) {
+            if (stat != null)
+                stat.kAlignerResult(kAlignmentResult);
+
             return kAlignmentResult;
-
-        // 1 - target
-        // 2 - query
-
-        // maxIndels = 5
-        // length1 = 100
-        // length2 = 100
-
-        // added1 = maxIndels
-        // added2 = maxIndels
-
-
-        // maxIndels = 5
-        // length1 = 100
-        // length2 = 130
-
-        // added1 = 0
-        // length2 = 100 + maxIndels
-        // added2 = maxIndels * 2
-
-
-        // maxIndels = 5
-        // length1 = 100
-        // length2 = 103
-
-        // delta = sig(length2 - length1) * min(length2 - length1, maxIndels)
-        // added1 = maxIndels - delta
-        // added2 = maxIndels + delta
+        }
 
         int length1, length2, added1, added2, offset1, offset2, delta;
         int seq1From, seq1To, seq2From, seq2To;
@@ -131,8 +120,8 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
             final NucleotideSequence target = sequences.get(mappingHit.id);
             final MutationsBuilder<NucleotideSequence> mutations =
                     new MutationsBuilder<>(NucleotideSequence.ALPHABET);
-            //Left edge alignment
 
+            //Left edge alignment
             int seedPosition2 = seeds.get(mappingHit.indexById(0));
             int seedPosition1 = seedPosition2 + mappingHit.offsetById(0);
 
@@ -260,6 +249,10 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
                 break;
         if (i < hits.size())
             hits.removeRange(i, hits.size());
+
+        if (stat != null)
+            stat.kAlignerResult(kAlignmentResult);
+
         return kAlignmentResult;
     }
 
