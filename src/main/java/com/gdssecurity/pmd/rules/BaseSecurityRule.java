@@ -89,6 +89,8 @@ public class BaseSecurityRule extends AbstractJavaRule {
             },
             1.0f, 
             '|');
+
+    private boolean initialized = false;
 	
 	public BaseSecurityRule() {
 		super();
@@ -99,18 +101,14 @@ public class BaseSecurityRule extends AbstractJavaRule {
 
 
 
-    protected void init() {
-        if (this.sources == null) {
-            this.sources = Utils.arrayAsSet(getProperty(this.sourceDescriptor));
-        }
-        if (this.unsafeTypes == null) {
-            this.unsafeTypes = Utils.arrayAsSet(getProperty(this.unsafeTypesDescriptor));
-        }
-
-        if (this.safeTypes == null) {
-            this.safeTypes = Utils.arrayAsSet(getProperty(this.safeTypesDescriptor));
-        }    	
-    }
+	protected void init() {
+		if (!this.initialized) {
+			this.sources = Utils.arrayAsSet(getProperty(this.sourceDescriptor));
+			this.unsafeTypes = Utils.arrayAsSet(getProperty(this.unsafeTypesDescriptor));
+			this.safeTypes = Utils.arrayAsSet(getProperty(this.safeTypesDescriptor));
+			this.initialized = true;
+		}
+	}
     
     
     protected boolean isSafeType(ASTType type) {

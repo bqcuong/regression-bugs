@@ -117,6 +117,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 	private static final int MAX_DATAFLOWS = 1000;
 	private boolean generator = false;
+	private boolean initialized = false;
 
 	public DfaSecurityRule() {
 		super();
@@ -131,6 +132,12 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	@Override
 	protected void init() {
 		super.init();
+		if (!this.initialized) {
+			init2();
+			this.initialized = true;
+		}
+	}
+	private void init2() {
 		this.sinks = Utils.arrayAsSet(getProperty(this.sinkDescriptor));
 		this.sanitizers = Utils.arrayAsSet(getProperty(this.sanitizerDescriptor));
 		this.sinkAnnotations = Utils.arrayAsSet(getProperty(this.sinkAnnotationsDescriptor));
