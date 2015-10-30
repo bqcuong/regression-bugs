@@ -37,4 +37,13 @@ public class AnnotationsGeneratorTest {
 	public void testGeneratorPrivateCallBad() throws Exception {
 		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorPrivateCallBad.java", RULESET_ANNOTATIONS));
 	}
+	@Test
+	public void testGeneratorTwoCallsInOneFile() throws Exception {
+		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/annotations/generator/twocallsonefile/TwoCallsInOneFile.java", RULESET_ANNOTATIONS));
+	}
+	
+	@Test
+	public void testGeneratorTwoCallsInTwoFiles() throws Exception {
+		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/annotations/generator/twocallstwofiles", RULESET_ANNOTATIONS));
+	}
 }

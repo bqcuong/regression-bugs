@@ -79,6 +79,8 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 	private static final String UNKNOWN_TYPE = "UNKNOWN_TYPE";
 	private Map<String, String> cacheReturnTypes = new HashMap<String, String>();
+	private Set<String> generators = new HashSet<String>();
+	private Set<String> annotatedSinks = new HashSet<String>();
 	private Set<String> currentPathTaintedVariables;
 	private Set<String> functionParameterTainted = new HashSet<String>();
 	private Set<String> fieldTypesTainted = new HashSet<String>();
@@ -86,7 +88,6 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	private Map<String, Class<?>> fieldTypes;
 	private Map<String, Class<?>> functionParameterTypes;
 	private Set<String> sinks;
-	private Set<String> generators;
 	private Set<String> sanitizers;
 	private Set<String> sinkAnnotations;
 	private Set<String> generatorAnnotations;
@@ -137,7 +138,6 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		this.searchAnnotationsInPackages = Utils.arrayAsSet(getProperty(this.annotationsPackagesDescriptor));
 		this.searchAnnotationsInPackagesArray = this.searchAnnotationsInPackages
 				.toArray(new String[this.searchAnnotationsInPackages.size()]);
-		this.generators = new HashSet<String>();
 	}
 	@Override
 	public void execute(CurrentPath currentPath) {
@@ -186,10 +186,10 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	}
 
 	private boolean isSink(String objectTypeAndMethod) {
-		return this.sinks.contains(objectTypeAndMethod);
+		return this.sinks.contains(objectTypeAndMethod) || this.annotatedSinks.contains(objectTypeAndMethod);
 	}
 	private boolean isSink(String objectType, String objectMethod) {
-		return this.sinks.contains(objectType + "." + objectMethod);
+		return isSink(objectType + "." + objectMethod);
 	}
 	private boolean isGenerator(String objectTypeAndMethod) {
 		return this.generators.contains(objectTypeAndMethod);
@@ -645,7 +645,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 						Annotation[] annotations = method.getAnnotations();
 						for (Annotation annotation : annotations) {
 							if (this.sinkAnnotations.contains(annotation.annotationType().getCanonicalName())) {
-								this.sinks.add(key);
+								this.annotatedSinks.add(key);
 							}
 							if (this.generatorAnnotations.contains(annotation.annotationType().getCanonicalName())) {
 								this.generators.add(key);
