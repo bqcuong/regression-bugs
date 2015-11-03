@@ -23,6 +23,7 @@ http://www.opensource.org/licenses/rpl1.5
 package com.gdssecurity.pmd.rules.dfa;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,6 +71,7 @@ import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
 import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jaxen.JaxenException;
 
 import com.gdssecurity.pmd.Utils;
@@ -795,7 +797,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 						if (this.functionParameterTypes.containsKey(parameterName)) {
 							type = this.functionParameterTypes.get(parameterName);
 						} else {
-							type = getContainingType(node);
+							type = getTypeFromAttribute(node, parameterName);
 						}
 					}
 				} else {
@@ -804,7 +806,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 						if (this.fieldTypes.containsKey(suffix.getImage())) {
 							type = this.fieldTypes.get(suffix.getImage());
 						} else {
-							type = getContainingType(node);
+							type = getTypeFromAttribute(node, suffix.getImage());
 						}
 					}
 
@@ -820,6 +822,41 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		}
 		return type;
 
+	}
+
+	private Class<?> getTypeFromAttribute(Node node, String attributeName) {
+		Class<?> type = getContainingType(node);
+		Field field = null;
+
+		if (type != null) {
+			List<Class<?>> inheritanceList = getInheritance(type);
+
+			for (Class<?> clazz : inheritanceList) {
+				try {
+					field = FieldUtils.getDeclaredField(clazz, attributeName, true);
+					if (field != null) {
+						break;
+					}
+				} catch (SecurityException e) {
+					field = null;
+				}
+			}
+		}
+
+		if (field != null) {
+			type = field.getType();
+		}
+		return type;
+	}
+
+	private List<Class<?>> getInheritance(Class<?> declaringClass) {
+		List<Class<?>> list = new ArrayList<Class<?>>();
+		Class<?> aux = declaringClass;
+		while (aux != null) {
+			list.add(aux);
+			aux = aux.getSuperclass();
+		}
+		return list;
 	}
 
 	private Class<?> getContainingType (Node node) {
