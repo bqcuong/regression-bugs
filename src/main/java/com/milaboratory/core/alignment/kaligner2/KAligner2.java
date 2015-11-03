@@ -102,7 +102,7 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
         ArrList<KAlignmentHit2<P>> hits = new ArrList<>();
 
         final int maxIndels = parameters.getMapperMaxClusterIndels();
-        final int kValue = mapper.getKValue();
+        final int nValue = 0;//mapper.getNValue();
 
         KAlignmentResult2<P> kAlignmentResult = new KAlignmentResult2<>(mapping, hits, query, from, to);
         if (mapping.getHits().isEmpty()) {
@@ -169,20 +169,20 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
                 seedPosition2 = seeds.get(mappingHit.indexById(seedId));
                 seedPosition1 = seedPosition2 + mappingHit.offsetById(seedId);
 
-                offset1 = previousSeedPosition1 + kValue;
+                offset1 = previousSeedPosition1 + nValue;
                 length1 = seedPosition1 - offset1;
 
-                offset2 = previousSeedPosition2 + kValue;
+                offset2 = previousSeedPosition2 + nValue;
                 length2 = seedPosition2 - offset2;
 
-                assert target.getRange(offset1 - kValue, offset1).equals(query.getRange(offset2 - kValue, offset2));
+//                assert target.getRange(offset1 - nValue, offset1).equals(query.getRange(offset2 - nValue, offset2));
 
-                if (length2 < 0 || length1 < 0) {
-                    offset1 -= kValue;
-                    offset2 -= kValue;
-                    length1 += 2 * kValue;
-                    length2 += 2 * kValue;
-                }
+//                if (length2 < 0 || length1 < 0) {
+//                    offset1 -= nValue;
+//                    offset2 -= nValue;
+//                    length1 += 2 * nValue;
+//                    length2 += 2 * nValue;
+//                }
 
                 assert length1 >= 0 && length2 >= 0;
 
@@ -196,7 +196,7 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
             }
 
             //Right edge
-            offset2 = seeds.get(mappingHit.indexById(mappingHit.seedRecords.length - 1)) + kValue;
+            offset2 = seeds.get(mappingHit.indexById(mappingHit.seedRecords.length - 1)) + nValue;
             offset1 = offset2 + mappingHit.offsetById(mappingHit.seedRecords.length - 1);
 
             length1 = target.size() - offset1;

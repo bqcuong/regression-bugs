@@ -44,6 +44,10 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     /**
      * Nucleotides in kMer (value of k; kMer length)
      */
+    private int mapperNValue;
+    /**
+     * Allowed mutations in kMers
+     */
     private int mapperKValue;
     /**
      * Defines floating bounds of alignment
@@ -146,7 +150,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     // * @param maxHits                  maximal number of hits stored by {@link com.milaboratory.core.alignment.KAlignmentResult}
     // * @param scoring                  scoring system used for building alignments
     // */
-    public KAlignerParameters2(int mapperKValue, boolean floatingLeftBound, boolean floatingRightBound,
+    public KAlignerParameters2(int mapperNValue, int mapperKValue, boolean floatingLeftBound, boolean floatingRightBound,
                                int mapperAbsoluteMinClusterScore, int mapperExtraClusterScore, int mapperAbsoluteMinScore, float mapperRelativeMinScore,
                                int mapperMatchScore, int mapperMismatchScore, int mapperOffsetShiftScore, int mapperMinSeedsDistance,
                                int mapperMaxSeedsDistance, int mapperSlotCount, int mapperMaxClusterIndels,
@@ -154,6 +158,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
                                int maxHits, AffineGapAlignmentScoring scoring) {
         if (scoring != null && !scoring.uniformBasicMatchScore())
             throw new IllegalArgumentException("Use scoring with common match score.");
+        this.mapperNValue = mapperNValue;
         this.mapperKValue = mapperKValue;
         this.floatingLeftBound = floatingLeftBound;
         this.floatingRightBound = floatingRightBound;
@@ -203,8 +208,8 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      *
      * @return kValue (length of kMers or seeds)
      */
-    public int getMapperKValue() {
-        return mapperKValue;
+    public int getMapperNValue() {
+        return mapperNValue;
     }
 
     /**
@@ -213,8 +218,17 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
      * @param kValue
      * @return parameters object
      */
-    public KAlignerParameters2 setMapperKValue(int kValue) {
-        this.mapperKValue = kValue;
+    public KAlignerParameters2 setMapperNValue(int kValue) {
+        this.mapperNValue = kValue;
+        return this;
+    }
+
+    public int getMapperKValue() {
+        return mapperKValue;
+    }
+
+    public KAlignerParameters2 setMapperKValue(int mapperKValue) {
+        this.mapperKValue = mapperKValue;
         return this;
     }
 
@@ -576,7 +590,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
 
         KAlignerParameters2 that = (KAlignerParameters2) o;
 
-        if (mapperKValue != that.mapperKValue) return false;
+        if (mapperNValue != that.mapperNValue) return false;
         if (floatingLeftBound != that.floatingLeftBound) return false;
         if (floatingRightBound != that.floatingRightBound) return false;
         if (mapperAbsoluteMinClusterScore != that.mapperAbsoluteMinClusterScore) return false;
@@ -600,7 +614,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
 
     @Override
     public int hashCode() {
-        int result = mapperKValue;
+        int result = mapperNValue;
         result = 31 * result + (floatingLeftBound ? 1 : 0);
         result = 31 * result + (floatingRightBound ? 1 : 0);
         result = 31 * result + mapperAbsoluteMinClusterScore;

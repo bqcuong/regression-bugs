@@ -2,9 +2,11 @@ package com.milaboratory.core.alignment.kaligner2;
 
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.alignment.Alignment;
+import com.milaboratory.core.alignment.AlignmentUtils;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.GlobalObjectMappers;
 import com.milaboratory.util.RandomUtil;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -14,7 +16,7 @@ public class KAligner2Test {
     public static final AffineGapAlignmentScoring<NucleotideSequence> scoring = new AffineGapAlignmentScoring<>(
             NucleotideSequence.ALPHABET, 10, -7, -11, -2);
     public static final KAlignerParameters2 gParams = new KAlignerParameters2(
-            5, true, true,
+            9,3, true, true,
             15, -10, 15, 0f, 13, -7, -3,
             3, 6, 4, 3,
             0, 70, 0.8f, 5, scoring);
@@ -27,19 +29,24 @@ public class KAligner2Test {
         aligner.addReference(new NucleotideSequence("atgcgtcgatcgtagctagctgatcgatcgactgactagcatcagcatcaggatgtagagctagctagctac"));
         aligner.addReference(new NucleotideSequence("atgcgtcgatcgtagctagctgtagtagatgatgatagtagatagtagtagtgatgacgatcgactgaatgtagagctagctagctac"));
 
-        KAlignmentResult2<Object> al = aligner.align(new NucleotideSequence("atgcgtcgatcgtagctagctgtcgatcgactgaatgtagagctagctagctac"));
+        NucleotideSequence query = new NucleotideSequence("atgcgtcgatcgtagctagctgtcgatcgactgaatgtagagctagctagctac");
+        KAlignmentResult2<Object> al = aligner.align(query);
         System.out.println(GlobalObjectMappers.PRETTY.writeValueAsString(stat));
         System.out.println(al.hasHits());
+
         Alignment<NucleotideSequence> val = al.getHits().get(0).getAlignment();
+        Assert.assertEquals(query.getRange(val.getSequence2Range()), AlignmentUtils.getAlignedSequence2Part(val));
         System.out.println(val.getScore());
         System.out.println(val);
 
         val = al.getHits().get(1).getAlignment();
+        Assert.assertEquals(query.getRange(val.getSequence2Range()), AlignmentUtils.getAlignedSequence2Part(val));
         System.out.println(val.getScore());
         System.out.println(val);
 
 
         val = al.getHits().get(2).getAlignment();
+        Assert.assertEquals(query.getRange(val.getSequence2Range()), AlignmentUtils.getAlignedSequence2Part(val));
         System.out.println(val.getScore());
         System.out.println(val);
     }

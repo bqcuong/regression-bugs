@@ -27,7 +27,7 @@ public class KAlignerParameters2Test {
     public static final AffineGapAlignmentScoring<NucleotideSequence> scoring = new AffineGapAlignmentScoring<>(
             NucleotideSequence.ALPHABET, 10, -7, -11, -2);
     public static final KAlignerParameters2 gParams = new KAlignerParameters2(
-            5, true, true,
+            9, 3, true, true,
             15, -10, 15, 0f, 13, -7, -3,
             3, 6, 4, 3,
             0, 70, 0.8f, 5, scoring);

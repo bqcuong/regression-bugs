@@ -15,8 +15,10 @@
  */
 package com.milaboratory.core.alignment.kaligner2;
 
+import cc.redberry.pipe.CUtils;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.IntArrayList;
+import com.milaboratory.util.IntCombinations;
 import com.milaboratory.util.RandomUtil;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
@@ -71,15 +73,25 @@ public final class KMapper2 implements java.io.Serializable {
     /**
      * Nucleotides in kMer (value of k)
      */
+    private final int nValue;
+    /**
+     * Allowed number of mutations in kMer
+     */
     private final int kValue;
+    /**
+     * Iterations for each kMer
+     */
+    private final int kMersPerPosition;
     /**
      * Base of records for individual kMers
      */
-    private final int[][] base;
+    //base[combinationMask][kMer][seeds]
+    private final int[][][] base;
     /**
      * Number of records for each individual kMer (used only for building of base)
      */
-    private final int[] lengths;
+    //length[combinationMask][kMer]
+    private final int[][] lengths;
     /**
      * Minimal absolute score value
      */
@@ -137,7 +149,7 @@ public final class KMapper2 implements java.io.Serializable {
     /**
      * Creates new KMer mapper.
      *
-     * @param kValue                  nucleotides in kMer (value of k)
+     * @param nValue                  nucleotides in kMer (value of k)
      * @param minDistance             minimal distance between kMer seed positions in target sequence
      * @param maxDistance             maximal distance between kMer seed positions in target sequence
      * @param absoluteMinClusterScore minimal score
@@ -147,20 +159,20 @@ public final class KMapper2 implements java.io.Serializable {
      * @param floatingLeftBound       true if left bound of alignment could be floating
      * @param floatingRightBound      true if right bound of alignment could be floating
      */
-    public KMapper2(int kValue,
+    public KMapper2(int nValue, int kValue,
                     int minDistance, int maxDistance,
                     int absoluteMinClusterScore, int extraClusterScore,
                     int absoluteMinScore, float relativeMinScore,
                     int matchScore, int mismatchScore, int offsetShiftScore,
                     int slotCount, int maxClusterIndels,
                     boolean floatingLeftBound, boolean floatingRightBound) {
-        this(kValue, minDistance, maxDistance, absoluteMinClusterScore, extraClusterScore, absoluteMinScore, relativeMinScore, matchScore, mismatchScore, offsetShiftScore, slotCount, maxClusterIndels, floatingLeftBound, floatingRightBound, null);
+        this(nValue, kValue, minDistance, maxDistance, absoluteMinClusterScore, extraClusterScore, absoluteMinScore, relativeMinScore, matchScore, mismatchScore, offsetShiftScore, slotCount, maxClusterIndels, floatingLeftBound, floatingRightBound, null);
     }
 
     /**
      * Creates new KMer mapper.
      *
-     * @param kValue                  nucleotides in kMer (value of k)
+     * @param nValue                  nucleotides in kMer (value of k)
      * @param minDistance             minimal distance between kMer seed positions in target sequence
      * @param maxDistance             maximal distance between kMer seed positions in target sequence
      * @param absoluteMinClusterScore minimal score
@@ -171,7 +183,7 @@ public final class KMapper2 implements java.io.Serializable {
      * @param floatingRightBound      true if right bound of alignment could be floating
      * @param stat                    stat
      */
-    public KMapper2(int kValue,
+    public KMapper2(int nValue, int kValue,
                     int minDistance, int maxDistance,
                     int absoluteMinClusterScore, int extraClusterScore,
                     int absoluteMinScore, float relativeMinScore,
@@ -179,19 +191,24 @@ public final class KMapper2 implements java.io.Serializable {
                     int slotCount, int maxClusterIndels,
                     boolean floatingLeftBound, boolean floatingRightBound,
                     KAligner2Statistics stat) {
+        this.nValue = nValue;
         this.kValue = kValue;
-
         //Bits
         //this.bitsForIndex = 14;
         //this.offsetMask = 0xFFFFFFFF >>> bitsForIndex;
         //this.indexMask = 0xFFFFFFFF >>> (32 - bitsForIndex);
 
-        //Initialize base
-        int maxNumberOfKmers = 1 << (kValue * 2);
-
         // TODO lazy
-        base = new int[maxNumberOfKmers][10];
-        lengths = new int[maxNumberOfKmers];
+        base = new int[1 << nValue][][];
+        lengths = new int[1 << nValue][];
+        this.kMersPerPosition = nValue/kValue;
+
+        IntCombinations combinations = new IntCombinations(nValue, kValue);
+        for (int[] combination : CUtils.it(combinations)) {
+            int holesMask = getCombinationMask(combination);
+            base[holesMask] = new int[1 << (nValue * 2)][];
+            lengths[holesMask] = new int[1 << (nValue * 2)];
+        }
 
         //Parameters
         this.minDistance = minDistance;
@@ -218,7 +235,7 @@ public final class KMapper2 implements java.io.Serializable {
      * @return new KMapper
      */
     public static KMapper2 createFromParameters(KAlignerParameters2 parameters) {
-        return new KMapper2(parameters.getMapperKValue(), parameters.getMapperMinSeedsDistance(),
+        return new KMapper2(parameters.getMapperNValue(), parameters.getMapperKValue(), parameters.getMapperMinSeedsDistance(),
                 parameters.getMapperMaxSeedsDistance(), parameters.getMapperAbsoluteMinClusterScore(),
                 parameters.getMapperExtraClusterScore(),
                 parameters.getMapperAbsoluteMinScore(),
@@ -238,7 +255,7 @@ public final class KMapper2 implements java.io.Serializable {
      * @return new KMapper
      */
     public static KMapper2 createFromParameters(KAlignerParameters2 parameters, KAligner2Statistics stat) {
-        return new KMapper2(parameters.getMapperKValue(), parameters.getMapperMinSeedsDistance(),
+        return new KMapper2(parameters.getMapperNValue(), parameters.getMapperKValue(), parameters.getMapperMinSeedsDistance(),
                 parameters.getMapperMaxSeedsDistance(), parameters.getMapperAbsoluteMinClusterScore(),
                 parameters.getMapperExtraClusterScore(),
                 parameters.getMapperAbsoluteMinScore(),
@@ -261,17 +278,19 @@ public final class KMapper2 implements java.io.Serializable {
     /**
      * Encodes and adds individual kMer to the base.
      */
-    private void addKmer(int kmer, int id, int offset) {
-        if (base[kmer].length == lengths[kmer])
-            base[kmer] = copyOf(base[kmer], base[kmer].length * 3 / 2 + 1);
+    private void addKmer(int holesMask, int kmer, int id, int offset) {
+        if (base[holesMask][kmer] == null)
+            base[holesMask][kmer] = new int[10];
+        else if (base[holesMask][kmer].length == lengths[holesMask][kmer])
+            base[holesMask][kmer] = copyOf(base[holesMask][kmer], base[holesMask][kmer].length * 3 / 2 + 1);
 
         if ((offset & offsetMask) != offset)
             throw new IllegalArgumentException("Record is too long.");
 
-        assert lengths[kmer] == 0 || index(base[kmer][lengths[kmer] - 1]) != id
-                || offset(base[kmer][lengths[kmer] - 1]) < offset;
+        assert lengths[holesMask][kmer] == 0 || index(base[holesMask][kmer][lengths[holesMask][kmer] - 1]) != id
+                || offset(base[holesMask][kmer][lengths[holesMask][kmer] - 1]) < offset;
 
-        base[kmer][lengths[kmer]++] = record(offset, id);
+        base[holesMask][kmer][lengths[holesMask][kmer]++] = record(offset, id);
     }
 
 
@@ -295,25 +314,34 @@ public final class KMapper2 implements java.io.Serializable {
         maxReferenceLength = max(maxReferenceLength, sequence.size());
         minReferenceLength = Math.min(minReferenceLength, sequence.size());
 
-        int kmer = 0;
-        int kmerMask = 0xFFFFFFFF >>> (32 - kValue * 2);
-        int tMask = 0xFFFFFFFF >>> (34 - kValue * 2);
+        int kmer;
+        int tMask = 0xFFFFFFFF >>> (34 - nValue * 2);
 
-        int to = sequence.size() - kValue;
-        for (int j = 0; j < kValue; ++j)
-            kmer = kmer << 2 | sequence.codeAt(j);
-        addKmer(kmer, id, 0);
+        int to = sequence.size() - nValue;
+        IntCombinations combinations = new IntCombinations(nValue, kValue);
+        for (int[] combination : CUtils.it(combinations)) {
+            int holesMask = getCombinationMask(combination);
 
-        for (int i = 1; i <= to; ++i) {
-            //Next kMer
-            kmer = kmerMask & (kmer << 2 | sequence.codeAt(i + kValue - 1));
+            kmer = 0;
+            for (int j = 0; j < nValue; ++j)
+                if (((holesMask >> j) & 1) == 0)
+                    kmer = (kmer << 2 | sequence.codeAt(j));
+            addKmer(holesMask, kmer, id, 0);
 
-            //Detecting homopolymeric kMers and dropping them
-            if (((kmer ^ (kmer >>> 2)) & tMask) == 0 &&
-                    ((kmer ^ (kmer << 2)) & (tMask << 2)) == 0)
-                continue;
+            for (int i = 1; i <= to; ++i) {
+                //Next kMer
+                kmer = 0;
+                for (int j = 0; j < nValue; ++j)
+                    if (((holesMask >> j) & 1) == 0)
+                        kmer = (kmer << 2 | sequence.codeAt(i + j));
 
-            addKmer(kmer, id, i);
+                //Detecting homopolymeric kMers and dropping them
+                //TODO:::!!!!
+//                if (((kmer ^ (kmer >>> 2)) & tMask) == 0 && ((kmer ^ (kmer << 2)) & (tMask << 2)) == 0)
+//                    continue;
+
+                addKmer(holesMask, kmer, id, i);
+            }
         }
 
         return id;
@@ -327,8 +355,17 @@ public final class KMapper2 implements java.io.Serializable {
         if (!built)
             synchronized (this) {
                 if (!built) {
-                    for (int i = 0; i < base.length; ++i)
-                        base[i] = copyOf(base[i], lengths[i]);
+                    int[] zero = new int[0];
+                    IntCombinations combinations = new IntCombinations(nValue, kValue);
+                    for (int[] combination : CUtils.it(combinations)) {
+                        int holeMask = getCombinationMask(combination);
+                        for (int kMer = 0; kMer < base[holeMask].length; ++kMer)
+                            if (base[holeMask][kMer] != null) {
+                                base[holeMask][kMer] = copyOf(base[holeMask][kMer], lengths[holeMask][kMer]);
+                                Arrays.sort(base[holeMask][kMer]);
+                            } else
+                                base[holeMask][kMer] = zero;
+                    }
                     built = true;
                 }
             }
@@ -364,7 +401,7 @@ public final class KMapper2 implements java.io.Serializable {
         final ArrList<KMappingHit2> result = new ArrList<>();
 
         // Sequence is shorter than k values
-        if (to - from <= kValue){
+        if (to - from <= nValue) {
             KMappingResult2 kMappingResult2 = new KMappingResult2(null, result);
 
             // Collecting statistics
@@ -383,11 +420,11 @@ public final class KMapper2 implements java.io.Serializable {
 
         // Generating random positions of seeds
         RandomGenerator random = RandomUtil.getThreadLocalRandom();
-        while ((seedPosition += random.nextInt(maxDistance + 1 - minDistance) + minDistance) < to - kValue)
+        while ((seedPosition += random.nextInt(maxDistance + 1 - minDistance) + minDistance) < to - nValue)
             seedPositions.add(seedPosition);
 
         // Adding last possible position to the lis of seed positions
-        seedPositions.add(to - kValue);
+        seedPositions.add(to - nValue);
 
         int kmer;
         final IntArrayList[] candidates = new IntArrayList[sequencesInBase];
@@ -396,16 +433,31 @@ public final class KMapper2 implements java.io.Serializable {
         // By querying db for each seed kmer from query sequence
         int id, positionInTarget;
         for (int i = 0; i < seedPositions.size(); ++i) {
-            kmer = 0;
-            for (int j = seedPositions.get(i); j < seedPositions.get(i) + kValue; ++j)
-                kmer = kmer << 2 | sequence.codeAt(j);
+            IntArrayList allRecods = new IntArrayList();
+            int forbidden = 0xffffffff;
+            for (int holesMaskIter = 0; holesMaskIter < kMersPerPosition; ++holesMaskIter) {
+                int holesMask = 0;
+                while (Integer.bitCount(holesMask) != kValue) {
+                    holesMask |= 1 << random.nextInt(nValue);
+                    holesMask &= forbidden;
+                }
 
-            // DB contains no records for this kMer
-            if (base[kmer].length == 0)
-                continue;
+                forbidden &= ~holesMask;
+                kmer = 0;
+                for (int j = 0; j < nValue; ++j)
+                    if (((holesMask >> j) & 1) == 0)
+                        kmer = kmer << 2 | sequence.codeAt(seedPositions.get(i) + j);
+                allRecods.addAll(base[holesMask][kmer]);
+            }
 
             // Adding each records for it's corresponding candidate
-            for (int record : base[kmer]) {
+
+            allRecods.sort();
+            for (int i1 = 0; i1 < allRecods.size(); i1++) {
+                int record = allRecods.get(i1);
+                if (i1 > 0 && record == allRecods.get(i1 - 1))
+                    continue;
+
                 // Id of target sequence, where the kMer was found
                 id = index(record);
                 // Position of the kMer in target sequence
@@ -915,8 +967,8 @@ public final class KMapper2 implements java.io.Serializable {
      * @return number of nucleotides in kMer (value of k)
      */
 
-    public int getKValue() {
-        return kValue;
+    public int getNValue() {
+        return nValue;
     }
 
     /**
@@ -976,20 +1028,28 @@ public final class KMapper2 implements java.io.Serializable {
         return -maxAllowedDelta <= diff && diff <= maxAllowedDelta;
     }
 
+    private static int getCombinationMask(final int[] combination) {
+        int c = 0;
+        for (int a : combination)
+            c |= (1 << a);
+        return c;
+    }
+
     /**
      * Method used internally.
      */
     public SummaryStatistics getRecordSizeSummaryStatistics() {
         SummaryStatistics ss = new SummaryStatistics();
-        for (int len : lengths)
-            ss.addValue(len);
+        for (int[] length : lengths)
+            for (int len : length)
+                ss.addValue(len);
         return ss;
     }
 
     @Override
     public String toString() {
         SummaryStatistics ss = getRecordSizeSummaryStatistics();
-        return "K=" + kValue + "; Avr=" + ss.getMean() + "; SD=" + ss.getStandardDeviation();
+        return "K=" + nValue + "; Avr=" + ss.getMean() + "; SD=" + ss.getStandardDeviation();
     }
 
     static final class ArrList<T> extends ArrayList<T> {

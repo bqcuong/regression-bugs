@@ -1,7 +1,6 @@
 package com.milaboratory.core.alignment.kaligner2;
 
 import cc.redberry.pipe.CUtils;
-import cc.redberry.pipe.OutputPort;
 import com.milaboratory.core.Range;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.generator.MutationModels;
@@ -11,6 +10,7 @@ import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
 import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
+import com.milaboratory.util.IntCombinations;
 import com.milaboratory.util.RandomUtil;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.math3.random.RandomDataGenerator;
@@ -28,7 +28,7 @@ import java.util.Random;
  * Created by poslavsky on 15/09/15.
  */
 public class KMapper2Test {
-    public static final KAlignerParameters2 gParams = new KAlignerParameters2(5, false, false,
+    public static final KAlignerParameters2 gParams = new KAlignerParameters2(9,3, false, false,
             15, -20, 15, 0.87f, 13, -7,
             -3, 3, 6, 4, 3, 0, 0, 0, 0, null);
 
@@ -492,12 +492,12 @@ public class KMapper2Test {
 //                        int kmer1 = 0, kmer2 = 0;
 //                        //get kmer in target sequence
 //                        int targetFrom = result.seeds.get(hit.from + k);
-//                        for (int j = targetFrom; j < targetFrom + ka.getKValue(); ++j)
+//                        for (int j = targetFrom; j < targetFrom + ka.getNValue(); ++j)
 //                            kmer1 = kmer1 << 2 | target.codeAt(j);
 //
 //                        //kmer in ref sequence
 //                        int refFrom = targetFrom - hit.seedOffsets[k];
-//                        for (int j = refFrom; j < refFrom + ka.getKValue(); ++j)
+//                        for (int j = refFrom; j < refFrom + ka.getNValue(); ++j)
 //                            kmer2 = kmer2 << 2 | ncs.get(hit.id).codeAt(j);
 //
 //                        Assert.assertEquals(kmer1, kmer2);
@@ -512,304 +512,15 @@ public class KMapper2Test {
 //        Assert.assertTrue((float) found / total > 0.85f);
 //    }
 
-
-    //@Test
-    //public void testArrList() throws Exception {
-    //    Random random = new Random();
-    //
-    //
-    //    Comparator<Integer> comp = new Comparator<Integer>() {
-    //        @Override
-    //        public int compare(Integer o1, Integer o2) {
-    //            return Integer.compare(o1, o2);
-    //        }
-    //    };
-    //
-    //    for (int c = 0; c < 100000; ++c) {
-    //        ArrayList<Integer> arrayList = new ArrayList<>();
-    //        ArrList<Integer> arrList = new ArrList<>();
-    //        for (int i = 0; i < 100; ++i) {
-    //            int r = random.nextInt();
-    //            arrayList.add(r);
-    //            arrList.add(r);
-    //        }
-    //
-    //        long start;
-    //        start = System.nanoTime();
-    //        Collections.sort(arrayList, comp);
-    //        long arrayListTiming = System.nanoTime() - start;
-    //
-    //        start = System.nanoTime();
-    //        arrList.sort(comp);
-    //        long arrListTiming = System.nanoTime() - start;
-    //    }
-    //
-    //    DescriptiveStatistics statistics = new DescriptiveStatistics();
-    //    DescriptiveStatistics arrStatistics = new DescriptiveStatistics();
-    //    DescriptiveStatistics llStatistics = new DescriptiveStatistics();
-    //    for (int c = 0; c < 100000; ++c) {
-    //        ArrayList<Integer> arrayList = new ArrayList<>();
-    //        ArrList<Integer> arrList = new ArrList<>();
-    //        for (int i = 0; i < 1000; ++i) {
-    //            int r = random.nextInt();
-    //            arrayList.add(r);
-    //            arrList.add(r);
-    //        }
-    //
-    //        long start;
-    //        start = System.nanoTime();
-    //        Collections.sort(arrayList, comp);
-    //        long arrayListTiming = System.nanoTime() - start;
-    //
-    //        start = System.nanoTime();
-    //        arrList.sort(comp);
-    //        long arrListTiming = System.nanoTime() - start;
-    //
-    //        llStatistics.addValue(arrayListTiming);
-    //        arrStatistics.addValue(arrListTiming);
-    //        statistics.addValue(arrayListTiming - arrListTiming);
-    //    }
-    //
-    //    System.out.println("ArrayList:");
-    //    System.out.println(llStatistics);
-    //
-    //    System.out.println("ArrList:");
-    //    System.out.println(arrStatistics);
-    //
-    //    System.out.println("ArrayList-ArrList:");
-    //    System.out.println(statistics);
-    //}
-
-    //static final class ArrList<T> extends ArrayList<T> {
-    //    public ArrList() {
-    //    }
-    //
-    //    final Field elementData;
-    //
-    //    {
-    //        try {
-    //            elementData = ArrayList.class.getDeclaredField("elementData");
-    //            elementData.setAccessible(true);
-    //        } catch (Throwable e) {
-    //            throw new RuntimeException(e);
-    //        }
-    //    }
-    //
-    //    Object[] arr;
-    //
-    //    @Override
-    //    public boolean add(T t) {
-    //        ensure();
-    //        return super.add(t);
-    //    }
-    //
-    //    private void ensure() {
-    //        try {
-    //            arr = (Object[]) elementData.get(this);
-    //        } catch (Throwable e) {
-    //            throw new RuntimeException(e);
-    //        }
-    //    }
-    //
-    //    @Override
-    //    public void removeRange(int fromIndex, int toIndex) {
-    //        super.removeRange(fromIndex, toIndex);
-    //    }
-    //
-    //    private void sort(Comparator<T> comp) {
-    //        Arrays.sort(arr, 0, size(), (Comparator) comp);
-    //    }
-    //}
-
-
-    // base[combId = 0001110000]
-    // base[combIndex = 0,1,2,3 ... C(N,k)] + map <
     @Test
-    public void test3() throws Exception {
-        int N = 12;
-        int k = 3;
-
-        TIntObjectHashMap<String> map = new TIntObjectHashMap<>();
-        String[] arr = new String[1 << N];
-        Combinations combinations = new Combinations(N, k);
-
-        //map <comb -> index>
-
-        for (int[] comb : CUtils.it(combinations)) {
-            int c = pack(comb);
-            map.put(c, Arrays.toString(comb.clone()));
-            arr[c] = Arrays.toString(comb.clone());
-        }
-
-        Random random = new Random();
-
-        long length = 0;
-        long timingMap = 0, timingArr = 0, start;
-        int iterations = 10_000_000;
-
-//        for (int i = 0; i < iterations; ++i) {
-//            int c = 0;
-//            while (Integer.bitCount(c) != k)
-//                c |= 1 << random.nextInt(N);
-//
-//            long start = System.nanoTime();
-//            String s = map.get(c);
-//            timingMap += System.nanoTime() - start;
-//            length += s.length();
-//        }
-//
-//
-//        length = 0;
-//        timingMap = 0;
-//        for (int i = 0; i < iterations; ++i) {
-//            int c = 0;
-//            while (Integer.bitCount(c) != k)
-//                c |= 1 << random.nextInt(N);
-//
-//            long start = System.nanoTime();
-//            String s = map.get(c);
-//            timingMap += System.nanoTime() - start;
-//            length += s.length();
-//        }
-//
-//
-//        length = 0;
-//        long timingArr = 0;
-//        for (int i = 0; i < iterations; ++i) {
-//            int c = 0;
-//            while (Integer.bitCount(c) != k)
-//                c |= 1 << random.nextInt(N);
-//
-//            long start = System.nanoTime();
-//            String s = arr[c];
-//            timingArr += System.nanoTime() - start;
-//            length += s.length();
-//        }
-//
-//
-//        length = 0;
-//        timingArr = 0;
-//        for (int i = 0; i < iterations; ++i) {
-//            int c = 0;
-//            while (Integer.bitCount(c) != k)
-//                c |= 1 << random.nextInt(N);
-//
-//            long start = System.nanoTime();
-//            String s = arr[c];
-//            timingArr += System.nanoTime() - start;
-//            length += s.length();
-//        }
-//
-//        System.out.println(timingMap);
-//        System.out.println(timingArr);
-
-
-        length = 0;
-        timingArr = 0;
-        int cc[] = new int[iterations];
-        for (int i = 0; i < iterations; ++i) {
-            int c = 0;
-            while (Integer.bitCount(c) != k)
-                c |= 1 << random.nextInt(N);
-            cc[i] = c;
-        }
-
-        length = 0;
-        timingArr = 0;
-        start = System.nanoTime();
-        for (int i = 0; i < iterations; ++i) {
-            String s = arr[cc[i]];
-            length += s.length();
-        }
-        timingArr += System.nanoTime() - start;
-
-
-        length = 0;
-        timingArr = 0;
-        start = System.nanoTime();
-        for (int i = 0; i < iterations; ++i) {
-            String s = arr[cc[i]];
-            length += s.length();
-        }
-        timingArr += System.nanoTime() - start;
-        System.out.println(timingArr);
-
-
-
-        length = 0;
-        timingMap = 0;
-        start = System.nanoTime();
-        for (int i = 0; i < iterations; ++i) {
-            String s = map.get(cc[i]);
-            length += s.length();
-        }
-        timingMap += System.nanoTime() - start;
-
-
-        length = 0;
-        timingMap = 0;
-        start = System.nanoTime();
-        for (int i = 0; i < iterations; ++i) {
-            String s = map.get(cc[i]);
-            length += s.length();
-        }
-        timingMap += System.nanoTime() - start;
-        System.out.println(timingMap);
+    public void testsss() throws Exception {
+        System.out.println( 0xFF);
     }
 
-    static int pack(int[] combination) {
-        int c = 0;
-        for (int i = 0; i < combination.length; ++i)
-            c |= (1 << combination[i]);
-        return c;
-    }
-
-    static class Combinations implements OutputPort<int[]> {
-        final int[] combination;
-        private final int n, k;
-        private boolean onFirst = true;
-
-        public Combinations(int n, int k) {
-            if (n < k)
-                throw new IllegalArgumentException(" n < k ");
-            this.n = n;
-            this.k = k;
-            this.combination = new int[k];
-            reset();
-        }
-
-
-        public void reset() {
-            onFirst = true;
-            for (int i = 0; i < k; ++i)
-                combination[i] = i;
-        }
-
-
-        private boolean isLast() {
-            for (int i = 0; i < k; ++i)
-                if (combination[i] != i + n - k)
-                    return false;
-            return true;
-        }
-
-
-        @Override
-        public int[] take() {
-            if (isLast())
-                return null;
-            if (onFirst)
-                onFirst = false;
-            else {
-                int i;
-                for (i = k - 1; i >= 0; --i)
-                    if (combination[i] != i + n - k)
-                        break;
-                int m = ++combination[i++];
-                for (; i < k; ++i)
-                    combination[i] = ++m;
-            }
-            return combination;
-        }
+    static int kMerTrailingZeros(int kMer, int mask) {
+        int i = Integer.numberOfTrailingZeros(mask);
+        kMer = mask;
+        mask >>= i;
+        return kMer;
     }
 }
