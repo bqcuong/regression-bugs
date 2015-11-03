@@ -1,10 +1,7 @@
 package com.milaboratory.core.alignment.kaligner2;
 
 import com.milaboratory.core.Range;
-import com.milaboratory.core.alignment.Alignment;
-import com.milaboratory.core.alignment.AlignmentUtils;
-import com.milaboratory.core.alignment.BandedAffineAligner;
-import com.milaboratory.core.alignment.BandedSemiLocalResult;
+import com.milaboratory.core.alignment.*;
 import com.milaboratory.core.alignment.batch.BatchAlignerWithBase;
 import com.milaboratory.core.alignment.kaligner2.KMapper2.ArrList;
 import com.milaboratory.core.mutations.Mutations;
@@ -95,6 +92,8 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
 
         final BandedAffineAligner.MatrixCache cache = new BandedAffineAligner.MatrixCache();
 
+        final AffineGapAlignmentScoring<NucleotideSequence> scoring = parameters.getScoring();
+
         // Saving to local variables for performance
         final KMappingResult2 mapping = mapper.align(query, from, to);
         final IntArrayList seeds = mapping.seeds;
@@ -102,7 +101,8 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
         ArrList<KAlignmentHit2<P>> hits = new ArrList<>();
 
         final int maxIndels = parameters.getMapperMaxClusterIndels();
-        final int nValue = 0;//mapper.getNValue();
+        final int nValue = mapper.getNValue();
+        final boolean kIsZero = (mapper.getKValue() == 0);
 
         KAlignmentResult2<P> kAlignmentResult = new KAlignmentResult2<>(mapping, hits, query, from, to);
         if (mapping.getHits().isEmpty()) {
@@ -175,18 +175,18 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
                 offset2 = previousSeedPosition2 + nValue;
                 length2 = seedPosition2 - offset2;
 
-//                assert target.getRange(offset1 - nValue, offset1).equals(query.getRange(offset2 - nValue, offset2));
+                assert !kIsZero || target.getRange(offset1 - nValue, offset1).equals(query.getRange(offset2 - nValue, offset2));
 
-//                if (length2 < 0 || length1 < 0) {
-//                    offset1 -= nValue;
-//                    offset2 -= nValue;
-//                    length1 += 2 * nValue;
-//                    length2 += 2 * nValue;
-//                }
+                if (length2 < 0 || length1 < 0)
+                    continue;
 
                 assert length1 >= 0 && length2 >= 0;
 
-                BandedAffineAligner.align0(parameters.getScoring(), target, query,
+                if (!kIsZero)
+                    Aligner.alignOnlySubstitutions0(target, query, previousSeedPosition1, nValue, previousSeedPosition2, nValue,
+                            scoring, mutations);
+
+                BandedAffineAligner.align0(scoring, target, query,
                         offset1, length1,
                         offset2, length2,
                         maxIndels, mutations, cache);
@@ -196,8 +196,12 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
             }
 
             //Right edge
-            offset2 = seeds.get(mappingHit.indexById(mappingHit.seedRecords.length - 1)) + nValue;
-            offset1 = offset2 + mappingHit.offsetById(mappingHit.seedRecords.length - 1);
+            if (!kIsZero)
+                Aligner.alignOnlySubstitutions0(target, query, previousSeedPosition1, nValue, previousSeedPosition2, nValue,
+                        scoring, mutations);
+
+            offset2 = previousSeedPosition2 + nValue;
+            offset1 = previousSeedPosition1 + nValue;
 
             length1 = target.size() - offset1;
             length2 = query.size() - offset2;

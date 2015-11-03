@@ -35,6 +35,9 @@ public class BandedAffineAligner {
                              final int offset1, final int length1, final int offset2, final int length2,
                              final int width, final MutationsBuilder<NucleotideSequence> mutations,
                              final MatrixCache cache) {
+        if (length1 == 0 && length2 == 0)
+            return 0;
+
         int size1 = length1 + 1,
                 size2 = length2 + 1;
 
@@ -110,7 +113,7 @@ public class BandedAffineAligner {
                                                         final int width, final MutationsBuilder<NucleotideSequence> mutations,
                                                         final MatrixCache cache) {
         if (length1 == 0 || length2 == 0)
-            return new BandedSemiLocalResult(offset1, offset2, 0);
+            return new BandedSemiLocalResult(offset1 - 1, offset2 - 1, 0);
 
         int minLength = Math.min(length1, length2) + width;
         length1 = Math.min(length1, minLength);

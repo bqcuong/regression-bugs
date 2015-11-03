@@ -24,7 +24,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class BandedAffineAlignerTest {
     @Test
-    public void test1() throws Exception {
+     public void test1() throws Exception {
         AffineGapAlignmentScoring<NucleotideSequence> scoring = new AffineGapAlignmentScoring<>(
                 NucleotideSequence.ALPHABET, 1, -10, -3, -1);
 
@@ -32,6 +32,25 @@ public class BandedAffineAlignerTest {
         NucleotideSequence b = new NucleotideSequence("agtcgttagcgacaaaaaaa");
 
         a = new NucleotideSequence("atcgagctagttttttttttt");
+        b = new NucleotideSequence("ataaaaaaaaaaacgagctag");
+
+        MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
+        BandedAffineAligner.align0(scoring, a, b, 0, a.size(), 0, b.size(), 151, mutations, new BandedAffineAligner.MatrixCache());
+
+        System.out.println(new Alignment<>(a, mutations.createAndDestroy(), new Range(0, a.size()), new Range(0, b.size()), 100));
+        System.out.println(Aligner.alignGlobalAffine(scoring, a, b));
+        //System.out.println(new Alignment<>(a, mutations.createAndDestroy(), new Range(0, a.size()), new Range(0, b.size()), 100));
+    }
+
+    @Test
+    public void test11() throws Exception {
+        AffineGapAlignmentScoring<NucleotideSequence> scoring = new AffineGapAlignmentScoring<>(
+                NucleotideSequence.ALPHABET, 1, -10, -3, -1);
+
+        NucleotideSequence a = new NucleotideSequence("ataaaaaaatgatcgacaaaaaaaatttttttt");
+        NucleotideSequence b = new NucleotideSequence("agtcgttagcgacaaaaaaa");
+
+        a = new NucleotideSequence("");
         b = new NucleotideSequence("ataaaaaaaaaaacgagctag");
 
         MutationsBuilder<NucleotideSequence> mutations = new MutationsBuilder<>(NucleotideSequence.ALPHABET);

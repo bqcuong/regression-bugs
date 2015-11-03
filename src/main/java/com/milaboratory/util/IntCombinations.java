@@ -38,11 +38,12 @@ public final class IntCombinations implements OutputPort<int[]> {
 
     @Override
     public int[] take() {
-        if (isLast())
-            return null;
         if (onFirst)
             onFirst = false;
         else {
+            if (isLast())
+                return null;
+
             int i;
             for (i = k - 1; i >= 0; --i)
                 if (combination[i] != i + n - k)

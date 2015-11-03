@@ -4,6 +4,7 @@ import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.alignment.AlignmentUtils;
 import com.milaboratory.core.sequence.NucleotideSequence;
+import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
 import com.milaboratory.util.RandomUtil;
 import org.junit.Assert;
@@ -16,9 +17,9 @@ public class KAligner2Test {
     public static final AffineGapAlignmentScoring<NucleotideSequence> scoring = new AffineGapAlignmentScoring<>(
             NucleotideSequence.ALPHABET, 10, -7, -11, -2);
     public static final KAlignerParameters2 gParams = new KAlignerParameters2(
-            9,3, true, true,
+            9, 3, true, true,
             15, -10, 15, 0f, 13, -7, -3,
-            3, 6, 4, 3,
+            3, 6, 4, 3, 3,
             0, 70, 0.8f, 5, scoring);
 
     @Test
@@ -51,6 +52,25 @@ public class KAligner2Test {
         System.out.println(val);
     }
 
+    @Test
+    public void testSimpleRandomTest() throws Exception {
+        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParams1(30), 10).take();
+        Benchmark bm = new Benchmark(50_000_000_000L);
+        KAlignerParameters2 alParams = new KAlignerParameters2(9, 3,
+                true, true,
+                75, -50, 115, 0.87f, 45, -10, -15,
+                2, 5, 5, 3, 3,
+                0, 70, 0.87f, 5,
+                new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -7, -9, -1));
+        alParams.setMapperNValue(9);
+        alParams.setMapperKValue(3);
+        alParams.setMapperKMersPerPosition(3);
+        BenchmarkInput bi = new BenchmarkInput(alParams, challenge);
+        BenchmarkResults result = bm.process(bi);
+        System.out.println(TestUtil.time(result.getAverageTiming()));
+        System.out.println(result.getProcessedQueries());
+        System.out.println(result.getBadFraction() * 100);
+    }
 
     @Test
     public void test2() throws Exception {

@@ -64,6 +64,17 @@ public class AlignerTest {
     }
 
     @Test
+    public void testExtractSubstitutions3() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("ATTAGACA"),
+                seq2 = new NucleotideSequence("ACAGATAC");
+
+        final Alignment muts = Aligner.alignOnlySubstitutions(seq1, seq2, 0, seq1.size(), 0, seq2.size(),
+                new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 2, -1, -4, -3));
+
+        assertEquals(seq2, muts.getAbsoluteMutations().mutate(seq1));
+    }
+
+    @Test
     public void testGlobal0() throws Exception {
         Alignment<NucleotideSequence> alignment = Aligner.alignGlobalLinear(
                 LinearGapAlignmentScoring.getNucleotideBLASTScoring(),

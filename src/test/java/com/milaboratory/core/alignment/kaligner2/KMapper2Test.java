@@ -1,6 +1,5 @@
 package com.milaboratory.core.alignment.kaligner2;
 
-import cc.redberry.pipe.CUtils;
 import com.milaboratory.core.Range;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.generator.MutationModels;
@@ -10,9 +9,7 @@ import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
 import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
-import com.milaboratory.util.IntCombinations;
 import com.milaboratory.util.RandomUtil;
-import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.Well1024a;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -20,17 +17,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by poslavsky on 15/09/15.
  */
 public class KMapper2Test {
-    public static final KAlignerParameters2 gParams = new KAlignerParameters2(9,3, false, false,
+    public static final KAlignerParameters2 gParams = new KAlignerParameters2(9, 3, false, false,
             15, -20, 15, 0.87f, 13, -7,
-            -3, 3, 6, 4, 3, 0, 0, 0, 0, null);
+            -3, 3, 6, 4, 3, 3, 0, 0, 0, 0, null);
 
 //    @Test
 //    public void testBestOffset1() throws Exception {
@@ -514,7 +509,7 @@ public class KMapper2Test {
 
     @Test
     public void testsss() throws Exception {
-        System.out.println( 0xFF);
+        System.out.println(0xFF);
     }
 
     static int kMerTrailingZeros(int kMer, int mask) {
