@@ -198,7 +198,7 @@ public final class KMapper2 implements java.io.Serializable {
         this.kValue = kValue;
 
         // TODO lazy
-        int maxHolesMask = ((0xFFFFFFFF >>> (32 - kValue)) << (nValue - kValue)) + 1;
+        int maxHolesMask = kValue == 0 ? 1 : (((0xFFFFFFFF >>> (32 - kValue)) << (nValue - kValue)) + 1);
         base = new int[maxHolesMask][][];
         lengths = new int[maxHolesMask][];
 

@@ -64,7 +64,8 @@ public final class Challenge {
                 Mutations<NucleotideSequence> m;
                 NucleotideSequence ins;
                 double v;
-                for (int i = generator.nextInt(parameters.minClusters, parameters.maxClusters); i >= 0; --i)
+                for (int i = parameters.minClusters == parameters.maxClusters ? parameters.minClusters :
+                        generator.nextInt(parameters.minClusters, parameters.maxClusters); i >= 0; --i)
                     if (tRanges.isEmpty()) {
                         r = new Range(tOffset, tOffset += generator.nextInt(parameters.minClusterLength, parameters.maxClusterLength));
                         if (r.getTo() > target.size())

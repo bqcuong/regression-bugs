@@ -66,4 +66,15 @@ public class ChallengeProvider implements OutputPort<Challenge> {
                         0, 0).multiplyProbabilities(multiplier)
         );
     }
+
+    public static ChallengeParameters getParams2OneCluster(double multiplier) {
+        return new ChallengeParameters(100, 100, 500,
+                100000,
+                1, 1, 30, 80, 3, 30,
+                0.45, 0.45, 0.5,
+                new GenericNucleotideMutationModel(
+                        SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
+                        0.00522, 0.00198).multiplyProbabilities(multiplier)
+        );
+    }
 }

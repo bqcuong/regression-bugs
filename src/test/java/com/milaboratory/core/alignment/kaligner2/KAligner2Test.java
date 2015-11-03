@@ -1,8 +1,6 @@
 package com.milaboratory.core.alignment.kaligner2;
 
-import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
-import com.milaboratory.core.alignment.Alignment;
-import com.milaboratory.core.alignment.AlignmentUtils;
+import com.milaboratory.core.alignment.*;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
@@ -67,6 +65,60 @@ public class KAligner2Test {
         alParams.setMapperKMersPerPosition(3);
         BenchmarkInput bi = new BenchmarkInput(alParams, challenge);
         BenchmarkResults result = bm.process(bi);
+        System.out.println(TestUtil.time(result.getAverageTiming()));
+        System.out.println(result.getProcessedQueries());
+        System.out.println(result.getBadFraction() * 100);
+    }
+
+    @Test
+    public void testSimpleRandomTestK2OneCluster() throws Exception {
+        /*
+        192.06us
+        100000
+        0.013
+        */
+        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParams2OneCluster(30), 10).take();
+        Benchmark bm = new Benchmark(50_000_000_000L);
+        KAlignerParameters2 alParams = new KAlignerParameters2(9, 3,
+                true, true,
+                75, -50, 115, 0.87f, 45, -10, -15,
+                2, 2, 5, 3, 3,
+                0, 70, 0.87f, 5,
+                new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -7, -9, -1));
+        //alParams.setMapperNValue(9);
+        //alParams.setMapperKValue(3);
+        //alParams.setMapperKMersPerPosition(3);
+        BenchmarkInput bi = new BenchmarkInput(alParams, challenge);
+        BenchmarkResults result = bm.process(bi);
+        System.out.println(TestUtil.time(result.getAverageTiming()));
+        System.out.println(result.getProcessedQueries());
+        System.out.println(result.getBadFraction() * 100);
+    }
+
+    @Test
+    public void testSimpleRandomTestK1OneCluster() throws Exception {
+        /*
+        647.65us
+        72840
+        0.0686436024162548
+         */
+        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParams2OneCluster(30), 10).take();
+        Benchmark1 bm = new Benchmark1(50_000_000_000L);
+        KAlignerParameters alParams = new KAlignerParameters(4,
+                true, true,
+                115, 0.87f, 45, -10, -15,
+                2, 2,
+                15, 3, -1000, 70, 0.87f, 5,
+                new LinearGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -7, -9));
+        alParams = KAlignerParameters.getByName("default");
+        alParams = new KAlignerParameters(5,
+                true, true,
+                1.5f, 0.7f, 1.0f, -0.1f, -0.3f,
+                4, 10,
+                15, 2, -1000, 40, 0.87f, 5,
+                new LinearGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 5, -9, -12));
+        BenchmarkInput1 bi = new BenchmarkInput1(alParams, challenge);
+        BenchmarkResults1 result = bm.process(bi);
         System.out.println(TestUtil.time(result.getAverageTiming()));
         System.out.println(result.getProcessedQueries());
         System.out.println(result.getBadFraction() * 100);
