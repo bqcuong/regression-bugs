@@ -1,5 +1,7 @@
 package com.milaboratory.core.alignment.kaligner2;
 
+import cc.redberry.pipe.CUtils;
+import cc.redberry.pipe.OutputPort;
 import com.milaboratory.core.Range;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.generator.MutationModels;
@@ -10,6 +12,7 @@ import com.milaboratory.core.sequence.SequenceBuilder;
 import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
 import com.milaboratory.util.RandomUtil;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.Well1024a;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -17,7 +20,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by poslavsky on 15/09/15.
@@ -55,7 +60,7 @@ public class KMapper2Test {
     @Test
     public void testCase1() throws Exception {
         RandomUtil.reseedThreadLocal(-8563992448850301133L);
-        NucleotideSequence query     = new NucleotideSequence("GATACTAGTCTCAACGGGGTACTACTAACGTCGAGGTGAATCCATAGGAAC");
+        NucleotideSequence query = new NucleotideSequence("GATACTAGTCTCAACGGGGTACTACTAACGTCGAGGTGAATCCATAGGAAC");
         NucleotideSequence reference = new NucleotideSequence("GATACTAACATTGGGTATCAAACAGCGTAGTCACTTAAAATGGCGCCTCCTCAGATCAATGAGCAATAGTACGGTCGTTCACTACCTGCCTCAAAGGCAATGTTT");
         KAlignerParameters2 params = GlobalObjectMappers.ONE_LINE.readValue("{\"mapperKValue\":4,\"floatingLeftBound\":true,\"floatingRightBound\":true,\"mapperAbsoluteMinClusterScore\":80,\"mapperExtraClusterScore\":-30,\"mapperMatchScore\":40,\"mapperMismatchScore\":-50,\"mapperOffsetShiftScore\":-10,\"mapperSlotCount\":3,\"mapperMaxClusterIndels\":4,\"mapperAbsoluteMinScore\":220,\"mapperRelativeMinScore\":0.0,\"mapperMinSeedsDistance\":2,\"mapperMaxSeedsDistance\":2,\"alignmentStopPenalty\":0,\"absoluteMinScore\":80,\"relativeMinScore\":0.8,\"maxHits\":5,\"scoring\":{\"type\":\"affine\",\"subsMatrix\":\"raw(4, -3, -3, -3, -1, 0, -3, -3, 0, -3, 0, -3, 0, 0, 0, -3, 4, -3, -3, -1, 0, -3, 0, -3, 0, -3, 0, 0, -3, 0, -3, -3, 4, -3, -1, -3, 0, 0, -3, -3, 0, 0, -3, 0, 0, -3, -3, -3, 4, -1, -3, 0, -3, 0, 0, -3, 0, 0, 0, -3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -3, -3, -1, 0, -3, -1, -1, -1, -1, -1, 0, -1, 0, -3, -3, 0, 0, -1, -3, 0, -1, -1, -1, -1, 0, -1, 0, -1, -3, 0, 0, -3, -1, -1, -1, 0, -3, -1, -1, 0, -1, -1, 0, 0, -3, -3, 0, -1, -1, -1, -3, 0, -1, -1, -1, 0, 0, -1, -3, 0, -3, 0, -1, -1, -1, -1, -1, 0, -3, 0, 0, -1, -1, 0, -3, 0, -3, -1, -1, -1, -1, -1, -3, 0, -1, -1, 0, 0, -3, 0, 0, 0, -1, -1, 0, 0, -1, 0, -1, 0, -1, -1, -1, 0, 0, -3, 0, -1, 0, -1, -1, 0, 0, -1, -1, 0, -1, -1, 0, -3, 0, 0, -1, -1, 0, -1, 0, -1, 0, -1, -1, 0, -1, 0, 0, 0, -3, -1, 0, -1, 0, -1, -1, 0, -1, -1, -1, 0)\",\"gapOpenPenalty\":-17,\"gapExtensionPenalty\":-1,\"uniformBasicMatch\":true}}", KAlignerParameters2.class);
         params.setMapperAbsoluteMinScore(-1000);
@@ -615,4 +620,196 @@ public class KMapper2Test {
     //        Arrays.sort(arr, 0, size(), (Comparator) comp);
     //    }
     //}
+
+
+    // base[combId = 0001110000]
+    // base[combIndex = 0,1,2,3 ... C(N,k)] + map <
+    @Test
+    public void test3() throws Exception {
+        int N = 12;
+        int k = 3;
+
+        TIntObjectHashMap<String> map = new TIntObjectHashMap<>();
+        String[] arr = new String[1 << N];
+        Combinations combinations = new Combinations(N, k);
+
+        //map <comb -> index>
+
+        for (int[] comb : CUtils.it(combinations)) {
+            int c = pack(comb);
+            map.put(c, Arrays.toString(comb.clone()));
+            arr[c] = Arrays.toString(comb.clone());
+        }
+
+        Random random = new Random();
+
+        long length = 0;
+        long timingMap = 0, timingArr = 0, start;
+        int iterations = 10_000_000;
+
+//        for (int i = 0; i < iterations; ++i) {
+//            int c = 0;
+//            while (Integer.bitCount(c) != k)
+//                c |= 1 << random.nextInt(N);
+//
+//            long start = System.nanoTime();
+//            String s = map.get(c);
+//            timingMap += System.nanoTime() - start;
+//            length += s.length();
+//        }
+//
+//
+//        length = 0;
+//        timingMap = 0;
+//        for (int i = 0; i < iterations; ++i) {
+//            int c = 0;
+//            while (Integer.bitCount(c) != k)
+//                c |= 1 << random.nextInt(N);
+//
+//            long start = System.nanoTime();
+//            String s = map.get(c);
+//            timingMap += System.nanoTime() - start;
+//            length += s.length();
+//        }
+//
+//
+//        length = 0;
+//        long timingArr = 0;
+//        for (int i = 0; i < iterations; ++i) {
+//            int c = 0;
+//            while (Integer.bitCount(c) != k)
+//                c |= 1 << random.nextInt(N);
+//
+//            long start = System.nanoTime();
+//            String s = arr[c];
+//            timingArr += System.nanoTime() - start;
+//            length += s.length();
+//        }
+//
+//
+//        length = 0;
+//        timingArr = 0;
+//        for (int i = 0; i < iterations; ++i) {
+//            int c = 0;
+//            while (Integer.bitCount(c) != k)
+//                c |= 1 << random.nextInt(N);
+//
+//            long start = System.nanoTime();
+//            String s = arr[c];
+//            timingArr += System.nanoTime() - start;
+//            length += s.length();
+//        }
+//
+//        System.out.println(timingMap);
+//        System.out.println(timingArr);
+
+
+        length = 0;
+        timingArr = 0;
+        int cc[] = new int[iterations];
+        for (int i = 0; i < iterations; ++i) {
+            int c = 0;
+            while (Integer.bitCount(c) != k)
+                c |= 1 << random.nextInt(N);
+            cc[i] = c;
+        }
+
+        length = 0;
+        timingArr = 0;
+        start = System.nanoTime();
+        for (int i = 0; i < iterations; ++i) {
+            String s = arr[cc[i]];
+            length += s.length();
+        }
+        timingArr += System.nanoTime() - start;
+
+
+        length = 0;
+        timingArr = 0;
+        start = System.nanoTime();
+        for (int i = 0; i < iterations; ++i) {
+            String s = arr[cc[i]];
+            length += s.length();
+        }
+        timingArr += System.nanoTime() - start;
+        System.out.println(timingArr);
+
+
+
+        length = 0;
+        timingMap = 0;
+        start = System.nanoTime();
+        for (int i = 0; i < iterations; ++i) {
+            String s = map.get(cc[i]);
+            length += s.length();
+        }
+        timingMap += System.nanoTime() - start;
+
+
+        length = 0;
+        timingMap = 0;
+        start = System.nanoTime();
+        for (int i = 0; i < iterations; ++i) {
+            String s = map.get(cc[i]);
+            length += s.length();
+        }
+        timingMap += System.nanoTime() - start;
+        System.out.println(timingMap);
+    }
+
+    static int pack(int[] combination) {
+        int c = 0;
+        for (int i = 0; i < combination.length; ++i)
+            c |= (1 << combination[i]);
+        return c;
+    }
+
+    static class Combinations implements OutputPort<int[]> {
+        final int[] combination;
+        private final int n, k;
+        private boolean onFirst = true;
+
+        public Combinations(int n, int k) {
+            if (n < k)
+                throw new IllegalArgumentException(" n < k ");
+            this.n = n;
+            this.k = k;
+            this.combination = new int[k];
+            reset();
+        }
+
+
+        public void reset() {
+            onFirst = true;
+            for (int i = 0; i < k; ++i)
+                combination[i] = i;
+        }
+
+
+        private boolean isLast() {
+            for (int i = 0; i < k; ++i)
+                if (combination[i] != i + n - k)
+                    return false;
+            return true;
+        }
+
+
+        @Override
+        public int[] take() {
+            if (isLast())
+                return null;
+            if (onFirst)
+                onFirst = false;
+            else {
+                int i;
+                for (i = k - 1; i >= 0; --i)
+                    if (combination[i] != i + n - k)
+                        break;
+                int m = ++combination[i++];
+                for (; i < k; ++i)
+                    combination[i] = ++m;
+            }
+            return combination;
+        }
+    }
 }
