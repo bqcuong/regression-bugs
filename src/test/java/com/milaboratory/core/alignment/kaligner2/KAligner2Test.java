@@ -8,6 +8,9 @@ import com.milaboratory.util.RandomUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
 /**
  * Created by poslavsky on 26/10/15.
  */
@@ -85,14 +88,27 @@ public class KAligner2Test {
                 2, 2, 5, 3, 3,
                 0, 70, 0.87f, 5,
                 new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -7, -9, -1));
+        //alParams = GlobalObjectMappers.ONE_LINE.readValue("{\"mapperAbsoluteMinScore\": 65, \"scoring\": {\"subsMatrix\": \"raw(6, -2, -2, -2, 0, 2, -2, -2, 2, -2, 2, -2, 0, 0, 0, -2, 6, -2, -2, 0, 2, -2, 2, -2, 2, -2, 0, 0, -2, 0, -2, -2, 6, -2, 0, -2, 2, 2, -2, -2, 2, 0, -2, 0, 0, -2, -2, -2, 6, 0, -2, 2, -2, 2, 2, -2, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, -2, -2, 0, 2, -2, 0, 0, 0, 0, 0, 0, 0, 0, -2, -2, 2, 2, 0, -2, 2, 0, 0, 0, 0, 0, 0, 0, 0, -2, 2, 2, -2, 0, 0, 0, 2, -2, 0, 0, 0, 0, 0, 0, 2, -2, -2, 2, 0, 0, 0, -2, 2, 0, 0, 0, 0, 0, 0, -2, 2, -2, 2, 0, 0, 0, 0, 0, 2, -2, 0, 0, 0, 0, 2, -2, 2, -2, 0, 0, 0, 0, 0, -2, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)\", \"uniformBasicMatch\": true, \"type\": \"affine\", \"gapOpenPenalty\": -23, \"gapExtensionPenalty\": -1}, \"floatingLeftBound\": true, \"mapperMaxClusterIndels\": 2, \"mapperNValue\": 9, \"mapperRelativeMinScore\": 0.8, \"mapperMatchScore\": 25, \"mapperMaxSeedsDistance\": 2, \"maxHits\": 5, \"mapperOffsetShiftScore\": -30, \"mapperMismatchScore\": -20, \"relativeMinScore\": 0.8, \"alignmentStopPenalty\": 0, \"mapperAbsoluteMinClusterScore\": 45, \"floatingRightBound\": true, \"mapperSlotCount\": 3, \"absoluteMinScore\": 20, \"mapperMinSeedsDistance\": 2, \"mapperExtraClusterScore\": -20, \"mapperKValue\": 3, \"mapperKMersPerPosition\": 3}", KAlignerParameters2.class);
         //alParams.setMapperNValue(9);
         //alParams.setMapperKValue(3);
         //alParams.setMapperKMersPerPosition(3);
+
+        alParams.setMapperMinSeedsDistance(2);
+        alParams.setMapperMaxSeedsDistance(6);
+        //alParams.setMapperSlotCount(10);
+        //alParams.setMapperNValue(8);
+        //alParams.setMapperKValue(3);
+        alParams.setMapperKMersPerPosition(2);
         BenchmarkInput bi = new BenchmarkInput(alParams, challenge);
         BenchmarkResults result = bm.process(bi);
         System.out.println(TestUtil.time(result.getAverageTiming()));
         System.out.println(result.getProcessedQueries());
         System.out.println(result.getBadFraction() * 100);
+        /*
+            208.03us
+            100000
+            0.07100000000000001
+         */
     }
 
     @Test
@@ -114,7 +130,7 @@ public class KAligner2Test {
         alParams = new KAlignerParameters(5,
                 true, true,
                 1.5f, 0.7f, 1.0f, -0.1f, -0.3f,
-                4, 10,
+                2, 5,
                 15, 2, -1000, 40, 0.87f, 5,
                 new LinearGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 5, -9, -12));
         BenchmarkInput1 bi = new BenchmarkInput1(alParams, challenge);
@@ -172,5 +188,80 @@ public class KAligner2Test {
         aligner.addReference(reference);
         KAlignmentResult2<NucleotideSequence> align = aligner.align(query);
         System.out.println(align.getHits().size());
+    }
+
+    @Test
+    public void testSpeed1() throws Exception {
+        new BufferedReader(new InputStreamReader(System.in)).readLine();
+        KAlignerParameters2 params = GlobalObjectMappers.ONE_LINE.readValue("{\"mapperAbsoluteMinScore\": 65, \"scoring\": {\"subsMatrix\": \"raw(6, -2, -2, -2, 0, 2, -2, -2, 2, -2, 2, -2, 0, 0, 0, -2, 6, -2, -2, 0, 2, -2, 2, -2, 2, -2, 0, 0, -2, 0, -2, -2, 6, -2, 0, -2, 2, 2, -2, -2, 2, 0, -2, 0, 0, -2, -2, -2, 6, 0, -2, 2, -2, 2, 2, -2, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, -2, -2, 0, 2, -2, 0, 0, 0, 0, 0, 0, 0, 0, -2, -2, 2, 2, 0, -2, 2, 0, 0, 0, 0, 0, 0, 0, 0, -2, 2, 2, -2, 0, 0, 0, 2, -2, 0, 0, 0, 0, 0, 0, 2, -2, -2, 2, 0, 0, 0, -2, 2, 0, 0, 0, 0, 0, 0, -2, 2, -2, 2, 0, 0, 0, 0, 0, 2, -2, 0, 0, 0, 0, 2, -2, 2, -2, 0, 0, 0, 0, 0, -2, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)\", \"uniformBasicMatch\": true, \"type\": \"affine\", \"gapOpenPenalty\": -23, \"gapExtensionPenalty\": -1}, \"floatingLeftBound\": true, \"mapperMaxClusterIndels\": 2, \"mapperNValue\": 9, \"mapperRelativeMinScore\": 0.8, \"mapperMatchScore\": 25, \"mapperMaxSeedsDistance\": 2, \"maxHits\": 5, \"mapperOffsetShiftScore\": -30, \"mapperMismatchScore\": -20, \"relativeMinScore\": 0.8, \"alignmentStopPenalty\": 0, \"mapperAbsoluteMinClusterScore\": 45, \"floatingRightBound\": true, \"mapperSlotCount\": 3, \"absoluteMinScore\": 20, \"mapperMinSeedsDistance\": 2, \"mapperExtraClusterScore\": -20, \"mapperKValue\": 3, \"mapperKMersPerPosition\": 3}", KAlignerParameters2.class);
+        //params.setMapperKMersPerPosition(1);
+        //Challenge challenge = new ChallengeProvider(ChallengeProvider.getParams2OneCluster(30), 10).take();
+        new Benchmark(1_000_000_000L).process(new BenchmarkInput(params, new ChallengeProvider(ChallengeProvider.getParams1(30), 10).take()));
+
+        BenchmarkResults result = new Benchmark(50_000_000_000L).process(
+                new BenchmarkInput(params, new ChallengeProvider(
+                        ChallengeProvider.getParams1(30), 10).take()));
+        printResult("Multicluster30:", result);
+
+        result = new Benchmark(50_000_000_000L).process(
+                new BenchmarkInput(params, new ChallengeProvider(
+                        ChallengeProvider.getParams2OneCluster(30), 10).take()));
+        printResult("Onecluster30:", result);
+
+        /*
+            Step 1
+            ======
+
+            Multicluster30:
+            Avr. total timing 1: 252.50us
+            Avr. total timing 2: 251.2907758155163us
+            Avr. seed extraction: 112.81350313503135us
+            Avr. hit calculation: 123.52711027110271us
+            Avr. total mapper: 236.3587271745435us
+            Avr. aligner: 15.4655us
+            Bad fraction: 0.481%
+
+            Onecluster30:
+            Avr. total timing 1: 217.16us
+            Avr. total timing 2: 216.21628716287162us
+            Avr. seed extraction: 99.01561515615157us
+            Avr. hit calculation: 105.91975us
+            Avr. total mapper: 204.90042400424005us
+            Avr. aligner: 14.15875us
+            Bad fraction: 0.07100000000000001%
+
+            Step 2 (ThreadLocal cache)
+            ======
+
+            Multicluster30:
+            Avr. total timing 1: 246.77us
+            Avr. total timing 2: 245.61991239824798us
+            Avr. seed extraction: 105.60968109681097us
+            Avr. hit calculation: 124.84087340873408us
+            Avr. total mapper: 230.41685833716673us
+            Avr. aligner: 15.64975us
+            Bad fraction: 0.481%
+
+            Onecluster30:
+            Avr. total timing 1: 213.75us
+            Avr. total timing 2: 212.84250342503424us
+            Avr. seed extraction: 93.51256012560125us
+            Avr. hit calculation: 107.6565us
+            Avr. total mapper: 201.19363693636936us
+            Avr. aligner: 14.4725us
+            Bad fraction: 0.07100000000000001%
+         */
+    }
+
+    public void printResult(String title, BenchmarkResults result) {
+        System.out.println(title);
+        System.out.println("Avr. total timing 1: " + TestUtil.time(result.getAverageTiming()));
+        System.out.println("Avr. total timing 2: " + result.getStat().totalTime.mean() + "us");
+        System.out.println("Avr. seed extraction: " + result.getStat().seedExtractionTime.mean() + "us");
+        System.out.println("Avr. hit calculation: " + result.getStat().hitCalculationTime.mean() + "us");
+        System.out.println("Avr. total mapper: " + result.getStat().mapperTotalTime.mean() + "us");
+        System.out.println("Avr. aligner: " + result.getStat().alignerTime.mean() + "us");
+        System.out.println("Bad fraction: " + (result.getBadFraction() * 100) + "%");
+        System.out.println();
     }
 }

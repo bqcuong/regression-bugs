@@ -116,7 +116,7 @@ public final class KMapper2 implements java.io.Serializable {
 
     maxClusterIndels;
 
-    private static final int maxClusters = 10;
+    private static final int maxClusters = 3;
 
     /**
      * Minimal absolute score.
@@ -141,6 +141,15 @@ public final class KMapper2 implements java.io.Serializable {
     private volatile boolean built = false;
     private int maxReferenceLength = 0, minReferenceLength = Integer.MAX_VALUE;
     private int sequencesInBase = 0;
+    /**
+     * Cache to prevent excessive memory allocation
+     */
+    final ThreadLocal<ThreadLocalCache> memoryCache = new ThreadLocal<ThreadLocalCache>() {
+        @Override
+        protected ThreadLocalCache initialValue() {
+            return new ThreadLocalCache();
+        }
+    };
     /**
      * Statistics aggregator
      */
@@ -271,15 +280,6 @@ public final class KMapper2 implements java.io.Serializable {
                 parameters.isFloatingLeftBound(), parameters.isFloatingRightBound(), stat);
     }
 
-    final ThreadLocal<OffsetPacksAccumulator> threadLocalAccumulator = new ThreadLocal<OffsetPacksAccumulator>() {
-        @Override
-        protected OffsetPacksAccumulator initialValue() {
-            return new OffsetPacksAccumulator(
-                    slotCount, maxClusterIndels, matchScore,
-                    mismatchScore, offsetShiftScore, absoluteMinClusterScore);
-        }
-    };
-
     /**
      * Encodes and adds individual kMer to the base.
      */
@@ -306,6 +306,9 @@ public final class KMapper2 implements java.io.Serializable {
      * @return index assigned to the sequence
      */
     public int addReference(NucleotideSequence sequence) {
+        if (built)
+            throw new IllegalStateException("Already in use.");
+
         // Checking parameters
         if (sequencesInBase >= (1 << bitsForIndex))
             throw new IllegalArgumentException("Maximum number of records reached.");
@@ -403,6 +406,9 @@ public final class KMapper2 implements java.io.Serializable {
     public KMappingResult2 align(final NucleotideSequence sequence, final int from, final int to) {
         ensureBuilt();
 
+        ThreadLocalCache cache = memoryCache.get();
+        cache.reset();
+
         final ArrList<KMappingHit2> result = new ArrList<>();
 
         // Sequence is shorter than k values
@@ -417,7 +423,7 @@ public final class KMapper2 implements java.io.Serializable {
         }
 
         // Positions of first nucleotides of seed k-mers in query sequence
-        final IntArrayList seedPositions = new IntArrayList((to - from) / minDistance + 2);
+        final IntArrayList seedPositions = cache.seedPositions;
         int seedPosition = from;
 
         // Adding firs possible position
@@ -432,12 +438,12 @@ public final class KMapper2 implements java.io.Serializable {
         seedPositions.add(to - nValue);
 
         int kmer;
-        final IntArrayList[] candidates = new IntArrayList[sequencesInBase];
+        final IntArrayList[] candidates = cache.candidates;
 
         // Building list of records for all target sequences
         // By querying db for each seed kmer from query sequence
         int id, positionInTarget;
-        IntArrayList allRecords = new IntArrayList();
+        IntArrayList allRecords = cache.cachedIntArray1;
 
         final int allPositionsMask = 0xFFFFFFFF >>> (32 - nValue);
         final int nValue2 = nValue / 2;
@@ -485,8 +491,8 @@ public final class KMapper2 implements java.io.Serializable {
                 positionInTarget = offset(record);
 
                 // Lazy initialization of candidate lists
-                if (candidates[id] == null)
-                    candidates[id] = new IntArrayList();
+                //if (candidates[id] == null)
+                //    candidates[id] = new IntArrayList();
 
                 // Records for the same target in DB are sorted in descending order by positions
                 assert candidates[id].isEmpty() || index(candidates[id].last()) != i
@@ -732,11 +738,12 @@ public final class KMapper2 implements java.io.Serializable {
     private KMappingHit2 calculateHit(final int id, final int[] data,
                                       final int dataFrom, final int dataTo,
                                       final IntArrayList seedPositions) {
-        OffsetPacksAccumulator accumulator = threadLocalAccumulator.get();
+        ThreadLocalCache cache = memoryCache.get();
+        OffsetPacksAccumulator accumulator = cache.offsetPacksAccumulator;
         accumulator.calculateInitialPartitioning(data, dataFrom, dataTo);
 
         IntArrayList results = accumulator.results;
-        if (accumulator.results.size() == 0)
+        if (accumulator.results.size() == 0 || accumulator.totalScore < absoluteMinScore)
             return null;
 
         // Collecting statistics
@@ -842,8 +849,11 @@ public final class KMapper2 implements java.io.Serializable {
 
         numberOfClusters = min(numberOfClusters, maxClusters);
 
-        IntArrayList untangled = new IntArrayList(numberOfClusters),
-                current = new IntArrayList(numberOfClusters);
+        IntArrayList untangled = cache.cachedIntArray1,
+                current = cache.cachedIntArray2;
+        untangled.clear();
+        current.clear();
+
         OUTER:
         for (long it = 0, size = (1L << numberOfClusters); it < size; ++it) {
             current.clear();
@@ -879,7 +889,8 @@ public final class KMapper2 implements java.io.Serializable {
 
         current.clear();//economy
         IntArrayList seedRecords = current;
-        IntArrayList packBoundaries = new IntArrayList();
+        IntArrayList packBoundaries = cache.cachedIntArray3;
+        packBoundaries.clear();
         int score = 0;
 
         // Collecting statistics
@@ -1084,6 +1095,38 @@ public final class KMapper2 implements java.io.Serializable {
         @Override
         public void removeRange(int fromIndex, int toIndex) {
             super.removeRange(fromIndex, toIndex);
+        }
+    }
+
+    private final class ThreadLocalCache {
+        final IntArrayList seedPositions;
+        final IntArrayList cachedIntArray1, cachedIntArray2, cachedIntArray3;
+        final IntArrayList[] candidates;
+        final OffsetPacksAccumulator offsetPacksAccumulator;
+
+        public ThreadLocalCache() {
+            this.seedPositions = new IntArrayList();
+            this.cachedIntArray1 = new IntArrayList();
+            this.cachedIntArray2 = new IntArrayList();
+            this.cachedIntArray3 = new IntArrayList();
+
+            this.candidates = new IntArrayList[sequencesInBase];
+
+            for (int i = 0; i < sequencesInBase; i++)
+                this.candidates[i] = new IntArrayList();
+
+            this.offsetPacksAccumulator = new OffsetPacksAccumulator(
+                    slotCount, maxClusterIndels, matchScore,
+                    mismatchScore, offsetShiftScore, absoluteMinClusterScore);
+        }
+
+        public void reset() {
+            seedPositions.clear();
+            cachedIntArray1.clear();
+            cachedIntArray2.clear();
+            cachedIntArray3.clear();
+            for (IntArrayList candidate : candidates)
+                candidate.clear();
         }
     }
 }

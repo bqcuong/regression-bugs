@@ -38,23 +38,31 @@ public final class KAligner2Statistics {
             return new State();
         }
     };
-    final AtomicLong inputQueries = new AtomicLong();
-    final AtomicHistogram allInitialRecordsCount = new AtomicHistogram(0, 300),
+    public final AtomicLong inputQueries = new AtomicLong();
+    public final AtomicHistogram allInitialRecordsCount = new AtomicHistogram(0, 300),
             topInitialRecordsCount = new AtomicHistogram(0, 300);
-    final AtomicHistogram allInitialClusters = new AtomicHistogram(0, 20),
+    public final AtomicHistogram allInitialClusters = new AtomicHistogram(0, 20),
             topInitialClusters = new AtomicHistogram(0, 20);
-    final AtomicHistogram allRemovedByTrimming = new AtomicHistogram(0, 20),
+    public final AtomicHistogram allRemovedByTrimming = new AtomicHistogram(0, 20),
             topRemovedByTrimming = new AtomicHistogram(0, 20);
-    final AtomicHistogram allRemovedByUntangling = new AtomicHistogram(0, 20),
+    public final AtomicHistogram allRemovedByUntangling = new AtomicHistogram(0, 20),
             topRemovedByUntangling = new AtomicHistogram(0, 20);
-    final AtomicHistogram allUntangledClusters = new AtomicHistogram(0, 20),
+    public final AtomicHistogram allUntangledClusters = new AtomicHistogram(0, 20),
             topUntangledClusters = new AtomicHistogram(0, 20);
-    final AtomicEnumHistogram<ClusterTrimmingType> allTrimming = new AtomicEnumHistogram<>(ClusterTrimmingType.class),
+    public final AtomicEnumHistogram<ClusterTrimmingType> allTrimming = new AtomicEnumHistogram<>(ClusterTrimmingType.class),
             topTrimming = new AtomicEnumHistogram<>(ClusterTrimmingType.class);
-    final AtomicLong rerun = new AtomicLong(), changeOfTop1 = new AtomicLong(), changeOfTop2 = new AtomicLong();
-    final AtomicHistogram numberOfMappingHits = new AtomicHistogram(0, 20),
+    public final AtomicLong rerun = new AtomicLong(), changeOfTop1 = new AtomicLong(), changeOfTop2 = new AtomicLong();
+    public final AtomicHistogram numberOfMappingHits = new AtomicHistogram(0, 20),
             numberOfAlignmentsHits = new AtomicHistogram(0, 20);
-    final AtomicHistogram filteredHitsByAlignments = new AtomicHistogram(0, 50);
+    public final AtomicHistogram filteredHitsByAlignments = new AtomicHistogram(0, 50);
+
+    // Timing
+    public final AtomicHistogram seedExtractionTime = new AtomicHistogram(0, 10000, 400),
+            hitCalculationTime = new AtomicHistogram(0, 10000, 400),
+            mapperTotalTime = new AtomicHistogram(0, 10000, 400),
+            alignerTime = new AtomicHistogram(0, 10000, 400),
+            totalTime = new AtomicHistogram(0, 10000, 400);
+
 
     public void nextQuery() {
         State state = currentState.get();
@@ -64,6 +72,9 @@ public final class KAligner2Statistics {
 
     public void afterCandidatesArrayDone(IntArrayList[] candidates) {
         State state = currentState.get();
+
+        state.previousStep = System.nanoTime();
+        seedExtractionTime.add((state.previousStep - state.start) / 1000.0);
 
         // Collecting statistics and calculating top candidate index
         int top = -1;
@@ -153,6 +164,11 @@ public final class KAligner2Statistics {
     public void kMappingResults(KMappingResult2 result) {
         State state = currentState.get();
 
+        long timestamp = System.nanoTime();
+        hitCalculationTime.add((timestamp - state.previousStep) / 1000.0);
+        mapperTotalTime.add((timestamp - state.start) / 1000.0);
+        state.previousStep = timestamp;
+
         if (result.hits == null) {
             numberOfMappingHits.add(0);
             state.mappingHits = 0;
@@ -176,6 +192,10 @@ public final class KAligner2Statistics {
 
     public void kAlignerResult(KAlignmentResult2 result) {
         State state = currentState.get();
+
+        long timestamp = System.nanoTime();
+        alignerTime.add((timestamp - state.previousStep) / 1000.0);
+        totalTime.add((timestamp - state.start) / 1000.0);
 
         int hits = result.getHits().size();
 
@@ -205,6 +225,7 @@ public final class KAligner2Statistics {
     public static final class State {
         volatile int topByRecordsCount, topByMappingScore, currentTargetIndex,
                 clusters, mappingHits;
+        volatile long start, previousStep;
 
         public boolean isCurrentTop() {
             return topByRecordsCount == currentTargetIndex;
@@ -213,6 +234,7 @@ public final class KAligner2Statistics {
         void reset() {
             topByRecordsCount = -1;
             currentTargetIndex = -1;
+            start = System.nanoTime();
         }
     }
 

@@ -77,6 +77,16 @@ public final class AtomicHistogram {
         return result;
     }
 
+    public double mean() {
+        double sum = 0;
+        long totalCount = 0;
+        for (int i = 0; i < hist.length(); i++) {
+            sum += hist.get(i) * (boundaries[i] + boundaries[i + 1]) / 2;
+            totalCount += hist.get(i);
+        }
+        return sum / totalCount;
+    }
+
     public double getCoveredFraction() {
         return 1.0 * getTotalCountInHist() / getTotalProcessed();
     }

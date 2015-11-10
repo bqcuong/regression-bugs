@@ -42,6 +42,7 @@ public final class OffsetPacksAccumulator {
     final int maxAllowedDelta;
     final int matchScore, mismatchScore, shiftScore, absoluteMinClusterScore;
     final IntArrayList results = new IntArrayList(OUTPUT_RECORD_SIZE * 2);
+    int totalScore;
 
     public OffsetPacksAccumulator(int slotCount, int maxAllowedDelta, int matchScore,
                                   int mismatchScore, int shiftScore, int absoluteMinClusterScore) {
@@ -56,6 +57,7 @@ public final class OffsetPacksAccumulator {
 
     private void reset() {
         results.clear();
+        totalScore = 0;
         Arrays.fill(slidingArray, Integer.MIN_VALUE);
     }
 
@@ -255,6 +257,7 @@ public final class OffsetPacksAccumulator {
         if (slidingArray[indexOfFinished + SCORE] < absoluteMinClusterScore)
             return; //just drop
 
+        totalScore += slidingArray[indexOfFinished + SCORE];
         results.add(slidingArray, indexOfFinished, OUTPUT_RECORD_SIZE);
     }
 

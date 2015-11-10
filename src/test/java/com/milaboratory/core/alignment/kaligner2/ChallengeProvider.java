@@ -74,7 +74,7 @@ public class ChallengeProvider implements OutputPort<Challenge> {
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
                         SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
-                        0.00522, 0.00198).multiplyProbabilities(multiplier)
+                        0.000522, 0.000198).multiplyProbabilities(multiplier)
         );
     }
 }
