@@ -198,7 +198,7 @@ public class ChallengeProvider implements OutputPort<Challenge> {
                                                           int minAlignmentScoring, int maxAlignmentScoring,
                                                           double multiplier) {
         return new ChallengeParameters(100, 350, 500,
-                100000,
+                1000000,
                 1, 1, 35, 80, 30, 100,
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
@@ -213,7 +213,7 @@ public class ChallengeProvider implements OutputPort<Challenge> {
                                                            int minAlignmentScoring, int maxAlignmentScoring,
                                                            double multiplier) {
         return new ChallengeParameters(100, 350, 500,
-                100000,
+                1000000,
                 2, 2, 35, 100, 30, 80,
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
