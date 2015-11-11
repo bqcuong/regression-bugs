@@ -10,11 +10,17 @@ import java.util.function.Consumer;
 
 public class Benchmark implements Processor<BenchmarkInput, BenchmarkResults> {
     final long maxExecutionTime;
+    final long maxNoHits;
     ExceptionListener exceptionListener;
     Consumer<KAlignmentResult2<Integer>> resultCallback;
 
     public Benchmark(long maxExecutionTime) {
+        this(maxExecutionTime, Integer.MAX_VALUE);
+    }
+
+    public Benchmark(long maxExecutionTime, long maxNoHits) {
         this.maxExecutionTime = maxExecutionTime;
+        this.maxNoHits = maxNoHits;
     }
 
     @Override
@@ -36,6 +42,9 @@ public class Benchmark implements Processor<BenchmarkInput, BenchmarkResults> {
         OUTER:
         for (KAligner2Query query : CUtils.it(input.challenge.queries())) {
             if (System.nanoTime() - start > maxExecutionTime)
+                break;
+
+            if (noHits > maxNoHits)
                 break;
 
             long seed = RandomUtil.reseedThreadLocal();

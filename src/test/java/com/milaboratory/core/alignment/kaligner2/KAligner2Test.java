@@ -1,8 +1,6 @@
 package com.milaboratory.core.alignment.kaligner2;
 
-import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
-import com.milaboratory.core.alignment.Alignment;
-import com.milaboratory.core.alignment.AlignmentUtils;
+import com.milaboratory.core.alignment.*;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
@@ -86,7 +84,7 @@ public class KAligner2Test {
         */
         AffineGapAlignmentScoring<NucleotideSequence> scoring = new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -7, -9, -1);
         int absoluteMinScore = 70;
-        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParams2OneCluster(scoring, absoluteMinScore,
+        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParamsOneCluster(scoring, absoluteMinScore,
                 Integer.MAX_VALUE, 30), 10).take();
         Benchmark bm = new Benchmark(50_000_000_000L);
 
@@ -119,34 +117,37 @@ public class KAligner2Test {
          */
     }
 
-    //@Test
-    //public void testSimpleRandomTestK1OneCluster() throws Exception {
-    //    /*
-    //    647.65us
-    //    72840
-    //    0.0686436024162548
-    //     */
-    //    Challenge challenge = new ChallengeProvider(ChallengeProvider.getParams2OneCluster(30), 10).take();
-    //    Benchmark1 bm = new Benchmark1(50_000_000_000L);
-    //    KAlignerParameters alParams = new KAlignerParameters(4,
-    //            true, true,
-    //            115, 0.87f, 45, -10, -15,
-    //            2, 2,
-    //            15, 3, -1000, 70, 0.87f, 5,
-    //            new LinearGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -7, -9));
-    //    alParams = KAlignerParameters.getByName("default");
-    //    alParams = new KAlignerParameters(5,
-    //            true, true,
-    //            1.5f, 0.7f, 1.0f, -0.1f, -0.3f,
-    //            2, 5,
-    //            15, 2, -1000, 40, 0.87f, 5,
-    //            new LinearGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 5, -9, -12));
-    //    BenchmarkInput1 bi = new BenchmarkInput1(alParams, challenge);
-    //    BenchmarkResults1 result = bm.process(bi);
-    //    System.out.println(TestUtil.time(result.getAverageTiming()));
-    //    System.out.println(result.getProcessedQueries());
-    //    System.out.println(result.getBadFraction() * 100);
-    //}
+    @Test
+    public void testSimpleRandomTestK1OneCluster() throws Exception {
+        /*
+        647.65us
+        72840
+        0.0686436024162548
+         */
+        KAlignerParameters2 params = GlobalObjectMappers.ONE_LINE.readValue("{\"mapperAbsoluteMinScore\": 65, \"scoring\": {\"subsMatrix\": \"raw(6, -2, -2, -2, 0, 2, -2, -2, 2, -2, 2, -2, 0, 0, 0, -2, 6, -2, -2, 0, 2, -2, 2, -2, 2, -2, 0, 0, -2, 0, -2, -2, 6, -2, 0, -2, 2, 2, -2, -2, 2, 0, -2, 0, 0, -2, -2, -2, 6, 0, -2, 2, -2, 2, 2, -2, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, -2, -2, 0, 2, -2, 0, 0, 0, 0, 0, 0, 0, 0, -2, -2, 2, 2, 0, -2, 2, 0, 0, 0, 0, 0, 0, 0, 0, -2, 2, 2, -2, 0, 0, 0, 2, -2, 0, 0, 0, 0, 0, 0, 2, -2, -2, 2, 0, 0, 0, -2, 2, 0, 0, 0, 0, 0, 0, -2, 2, -2, 2, 0, 0, 0, 0, 0, 2, -2, 0, 0, 0, 0, 2, -2, 2, -2, 0, 0, 0, 0, 0, -2, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)\", \"uniformBasicMatch\": true, \"type\": \"affine\", \"gapOpenPenalty\": -23, \"gapExtensionPenalty\": -1}, \"floatingLeftBound\": true, \"mapperMaxClusterIndels\": 2, \"mapperNValue\": 9, \"mapperRelativeMinScore\": 0.8, \"mapperMatchScore\": 25, \"mapperMaxSeedsDistance\": 2, \"maxHits\": 5, \"mapperOffsetShiftScore\": -30, \"mapperMismatchScore\": -20, \"relativeMinScore\": 0.8, \"alignmentStopPenalty\": 0, \"mapperAbsoluteMinClusterScore\": 45, \"floatingRightBound\": true, \"mapperSlotCount\": 3, \"absoluteMinScore\": 20, \"mapperMinSeedsDistance\": 2, \"mapperExtraClusterScore\": -20, \"mapperKValue\": 3, \"mapperKMersPerPosition\": 3}", KAlignerParameters2.class);
+        ChallengeParameters cp = ChallengeProvider.getParamsOneCluster(params.getScoring(), params.getAbsoluteMinScore(),
+                Integer.MAX_VALUE, 30);
+        Challenge challenge = new ChallengeProvider(cp, 10).take();
+        Benchmark1 bm = new Benchmark1(50_000_000_000L);
+        KAlignerParameters alParams = new KAlignerParameters(4,
+                true, true,
+                115, 0.87f, 45, -10, -15,
+                2, 2,
+                15, 3, -1000, 70, 0.87f, 5,
+                new LinearGapAlignmentScoring(NucleotideSequence.ALPHABET, 10, -7, -9));
+        alParams = KAlignerParameters.getByName("default");
+        alParams = new KAlignerParameters(4,
+                true, true,
+                1.5f, 0.7f, 1.0f, -0.1f, -0.3f,
+                2, 2,
+                15, 2, -1000, 40, 0.87f, 5,
+                new LinearGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 5, -9, -12));
+        BenchmarkInput1 bi = new BenchmarkInput1(alParams, challenge);
+        BenchmarkResults1 result = bm.process(bi);
+        System.out.println(TestUtil.time(result.getAverageTiming()));
+        System.out.println(result.getProcessedQueries());
+        System.out.println(result.getBadFraction() * 100);
+    }
 
     @Test
     public void test2() throws Exception {
@@ -203,7 +204,7 @@ public class KAligner2Test {
     //    new BufferedReader(new InputStreamReader(System.in)).readLine();
     //    KAlignerParameters2 params = GlobalObjectMappers.ONE_LINE.readValue("{\"mapperAbsoluteMinScore\": 65, \"scoring\": {\"subsMatrix\": \"raw(6, -2, -2, -2, 0, 2, -2, -2, 2, -2, 2, -2, 0, 0, 0, -2, 6, -2, -2, 0, 2, -2, 2, -2, 2, -2, 0, 0, -2, 0, -2, -2, 6, -2, 0, -2, 2, 2, -2, -2, 2, 0, -2, 0, 0, -2, -2, -2, 6, 0, -2, 2, -2, 2, 2, -2, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, -2, -2, 0, 2, -2, 0, 0, 0, 0, 0, 0, 0, 0, -2, -2, 2, 2, 0, -2, 2, 0, 0, 0, 0, 0, 0, 0, 0, -2, 2, 2, -2, 0, 0, 0, 2, -2, 0, 0, 0, 0, 0, 0, 2, -2, -2, 2, 0, 0, 0, -2, 2, 0, 0, 0, 0, 0, 0, -2, 2, -2, 2, 0, 0, 0, 0, 0, 2, -2, 0, 0, 0, 0, 2, -2, 2, -2, 0, 0, 0, 0, 0, -2, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)\", \"uniformBasicMatch\": true, \"type\": \"affine\", \"gapOpenPenalty\": -23, \"gapExtensionPenalty\": -1}, \"floatingLeftBound\": true, \"mapperMaxClusterIndels\": 2, \"mapperNValue\": 9, \"mapperRelativeMinScore\": 0.8, \"mapperMatchScore\": 25, \"mapperMaxSeedsDistance\": 2, \"maxHits\": 5, \"mapperOffsetShiftScore\": -30, \"mapperMismatchScore\": -20, \"relativeMinScore\": 0.8, \"alignmentStopPenalty\": 0, \"mapperAbsoluteMinClusterScore\": 45, \"floatingRightBound\": true, \"mapperSlotCount\": 3, \"absoluteMinScore\": 20, \"mapperMinSeedsDistance\": 2, \"mapperExtraClusterScore\": -20, \"mapperKValue\": 3, \"mapperKMersPerPosition\": 3}", KAlignerParameters2.class);
     //    //params.setMapperKMersPerPosition(1);
-    //    //Challenge challenge = new ChallengeProvider(ChallengeProvider.getParams2OneCluster(30), 10).take();
+    //    //Challenge challenge = new ChallengeProvider(ChallengeProvider.getParamsOneCluster(30), 10).take();
     //    new Benchmark(1_000_000_000L).process(new BenchmarkInput(params, new ChallengeProvider(ChallengeProvider.getParams1(30), 10).take()));
     //
     //    BenchmarkResults result = new Benchmark(50_000_000_000L).process(
@@ -213,7 +214,7 @@ public class KAligner2Test {
     //
     //    result = new Benchmark(50_000_000_000L).process(
     //            new BenchmarkInput(params, new ChallengeProvider(
-    //                    ChallengeProvider.getParams2OneCluster(30), 10).take()));
+    //                    ChallengeProvider.getParamsOneCluster(30), 10).take()));
     //    printResult("Onecluster30:", result);
     //
     //    /*

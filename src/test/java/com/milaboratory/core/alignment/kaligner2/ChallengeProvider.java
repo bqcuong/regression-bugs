@@ -194,12 +194,27 @@ public class ChallengeProvider implements OutputPort<Challenge> {
         );
     }
 
-    public static ChallengeParameters getParams2OneCluster(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+    public static ChallengeParameters getParamsOneCluster(AffineGapAlignmentScoring<NucleotideSequence> scoring,
+                                                          int minAlignmentScoring, int maxAlignmentScoring,
+                                                          double multiplier) {
+        return new ChallengeParameters(100, 350, 500,
+                100000,
+                1, 1, 35, 80, 30, 100,
+                0.45, 0.45, 0.5,
+                new GenericNucleotideMutationModel(
+                        SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
+                        0.000522, 0.000198).multiplyProbabilities(multiplier),
+                minAlignmentScoring, maxAlignmentScoring,
+                scoring
+        );
+    }
+
+    public static ChallengeParameters getParamsTwoClusters(AffineGapAlignmentScoring<NucleotideSequence> scoring,
                                                            int minAlignmentScoring, int maxAlignmentScoring,
                                                            double multiplier) {
-        return new ChallengeParameters(100, 100, 500,
+        return new ChallengeParameters(100, 350, 500,
                 100000,
-                1, 1, 30, 80, 3, 30,
+                2, 2, 35, 100, 30, 80,
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
                         SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),

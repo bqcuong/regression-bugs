@@ -35,7 +35,7 @@ public class ChallengeProviderTest {
         ChallengeParameters params = new ChallengeParameters(100, 100, 500,
                 100,
                 2, 2, 15, 50, 3, 30,
-                0.45, 0.45, 0.5,
+                0.45, 0.45, 0.9,
                 new GenericNucleotideMutationModel(
                         SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
                         0.000522, 0.000198).multiplyProbabilities(40),
@@ -43,7 +43,7 @@ public class ChallengeProviderTest {
                 scoring
         );
         ChallengeProvider.MAX_RERUNS = 10000;
-        Challenge challenge = new ChallengeProvider(params, 10).take();
+        Challenge challenge = new ChallengeProvider(params, 11).take();
         OutputPort<KAligner2Query> queries = challenge.queries();
         for (int i = 0; i < 100; i++) {
             Alignment<NucleotideSequence> ea = queries.take().expectedAlignment;
