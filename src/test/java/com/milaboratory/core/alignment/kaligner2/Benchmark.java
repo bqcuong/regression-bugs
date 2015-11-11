@@ -6,9 +6,12 @@ import com.milaboratory.core.alignment.AlignmentUtils;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.RandomUtil;
 
+import java.util.function.Consumer;
+
 public class Benchmark implements Processor<BenchmarkInput, BenchmarkResults> {
     final long maxExecutionTime;
     ExceptionListener exceptionListener;
+    Consumer<KAlignmentResult2<Integer>> resultCallback;
 
     public Benchmark(long maxExecutionTime) {
         this.maxExecutionTime = maxExecutionTime;
@@ -42,6 +45,9 @@ public class Benchmark implements Processor<BenchmarkInput, BenchmarkResults> {
                 ++processedQueries;
                 executionTime += (System.nanoTime() - b);
 
+                if (resultCallback != null)
+                    resultCallback.accept(result);
+
                 if (!result.hasHits()) {
                     ++noHits;
                     continue;
@@ -73,6 +79,10 @@ public class Benchmark implements Processor<BenchmarkInput, BenchmarkResults> {
 
     public void setExceptionListener(ExceptionListener exceptionListener) {
         this.exceptionListener = exceptionListener;
+    }
+
+    public void setResultCallback(Consumer<KAlignmentResult2<Integer>> resultCallback) {
+        this.resultCallback = resultCallback;
     }
 
     public interface ExceptionListener {

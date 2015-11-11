@@ -1,7 +1,9 @@
 package com.milaboratory.core.alignment.kaligner2;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
+import com.milaboratory.core.sequence.NucleotideSequence;
 
 /**
  * Created by dbolotin on 27/10/15.
@@ -16,8 +18,10 @@ public final class ChallengeParameters {
             minIndelLength, maxIndelLength;
     final double insertionProbability, deletionProbability, boundaryInsertProbability;
     final NucleotideMutationModel mutationModel;
+    final int minAlignmentScoring, maxAlignmentScoring;
+    final AffineGapAlignmentScoring<NucleotideSequence> scoring;
 
-    public ChallengeParameters(int dbSize, int dbMinSeqLength, int dbMaxSeqLength, int queryCount, int minClusters, int maxClusters, int minClusterLength, int maxClusterLength, int minIndelLength, int maxIndelLength, double insertionProbability, double deletionProbability, double boundaryInsertProbability, NucleotideMutationModel mutationModel) {
+    public ChallengeParameters(int dbSize, int dbMinSeqLength, int dbMaxSeqLength, int queryCount, int minClusters, int maxClusters, int minClusterLength, int maxClusterLength, int minIndelLength, int maxIndelLength, double insertionProbability, double deletionProbability, double boundaryInsertProbability, NucleotideMutationModel mutationModel, int minAlignmentScoring, int maxAlignmentScoring, AffineGapAlignmentScoring<NucleotideSequence> scoring) {
         this.dbSize = dbSize;
         this.dbMinSeqLength = dbMinSeqLength;
         this.dbMaxSeqLength = dbMaxSeqLength;
@@ -32,5 +36,8 @@ public final class ChallengeParameters {
         this.deletionProbability = deletionProbability;
         this.boundaryInsertProbability = boundaryInsertProbability;
         this.mutationModel = mutationModel;
+        this.minAlignmentScoring = minAlignmentScoring;
+        this.maxAlignmentScoring = maxAlignmentScoring;
+        this.scoring = scoring;
     }
 }

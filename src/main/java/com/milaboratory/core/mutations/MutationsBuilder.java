@@ -105,6 +105,15 @@ public final class MutationsBuilder<S extends Sequence<S>> {
         return this;
     }
 
+    public MutationsBuilder<S> append(MutationsBuilder<S> other) {
+        if (other.size == 0)
+            return this;
+        ensureInternalCapacity(size + other.size);
+        System.arraycopy(other.mutations, 0, mutations, size, other.size);
+        size += other.size;
+        return this;
+    }
+
     public MutationsBuilder<S> append(Mutations<S> other, int otherFrom, int length) {
         ensureInternalCapacity(size + length);
         if (length != 0)
@@ -138,6 +147,20 @@ public final class MutationsBuilder<S extends Sequence<S>> {
         return append(createInsertion(position, to));
     }
 
+    public MutationsBuilder<S> appendInsertion(int position, S insert) {
+        ensureCapacity(size + insert.size());
+        for (int i = 0; i < insert.size(); i++)
+            append(createInsertion(position, insert.codeAt(i)));
+        return this;
+    }
+
+    public MutationsBuilder<S> appendDeletion(int position, int length, S originalSequence) {
+        ensureCapacity(size + length);
+        for (int i = 0; i < length; i++)
+            append(createDeletion(position + i, originalSequence.codeAt(position + i)));
+        return this;
+    }
+
     public MutationsBuilder<S> reverseRange(int from, int to) {
         ArraysUtils.reverse(mutations, from, to);
         return this;
@@ -148,5 +171,10 @@ public final class MutationsBuilder<S extends Sequence<S>> {
                 reversed,
                 mutations == null ? null : mutations.clone(),
                 size);
+    }
+
+    @Override
+    public String toString() {
+        return this.clone().createAndDestroy().toString();
     }
 }

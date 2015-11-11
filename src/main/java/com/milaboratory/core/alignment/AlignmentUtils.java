@@ -30,6 +30,15 @@ public final class AlignmentUtils {
     private AlignmentUtils() {
     }
 
+    public static int calculateScore(AlignmentScoring scoring, int initialLength, Mutations mutations) {
+        if (scoring instanceof AffineGapAlignmentScoring)
+            return calculateScore((AffineGapAlignmentScoring) scoring, initialLength, mutations);
+        else if (scoring instanceof LinearGapAlignmentScoring)
+            return calculateScore((LinearGapAlignmentScoring) scoring, initialLength, mutations);
+        else
+            throw new IllegalArgumentException("Unknown scoring type");
+    }
+
     /**
      * Calculates score of alignments.
      *

@@ -58,7 +58,7 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
 
     public Alignment(S sequence1, Mutations<S> mutations,
                      Range sequence1Range, Range sequence2Range,
-                     LinearGapAlignmentScoring<S> scoring) {
+                     AlignmentScoring<S> scoring) {
         this(sequence1, mutations, sequence1Range, sequence2Range,
                 AlignmentUtils.calculateScore(scoring, sequence1Range.length(), mutations));
     }
