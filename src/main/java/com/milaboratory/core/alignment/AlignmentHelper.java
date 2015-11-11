@@ -20,6 +20,8 @@ import com.milaboratory.util.BitArray;
 
 import java.util.Arrays;
 
+import static com.milaboratory.util.StringUtil.spaces;
+
 public final class AlignmentHelper implements java.io.Serializable {
     protected final String seq1String, seq2String;
     protected final String markup;
@@ -180,12 +182,6 @@ public final class AlignmentHelper implements java.io.Serializable {
      */
     public String toCompactString() {
         return getLine1Compact() + "\n" + getLine3Compact();
-    }
-
-    private static String spaces(int n) {
-        char[] c = new char[n];
-        Arrays.fill(c, ' ');
-        return String.valueOf(c);
     }
 
     private static int a(int f) {
