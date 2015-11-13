@@ -52,10 +52,10 @@ public class MultiAlignmentHelper {
                 "", new String[queries.length]);
     }
 
-    public MultiAlignmentHelper(String subject, String[] queries, int[] subjectPositions,
-                                int[][] queryPositions, BitArray[] match,
-                                String subjectLeftTitle, String[] queryLeftTitles,
-                                String subjectRightTitle, String[] queryRightTitles) {
+    private MultiAlignmentHelper(String subject, String[] queries, int[] subjectPositions,
+                                 int[][] queryPositions, BitArray[] match,
+                                 String subjectLeftTitle, String[] queryLeftTitles,
+                                 String subjectRightTitle, String[] queryRightTitles) {
         this.subject = subject;
         this.queries = queries;
         this.subjectPositions = subjectPositions;

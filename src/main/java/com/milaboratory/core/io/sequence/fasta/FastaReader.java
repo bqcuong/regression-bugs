@@ -146,6 +146,25 @@ public class FastaReader<S extends Sequence<S>> implements CanReportProgress,
         return rawFastaRecord;
     }
 
+    /**
+     * Returns output port of raw records.
+     *
+     * @return output port of raw records
+     */
+    public OutputPortCloseable<RawFastaRecord> asRawRecordsPort() {
+        return new OutputPortCloseable<RawFastaRecord>() {
+            @Override
+            public void close() {
+                FastaReader.this.close();
+            }
+
+            @Override
+            public RawFastaRecord take() {
+                return takeRawRecord();
+            }
+        };
+    }
+
     private RawFastaRecord nextRawRecord() throws IOException {
         String description;
         if (bufferedLine != null)
