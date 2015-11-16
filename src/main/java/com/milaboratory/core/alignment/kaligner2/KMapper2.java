@@ -147,7 +147,7 @@ public final class KMapper2 implements java.io.Serializable {
     final ThreadLocal<ThreadLocalCache> memoryCache = new ThreadLocal<ThreadLocalCache>() {
         @Override
         protected ThreadLocalCache initialValue() {
-            return new ThreadLocalCache();
+            return new ThreadLocalCache(sequencesInBase, slotCount, maxClusterIndels, matchScore, mismatchScore, offsetShiftScore, absoluteMinClusterScore);
         }
     };
     /**
@@ -1098,13 +1098,14 @@ public final class KMapper2 implements java.io.Serializable {
         }
     }
 
-    private final class ThreadLocalCache {
+    private static final class ThreadLocalCache {
         final IntArrayList seedPositions;
         final IntArrayList cachedIntArray1, cachedIntArray2, cachedIntArray3;
         final IntArrayList[] candidates;
         final OffsetPacksAccumulator offsetPacksAccumulator;
 
-        public ThreadLocalCache() {
+        public ThreadLocalCache(int sequencesInBase, int slotCount, int maxClusterIndels, int matchScore,
+                                int mismatchScore, int offsetShiftScore, int absoluteMinClusterScore) {
             this.seedPositions = new IntArrayList();
             this.cachedIntArray1 = new IntArrayList();
             this.cachedIntArray2 = new IntArrayList();
