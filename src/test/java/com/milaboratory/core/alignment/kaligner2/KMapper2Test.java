@@ -27,7 +27,7 @@ import java.util.List;
 public class KMapper2Test {
     public static final KAlignerParameters2 gParams = new KAlignerParameters2(9, 3, false, false,
             15, -20, 15, 0.87f, 13, -7,
-            -3, 3, 6, 4, 3, 3, 0, 0, 0, 0, null);
+            -3, 3, 6, 4, 3, 3, 3, 0, 0, 0, 0, null);
 
 //    @Test
 //    public void testBestOffset1() throws Exception {
