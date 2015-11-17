@@ -97,7 +97,7 @@ public class KMapper2Test {
         for (int i = 0; i < TestUtil.its(1000, 50000); ++i) {            //GAACGCGCTGCGCGATGATATATCGCGATAATTCTCTGA
             KMappingResult2 result = aligner.align(new NucleotideSequence("GAACGCGCTGCGCGATGATATATCGCGATAATTCTCTGAAGTAGATGATGATGCAGCGTATG"));
 
-//            System.out.println(result);
+            // System.out.println(result);
 
             List<KMappingHit2> hits = result.hits;
 

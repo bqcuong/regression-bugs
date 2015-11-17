@@ -160,8 +160,13 @@ public final class ChallengeProvider implements OutputPort<Challenge> {
     public static NucleotideSequence[] generateDB(RandomDataGenerator generator, ChallengeParameters params) {
         NucleotideSequence[] db = new NucleotideSequence[params.dbSize];
         for (int i = 0; i < params.dbSize; i++)
-            db[i] = randomSequence(NucleotideSequence.ALPHABET, generator.getRandomGenerator(), params.dbMinSeqLength, params.dbMaxSeqLength, true);
+            db[i] = randomSequence(NucleotideSequence.ALPHABET, generator, params.dbMinSeqLength, params.dbMaxSeqLength, true);
         return db;
+    }
+
+    public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomDataGenerator r,
+                                                           int minLength, int maxLength, boolean basicLettersOnly) {
+        return randomSequence(alphabet, r.getRandomGenerator(), minLength, maxLength, basicLettersOnly);
     }
 
     public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomGenerator r,
@@ -189,6 +194,8 @@ public final class ChallengeProvider implements OutputPort<Challenge> {
         );
     }
 
+    private final static double deletionProbability = 0.000522, insertionProbability = 0.000198;
+
     public static ChallengeParameters getParamsOneCluster(AffineGapAlignmentScoring<NucleotideSequence> scoring,
                                                           int minAlignmentScoring, int maxAlignmentScoring,
                                                           double multiplier) {
@@ -198,7 +205,7 @@ public final class ChallengeProvider implements OutputPort<Challenge> {
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
                         SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
-                        0.000522, 0.000198).multiplyProbabilities(multiplier),
+                        deletionProbability, insertionProbability).multiplyProbabilities(multiplier),
                 minAlignmentScoring, maxAlignmentScoring,
                 scoring
         );
@@ -213,7 +220,7 @@ public final class ChallengeProvider implements OutputPort<Challenge> {
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
                         SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
-                        0.000522, 0.000198).multiplyProbabilities(multiplier),
+                        deletionProbability, insertionProbability).multiplyProbabilities(multiplier),
                 minAlignmentScoring, maxAlignmentScoring,
                 scoring
         );
