@@ -164,6 +164,9 @@ public class ChallengeProvider implements OutputPort<Challenge> {
         return db;
     }
 
+    final static double deletionProbability = 0.000522;
+    final static double insertionProbability = 0.000198;
+
     public static ChallengeParameters getParams1(AffineGapAlignmentScoring<NucleotideSequence> scoring,
                                                  int minAlignmentScoring, int maxAlignmentScoring,
                                                  double multiplier) {
@@ -173,7 +176,7 @@ public class ChallengeProvider implements OutputPort<Challenge> {
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
                         SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
-                        0.000522, 0.000198).multiplyProbabilities(multiplier),
+                        deletionProbability, insertionProbability).multiplyProbabilities(multiplier),
                 minAlignmentScoring, maxAlignmentScoring,
                 scoring
         );
@@ -203,7 +206,7 @@ public class ChallengeProvider implements OutputPort<Challenge> {
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
                         SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
-                        0.000522, 0.000198).multiplyProbabilities(multiplier),
+                        deletionProbability, insertionProbability).multiplyProbabilities(multiplier),
                 minAlignmentScoring, maxAlignmentScoring,
                 scoring
         );
@@ -218,7 +221,7 @@ public class ChallengeProvider implements OutputPort<Challenge> {
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
                         SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
-                        0.000522, 0.000198).multiplyProbabilities(multiplier),
+                        deletionProbability, insertionProbability).multiplyProbabilities(multiplier),
                 minAlignmentScoring, maxAlignmentScoring,
                 scoring
         );

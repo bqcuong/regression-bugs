@@ -51,8 +51,8 @@ public class Benchmark implements Processor<BenchmarkInput, BenchmarkResults> {
             try {
                 long b = System.nanoTime();
                 KAlignmentResult2<Integer> result = aligner.align(query.query);
-                ++processedQueries;
                 executionTime += (System.nanoTime() - b);
+                ++processedQueries;
 
                 if (resultCallback != null)
                     resultCallback.accept(result);
