@@ -1139,7 +1139,6 @@ public final class KMapper2 implements java.io.Serializable {
 
     @Override
     protected void finalize() throws Throwable {
-        System.out.println("DELETED");
         super.finalize();
     }
 }
