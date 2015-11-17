@@ -17,7 +17,7 @@ public class KAligner2Test {
     public static final KAlignerParameters2 gParams = new KAlignerParameters2(
             9, 3, true, true,
             15, -10, 15, 0f, 13, -7, -3,
-            3, 6, 4, 3, 3,
+            3, 6, 4, 3, 3, 3,
             0, 70, 0.8f, 5, scoring);
 
     @Test
@@ -62,7 +62,7 @@ public class KAligner2Test {
         KAlignerParameters2 alParams = new KAlignerParameters2(9, 3,
                 true, true,
                 75, -50, 115, 0.87f, 45, -10, -15,
-                2, 5, 5, 3, 3,
+                2, 5, 5, 3, 3, 3,
                 0, absoluteMinScore, 0.87f, 5,
                 scoring);
         alParams.setMapperNValue(9);
@@ -91,7 +91,7 @@ public class KAligner2Test {
         KAlignerParameters2 alParams = new KAlignerParameters2(9, 3,
                 true, true,
                 75, -50, 115, 0.87f, 45, -10, -15,
-                2, 2, 5, 3, 3,
+                2, 2, 5, 3, 3, 3,
                 0, absoluteMinScore, 0.87f, 5,
                 scoring);
         //alParams = GlobalObjectMappers.ONE_LINE.readValue("{\"mapperAbsoluteMinScore\": 65, \"scoring\": {\"subsMatrix\": \"raw(6, -2, -2, -2, 0, 2, -2, -2, 2, -2, 2, -2, 0, 0, 0, -2, 6, -2, -2, 0, 2, -2, 2, -2, 2, -2, 0, 0, -2, 0, -2, -2, 6, -2, 0, -2, 2, 2, -2, -2, 2, 0, -2, 0, 0, -2, -2, -2, 6, 0, -2, 2, -2, 2, 2, -2, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, -2, -2, 0, 2, -2, 0, 0, 0, 0, 0, 0, 0, 0, -2, -2, 2, 2, 0, -2, 2, 0, 0, 0, 0, 0, 0, 0, 0, -2, 2, 2, -2, 0, 0, 0, 2, -2, 0, 0, 0, 0, 0, 0, 2, -2, -2, 2, 0, 0, 0, -2, 2, 0, 0, 0, 0, 0, 0, -2, 2, -2, 2, 0, 0, 0, 0, 0, 2, -2, 0, 0, 0, 0, 2, -2, 2, -2, 0, 0, 0, 0, 0, -2, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)\", \"uniformBasicMatch\": true, \"type\": \"affine\", \"gapOpenPenalty\": -23, \"gapExtensionPenalty\": -1}, \"floatingLeftBound\": true, \"mapperMaxClusterIndels\": 2, \"mapperNValue\": 9, \"mapperRelativeMinScore\": 0.8, \"mapperMatchScore\": 25, \"mapperMaxSeedsDistance\": 2, \"maxHits\": 5, \"mapperOffsetShiftScore\": -30, \"mapperMismatchScore\": -20, \"relativeMinScore\": 0.8, \"alignmentStopPenalty\": 0, \"mapperAbsoluteMinClusterScore\": 45, \"floatingRightBound\": true, \"mapperSlotCount\": 3, \"absoluteMinScore\": 20, \"mapperMinSeedsDistance\": 2, \"mapperExtraClusterScore\": -20, \"mapperKValue\": 3, \"mapperKMersPerPosition\": 3}", KAlignerParameters2.class);

@@ -76,6 +76,8 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
 
     mapperSlotCount,
 
+    mapperMaxClusters,
+
     mapperMaxClusterIndels,
 
     mapperKMersPerPosition;
@@ -155,7 +157,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     public KAlignerParameters2(int mapperNValue, int mapperKValue, boolean floatingLeftBound, boolean floatingRightBound,
                                int mapperAbsoluteMinClusterScore, int mapperExtraClusterScore, int mapperAbsoluteMinScore, float mapperRelativeMinScore,
                                int mapperMatchScore, int mapperMismatchScore, int mapperOffsetShiftScore, int mapperMinSeedsDistance,
-                               int mapperMaxSeedsDistance, int mapperSlotCount, int mapperMaxClusterIndels, int mapperKMersPerPosition,
+                               int mapperMaxSeedsDistance, int mapperSlotCount, int mapperMaxClusters, int mapperMaxClusterIndels, int mapperKMersPerPosition,
                                int alignmentStopPenalty, int absoluteMinScore, float relativeMinScore,
                                int maxHits, AffineGapAlignmentScoring scoring) {
         if (scoring != null && !scoring.uniformBasicMatchScore())
@@ -174,6 +176,7 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
         this.mapperMinSeedsDistance = mapperMinSeedsDistance;
         this.mapperMaxSeedsDistance = mapperMaxSeedsDistance;
         this.mapperSlotCount = mapperSlotCount;
+        this.mapperMaxClusters = mapperMaxClusters;
         this.mapperMaxClusterIndels = mapperMaxClusterIndels;
         this.mapperKMersPerPosition = mapperKMersPerPosition;
         this.alignmentStopPenalty = alignmentStopPenalty;
@@ -427,6 +430,17 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
     //TODO
     public KAlignerParameters2 setMapperKMersPerPosition(int mapperKMersPerPosition) {
         this.mapperKMersPerPosition = mapperKMersPerPosition;
+        return this;
+    }
+
+    //TODO
+    public int getMapperMaxClusters() {
+        return mapperMaxClusters;
+    }
+
+    //TODO
+    public KAlignerParameters2 setMapperMaxClusters(int mapperMaxClusters) {
+        this.mapperMaxClusters = mapperMaxClusters;
         return this;
     }
 

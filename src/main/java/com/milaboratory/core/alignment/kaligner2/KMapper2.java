@@ -116,7 +116,7 @@ public final class KMapper2 implements java.io.Serializable {
 
     maxClusterIndels;
 
-    private static final int maxClusters = 3;
+    private final int maxClusters;
 
     /**
      * Minimal absolute score.
@@ -174,10 +174,10 @@ public final class KMapper2 implements java.io.Serializable {
                     int absoluteMinClusterScore, int extraClusterScore,
                     int absoluteMinScore, float relativeMinScore,
                     int matchScore, int mismatchScore, int offsetShiftScore,
-                    int slotCount, int maxClusterIndels, int kMersPerPosition,
+                    int slotCount, int maxClusters, int maxClusterIndels, int kMersPerPosition,
                     boolean floatingLeftBound, boolean floatingRightBound) {
         this(nValue, kValue, minDistance, maxDistance, absoluteMinClusterScore, extraClusterScore, absoluteMinScore,
-                relativeMinScore, matchScore, mismatchScore, offsetShiftScore, slotCount, maxClusterIndels,
+                relativeMinScore, matchScore, mismatchScore, offsetShiftScore, slotCount, maxClusters, maxClusterIndels,
                 kMersPerPosition, floatingLeftBound, floatingRightBound, null);
     }
 
@@ -200,7 +200,7 @@ public final class KMapper2 implements java.io.Serializable {
                     int absoluteMinClusterScore, int extraClusterScore,
                     int absoluteMinScore, float relativeMinScore,
                     int matchScore, int mismatchScore, int offsetShiftScore,
-                    int slotCount, int maxClusterIndels, int kMersPerPosition,
+                    int slotCount, int maxClusters, int maxClusterIndels, int kMersPerPosition,
                     boolean floatingLeftBound, boolean floatingRightBound,
                     KAligner2Statistics stat) {
         this.nValue = nValue;
@@ -235,6 +235,7 @@ public final class KMapper2 implements java.io.Serializable {
         this.mismatchScore = mismatchScore;
         this.offsetShiftScore = offsetShiftScore;
         this.slotCount = slotCount;
+        this.maxClusters = maxClusters;
         this.maxClusterIndels = maxClusterIndels;
         this.floatingLeftBound = floatingLeftBound;
         this.floatingRightBound = floatingRightBound;
@@ -249,15 +250,7 @@ public final class KMapper2 implements java.io.Serializable {
      * @return new KMapper
      */
     public static KMapper2 createFromParameters(KAlignerParameters2 parameters) {
-        return new KMapper2(parameters.getMapperNValue(), parameters.getMapperKValue(), parameters.getMapperMinSeedsDistance(),
-                parameters.getMapperMaxSeedsDistance(), parameters.getMapperAbsoluteMinClusterScore(),
-                parameters.getMapperExtraClusterScore(),
-                parameters.getMapperAbsoluteMinScore(),
-                parameters.getMapperRelativeMinScore(),
-                parameters.getMapperMatchScore(), parameters.getMapperMismatchScore(),
-                parameters.getMapperOffsetShiftScore(), parameters.getMapperSlotCount(),
-                parameters.getMapperMaxClusterIndels(), parameters.getMapperKMersPerPosition(),
-                parameters.isFloatingLeftBound(), parameters.isFloatingRightBound());
+        return createFromParameters(parameters, null);
     }
 
     /**
@@ -276,6 +269,7 @@ public final class KMapper2 implements java.io.Serializable {
                 parameters.getMapperRelativeMinScore(),
                 parameters.getMapperMatchScore(), parameters.getMapperMismatchScore(),
                 parameters.getMapperOffsetShiftScore(), parameters.getMapperSlotCount(),
+                parameters.getMapperMaxClusters(),
                 parameters.getMapperMaxClusterIndels(), parameters.getMapperKMersPerPosition(),
                 parameters.isFloatingLeftBound(), parameters.isFloatingRightBound(), stat);
     }
