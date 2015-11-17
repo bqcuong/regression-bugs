@@ -87,12 +87,12 @@ public final class KMapper2 implements java.io.Serializable {
      * Base of records for individual kMers
      */
     //base[combinationMask][kMer][seeds]
-    public final int[][][] base;
+    private final int[][][] base;
     /**
      * Number of records for each individual kMer (used only for building of base)
      */
     //length[combinationMask][kMer]
-    public final int[][] lengths;
+    private final int[][] lengths;
     /**
      * Minimal absolute score value
      */
@@ -140,7 +140,7 @@ public final class KMapper2 implements java.io.Serializable {
     /*                  Utility fields                   */
     private volatile boolean built = false;
     private int maxReferenceLength = 0, minReferenceLength = Integer.MAX_VALUE;
-    public int sequencesInBase = 0;
+    private int sequencesInBase = 0;
     /**
      * Cache to prevent excessive memory allocation
      */
@@ -148,11 +148,6 @@ public final class KMapper2 implements java.io.Serializable {
         @Override
         protected ThreadLocalCache initialValue() {
             return new ThreadLocalCache(sequencesInBase, slotCount, maxClusterIndels, matchScore, mismatchScore, offsetShiftScore, absoluteMinClusterScore);
-        }
-
-        @Override
-        public void remove() {
-            super.remove();
         }
     };
     /**
@@ -845,7 +840,19 @@ public final class KMapper2 implements java.io.Serializable {
 
         //A2: correcting intersections, step 2 untangling
         int bestScore = 0, currentScore;
+
         int numberOfClusters = results.size() / OUTPUT_RECORD_SIZE;
+        for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
+            if (results.get(i + FIRST_RECORD_ID) == DROPPED_CLUSTER
+                    || crosses(seedPositions, data, results.get(i + FIRST_RECORD_ID), results.get(i + LAST_RECORD_ID))) {
+                --numberOfClusters;
+                results.set(i + FIRST_RECORD_ID, DROPPED_CLUSTER);
+                results.set(i + SCORE, Integer.MIN_VALUE);
+            }
+        }
+
+        if (numberOfClusters == 0)
+            return null;
 
         final long[] forPreFiltering = new long[numberOfClusters];
         for (int i = 0; i < numberOfClusters; i++)

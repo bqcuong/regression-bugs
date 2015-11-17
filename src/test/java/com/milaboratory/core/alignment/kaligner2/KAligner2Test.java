@@ -56,7 +56,7 @@ public class KAligner2Test {
         AffineGapAlignmentScoring<NucleotideSequence> scoring =
                 new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -7, -9, -1);
         int absoluteMinScore = 70;
-        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParams1(scoring, absoluteMinScore,
+        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParamsOneCluster(scoring, absoluteMinScore,
                 Integer.MAX_VALUE,
                 30), 10).take();
         Benchmark bm = new Benchmark(50_000_000_000L);

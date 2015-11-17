@@ -26,6 +26,10 @@ public final class Benchmark<T extends AlignerParameters>
         this.maxNoHits = maxNoHits;
     }
 
+    public void setExceptionListener(ExceptionListener exceptionListener) {
+        this.exceptionListener = exceptionListener;
+    }
+
     @Override
     public BenchmarkResults process(BenchmarkInput input) {
         RandomUtil.reseedThreadLocal(input.challenge.seed);
