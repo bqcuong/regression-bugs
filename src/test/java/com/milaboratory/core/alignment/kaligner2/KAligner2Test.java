@@ -1,6 +1,7 @@
 package com.milaboratory.core.alignment.kaligner2;
 
 import com.milaboratory.core.alignment.*;
+import com.milaboratory.core.alignment.benchmark.*;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
@@ -128,7 +129,7 @@ public class KAligner2Test {
         ChallengeParameters cp = ChallengeProvider.getParamsOneCluster(params.getScoring(), params.getAbsoluteMinScore(),
                 Integer.MAX_VALUE, 30);
         Challenge challenge = new ChallengeProvider(cp, 10).take();
-        Benchmark1 bm = new Benchmark1(50_000_000_000L);
+        Benchmark bm = new Benchmark(50_000_000L);
         KAlignerParameters alParams = new KAlignerParameters(4,
                 true, true,
                 115, 0.87f, 45, -10, -15,
@@ -142,8 +143,8 @@ public class KAligner2Test {
                 2, 2,
                 15, 2, -1000, 40, 0.87f, 5,
                 new LinearGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 5, -9, -12));
-        BenchmarkInput1 bi = new BenchmarkInput1(alParams, challenge);
-        BenchmarkResults1 result = bm.process(bi);
+        BenchmarkInput bi = new BenchmarkInput(alParams, challenge);
+        BenchmarkResults result = bm.process(bi);
         System.out.println(TestUtil.time(result.getAverageTiming()));
         System.out.println(result.getProcessedQueries());
         System.out.println(result.getBadFraction() * 100);

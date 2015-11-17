@@ -1,4 +1,4 @@
-package com.milaboratory.core.alignment.kaligner2;
+package com.milaboratory.core.alignment.benchmark;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.milaboratory.core.Range;
@@ -10,16 +10,16 @@ import java.util.List;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
         getterVisibility = JsonAutoDetect.Visibility.NONE)
-public class KAligner2Query {
+public class KAlignerQuery {
     public final int targetId;
     public final List<Range> queryClusters, targetClusters;
     public final List<Mutations<NucleotideSequence>> mutationsInTarget;
     public final NucleotideSequence query;
     public final Alignment<NucleotideSequence> expectedAlignment;
 
-    public KAligner2Query(int targetId, List<Range> queryClusters, List<Range> targetClusters,
-                          List<Mutations<NucleotideSequence>> mutationsInTarget, NucleotideSequence query,
-                          Alignment<NucleotideSequence> expectedAlignment) {
+    public KAlignerQuery(int targetId, List<Range> queryClusters, List<Range> targetClusters,
+                         List<Mutations<NucleotideSequence>> mutationsInTarget, NucleotideSequence query,
+                         Alignment<NucleotideSequence> expectedAlignment) {
         this.targetId = targetId;
         this.queryClusters = queryClusters;
         this.targetClusters = targetClusters;

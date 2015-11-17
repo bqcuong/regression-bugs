@@ -3,6 +3,7 @@ package com.milaboratory.core.alignment.kaligner2;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
+import com.milaboratory.core.alignment.AlignerParameters;
 import com.milaboratory.core.alignment.KAlignmentHit;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.primitivio.annotations.Serializable;
@@ -15,7 +16,7 @@ import com.milaboratory.util.GlobalObjectMappers;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
         getterVisibility = JsonAutoDetect.Visibility.NONE)
 @Serializable(asJson = true)
-public final class KAlignerParameters2 implements Cloneable, java.io.Serializable {
+public final class KAlignerParameters2 implements AlignerParameters, Cloneable, java.io.Serializable {
     private static final long serialVersionUID = 1L;
 //    /**
 //     * List of known parameters presets
@@ -205,6 +206,11 @@ public final class KAlignerParameters2 implements Cloneable, java.io.Serializabl
 //    public static Set<String> getAvailableNames() {
 //        return knownParameters.keySet();
 //    }
+    
+    @Override
+    public <P> KAligner2<P> createAligner() {
+        return new KAligner2<>(this);
+    }
 
     /**
      * Returns kValue (length of kMers or seeds) used by {@link com.milaboratory.core.alignment.KMapper}

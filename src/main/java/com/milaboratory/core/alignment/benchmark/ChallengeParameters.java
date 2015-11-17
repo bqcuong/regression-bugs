@@ -1,4 +1,4 @@
-package com.milaboratory.core.alignment.kaligner2;
+package com.milaboratory.core.alignment.benchmark;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
@@ -39,5 +39,16 @@ public final class ChallengeParameters {
         this.minAlignmentScoring = minAlignmentScoring;
         this.maxAlignmentScoring = maxAlignmentScoring;
         this.scoring = scoring;
+    }
+
+    public ChallengeParameters setQueryCount(int newCount) {
+        return new ChallengeParameters(dbSize, dbMinSeqLength,
+                dbMaxSeqLength, newCount,
+                minClusters, maxClusters,
+                minClusterLength, maxClusterLength,
+                minIndelLength, maxIndelLength,
+                insertionProbability, deletionProbability,
+                boundaryInsertProbability, mutationModel,
+                minAlignmentScoring, maxAlignmentScoring, scoring);
     }
 }

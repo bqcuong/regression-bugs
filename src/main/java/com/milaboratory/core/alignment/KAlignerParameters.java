@@ -30,7 +30,7 @@ import java.util.Set;
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
         getterVisibility = JsonAutoDetect.Visibility.NONE)
 @Serializable(asJson = true)
-public final class KAlignerParameters implements Cloneable, java.io.Serializable {
+public final class KAlignerParameters implements AlignerParameters, Cloneable, java.io.Serializable {
     private static final long serialVersionUID = 1L;
     /**
      * List of known parameters presets
@@ -52,6 +52,29 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
             ioe.printStackTrace();
         }
         knownParameters = map;
+    }
+
+
+    /**
+     * Returns parameters by specified preset name
+     *
+     * @param name parameters preset name
+     * @return parameters with specified preset name
+     */
+    public static KAlignerParameters getByName(String name) {
+        KAlignerParameters params = knownParameters.get(name);
+        if (params == null)
+            return null;
+        return params.clone();
+    }
+
+    /**
+     * Returns all available parameters presets
+     *
+     * @return all available parameters presets
+     */
+    public static Set<String> getAvailableNames() {
+        return knownParameters.keySet();
     }
 
     /**
@@ -179,26 +202,9 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
             throw new IllegalArgumentException("Use scoring with common match score.");
     }
 
-    /**
-     * Returns parameters by specified preset name
-     *
-     * @param name parameters preset name
-     * @return parameters with specified preset name
-     */
-    public static KAlignerParameters getByName(String name) {
-        KAlignerParameters params = knownParameters.get(name);
-        if (params == null)
-            return null;
-        return params.clone();
-    }
-
-    /**
-     * Returns all available parameters presets
-     *
-     * @return all available parameters presets
-     */
-    public static Set<String> getAvailableNames() {
-        return knownParameters.keySet();
+    @Override
+    public <P> KAligner<P> createAligner() {
+        return new KAligner<>(this);
     }
 
     /**

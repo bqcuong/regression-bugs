@@ -18,6 +18,10 @@ package com.milaboratory.core.alignment.kaligner2;
 import cc.redberry.pipe.OutputPort;
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.alignment.Alignment;
+import com.milaboratory.core.alignment.benchmark.Challenge;
+import com.milaboratory.core.alignment.benchmark.ChallengeParameters;
+import com.milaboratory.core.alignment.benchmark.ChallengeProvider;
+import com.milaboratory.core.alignment.benchmark.KAlignerQuery;
 import com.milaboratory.core.mutations.generator.GenericNucleotideMutationModel;
 import com.milaboratory.core.mutations.generator.SubstitutionModels;
 import com.milaboratory.core.sequence.NucleotideSequence;
@@ -44,7 +48,7 @@ public class ChallengeProviderTest {
         );
         ChallengeProvider.MAX_RERUNS = 10000;
         Challenge challenge = new ChallengeProvider(params, 11).take();
-        OutputPort<KAligner2Query> queries = challenge.queries();
+        OutputPort<KAlignerQuery> queries = challenge.queries();
         for (int i = 0; i < 100; i++) {
             Alignment<NucleotideSequence> ea = queries.take().expectedAlignment;
             System.out.println(ea.getScore());

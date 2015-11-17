@@ -87,12 +87,12 @@ public final class KMapper2 implements java.io.Serializable {
      * Base of records for individual kMers
      */
     //base[combinationMask][kMer][seeds]
-    private final int[][][] base;
+    public final int[][][] base;
     /**
      * Number of records for each individual kMer (used only for building of base)
      */
     //length[combinationMask][kMer]
-    private final int[][] lengths;
+    public final int[][] lengths;
     /**
      * Minimal absolute score value
      */
@@ -140,7 +140,7 @@ public final class KMapper2 implements java.io.Serializable {
     /*                  Utility fields                   */
     private volatile boolean built = false;
     private int maxReferenceLength = 0, minReferenceLength = Integer.MAX_VALUE;
-    private int sequencesInBase = 0;
+    public int sequencesInBase = 0;
     /**
      * Cache to prevent excessive memory allocation
      */
@@ -148,6 +148,11 @@ public final class KMapper2 implements java.io.Serializable {
         @Override
         protected ThreadLocalCache initialValue() {
             return new ThreadLocalCache();
+        }
+
+        @Override
+        public void remove() {
+            super.remove();
         }
     };
     /**
@@ -1128,5 +1133,11 @@ public final class KMapper2 implements java.io.Serializable {
             for (IntArrayList candidate : candidates)
                 candidate.clear();
         }
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("DELETED");
+        super.finalize();
     }
 }

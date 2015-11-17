@@ -13,9 +13,11 @@ import com.milaboratory.util.RandomUtil;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.Well1024a;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -507,10 +509,6 @@ public class KMapper2Test {
 //        Assert.assertTrue((float) found / total > 0.85f);
 //    }
 
-    @Test
-    public void testsss() throws Exception {
-        System.out.println(0xFF);
-    }
 
     static int kMerTrailingZeros(int kMer, int mask) {
         int i = Integer.numberOfTrailingZeros(mask);

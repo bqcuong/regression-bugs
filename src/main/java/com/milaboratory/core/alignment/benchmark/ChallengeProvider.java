@@ -1,4 +1,4 @@
-package com.milaboratory.core.alignment.kaligner2;
+package com.milaboratory.core.alignment.benchmark;
 
 import cc.redberry.pipe.OutputPort;
 import com.milaboratory.core.Range;
@@ -12,7 +12,9 @@ import com.milaboratory.core.mutations.generator.GenericNucleotideMutationModel;
 import com.milaboratory.core.mutations.generator.MutationsGenerator;
 import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.mutations.generator.SubstitutionModels;
+import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.NucleotideSequence;
+import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.RandomGenerator;
@@ -22,12 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.milaboratory.test.TestUtil.randomSequence;
-
 /**
  * Created by dbolotin on 27/10/15.
  */
-public class ChallengeProvider implements OutputPort<Challenge> {
+public final class ChallengeProvider implements OutputPort<Challenge> {
     public static int MAX_RERUNS = 200;
     final ChallengeParameters parameters;
     final RandomGenerator gen;
@@ -48,7 +48,7 @@ public class ChallengeProvider implements OutputPort<Challenge> {
         final RandomDataGenerator generator = new RandomDataGenerator(rg);
         final AtomicInteger counter = new AtomicInteger();
 
-        List<KAligner2Query> queries = new ArrayList<>();
+        List<KAlignerQuery> queries = new ArrayList<>();
 
         int consequentReruns = 0;
 
@@ -149,7 +149,7 @@ public class ChallengeProvider implements OutputPort<Challenge> {
             assert AlignmentUtils.getAlignedSequence2Part(expectedAlignment)
                     .equals(q.getRange(expectedAlignment.getSequence2Range()));
 
-            KAligner2Query query = new KAligner2Query(targetId, qRanges, tRanges, muts,
+            KAlignerQuery query = new KAlignerQuery(targetId, qRanges, tRanges, muts,
                     q, expectedAlignment);
             queries.add(query);
         }
@@ -160,23 +160,18 @@ public class ChallengeProvider implements OutputPort<Challenge> {
     public static NucleotideSequence[] generateDB(RandomDataGenerator generator, ChallengeParameters params) {
         NucleotideSequence[] db = new NucleotideSequence[params.dbSize];
         for (int i = 0; i < params.dbSize; i++)
-            db[i] = randomSequence(NucleotideSequence.ALPHABET, generator, params.dbMinSeqLength, params.dbMaxSeqLength);
+            db[i] = randomSequence(NucleotideSequence.ALPHABET, generator.getRandomGenerator(), params.dbMinSeqLength, params.dbMaxSeqLength, true);
         return db;
     }
 
-    public static ChallengeParameters getParams1(AffineGapAlignmentScoring<NucleotideSequence> scoring,
-                                                 int minAlignmentScoring, int maxAlignmentScoring,
-                                                 double multiplier) {
-        return new ChallengeParameters(100, 100, 500,
-                100000,
-                1, 4, 15, 50, 3, 30,
-                0.45, 0.45, 0.5,
-                new GenericNucleotideMutationModel(
-                        SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
-                        0.000522, 0.000198).multiplyProbabilities(multiplier),
-                minAlignmentScoring, maxAlignmentScoring,
-                scoring
-        );
+    public static <S extends Sequence<S>> S randomSequence(Alphabet<S> alphabet, RandomGenerator r,
+                                                           int minLength, int maxLength, boolean basicLettersOnly) {
+        int length = minLength == maxLength ?
+                minLength : minLength + r.nextInt(maxLength - minLength + 1);
+        SequenceBuilder<S> builder = alphabet.getBuilder();
+        for (int i = 0; i < length; ++i)
+            builder.append((byte) r.nextInt(basicLettersOnly ? alphabet.basicSize() : alphabet.size()));
+        return builder.createAndDestroy();
     }
 
     public static ChallengeParameters getParams1NoGap(AffineGapAlignmentScoring<NucleotideSequence> scoring,
