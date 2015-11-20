@@ -315,11 +315,11 @@ public final class Mutations<S extends Sequence<S>>
      * @return mutations for a range of positions
      */
     public Mutations<S> extractMutationsForRange(int from, int to) {
-        //If range size is 0 return empty array
+        // If range size is 0 return empty array
         if (from == to)
-            return new Mutations<S>(alphabet, new int[0], true);
+            return new Mutations<>(alphabet, new int[0], true);
 
-        //Find first mutation for the range
+        // Find first mutation for the range
         int fromIndex = firstMutationWithPosition(from);
         if (fromIndex < 0)
             fromIndex = -fromIndex - 1;
@@ -331,7 +331,7 @@ public final class Mutations<S extends Sequence<S>>
                 (mutations[fromIndex] & MUTATION_TYPE_MASK) == RAW_MUTATION_TYPE_INSERTION)
             ++fromIndex;
 
-        //Find last mutation
+        // Find last mutation
         int toIndex = firstMutationWithPosition(fromIndex, mutations.length, to);
         if (toIndex < 0)
             toIndex = -toIndex - 1;
@@ -341,21 +341,25 @@ public final class Mutations<S extends Sequence<S>>
                 (mutations[toIndex] & MUTATION_TYPE_MASK) == RAW_MUTATION_TYPE_INSERTION)
             ++toIndex;
 
-        //Creating result
+        // Don't create new object if result will be equal to this
+        if (from == 0 && fromIndex == 0 && toIndex == mutations.length)
+            return this;
+
+        // Creating result
         int[] result = new int[toIndex - fromIndex];
 
-        //Constant to move positions in the output array
+        // Constant to move positions in the output array
         int offset;
         if (from == -1)
             offset = 0;
         else
             offset = ((-from) << POSITION_OFFSET);
 
-        //Copy and move mutations
+        // Copy and move mutations
         for (int i = result.length - 1, j = toIndex - 1; i >= 0; --i, --j)
             result[i] = mutations[j] + offset;
 
-        return new Mutations<S>(alphabet, result, true);
+        return new Mutations<>(alphabet, result, true);
     }
 
     /**
@@ -483,7 +487,7 @@ public final class Mutations<S extends Sequence<S>>
     }
 
     public static <S extends Sequence<S>> Mutations<S> decode(String string, Alphabet<S> alphabet) {
-        return new Mutations<S>(alphabet, MutationsUtil.decode(string, alphabet), true);
+        return new Mutations<>(alphabet, MutationsUtil.decode(string, alphabet), true);
     }
 
     @Override
