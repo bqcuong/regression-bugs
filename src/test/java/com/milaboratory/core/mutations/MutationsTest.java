@@ -26,6 +26,7 @@ import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -92,6 +93,7 @@ public class MutationsTest {
         Assert.assertEquals(seq3, m3.mutate(seq1));
     }
 
+    @Ignore
     @Test
     public void testExtract0() throws Exception {
         NucleotideSequence seq1 = new NucleotideSequence("ATTAGAGA"),
@@ -106,6 +108,7 @@ public class MutationsTest {
         Assert.assertTrue(extracted == m1);
     }
 
+    @Ignore
     @Test
     public void testExtract1() throws Exception {
         NucleotideSequence seq1 = new NucleotideSequence("AACTGCTAACTCGA"),

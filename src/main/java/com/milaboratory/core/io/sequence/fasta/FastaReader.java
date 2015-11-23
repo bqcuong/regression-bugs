@@ -123,6 +123,11 @@ public class FastaReader<S extends Sequence<S>> implements CanReportProgress,
      */
     public FastaRecord<S> take() {
         RawFastaRecord rawRecord = takeRawRecord();
+
+        // On EOF
+        if (rawRecord == null)
+            return null;
+
         return new FastaRecord<>(id++, rawRecord.description,
                 alphabet.parse(rawRecord.sequence));
     }
