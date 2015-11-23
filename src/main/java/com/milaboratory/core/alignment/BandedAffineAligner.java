@@ -132,7 +132,7 @@ public class BandedAffineAligner {
 
         int match, gap1, gap2, to;
 
-        int maxI = 0, maxJ = 0, maxScore = Integer.MIN_VALUE;
+        int maxI = -1, maxJ = -1, maxScore = 0;
         final int gapExtensionPenalty = scoring.getGapExtensionPenalty();
 
         for (i = 0; i < length1; ++i) {
@@ -229,7 +229,7 @@ public class BandedAffineAligner {
 
         int match, gap1, gap2, to;
 
-        int maxI = 0, maxJ = 0, maxScore = Integer.MIN_VALUE;
+        int maxI = -1, maxJ = -1, maxScore = 0;
         final int gapExtensionPenalty = scoring.getGapExtensionPenalty();
 
         for (i = 0; i < length1; ++i) {

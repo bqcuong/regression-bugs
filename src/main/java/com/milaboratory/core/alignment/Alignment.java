@@ -70,7 +70,7 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
             if (!mutations.isCompatibleWith(sequence1)
                     || !sequence1Range.contains(mutations.getMutatedRange())
                     || sequence1Range.length() + mutations.getLengthDelta() != sequence2Range.length())
-                throw new IllegalArgumentException("Not compatible arguments.");
+                throw new IllegalArgumentException("Not compatible arguments: muts: " + mutations + " range1: " + sequence1Range + " range2: " + sequence2Range );
         } else if (sequence1Range.length() != sequence2Range.length())
             throw new IllegalArgumentException("Not compatible arguments.");
 

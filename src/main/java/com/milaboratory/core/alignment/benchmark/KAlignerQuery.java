@@ -28,6 +28,14 @@ public class KAlignerQuery {
         this.expectedAlignment = expectedAlignment;
     }
 
+    public KAlignerQuery(NucleotideSequence sequence) {
+        this(-1, null, null, null, sequence, null);
+    }
+
+    public boolean isFalse(){
+        return targetId == -1;
+    }
+
     @Override
     public String toString() {
         return "Challenge{" +

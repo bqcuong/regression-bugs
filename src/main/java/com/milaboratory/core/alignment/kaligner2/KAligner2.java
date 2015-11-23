@@ -4,6 +4,7 @@ import com.milaboratory.core.Range;
 import com.milaboratory.core.alignment.*;
 import com.milaboratory.core.alignment.batch.BatchAlignerWithBase;
 import com.milaboratory.core.alignment.kaligner2.KMapper2.ArrList;
+import com.milaboratory.core.mutations.Mutation;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.NucleotideSequence;
@@ -122,7 +123,7 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
                     new MutationsBuilder<>(NucleotideSequence.ALPHABET);
 
             //Left edge alignment
-            int seedPosition2 = seeds.get(mappingHit.indexById(0));
+            int seedPosition2 = seeds.get(mappingHit.indexById(0)) + nValue;
             int seedPosition1 = seedPosition2 + mappingHit.offsetById(0);
 
             length1 = seedPosition1;
@@ -151,7 +152,6 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
                         offset1, length1,
                         offset2, length2,
                         maxIndels, mutations, cache);
-
             } else {
                 br = BandedAffineAligner.semiGlobalLeft0(parameters.getScoring(), target, query,
                         offset1, length1, added1,
@@ -165,6 +165,7 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
             int previousSeedPosition2 = seeds.get(mappingHit.indexById(0)),
                     previousSeedPosition1 = previousSeedPosition2 + mappingHit.offsetById(0);
 
+            boolean first = true;
             for (int seedId = 1; seedId < mappingHit.seedRecords.length; seedId++) {
                 seedPosition2 = seeds.get(mappingHit.indexById(seedId));
                 seedPosition1 = seedPosition2 + mappingHit.offsetById(seedId);
@@ -182,9 +183,10 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
 
                 assert length1 >= 0 && length2 >= 0;
 
-                if (!kIsZero)
+                if (!kIsZero && !first)
                     Aligner.alignOnlySubstitutions0(target, query, previousSeedPosition1, nValue, previousSeedPosition2, nValue,
                             scoring, mutations);
+                first = false;
 
                 BandedAffineAligner.align0(scoring, target, query,
                         offset1, length1,
@@ -196,12 +198,12 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
             }
 
             //Right edge
-            if (!kIsZero)
-                Aligner.alignOnlySubstitutions0(target, query, previousSeedPosition1, nValue, previousSeedPosition2, nValue,
-                        scoring, mutations);
+//            if (!kIsZero && !first)
+//                Aligner.alignOnlySubstitutions0(target, query, previousSeedPosition1, nValue, previousSeedPosition2, nValue,
+//                        scoring, mutations);
 
-            offset2 = previousSeedPosition2 + nValue;
-            offset1 = previousSeedPosition1 + nValue;
+            offset2 = previousSeedPosition2 + (first ? nValue : 0);
+            offset1 = previousSeedPosition1 + (first ? nValue : 0);
 
             length1 = target.size() - offset1;
             length2 = query.size() - offset2;

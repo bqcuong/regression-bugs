@@ -12,17 +12,23 @@ public class BenchmarkResults {
     public final KAligner2Statistics stat;
     public final long executionTime;
     public final int processedQueries;
+    public final int processedGoodQueries;
+    public final int falsePositives;
     public final int mismatched;
     public final int noHits;
+    public final int scoreError;
 
-    public BenchmarkResults(BenchmarkInput input, KAligner2Statistics stat,
-                            long executionTime, int processedQueries, int mismatched, int noHits) {
+    public BenchmarkResults(BenchmarkInput input, KAligner2Statistics stat, long executionTime, int processedQueries,
+                            int processedGoodQueries, int falsePositives, int mismatched, int noHits, int scoreError) {
         this.input = input;
         this.stat = stat;
         this.executionTime = executionTime;
         this.processedQueries = processedQueries;
+        this.processedGoodQueries = processedGoodQueries;
+        this.falsePositives = falsePositives;
         this.mismatched = mismatched;
         this.noHits = noHits;
+        this.scoreError = scoreError;
     }
 
     public BenchmarkInput getInput() {
@@ -37,9 +43,11 @@ public class BenchmarkResults {
         return executionTime;
     }
 
-    public int getProcessedQueries() {
-        return processedQueries;
+    public int getProcessedGoodQueries() {
+        return processedGoodQueries;
     }
+
+    public int getProcessedQueries() { return processedQueries; }
 
     public int getMismatched() {
         return mismatched;
@@ -50,15 +58,23 @@ public class BenchmarkResults {
     }
 
     public double getNoHitsFraction() {
-        return 1.0 * noHits / processedQueries;
+        return 1.0 * noHits / processedGoodQueries;
     }
 
     public double getMismatchedFraction() {
-        return 1.0 * mismatched / processedQueries;
+        return 1.0 * mismatched / processedGoodQueries;
     }
 
     public double getBadFraction() {
-        return 1.0 * (noHits + mismatched) / processedQueries;
+        return 1.0 * (noHits + mismatched) / processedGoodQueries;
+    }
+
+    public double getFalsePositiveFraction() {
+        return 1.0 * falsePositives / (processedQueries - processedGoodQueries);
+    }
+
+    public double getScoreErrorFraction() {
+        return 1.0 * scoreError / (processedGoodQueries - noHits - mismatched);
     }
 
     public long getAverageTiming() {

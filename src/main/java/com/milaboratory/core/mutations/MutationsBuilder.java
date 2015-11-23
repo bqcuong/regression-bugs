@@ -45,6 +45,8 @@ public final class MutationsBuilder<S extends Sequence<S>> {
         this.reversed = reversed;
     }
 
+    public int get(int index) { return mutations[index]; }
+
     public int size() {
         return size;
     }

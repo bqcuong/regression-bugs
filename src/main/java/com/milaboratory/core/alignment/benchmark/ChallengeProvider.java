@@ -21,7 +21,9 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well19937c;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -154,6 +156,13 @@ public final class ChallengeProvider implements OutputPort<Challenge> {
             queries.add(query);
         }
 
+        for (int i = 0; i < parameters.falseCount; ++i)
+            queries.add(new KAlignerQuery(randomSequence(NucleotideSequence.ALPHABET, generator,
+                    parameters.minClusters * (parameters.minClusterLength + parameters.minIndelLength) + parameters.minIndelLength,
+                    parameters.maxClusters * (parameters.maxClusterLength + parameters.maxIndelLength) + parameters.maxIndelLength,
+                    true
+            )));
+        Collections.shuffle(queries, new Random(gen.nextLong()));
         return new Challenge(db, queries, parameters, seed);
     }
 
@@ -183,7 +192,7 @@ public final class ChallengeProvider implements OutputPort<Challenge> {
                                                       int minAlignmentScoring, int maxAlignmentScoring,
                                                       double multiplier) {
         return new ChallengeParameters(100, 100, 500,
-                100000,
+                100000, 1000000,
                 1, 4, 15, 50, 3, 30,
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
@@ -200,7 +209,7 @@ public final class ChallengeProvider implements OutputPort<Challenge> {
                                                           int minAlignmentScoring, int maxAlignmentScoring,
                                                           double multiplier) {
         return new ChallengeParameters(100, 350, 500,
-                1000000,
+                1000000, 1000000,
                 1, 1, 35, 80, 30, 100,
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(
@@ -215,7 +224,7 @@ public final class ChallengeProvider implements OutputPort<Challenge> {
                                                            int minAlignmentScoring, int maxAlignmentScoring,
                                                            double multiplier) {
         return new ChallengeParameters(100, 350, 500,
-                1000000,
+                1000000, 1000000,
                 2, 2, 35, 100, 30, 80,
                 0.45, 0.45, 0.5,
                 new GenericNucleotideMutationModel(

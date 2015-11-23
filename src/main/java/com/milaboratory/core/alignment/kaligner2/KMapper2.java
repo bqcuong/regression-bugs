@@ -877,8 +877,10 @@ public final class KMapper2 implements java.io.Serializable {
                         int b = current.get(i);
                         if (results.get(b + FIRST_RECORD_ID) == DROPPED_CLUSTER)
                             continue;
-                        if (crosses(seedPositions, data, results.get(a + FIRST_RECORD_ID), results.get(b + FIRST_RECORD_ID))) {
-                            assert crosses(seedPositions, data, results.get(a + LAST_RECORD_ID), results.get(b + LAST_RECORD_ID));
+                        if (crosses(seedPositions, data, results.get(a + FIRST_RECORD_ID), results.get(b + FIRST_RECORD_ID)) ||
+                                crosses(seedPositions, data, results.get(a + LAST_RECORD_ID), results.get(b + LAST_RECORD_ID))) {
+                            assert crosses(seedPositions, data, results.get(a + FIRST_RECORD_ID), results.get(b + LAST_RECORD_ID))
+                                    || crosses(seedPositions, data, results.get(a + LAST_RECORD_ID), results.get(b + FIRST_RECORD_ID));
                             //it += ((1 << ai) - 1);
                             continue OUTER;
                         }

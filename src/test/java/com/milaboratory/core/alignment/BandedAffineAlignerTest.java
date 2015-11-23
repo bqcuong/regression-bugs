@@ -14,6 +14,8 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
+import static com.milaboratory.core.alignment.BandedAffineAligner.semiLocalLeft;
+import static com.milaboratory.core.alignment.BandedAffineAligner.semiLocalRight;
 import static com.milaboratory.test.TestUtil.its;
 import static com.milaboratory.test.TestUtil.randomSequence;
 import static org.junit.Assert.assertEquals;
@@ -24,7 +26,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class BandedAffineAlignerTest {
     @Test
-     public void test1() throws Exception {
+    public void test1() throws Exception {
         AffineGapAlignmentScoring<NucleotideSequence> scoring = new AffineGapAlignmentScoring<>(
                 NucleotideSequence.ALPHABET, 1, -10, -3, -1);
 
@@ -298,7 +300,7 @@ public class BandedAffineAlignerTest {
                 Assert.assertEquals((int) la.score, score);
                 assertAlignment(la, s2);
 
-                la = BandedAffineAligner.semiLocalLeft(scoring, s1, s2,
+                la = semiLocalLeft(scoring, s1, s2,
                         0, s1.size(),
                         0, s2.size(),
                         10);
@@ -323,6 +325,16 @@ public class BandedAffineAlignerTest {
                 assertAlignment(la, s2);
             }
         }
+    }
+
+    @Test
+    public void test6() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("CTATGCTGGTAATTGCTCGGTCCATCTAAAACGGGTTACCCGATTACAGGACC");
+        NucleotideSequence seq2 = new NucleotideSequence("GTATGCTGGTAATTGCTCTGTCCATCTAAAACGGGTTATCCTATTACAGGACC");
+
+        AffineGapAlignmentScoring<NucleotideSequence> IGBLAST_SCORING = new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -30, -40, -10);
+        System.out.println(semiLocalLeft(IGBLAST_SCORING, seq1.getRange(0, 1),
+                seq2.getRange(0, 1), 4));
     }
 
     static <T extends Sequence<T>> void assertAlignment(Alignment<T> alignment, T s2) {

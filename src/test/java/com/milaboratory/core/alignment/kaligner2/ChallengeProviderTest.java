@@ -37,7 +37,7 @@ public class ChallengeProviderTest {
         int absoluteMinScore = 70;
 
         ChallengeParameters params = new ChallengeParameters(100, 100, 500,
-                100,
+                100, 100,
                 2, 2, 15, 50, 3, 30,
                 0.45, 0.45, 0.9,
                 new GenericNucleotideMutationModel(

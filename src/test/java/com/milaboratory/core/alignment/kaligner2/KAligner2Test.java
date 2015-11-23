@@ -72,7 +72,7 @@ public class KAligner2Test {
         BenchmarkInput bi = new BenchmarkInput(alParams, challenge);
         BenchmarkResults result = bm.process(bi);
         System.out.println(TestUtil.time(result.getAverageTiming()));
-        System.out.println(result.getProcessedQueries());
+        System.out.println(result.getProcessedGoodQueries());
         System.out.println(result.getBadFraction() * 100);
     }
 
@@ -109,7 +109,7 @@ public class KAligner2Test {
         BenchmarkInput bi = new BenchmarkInput(alParams, challenge);
         BenchmarkResults result = bm.process(bi);
         System.out.println(TestUtil.time(result.getAverageTiming()));
-        System.out.println(result.getProcessedQueries());
+        System.out.println(result.getProcessedGoodQueries());
         System.out.println(result.getBadFraction() * 100);
         /*
             208.03us
@@ -146,7 +146,7 @@ public class KAligner2Test {
         BenchmarkInput bi = new BenchmarkInput(alParams, challenge);
         BenchmarkResults result = bm.process(bi);
         System.out.println(TestUtil.time(result.getAverageTiming()));
-        System.out.println(result.getProcessedQueries());
+        System.out.println(result.getProcessedGoodQueries());
         System.out.println(result.getBadFraction() * 100);
     }
 

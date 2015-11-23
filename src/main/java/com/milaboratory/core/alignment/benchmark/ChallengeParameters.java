@@ -13,6 +13,7 @@ import com.milaboratory.core.sequence.NucleotideSequence;
 public final class ChallengeParameters {
     final int dbSize, dbMinSeqLength, dbMaxSeqLength;
     final int queryCount;
+    final int falseCount;
     final int minClusters, maxClusters,
             minClusterLength, maxClusterLength,
             minIndelLength, maxIndelLength;
@@ -21,11 +22,17 @@ public final class ChallengeParameters {
     final int minAlignmentScoring, maxAlignmentScoring;
     final AffineGapAlignmentScoring<NucleotideSequence> scoring;
 
-    public ChallengeParameters(int dbSize, int dbMinSeqLength, int dbMaxSeqLength, int queryCount, int minClusters, int maxClusters, int minClusterLength, int maxClusterLength, int minIndelLength, int maxIndelLength, double insertionProbability, double deletionProbability, double boundaryInsertProbability, NucleotideMutationModel mutationModel, int minAlignmentScoring, int maxAlignmentScoring, AffineGapAlignmentScoring<NucleotideSequence> scoring) {
+    public ChallengeParameters(int dbSize, int dbMinSeqLength, int dbMaxSeqLength, int queryCount, int falseCount,
+                               int minClusters, int maxClusters, int minClusterLength, int maxClusterLength,
+                               int minIndelLength, int maxIndelLength, double insertionProbability,
+                               double deletionProbability, double boundaryInsertProbability,
+                               NucleotideMutationModel mutationModel, int minAlignmentScoring,
+                               int maxAlignmentScoring, AffineGapAlignmentScoring<NucleotideSequence> scoring) {
         this.dbSize = dbSize;
         this.dbMinSeqLength = dbMinSeqLength;
         this.dbMaxSeqLength = dbMaxSeqLength;
         this.queryCount = queryCount;
+        this.falseCount = falseCount;
         this.minClusters = minClusters;
         this.maxClusters = maxClusters;
         this.minClusterLength = minClusterLength;
@@ -43,7 +50,7 @@ public final class ChallengeParameters {
 
     public ChallengeParameters setQueryCount(int newCount) {
         return new ChallengeParameters(dbSize, dbMinSeqLength,
-                dbMaxSeqLength, newCount,
+                dbMaxSeqLength, newCount, falseCount,
                 minClusters, maxClusters,
                 minClusterLength, maxClusterLength,
                 minIndelLength, maxIndelLength,

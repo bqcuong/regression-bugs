@@ -41,8 +41,11 @@ public final class Benchmark<T extends AlignerParameters>
 
         long executionTime = 0;
         int processedQueries = 0;
+        int processedGoodQueries = 0;
+        int falsePositives = 0;
         int mismatched = 0;
         int noHits = 0;
+        int scoreError = 0;
 
         long start = System.nanoTime();
 
@@ -58,26 +61,44 @@ public final class Benchmark<T extends AlignerParameters>
             try {
                 long b = System.nanoTime();
                 AlignmentResult<? extends AlignmentHit> result = aligner.align(query.query);
-                ++processedQueries;
                 executionTime += (System.nanoTime() - b);
 
-                if (!result.hasHits()) {
-                    ++noHits;
-                    continue;
-                }
-                for (AlignmentHit hit : result.getHits())
-                    if (!query.query.getRange(hit.getAlignment().getSequence2Range())
-                            .equals(AlignmentUtils.getAlignedSequence2Part(hit.getAlignment())))
-                        throw new RuntimeException("Wrong answer.");
+                ++processedQueries;
+                if (query.isFalse()) {
+                    if (result.hasHits())
+                        ++falsePositives;
+                } else {
+                    ++processedGoodQueries;
 
-                float topScore = result.getHits().get(0).getAlignment().getScore();
-                for (AlignmentHit hit : result.getHits()) {
-                    if (hit.getAlignment().getScore() != topScore)
-                        break;
-                    if (hit.getRecordPayload().equals(query.targetId))
-                        continue OUTER;
+
+                    if (!result.hasHits()) {
+                        ++noHits;
+                        continue;
+                    }
+                    for (AlignmentHit hit : result.getHits())
+                        if (!query.query.getRange(hit.getAlignment().getSequence2Range())
+                                .equals(AlignmentUtils.getAlignedSequence2Part(hit.getAlignment())))
+                            throw new RuntimeException("Wrong answer.");
+
+                    float topScore = result.getHits().get(0).getAlignment().getScore();
+                    for (AlignmentHit hit : result.getHits()) {
+                        if (hit.getAlignment().getScore() != topScore)
+                            break;
+                        if (hit.getRecordPayload().equals(query.targetId)) {
+                            if (topScore < 0.95 * query.expectedAlignment.getScore()) {
+//                                System.out.println("\n\n\n======================\n\n");
+//                                System.out.println("expected score: " + query.expectedAlignment.getScore());
+//                                System.out.println(query.expectedAlignment.getAlignmentHelper());
+//                                System.out.println("\n");
+//                                System.out.println("actual score: " + hit.getAlignment().getScore());
+//                                System.out.println(hit.getAlignment().getAlignmentHelper());
+                                ++scoreError;
+                            }
+                            continue OUTER;
+                        }
+                    }
+                    ++mismatched;
                 }
-                ++mismatched;
             } catch (Exception e) {
                 if (exceptionListener != null)
                     exceptionListener.onException(new ExceptionData(seed, e, db, query.query, input));
@@ -86,7 +107,8 @@ public final class Benchmark<T extends AlignerParameters>
             }
         }
 
-        return new BenchmarkResults(input, stat, executionTime, processedQueries, mismatched, noHits);
+        return new BenchmarkResults(input, stat, executionTime, processedQueries, processedGoodQueries, falsePositives,
+                mismatched, noHits, scoreError);
     }
 
     public interface ExceptionListener {
