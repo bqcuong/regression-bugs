@@ -34,5 +34,7 @@ import com.milaboratory.primitivio.annotations.Serializable;
         @JsonSubTypes.Type(value = KAlignerParameters2.class, name = "kaligner2")})
 @Serializable(asJson = true)
 public interface BatchAlignerWithBaseParameters {
-    <P> BatchAlignerWithBase<NucleotideSequence, P, ? extends AlignmentHit> createAligner();
+    <P> BatchAlignerWithBase<NucleotideSequence, P, ? extends AlignmentHit<NucleotideSequence, P>> createAligner();
+
+    BatchAlignerWithBaseParameters clone();
 }

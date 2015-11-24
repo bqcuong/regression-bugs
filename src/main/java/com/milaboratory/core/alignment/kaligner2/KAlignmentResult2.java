@@ -57,6 +57,11 @@ public final class KAlignmentResult2<P> implements AlignmentResult<KAlignmentHit
     }
 
     @Override
+    public final KAlignmentHit2<P> getBestHit() {
+        return hits.isEmpty() ? null : hits.get(0);
+    }
+
+    @Override
     public boolean hasHits() {
         return !hits.isEmpty();
     }

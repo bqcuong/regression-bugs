@@ -86,6 +86,7 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
         return align(sequence, 0, sequence.size());
     }
 
+    @Override
     public KAlignmentResult2<P> align(final NucleotideSequence query, final int from, final int to) {
         if (stat != null)
             stat.nextQuery();

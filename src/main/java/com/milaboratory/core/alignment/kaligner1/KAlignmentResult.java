@@ -132,6 +132,7 @@ public class KAlignmentResult<P> implements AlignmentResult<KAlignmentHit<P>>,
      * @return best hit (hit with highest alignment or mapper (if lazy alignment is used) score) or null if there is no
      * hits in this result
      */
+    @Override
     public KAlignmentHit getBestHit() {
         if (hits.isEmpty())
             return null;

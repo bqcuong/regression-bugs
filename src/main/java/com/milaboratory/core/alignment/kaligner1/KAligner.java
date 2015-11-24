@@ -197,6 +197,7 @@ public class KAligner<P> implements PipedBatchAlignerWithBase<NucleotideSequence
      * @param to       last nucleotide to be aligned (exclusive)
      * @return a list of hits found in target sequence
      */
+    @Override
     public KAlignmentResult<P> align(NucleotideSequence sequence, int from, int to) {
         return align(sequence, from, to, true);
     }
