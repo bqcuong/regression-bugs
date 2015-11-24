@@ -283,4 +283,38 @@ public final class MutationsUtil {
         }
         return true;
     }
+
+    public static Mutations<AminoAcidSequence> nt2aa(NucleotideSequence seq1, Mutations<NucleotideSequence> mutations) {
+        return nt2aa(seq1, mutations, Integer.MAX_VALUE);
+    }
+
+    public static Mutations<AminoAcidSequence> nt2aa(NucleotideSequence seq1, Mutations<NucleotideSequence> mutations,
+                                                     int maxShiftedTriplets) {
+        AminoAcidSequence aaSeq1 = AminoAcidSequence.translateFromLeft(seq1);
+        NucleotideSequence seq2 = mutations.mutate(seq1);
+        AminoAcidSequence aaSeq2 = AminoAcidSequence.translateFromLeft(seq2);
+        MutationsBuilder<AminoAcidSequence> result = new MutationsBuilder<>(AminoAcidSequence.ALPHABET);
+
+        int aaP2, prevAAP2 = -1;
+        int ntP1, ntP2;
+        for (int aaP1 = 0; aaP1 <= aaSeq1.size(); aaP1++) {
+            ntP1 = aaP1 * 3;
+            ntP2 = mutations.convertPosition(ntP1);
+            if (ntP2 < 0)
+                ntP2 = -ntP2 - 2;
+            // Not a simple division (e.g. ntP2/3) to overcome Java's strange division rules for negative numbers
+            aaP2 = (ntP2 + 3) / 3 - 1;
+            if (aaP2 == prevAAP2) // Deletion
+                result.appendDeletion(aaP1, aaSeq1.codeAt(aaP1));
+            else {
+                if (aaP2 > prevAAP2 + 1) // Insertion
+                    for (int i = prevAAP2 + 1; i < aaP2; i++)
+                        result.appendInsertion(aaP1, aaSeq2.codeAt(i));
+                if (aaP1 < aaSeq1.size() && aaSeq2.codeAt(aaP2) != aaSeq1.codeAt(aaP1)) // Substitution
+                    result.appendSubstitution(aaP1, aaSeq1.codeAt(aaP1), aaSeq2.codeAt(aaP2));
+                prevAAP2 = aaP2;
+            }
+        }
+        return result.createAndDestroy();
+    }
 }

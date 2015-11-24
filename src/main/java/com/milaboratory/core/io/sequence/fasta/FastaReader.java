@@ -123,6 +123,11 @@ public class FastaReader<S extends Sequence<S>> implements CanReportProgress,
      */
     public FastaRecord<S> take() {
         RawFastaRecord rawRecord = takeRawRecord();
+
+        // On EOF
+        if (rawRecord == null)
+            return null;
+
         return new FastaRecord<>(id++, rawRecord.description,
                 alphabet.parse(rawRecord.sequence));
     }
@@ -144,6 +149,25 @@ public class FastaReader<S extends Sequence<S>> implements CanReportProgress,
         if (rawFastaRecord == null)
             isFinished = true;
         return rawFastaRecord;
+    }
+
+    /**
+     * Returns output port of raw records.
+     *
+     * @return output port of raw records
+     */
+    public OutputPortCloseable<RawFastaRecord> asRawRecordsPort() {
+        return new OutputPortCloseable<RawFastaRecord>() {
+            @Override
+            public void close() {
+                FastaReader.this.close();
+            }
+
+            @Override
+            public RawFastaRecord take() {
+                return takeRawRecord();
+            }
+        };
     }
 
     private RawFastaRecord nextRawRecord() throws IOException {

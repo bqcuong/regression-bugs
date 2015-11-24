@@ -26,6 +26,7 @@ import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -35,6 +36,7 @@ import static org.junit.Assert.assertTrue;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
+@SuppressWarnings("Duplicates")
 public class MutationsTest {
 
     @Test
@@ -89,6 +91,35 @@ public class MutationsTest {
         checkMutations(m3);
 
         Assert.assertEquals(seq3, m3.mutate(seq1));
+    }
+
+    @Ignore
+    @Test
+    public void testExtract0() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("ATTAGAGA"),
+                seq2 = new NucleotideSequence("TTTTAGACA");
+
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations();
+
+        Mutations<NucleotideSequence> extracted = m1.extractMutationsForRange(0, seq1.size());
+
+        System.out.println(m1);
+        Assert.assertEquals(extracted, m1);
+        Assert.assertTrue(extracted == m1);
+    }
+
+    @Ignore
+    @Test
+    public void testExtract1() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("AACTGCTAACTCGA"),
+                seq2 = new NucleotideSequence("CGAACGTTAAGCACAAA");
+
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations();
+
+        Mutations<NucleotideSequence> extracted = m1.extractMutationsForRange(0, seq1.size());
+
+        Assert.assertEquals(extracted, m1);
+        Assert.assertTrue(extracted == m1);
     }
 
     @Test

@@ -52,10 +52,10 @@ public class MultiAlignmentHelper {
                 "", new String[queries.length]);
     }
 
-    public MultiAlignmentHelper(String subject, String[] queries, int[] subjectPositions,
-                                int[][] queryPositions, BitArray[] match,
-                                String subjectLeftTitle, String[] queryLeftTitles,
-                                String subjectRightTitle, String[] queryRightTitles) {
+    private MultiAlignmentHelper(String subject, String[] queries, int[] subjectPositions,
+                                 int[][] queryPositions, BitArray[] match,
+                                 String subjectLeftTitle, String[] queryLeftTitles,
+                                 String subjectRightTitle, String[] queryRightTitles) {
         this.subject = subject;
         this.queries = queries;
         this.subjectPositions = subjectPositions;
@@ -317,7 +317,11 @@ public class MultiAlignmentHelper {
     public static <S extends Sequence<S>> MultiAlignmentHelper build(Settings settings, Range subjectRange,
                                                                      Alignment<S>... alignments) {
         S subject = alignments[0].getSequence1();
+        return build(settings, subjectRange, subject, alignments);
+    }
 
+    public static <S extends Sequence<S>> MultiAlignmentHelper build(Settings settings, Range subjectRange,
+                                                                     S subject, Alignment<S>... alignments) {
         for (Alignment<S> alignment : alignments)
             if (!alignment.getSequence1().equals(subject))
                 throw new IllegalArgumentException();
