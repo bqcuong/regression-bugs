@@ -4,7 +4,6 @@ import com.milaboratory.core.Range;
 import com.milaboratory.core.alignment.*;
 import com.milaboratory.core.alignment.batch.BatchAlignerWithBase;
 import com.milaboratory.core.alignment.kaligner2.KMapper2.ArrList;
-import com.milaboratory.core.mutations.Mutation;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.MutationsBuilder;
 import com.milaboratory.core.sequence.NucleotideSequence;
@@ -105,6 +104,11 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
         final int nValue = mapper.getNValue();
         final boolean kIsZero = (mapper.getKValue() == 0);
 
+        final int halfN = nValue / 2;
+        final int leftBoundaryOffset = kIsZero ? 0 : halfN;
+        final int rightBoundaryOffset = kIsZero ? nValue : halfN;
+        final int rightLeftDeltaBoundaryOffset = rightBoundaryOffset - leftBoundaryOffset;
+
         KAlignmentResult2<P> kAlignmentResult = new KAlignmentResult2<>(mapping, hits, query, from, to);
         if (mapping.getHits().isEmpty()) {
             if (stat != null)
@@ -123,7 +127,7 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
                     new MutationsBuilder<>(NucleotideSequence.ALPHABET);
 
             //Left edge alignment
-            int seedPosition2 = seeds.get(mappingHit.indexById(0)) + nValue;
+            int seedPosition2 = seeds.get(mappingHit.indexById(0)) + leftBoundaryOffset;
             int seedPosition1 = seedPosition2 + mappingHit.offsetById(0);
 
             length1 = seedPosition1;
@@ -161,19 +165,18 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
             seq1From = br.sequence1Stop;
             seq2From = br.sequence2Stop;
 
+            int previousSeedPosition2 = seedPosition2 + rightLeftDeltaBoundaryOffset,
+                    previousSeedPosition1 = seedPosition1 + rightLeftDeltaBoundaryOffset;
 
-            int previousSeedPosition2 = seeds.get(mappingHit.indexById(0)),
-                    previousSeedPosition1 = previousSeedPosition2 + mappingHit.offsetById(0);
-
-            boolean first = true;
+            //boolean first = true;
             for (int seedId = 1; seedId < mappingHit.seedRecords.length; seedId++) {
-                seedPosition2 = seeds.get(mappingHit.indexById(seedId));
+                seedPosition2 = seeds.get(mappingHit.indexById(seedId)) + leftBoundaryOffset;
                 seedPosition1 = seedPosition2 + mappingHit.offsetById(seedId);
 
-                offset1 = previousSeedPosition1 + nValue;
+                offset1 = previousSeedPosition1;
                 length1 = seedPosition1 - offset1;
 
-                offset2 = previousSeedPosition2 + nValue;
+                offset2 = previousSeedPosition2;
                 length2 = seedPosition2 - offset2;
 
                 assert !kIsZero || target.getRange(offset1 - nValue, offset1).equals(query.getRange(offset2 - nValue, offset2));
@@ -183,27 +186,27 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
 
                 assert length1 >= 0 && length2 >= 0;
 
-                if (!kIsZero && !first)
-                    Aligner.alignOnlySubstitutions0(target, query, previousSeedPosition1, nValue, previousSeedPosition2, nValue,
-                            scoring, mutations);
-                first = false;
+                //if (!kIsZero)
+                //    Aligner.alignOnlySubstitutions0(target, query, previousSeedPosition1, nValue, previousSeedPosition2, nValue,
+                //            scoring, mutations);
+                //first = false;
 
                 BandedAffineAligner.align0(scoring, target, query,
                         offset1, length1,
                         offset2, length2,
                         maxIndels, mutations, cache);
 
-                previousSeedPosition1 = seedPosition1;
-                previousSeedPosition2 = seedPosition2;
+                previousSeedPosition1 = seedPosition1 + rightLeftDeltaBoundaryOffset;
+                previousSeedPosition2 = seedPosition2 + rightLeftDeltaBoundaryOffset;
             }
 
             //Right edge
-//            if (!kIsZero && !first)
-//                Aligner.alignOnlySubstitutions0(target, query, previousSeedPosition1, nValue, previousSeedPosition2, nValue,
-//                        scoring, mutations);
+            //if (!kIsZero && !first)
+            //    Aligner.alignOnlySubstitutions0(target, query, previousSeedPosition1, nValue, previousSeedPosition2, nValue,
+            //            scoring, mutations);
 
-            offset2 = previousSeedPosition2 + (first ? nValue : 0);
-            offset1 = previousSeedPosition1 + (first ? nValue : 0);
+            offset2 = previousSeedPosition2;
+            offset1 = previousSeedPosition1;
 
             length1 = target.size() - offset1;
             length2 = query.size() - offset2;

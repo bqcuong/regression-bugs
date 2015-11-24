@@ -77,8 +77,13 @@ public final class Benchmark<T extends AlignerParameters>
                     }
                     for (AlignmentHit hit : result.getHits())
                         if (!query.query.getRange(hit.getAlignment().getSequence2Range())
-                                .equals(AlignmentUtils.getAlignedSequence2Part(hit.getAlignment())))
+                                .equals(AlignmentUtils.getAlignedSequence2Part(hit.getAlignment()))) {
+                            System.out.println("Expected:");
+                            System.out.println(query.expectedAlignment.getAlignmentHelper());
+                            System.out.println("Actual:");
+                            System.out.println(hit.getAlignment().getAlignmentHelper());
                             throw new RuntimeException("Wrong answer.");
+                        }
 
                     float topScore = result.getHits().get(0).getAlignment().getScore();
                     for (AlignmentHit hit : result.getHits()) {
