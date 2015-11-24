@@ -203,6 +203,9 @@ public final class KMapper2 implements java.io.Serializable {
                     int slotCount, int maxClusters, int maxClusterIndels, int kMersPerPosition,
                     boolean floatingLeftBound, boolean floatingRightBound,
                     KAligner2Statistics stat) {
+        if (nValue - kValue <= 2)
+            throw new IllegalArgumentException("Wrong value for K and N values. K = " + kValue + " N = " + nValue + ".");
+
         this.nValue = nValue;
         this.kValue = kValue;
 

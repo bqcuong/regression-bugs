@@ -203,4 +203,15 @@ public final class AffineGapAlignmentScoring<S extends Sequence<S>> extends Abst
                 matrix.getMatrix(),
                 gapOpenPenalty, gapExtensionPenalty);
     }
+
+    /**
+     * Scoring as used in <a href="http://www.ncbi.nlm.nih.gov/igblast/">IgBlast</a> for alignments of V genes
+     */
+    public static final AffineGapAlignmentScoring<NucleotideSequence> IGBLAST_NUCLEOTIDE_SCORING =
+            new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -30, -40, -10);
+
+    /**
+     * Scoring threshold as used in <a href="http://www.ncbi.nlm.nih.gov/igblast/">IgBlast</a> for alignments of V genes
+     */
+    public static final int IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD = 150;
 }

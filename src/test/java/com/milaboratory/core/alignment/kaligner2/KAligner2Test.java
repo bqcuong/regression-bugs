@@ -9,6 +9,8 @@ import com.milaboratory.util.RandomUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static com.milaboratory.test.TestUtil.its;
+
 /**
  * Created by poslavsky on 26/10/15.
  */
@@ -53,13 +55,10 @@ public class KAligner2Test {
 
     @Test
     public void testSimpleRandomTest() throws Exception {
-        AffineGapAlignmentScoring<NucleotideSequence> scoring =
-                new AffineGapAlignmentScoring<>(NucleotideSequence.ALPHABET, 10, -7, -9, -1);
-        int absoluteMinScore = 70;
-        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParamsOneCluster(scoring, absoluteMinScore,
-                Integer.MAX_VALUE,
-                30), 10).take();
-        Benchmark bm = new Benchmark(50_000_000_000L);
+        AffineGapAlignmentScoring<NucleotideSequence> scoring = AffineGapAlignmentScoring.IGBLAST_NUCLEOTIDE_SCORING;
+        int absoluteMinScore = AffineGapAlignmentScoring.IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
+        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParamsOneCluster(scoring, absoluteMinScore, Integer.MAX_VALUE, 20.0).setQueryCount(its(5000, 100000)), 123).take();
+        Benchmark bm = new Benchmark(its(15_000_000_000L, 150_000_000_000L));
         KAlignerParameters2 alParams = new KAlignerParameters2(9, 3,
                 true, true,
                 75, -50, 115, 0.87f, 45, -10, -15,
@@ -67,13 +66,36 @@ public class KAligner2Test {
                 0, absoluteMinScore, 0.87f, 5,
                 scoring);
         alParams.setMapperNValue(9);
-        alParams.setMapperKValue(3);
-        alParams.setMapperKMersPerPosition(3);
+        alParams.setMapperKValue(1);
+        alParams.setMapperKMersPerPosition(9);
+        alParams.setMapperOffsetShiftScore(-22);
+        alParams.setMapperMaxSeedsDistance(4);
+        alParams.setMapperAbsoluteMinScore(100);
+        alParams.setFloatingLeftBound(true);
+        alParams.setAbsoluteMinScore(150);
+        alParams.setMaxHits(3);
+        alParams.setMapperMismatchScore(-36);
+        alParams.setMapperAbsoluteMinClusterScore(128);
+        alParams.setFloatingRightBound(true);
+        alParams.setMapperSlotCount(1);
+        alParams.setMapperMaxClusters(1);
+        alParams.setAlignmentStopPenalty(0);
+        alParams.setRelativeMinScore(0.8f);
+        alParams.setMapperExtraClusterScore(-78);
+        alParams.setMapperMatchScore(90);
+        alParams.setMapperRelativeMinScore(0.8f);
+        alParams.setMapperMaxClusterIndels(3);
+        alParams.setMapperMinSeedsDistance(4);
         BenchmarkInput bi = new BenchmarkInput(alParams, challenge);
         BenchmarkResults result = bm.process(bi);
-        System.out.println(TestUtil.time(result.getAverageTiming()));
-        System.out.println(result.getProcessedGoodQueries());
-        System.out.println(result.getBadFraction() * 100);
+        System.out.println("Time per query: " + TestUtil.time(result.getAverageTiming()));
+        System.out.println("Processed queries: " + result.getProcessedGoodQueries());
+        System.out.println("Bad percent: " + result.getBadFraction() * 100);
+        System.out.println("False positive percent: " + result.getFalsePositiveFraction() * 100);
+        System.out.println("Scoring error percent: " + result.getScoreErrorFraction() * 100);
+        Assert.assertTrue(result.getBadFraction() < 0.005);
+        Assert.assertTrue(result.getFalsePositiveFraction() < 0.01);
+        Assert.assertTrue(result.getScoreErrorFraction() < 0.01);
     }
 
     @Test
@@ -97,33 +119,6 @@ public class KAligner2Test {
 
     static NucleotideSequence nt(String str) {
         return new NucleotideSequence(str.replace(" ", ""));
-    }
-
-    @Test
-    public void testCase1() throws Exception {
-        RandomUtil.reseedThreadLocal(-8563992448850301133L);
-        NucleotideSequence query = new NucleotideSequence("GATACTAGTCTCAACGGGGTACTACTAACGTCGAGGTGAATCCATAGGAAC");
-        NucleotideSequence reference = new NucleotideSequence("GATACTAACATTGGGTATCAAACAGCGTAGTCACTTAAAATGGCGCCTCCTCAGATCAATGAGCAATAGTACGGTCGTTCACTACCTGCCTCAAAGGCAATGTTT");
-
-        KAlignerParameters2 params = GlobalObjectMappers.ONE_LINE.readValue("{\"mapperKValue\":4,\"floatingLeftBound\":true,\"floatingRightBound\":true,\"mapperAbsoluteMinClusterScore\":80,\"mapperExtraClusterScore\":-30,\"mapperMatchScore\":40,\"mapperMismatchScore\":-50,\"mapperOffsetShiftScore\":-10,\"mapperSlotCount\":3,\"mapperMaxClusterIndels\":4,\"mapperAbsoluteMinScore\":220,\"mapperRelativeMinScore\":0.0,\"mapperMinSeedsDistance\":2,\"mapperMaxSeedsDistance\":2,\"alignmentStopPenalty\":0,\"absoluteMinScore\":80,\"relativeMinScore\":0.8,\"maxHits\":5,\"scoring\":{\"type\":\"affine\",\"subsMatrix\":\"raw(4, -3, -3, -3, -1, 0, -3, -3, 0, -3, 0, -3, 0, 0, 0, -3, 4, -3, -3, -1, 0, -3, 0, -3, 0, -3, 0, 0, -3, 0, -3, -3, 4, -3, -1, -3, 0, 0, -3, -3, 0, 0, -3, 0, 0, -3, -3, -3, 4, -1, -3, 0, -3, 0, 0, -3, 0, 0, 0, -3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -3, -3, -1, 0, -3, -1, -1, -1, -1, -1, 0, -1, 0, -3, -3, 0, 0, -1, -3, 0, -1, -1, -1, -1, 0, -1, 0, -1, -3, 0, 0, -3, -1, -1, -1, 0, -3, -1, -1, 0, -1, -1, 0, 0, -3, -3, 0, -1, -1, -1, -3, 0, -1, -1, -1, 0, 0, -1, -3, 0, -3, 0, -1, -1, -1, -1, -1, 0, -3, 0, 0, -1, -1, 0, -3, 0, -3, -1, -1, -1, -1, -1, -3, 0, -1, -1, 0, 0, -3, 0, 0, 0, -1, -1, 0, 0, -1, 0, -1, 0, -1, -1, -1, 0, 0, -3, 0, -1, 0, -1, -1, 0, 0, -1, -1, 0, -1, -1, 0, -3, 0, 0, -1, -1, 0, -1, 0, -1, 0, -1, -1, 0, -1, 0, 0, 0, -3, -1, 0, -1, 0, -1, -1, 0, -1, -1, -1, 0)\",\"gapOpenPenalty\":-17,\"gapExtensionPenalty\":-1,\"uniformBasicMatch\":true}}", KAlignerParameters2.class);
-        params.setMapperAbsoluteMinScore(-10000);
-        params.setAbsoluteMinScore(-10000);
-        params.setMapperAbsoluteMinClusterScore(-10000);
-
-//        ID: 0
-//        Score: 140
-//        Cluster 0:
-//        Q 0 -> T 0 - 0
-//        Q 2 -> T 2 - 0
-//        Cluster 1:
-//        Q 20 -> T 3 - -17
-//        Q 22 -> T 2 - -20
-//        Q 24 -> T 4 - -20
-
-        KAligner2 aligner = new KAligner2(params);
-        aligner.addReference(reference);
-        KAlignmentResult2<NucleotideSequence> align = aligner.align(query);
-        System.out.println(align.getHits().size());
     }
 
     //@Test

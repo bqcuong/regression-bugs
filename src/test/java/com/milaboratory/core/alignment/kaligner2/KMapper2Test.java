@@ -8,16 +8,13 @@ import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
 import com.milaboratory.test.TestUtil;
-import com.milaboratory.util.GlobalObjectMappers;
 import com.milaboratory.util.RandomUtil;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.Well1024a;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.commons.math3.util.CombinatoricsUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.instrument.Instrumentation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +22,9 @@ import java.util.List;
  * Created by poslavsky on 15/09/15.
  */
 public class KMapper2Test {
-    public static final KAlignerParameters2 gParams = new KAlignerParameters2(9, 3, false, false,
-            15, -20, 15, 0.87f, 13, -7,
-            -3, 3, 6, 4, 3, 3, 3, 0, 0, 0, 0, null);
+    public static final KAlignerParameters2 gParams = new KAlignerParameters2(10, 2, true, true,
+            99, -1, 100, 0.87f, 48, -3,
+            -1, 3, 3, 4, 7, 2, 4, -1000, 150, 0.87f, 2, null);
 
 //    @Test
 //    public void testBestOffset1() throws Exception {
@@ -52,28 +49,6 @@ public class KMapper2Test {
 //        System.out.println(v >> 14);
 //
 //    }
-
-
-    @Test
-    public void testCase1() throws Exception {
-        RandomUtil.reseedThreadLocal(-8563992448850301133L);
-        NucleotideSequence query = new NucleotideSequence("GATACTAGTCTCAACGGGGTACTACTAACGTCGAGGTGAATCCATAGGAAC");
-        NucleotideSequence reference = new NucleotideSequence("GATACTAACATTGGGTATCAAACAGCGTAGTCACTTAAAATGGCGCCTCCTCAGATCAATGAGCAATAGTACGGTCGTTCACTACCTGCCTCAAAGGCAATGTTT");
-        KAlignerParameters2 params = GlobalObjectMappers.ONE_LINE.readValue("{\"mapperKValue\":4,\"floatingLeftBound\":true,\"floatingRightBound\":true,\"mapperAbsoluteMinClusterScore\":80,\"mapperExtraClusterScore\":-30,\"mapperMatchScore\":40,\"mapperMismatchScore\":-50,\"mapperOffsetShiftScore\":-10,\"mapperSlotCount\":3,\"mapperMaxClusterIndels\":4,\"mapperAbsoluteMinScore\":220,\"mapperRelativeMinScore\":0.0,\"mapperMinSeedsDistance\":2,\"mapperMaxSeedsDistance\":2,\"alignmentStopPenalty\":0,\"absoluteMinScore\":80,\"relativeMinScore\":0.8,\"maxHits\":5,\"scoring\":{\"type\":\"affine\",\"subsMatrix\":\"raw(4, -3, -3, -3, -1, 0, -3, -3, 0, -3, 0, -3, 0, 0, 0, -3, 4, -3, -3, -1, 0, -3, 0, -3, 0, -3, 0, 0, -3, 0, -3, -3, 4, -3, -1, -3, 0, 0, -3, -3, 0, 0, -3, 0, 0, -3, -3, -3, 4, -1, -3, 0, -3, 0, 0, -3, 0, 0, 0, -3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, -3, -3, -1, 0, -3, -1, -1, -1, -1, -1, 0, -1, 0, -3, -3, 0, 0, -1, -3, 0, -1, -1, -1, -1, 0, -1, 0, -1, -3, 0, 0, -3, -1, -1, -1, 0, -3, -1, -1, 0, -1, -1, 0, 0, -3, -3, 0, -1, -1, -1, -3, 0, -1, -1, -1, 0, 0, -1, -3, 0, -3, 0, -1, -1, -1, -1, -1, 0, -3, 0, 0, -1, -1, 0, -3, 0, -3, -1, -1, -1, -1, -1, -3, 0, -1, -1, 0, 0, -3, 0, 0, 0, -1, -1, 0, 0, -1, 0, -1, 0, -1, -1, -1, 0, 0, -3, 0, -1, 0, -1, -1, 0, 0, -1, -1, 0, -1, -1, 0, -3, 0, 0, -1, -1, 0, -1, 0, -1, 0, -1, -1, 0, -1, 0, 0, 0, -3, -1, 0, -1, 0, -1, -1, 0, -1, -1, -1, 0)\",\"gapOpenPenalty\":-17,\"gapExtensionPenalty\":-1,\"uniformBasicMatch\":true}}", KAlignerParameters2.class);
-        params.setMapperAbsoluteMinScore(-1000);
-
-//        System.out.println( query.getRange(20, 24));
-//        System.out.println( query.getRange(22, 26));
-
-        KMapper2 aligner = KMapper2.createFromParameters(params);
-        aligner.addReference(reference);
-
-        // 3 3 _3_ _4_ 5 5 5 5 5 5 5 5
-        KMappingResult2 al = aligner.align(query);
-
-        System.out.println(al.getHits().get(0));
-
-    }
 
     @Test
     public void testRecord() throws Exception {
