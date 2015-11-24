@@ -16,6 +16,7 @@
 package com.milaboratory.core.alignment.kaligner2;
 
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
+import com.milaboratory.core.alignment.batch.BatchAlignerWithBaseParameters;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import org.junit.Test;
@@ -34,6 +35,6 @@ public class KAlignerParameters2Test {
 
     @Test
     public void test1() throws Exception {
-        TestUtil.assertJson(gParams);
+        TestUtil.assertJson(gParams, BatchAlignerWithBaseParameters.class);
     }
 }

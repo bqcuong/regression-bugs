@@ -2,7 +2,7 @@ package com.milaboratory.core.alignment.benchmark;
 
 import cc.redberry.pipe.CUtils;
 import cc.redberry.pipe.Processor;
-import com.milaboratory.core.alignment.AlignerParameters;
+import com.milaboratory.core.alignment.batch.BatchAlignerWithBaseParameters;
 import com.milaboratory.core.alignment.AlignmentUtils;
 import com.milaboratory.core.alignment.batch.AlignmentHit;
 import com.milaboratory.core.alignment.batch.AlignmentResult;
@@ -11,7 +11,7 @@ import com.milaboratory.core.alignment.kaligner2.KAligner2Statistics;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.RandomUtil;
 
-public final class Benchmark<T extends AlignerParameters>
+public final class Benchmark<T extends BatchAlignerWithBaseParameters>
         implements Processor<BenchmarkInput<T>, BenchmarkResults> {
     final long maxExecutionTime;
     final long maxNoHits;

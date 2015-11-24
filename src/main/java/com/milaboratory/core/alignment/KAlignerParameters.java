@@ -15,10 +15,9 @@
  */
 package com.milaboratory.core.alignment;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.milaboratory.primitivio.annotations.Serializable;
+import com.milaboratory.core.alignment.batch.BatchAlignerWithBaseParameters;
 import com.milaboratory.util.GlobalObjectMappers;
 
 import java.io.IOException;
@@ -27,10 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
-        getterVisibility = JsonAutoDetect.Visibility.NONE)
-@Serializable(asJson = true)
-public final class KAlignerParameters implements AlignerParameters, Cloneable, java.io.Serializable {
+public final class KAlignerParameters implements BatchAlignerWithBaseParameters, Cloneable, java.io.Serializable {
     private static final long serialVersionUID = 1L;
     /**
      * List of known parameters presets
@@ -53,7 +49,6 @@ public final class KAlignerParameters implements AlignerParameters, Cloneable, j
         }
         knownParameters = map;
     }
-
 
     /**
      * Returns parameters by specified preset name
@@ -152,7 +147,8 @@ public final class KAlignerParameters implements AlignerParameters, Cloneable, j
      * @param floatingRightBound       {@code true} if right bound of alignment could be floating
      * @param mapperAbsoluteMinScore   minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper}
      *                                 to consider hit as reliable candidate
-     * @param mapperRelativeMinScore   minimal allowed ratio between best hit score and scores of other hits obtained by
+     * @param mapperRelativeMinScore   minimal allowed ratio between best hit score and scores of other hits obtained
+     *                                 by
      *                                 {@link com.milaboratory.core.alignment.KMapper} to consider hit as
      *                                 reliable candidate
      * @param mapperMatchScore         reward for successfully mapped seeds (used in {@link com.milaboratory.core.alignment.KMapper}),

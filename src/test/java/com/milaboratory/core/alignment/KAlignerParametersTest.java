@@ -15,6 +15,7 @@
  */
 package com.milaboratory.core.alignment;
 
+import com.milaboratory.core.alignment.batch.BatchAlignerWithBaseParameters;
 import com.milaboratory.core.io.util.IOTestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
 import org.junit.Assert;
@@ -42,10 +43,9 @@ public class KAlignerParametersTest extends AlignmentTest {
         IOTestUtil.assertJavaSerialization(se);
     }
 
-
     private void check(KAlignerParameters params) throws IOException {
         String seialized = GlobalObjectMappers.PRETTY.writeValueAsString(params);
-        KAlignerParameters deserialized = GlobalObjectMappers.PRETTY.readValue(seialized, KAlignerParameters.class);
+        KAlignerParameters deserialized = (KAlignerParameters) GlobalObjectMappers.PRETTY.readValue(seialized, BatchAlignerWithBaseParameters.class);
         Assert.assertTrue(deserialized.equals(params));
     }
 }
