@@ -568,7 +568,6 @@ public class BandedAffineAligner {
                 new Range(res.sequence2Stop, offset2 + length2), res.score);
     }
 
-
     public static final class MatrixCache {
         private final CachedIntArray mainCache, gapIn1Cache, gapIn2Cache;
         private BandedMatrix main, gapIn1, gapIn2;

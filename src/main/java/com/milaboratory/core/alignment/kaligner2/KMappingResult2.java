@@ -15,15 +15,16 @@
  */
 package com.milaboratory.core.alignment.kaligner2;
 
+import com.milaboratory.core.alignment.kaligner1.KMapper;
 import com.milaboratory.util.IntArrayList;
 
 import java.util.Collections;
 import java.util.List;
 
 /**
- * KMappingResult - class which is result of {@link com.milaboratory.core.alignment.KMapper#align(com.milaboratory.core.sequence.nucleotide.NucleotideSequence,
- * int, int)}, {@link com.milaboratory.core.alignment.KMapper#align(com.milaboratory.core.sequence.NucleotideSequence)}
- * methods. <p>It contains seeds used for aligning by {@link com.milaboratory.core.alignment.KMapper} and list
+ * KMappingResult - class which is result of {@link KMapper#align(com.milaboratory.core.sequence.nucleotide.NucleotideSequence,
+ * int, int)}, {@link KMapper#align(com.milaboratory.core.sequence.NucleotideSequence)}
+ * methods. <p>It contains seeds used for aligning by {@link KMapper} and list
  * of hits found in target sequence.</p>
  */
 public final class KMappingResult2 implements java.io.Serializable {
@@ -40,7 +41,7 @@ public final class KMappingResult2 implements java.io.Serializable {
      * Creates new KMappingResult
      *
      * @param seeds seeds used for alignment
-     * @param hits  hits obtained by {@link com.milaboratory.core.alignment.KMapper}
+     * @param hits  hits obtained by {@link KMapper}
      */
     public KMappingResult2(IntArrayList seeds, List<KMappingHit2> hits) {
         this.seeds = seeds;

@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.milaboratory.core.alignment;
+package com.milaboratory.core.alignment.kaligner1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.milaboratory.core.alignment.LinearGapAlignmentScoring;
 import com.milaboratory.core.alignment.batch.BatchAlignerWithBaseParameters;
 import com.milaboratory.util.GlobalObjectMappers;
 
@@ -81,13 +82,13 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
      */
     private boolean floatingLeftBound, floatingRightBound;
     /**
-     * Minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper} to
+     * Minimal allowed absolute hit score obtained by {@link KMapper} to
      * consider hit as reliable candidate
      */
     private float mapperAbsoluteMinScore,
     /**
      * Minimal allowed ratio between best hit score and other hits obtained by {@link
-     * com.milaboratory.core.alignment.KMapper} to consider hit as reliable candidate
+     * KMapper} to consider hit as reliable candidate
      */
     mapperRelativeMinScore,
     /**
@@ -142,33 +143,33 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     /**
      * Creates new KAligner
      *
-     * @param mapperKValue             length of k-mers (seeds) used by {@link com.milaboratory.core.alignment.KMapper}
+     * @param mapperKValue             length of k-mers (seeds) used by {@link KMapper}
      * @param floatingLeftBound        {@code true} if left bound of alignment could be floating
      * @param floatingRightBound       {@code true} if right bound of alignment could be floating
-     * @param mapperAbsoluteMinScore   minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper}
+     * @param mapperAbsoluteMinScore   minimal allowed absolute hit score obtained by {@link KMapper}
      *                                 to consider hit as reliable candidate
      * @param mapperRelativeMinScore   minimal allowed ratio between best hit score and scores of other hits obtained
      *                                 by
-     *                                 {@link com.milaboratory.core.alignment.KMapper} to consider hit as
+     *                                 {@link KMapper} to consider hit as
      *                                 reliable candidate
-     * @param mapperMatchScore         reward for successfully mapped seeds (used in {@link com.milaboratory.core.alignment.KMapper}),
+     * @param mapperMatchScore         reward for successfully mapped seeds (used in {@link KMapper}),
      *                                 must be > 0
-     * @param mapperMismatchPenalty    penalty for not mapped seed (used in {@link com.milaboratory.core.alignment.KMapper}),
+     * @param mapperMismatchPenalty    penalty for not mapped seed (used in {@link KMapper}),
      *                                 must be < 0
      * @param mapperOffsetShiftPenalty penalty for different offset between adjacent seeds (used in {@link
-     *                                 com.milaboratory.core.alignment.KMapper}), must be < 0
+     *                                 KMapper}), must be < 0
      * @param mapperMinSeedsDistance   minimal distance between randomly chosen seeds during alignment in {@link
-     *                                 com.milaboratory.core.alignment.KMapper}
+     *                                 KMapper}
      * @param mapperMaxSeedsDistance   maximal distance between randomly chosen seeds during alignment in {@link
-     *                                 com.milaboratory.core.alignment.KMapper}
+     *                                 KMapper}
      * @param minAlignmentLength       minimal allowed alignment length
      * @param maxAdjacentIndels        maximal allowed number of insertions and deletions between 2 kMers
      * @param alignmentStopPenalty     penalty score defining when to stop alignment procedure performed by {@link
      *                                 KAlignmentHit#calculateAlignment()}
-     * @param absoluteMinScore         minimal absolute score of a hit obtained by {@link com.milaboratory.core.alignment.KAligner}
+     * @param absoluteMinScore         minimal absolute score of a hit obtained by {@link KAligner}
      * @param relativeMinScore         maximal ratio between best hit score and scores of other hits obtained by {@link
-     *                                 com.milaboratory.core.alignment.KAligner}
-     * @param maxHits                  maximal number of hits stored by {@link com.milaboratory.core.alignment.KAlignmentResult}
+     *                                 KAligner}
+     * @param maxHits                  maximal number of hits stored by {@link KAlignmentResult}
      * @param scoring                  scoring system used for building alignments
      */
     public KAlignerParameters(int mapperKValue, boolean floatingLeftBound, boolean floatingRightBound,
@@ -204,7 +205,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Returns kValue (length of kMers or seeds) used by {@link com.milaboratory.core.alignment.KMapper}
+     * Returns kValue (length of kMers or seeds) used by {@link KMapper}
      *
      * @return kValue (length of kMers or seeds)
      */
@@ -213,7 +214,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Sets kValue (length of kMers or seeds) used by {@link com.milaboratory.core.alignment.KMapper}
+     * Sets kValue (length of kMers or seeds) used by {@link KMapper}
      *
      * @param kValue
      * @return parameters object
@@ -224,17 +225,17 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Returns minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper}
+     * Returns minimal allowed absolute hit score obtained by {@link KMapper}
      * to consider hit as reliable candidate
      *
-     * @return minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper}
+     * @return minimal allowed absolute hit score obtained by {@link KMapper}
      */
     public float getMapperAbsoluteMinScore() {
         return mapperAbsoluteMinScore;
     }
 
     /**
-     * Sets minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper} to
+     * Sets minimal allowed absolute hit score obtained by {@link KMapper} to
      * consider hit as reliable candidate
      *
      * @param mapperAbsoluteMinScore minimal allowed absolute hit score value
@@ -247,10 +248,10 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
 
     /**
      * Returns minimal allowed ratio between best hit score and other hits obtained by {@link
-     * com.milaboratory.core.alignment.KMapper} to consider hit as reliable candidate
+     * KMapper} to consider hit as reliable candidate
      *
      * @return minimal allowed ratio between best hit score and other hits obtained by {@link
-     * com.milaboratory.core.alignment.KMapper}
+     * KMapper}
      */
     public float getMapperRelativeMinScore() {
         return mapperRelativeMinScore;
@@ -258,7 +259,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
 
     /**
      * Sets minimal allowed ratio between best hit score and other hits obtained by {@link
-     * com.milaboratory.core.alignment.KMapper} to consider hit as reliable candidate
+     * KMapper} to consider hit as reliable candidate
      *
      * @param mapperRelativeMinScore minimal allowed ratio between best hit score and other hits
      * @return parameters object
@@ -269,7 +270,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Returns reward for successfully mapped seeds (used in {@link com.milaboratory.core.alignment.KMapper})
+     * Returns reward for successfully mapped seeds (used in {@link KMapper})
      *
      * @return reward score for mapped seed
      */
@@ -278,9 +279,9 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Sets for successfully mapped seeds (used in {@link com.milaboratory.core.alignment.KMapper})
+     * Sets for successfully mapped seeds (used in {@link KMapper})
      *
-     * @param mapperMatchScore reward for successfully mapped seeds (used in {@link com.milaboratory.core.alignment.KMapper}),
+     * @param mapperMatchScore reward for successfully mapped seeds (used in {@link KMapper}),
      *                         must be > 0
      * @return parameters object
      */
@@ -290,7 +291,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Returns penalty score for not mapped seeds (used in {@link com.milaboratory.core.alignment.KMapper})
+     * Returns penalty score for not mapped seeds (used in {@link KMapper})
      *
      * @return penalty score for not mapped seed
      */
@@ -301,7 +302,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     /**
      * Sets penalty score for not mapped seed
      *
-     * @param mapperMismatchPenalty penalty for not mapped seed (used in {@link com.milaboratory.core.alignment.KMapper}),
+     * @param mapperMismatchPenalty penalty for not mapped seed (used in {@link KMapper}),
      *                              must be < 0
      * @return penalty for not mapped seed
      */
@@ -352,7 +353,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
 
     /**
      * Returns minimal distance between randomly chosen seeds during alignment in {@link
-     * com.milaboratory.core.alignment.KMapper}
+     * KMapper}
      *
      * @return minimal distance between randomly chosen seeds
      */
@@ -362,7 +363,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
 
     /**
      * Sets minimal distance between randomly chosen seeds during alignment in {@link
-     * com.milaboratory.core.alignment.KMapper}
+     * KMapper}
      *
      * @param mapperMinSeedsDistance minimal distance between randomly chosen seeds
      * @return parameters object
@@ -374,7 +375,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
 
     /**
      * Returns maximal distance between randomly chosen seeds during alignment in {@link
-     * com.milaboratory.core.alignment.KMapper}
+     * KMapper}
      *
      * @return maximal distance between randomly chosen seeds
      */
@@ -384,7 +385,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
 
     /**
      * Sets maximal distance between randomly chosen seeds during alignment in {@link
-     * com.milaboratory.core.alignment.KMapper}
+     * KMapper}
      *
      * @param mapperMaxSeedsDistance maximal distance between randomly chosen seeds
      * @return parameters object
@@ -479,7 +480,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Returns penalty for different offset between adjacent seeds (used in {@link com.milaboratory.core.alignment.KMapper})
+     * Returns penalty for different offset between adjacent seeds (used in {@link KMapper})
      *
      * @return penalty for different offset between adjacent seeds
      */
@@ -488,7 +489,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Sets penalty for different offset between adjacent seeds (used in {@link com.milaboratory.core.alignment.KMapper}),
+     * Sets penalty for different offset between adjacent seeds (used in {@link KMapper}),
      *
      * @param mapperOffsetShiftPenalty penalty for different offset between adjacent seeds, must be < 0
      * @return parameters object
@@ -499,7 +500,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Returns minimal absolute score of a hit obtained by {@link com.milaboratory.core.alignment.KAligner}
+     * Returns minimal absolute score of a hit obtained by {@link KAligner}
      *
      * @return minimal absolute score
      */
@@ -508,7 +509,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Sets minimal absolute score of a hit obtained by {@link com.milaboratory.core.alignment.KAligner}
+     * Sets minimal absolute score of a hit obtained by {@link KAligner}
      *
      * @param absoluteMinScore minimal absolute score of a hit
      * @return parameters object
@@ -520,7 +521,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
 
     /**
      * Returns maximal ratio between best hit score and scores of other hits obtained by {@link
-     * com.milaboratory.core.alignment.KAligner}
+     * KAligner}
      *
      * @return maximal ratio between best hit score and scores of other hits
      */
@@ -530,7 +531,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
 
     /**
      * Sets maximal ratio between best hit score and scores of other hits obtained by {@link
-     * com.milaboratory.core.alignment.KAligner}
+     * KAligner}
      *
      * @param relativeMinScore maximal ratio between best hit score and scores of other hits
      * @return parameters object
@@ -541,7 +542,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Returns maximal number of hits stored by {@link com.milaboratory.core.alignment.KAlignmentResult}
+     * Returns maximal number of hits stored by {@link KAlignmentResult}
      *
      * @return maximal number of stored hits
      */
@@ -550,7 +551,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
     }
 
     /**
-     * Sets maximal number of hits stored by {@link com.milaboratory.core.alignment.KAlignmentResult}
+     * Sets maximal number of hits stored by {@link KAlignmentResult}
      *
      * @param maxHits maximal number of stored hits
      * @return parameters object

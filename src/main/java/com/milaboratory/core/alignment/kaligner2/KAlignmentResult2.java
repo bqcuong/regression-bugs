@@ -16,6 +16,7 @@
 package com.milaboratory.core.alignment.kaligner2;
 
 import com.milaboratory.core.alignment.batch.AlignmentResult;
+import com.milaboratory.core.alignment.kaligner1.KMappingResult;
 import com.milaboratory.core.sequence.NucleotideSequence;
 
 import java.util.List;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 public final class KAlignmentResult2<P> implements AlignmentResult<KAlignmentHit2<P>> {
     /**
-     * Link to according {@link com.milaboratory.core.alignment.KMappingResult}
+     * Link to according {@link KMappingResult}
      */
     final KMappingResult2 mappingResult;
     /**

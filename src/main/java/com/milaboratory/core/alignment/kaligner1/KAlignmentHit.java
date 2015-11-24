@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.milaboratory.core.alignment;
+package com.milaboratory.core.alignment.kaligner1;
 
 import com.milaboratory.core.Range;
+import com.milaboratory.core.alignment.*;
 import com.milaboratory.core.alignment.batch.AlignmentHit;
 import com.milaboratory.core.mutations.Mutations;
 import com.milaboratory.core.mutations.MutationsBuilder;
@@ -25,7 +26,7 @@ import com.milaboratory.util.IntArrayList;
 import java.util.Arrays;
 
 /**
- * KAlignmentHit - class which represents single hit for {@link com.milaboratory.core.alignment.KAlignmentResult}
+ * KAlignmentHit - class which represents single hit for {@link KAlignmentResult}
  */
 public final class KAlignmentHit<P> implements java.io.Serializable, AlignmentHit<NucleotideSequence, P> {
     /*         Initially set      */
@@ -34,7 +35,7 @@ public final class KAlignmentHit<P> implements java.io.Serializable, AlignmentHi
      */
     private final KAlignmentResult<P> result;
     /**
-     * According hit index in {@link com.milaboratory.core.alignment.KMappingResult#hits} array
+     * According hit index in {@link KMappingResult#hits} array
      */
     private final int index;
 

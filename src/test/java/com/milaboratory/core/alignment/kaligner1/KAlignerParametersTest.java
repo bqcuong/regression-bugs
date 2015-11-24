@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.milaboratory.core.alignment;
+package com.milaboratory.core.alignment.kaligner1;
 
+import com.milaboratory.core.alignment.AlignmentTest;
+import com.milaboratory.core.alignment.LinearGapAlignmentScoring;
 import com.milaboratory.core.alignment.batch.BatchAlignerWithBaseParameters;
 import com.milaboratory.core.io.util.IOTestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
