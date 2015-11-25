@@ -26,9 +26,11 @@ import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
+import static com.milaboratory.core.mutations.Mutations.EMPTY_NUCLEOTIDE_MUTATIONS;
+import static com.milaboratory.core.mutations.Mutations.decode;
+import static com.milaboratory.util.RandomUtil.getThreadLocalRandom;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -93,33 +95,95 @@ public class MutationsTest {
         Assert.assertEquals(seq3, m3.mutate(seq1));
     }
 
-    @Ignore
     @Test
     public void testExtract0() throws Exception {
         NucleotideSequence seq1 = new NucleotideSequence("ATTAGAGA"),
-                seq2 = new NucleotideSequence("TTTTAGACA");
+                seq2 = new NucleotideSequence("TTTAGACA");
 
         Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations();
 
         Mutations<NucleotideSequence> extracted = m1.extractMutationsForRange(0, seq1.size());
 
-        System.out.println(m1);
-        Assert.assertEquals(extracted, m1);
+        Assert.assertEquals(m1, extracted);
         Assert.assertTrue(extracted == m1);
+
+        for (int i = 0; i < m1.size(); i++) {
+            extracted = m1.extractMutationsForRange(i, i);
+            Assert.assertEquals(decode("", NucleotideSequence.ALPHABET), extracted);
+        }
     }
 
-    @Ignore
     @Test
     public void testExtract1() throws Exception {
         NucleotideSequence seq1 = new NucleotideSequence("AACTGCTAACTCGA"),
-                seq2 = new NucleotideSequence("CGAACGTTAAGCACAAA");
+                seq2 = new NucleotideSequence("AACGTCTACCTCGA");
 
         Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations();
 
-        Mutations<NucleotideSequence> extracted = m1.extractMutationsForRange(0, seq1.size());
+        Mutations<NucleotideSequence> extracted = m1.extractMutationsForRange(3, seq1.size());
+        Assert.assertEquals(decode("DG1 SA5C", NucleotideSequence.ALPHABET), extracted);
 
-        Assert.assertEquals(extracted, m1);
-        Assert.assertTrue(extracted == m1);
+        extracted = m1.extractMutationsForRange(2, seq1.size());
+        Assert.assertEquals(decode("I1G DG2 SA6C", NucleotideSequence.ALPHABET), extracted);
+
+        for (int i = 0; i < m1.size(); i++) {
+            extracted = m1.extractMutationsForRange(i, i);
+            Assert.assertEquals(decode("", NucleotideSequence.ALPHABET), extracted);
+        }
+    }
+
+    @Test
+    public void testRemove0() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("ATTAGAGA"),
+                seq2 = new NucleotideSequence("TTTAGACA");
+
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations();
+
+        Mutations<NucleotideSequence> extracted = m1.removeMutationsInRange(0, seq1.size());
+
+        Assert.assertEquals(EMPTY_NUCLEOTIDE_MUTATIONS, extracted);
+
+        for (int i = 0; i < m1.size(); i++) {
+            extracted = m1.removeMutationsInRange(i, i);
+            Assert.assertEquals(m1, extracted);
+            Assert.assertTrue(m1 == extracted);
+        }
+    }
+
+    @Test
+    public void testRemove1() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("AACTGCTAACTCGA"),
+                seq2 = new NucleotideSequence("AACGTCTACCTCGA");
+
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations();
+
+        Mutations<NucleotideSequence> extracted = m1.removeMutationsInRange(3, seq1.size());
+        Assert.assertEquals(decode("I3G", NucleotideSequence.ALPHABET), extracted);
+
+
+        extracted = m1.removeMutationsInRange(3, 5);
+        Assert.assertEquals(decode("I3G SA6C", NucleotideSequence.ALPHABET), extracted);
+
+        extracted = m1.removeMutationsInRange(2, seq1.size());
+        Assert.assertEquals(EMPTY_NUCLEOTIDE_MUTATIONS, extracted);
+        Assert.assertTrue(EMPTY_NUCLEOTIDE_MUTATIONS == extracted);
+
+        for (int i = 0; i < m1.size(); i++) {
+            extracted = m1.removeMutationsInRange(i, i);
+            Assert.assertEquals(m1, extracted);
+            Assert.assertTrue(m1 == extracted);
+        }
+    }
+
+    @Test
+    public void testRemove2() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("AACTGCTAACTCGA"),
+                seq2 = new NucleotideSequence("AACGTCTACCTCGA");
+
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations();
+
+        Mutations<NucleotideSequence> extracted = m1.removeMutationsInRanges(new Range(3, 5), new Range(5, 6));
+        Assert.assertEquals(decode("I3G SA5C", NucleotideSequence.ALPHABET), extracted);
     }
 
     @Test
@@ -157,7 +221,7 @@ public class MutationsTest {
     }
 
     public static void checkMutations(Mutations mutations) {
-        assertEquals("Encode/Decode", mutations, Mutations.decode(mutations.encode(), NucleotideSequence.ALPHABET));
+        assertEquals("Encode/Decode", mutations, decode(mutations.encode(), NucleotideSequence.ALPHABET));
     }
 
     @Test
@@ -202,6 +266,23 @@ public class MutationsTest {
         builder.appendSubstitution(10, 3, 1);
         Mutations<NucleotideSequence> se = builder.createAndDestroy();
         IOTestUtil.assertJavaSerialization(se);
+    }
+
+    @Test
+    public void testRandom1() throws Exception {
+        NucleotideMutationModel model = MutationModels.getEmpiricalNucleotideMutationModel().multiplyProbabilities(30);
+        for (int i = 0; i < 100; i++) {
+            NucleotideSequence seq0 = TestUtil.randomSequence(NucleotideSequence.ALPHABET, 400, 800);
+            Mutations<NucleotideSequence> muts = MutationsGenerator.generateMutations(seq0, model);
+            int from = getThreadLocalRandom().nextInt(seq0.size());
+            int to = (from == seq0.size() - 1) ? from : from + getThreadLocalRandom().nextInt(seq0.size() - from);
+            Mutations<NucleotideSequence> inRangeMuts = muts.extractMutationsForRange(from, to);
+            Mutations<NucleotideSequence> outOfRangeMuts = muts.removeMutationsInRange(from, to);
+            NucleotideSequence inRangeSeq = seq0.getRange(from, to);
+            NucleotideSequence outOfRangeSeq = seq0.getRange(0, from).concatenate(seq0.getRange(to, seq0.size()));
+            assertTrue(inRangeMuts.isCompatibleWith(inRangeSeq));
+            assertTrue(outOfRangeMuts.isCompatibleWith(outOfRangeSeq));
+        }
     }
 
     @Test

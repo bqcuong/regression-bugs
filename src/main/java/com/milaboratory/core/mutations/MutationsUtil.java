@@ -297,11 +297,18 @@ public final class MutationsUtil {
 
         int aaP2, prevAAP2 = -1;
         int ntP1, ntP2;
+        int shiftedTriplets = 0;
         for (int aaP1 = 0; aaP1 <= aaSeq1.size(); aaP1++) {
             ntP1 = aaP1 * 3;
             ntP2 = mutations.convertPosition(ntP1);
             if (ntP2 < 0)
                 ntP2 = -ntP2 - 2;
+
+            // Detecting shifted triplets
+            if (ntP2 % 3 != 0)
+                if (shiftedTriplets++ > maxShiftedTriplets)
+                    return null;
+
             // Not a simple division (e.g. ntP2/3) to overcome Java's strange division rules for negative numbers
             aaP2 = (ntP2 + 3) / 3 - 1;
             if (aaP2 == prevAAP2) // Deletion
