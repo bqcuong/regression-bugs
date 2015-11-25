@@ -106,8 +106,12 @@ public class MutationsUtilTest {
         //                                                   F  R  H  R  L  Q
         NucleotideSequence ntSeq1 = new NucleotideSequence("TTTAGACACAGATTGCAA");
 
-        //                                                   F  R  R  S  Q
-        NucleotideSequence ntSeq2 = new NucleotideSequence("TTTAGAAGATCGCAG");
+        //                                                   F  Shift..
+        NucleotideSequence ntSeq2 = new NucleotideSequence("TTTAGCACAGATCGCAG");
+        nt2aaAssert(ntSeq1, ntSeq2, null);
+
+        //                                F  R  R  S  Q
+        ntSeq2 = new NucleotideSequence("TTTAGAAGATCGCAG");
         nt2aaAssert(ntSeq1, ntSeq2, "DH2 SL4S");
 
         //                                F  R  H  R  L  Q
@@ -142,14 +146,18 @@ public class MutationsUtilTest {
     private void nt2aaAssert(NucleotideSequence ntSeq1, NucleotideSequence ntSeq2,
                              String expectedMutations) {
         Alignment<NucleotideSequence> al = Aligner.alignGlobal(SCORE_NT2AA, ntSeq1, ntSeq2);
-        Mutations<AminoAcidSequence> expectedMutationsM = Mutations.decode(expectedMutations, AminoAcidSequence.ALPHABET);
         //System.out.println(al.getAlignmentHelper());
         AminoAcidSequence aaSeq1 = AminoAcidSequence.translateFromLeft(ntSeq1);
         AminoAcidSequence aaSeq2 = AminoAcidSequence.translateFromLeft(ntSeq2);
         //System.out.println(aaSeq2);
-        Mutations<AminoAcidSequence> aaMutations = nt2aa(ntSeq1, al.getAbsoluteMutations());
-        Assert.assertEquals("Checking assert input.", aaSeq2, aaMutations.mutate(aaSeq1));
-        Assert.assertEquals("Actual assert.", expectedMutationsM, aaMutations);
+        Mutations<AminoAcidSequence> aaMutations = nt2aa(ntSeq1, al.getAbsoluteMutations(), 3);
+        if (expectedMutations != null) {
+            Mutations<AminoAcidSequence> expectedMutationsM = Mutations.decode(expectedMutations, AminoAcidSequence.ALPHABET);
+            Assert.assertEquals("Checking assert input.", aaSeq2, aaMutations.mutate(aaSeq1));
+            Assert.assertEquals("Actual assert.", expectedMutationsM, aaMutations);
+        } else {
+            Assert.assertNull(aaMutations);
+        }
     }
 
     @Test

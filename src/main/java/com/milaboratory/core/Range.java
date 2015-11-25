@@ -18,6 +18,8 @@ package com.milaboratory.core;
 import com.milaboratory.core.io.binary.RangeSerializer;
 import com.milaboratory.primitivio.annotations.Serializable;
 
+import java.util.Comparator;
+
 /**
  * This class represents a range of positions in a sequence (e.g. sub-sequence). Range can be <b>reversed</b> ({@code
  * from > to}), to represent reverse complement sub-sequence of a nucleotide sequence.
@@ -319,4 +321,11 @@ public final class Range implements java.io.Serializable {
         result = 31 * result + (reversed ? 1 : 0);
         return result;
     }
+
+    public static final Comparator<Range> COMPARATOR_BY_FROM = new Comparator<Range>() {
+        @Override
+        public int compare(Range o1, Range o2) {
+            return Integer.compare(o1.getFrom(), o2.getTo());
+        }
+    };
 }

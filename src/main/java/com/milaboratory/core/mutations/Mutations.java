@@ -353,15 +353,21 @@ public final class Mutations<S extends Sequence<S>>
     /**
      * See {@link #removeMutationsInRange(int, int)}.
      *
+     * <p>Ranges must be sorted.</p>
+     *
      * @param ranges ranges to remove
      * @return
      */
     public Mutations<S> removeMutationsInRanges(Range... ranges) {
         Mutations<S> result = this;
         int offset = 0;
+        int lastTo = 0;
         for (Range range : ranges) {
+            if (range.getFrom() < lastTo)
+                throw new IllegalArgumentException("Ranges are not sorted.");
             result = result.removeMutationsInRange(range.move(offset));
             offset -= range.length();
+            lastTo = range.getTo();
         }
         return result;
     }
