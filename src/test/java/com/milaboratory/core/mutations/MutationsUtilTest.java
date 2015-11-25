@@ -106,8 +106,10 @@ public class MutationsUtilTest {
         //                                                   F  R  H  R  L  Q
         NucleotideSequence ntSeq1 = new NucleotideSequence("TTTAGACACAGATTGCAA");
 
-        //                                                   F  Shift..
-        NucleotideSequence ntSeq2 = new NucleotideSequence("TTTAGCACAGATCGCAG");
+        NucleotideSequence ntSeq2;
+
+        //                                F  Shift..
+        ntSeq2 = new NucleotideSequence("TTTAGCACAGATCGCAG");
         nt2aaAssert(ntSeq1, ntSeq2, null);
 
         //                                F  R  R  S  Q
@@ -141,6 +143,20 @@ public class MutationsUtilTest {
         //                                F  R  H  R  L
         ntSeq2 = new NucleotideSequence("TTTAGACACCGTTTA");
         nt2aaAssert(ntSeq1, ntSeq2, "DQ5");
+
+        //                                F  R  H  R  L  Q  F
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATTGCAATTT");
+        nt2aaAssert(ntSeq1, ntSeq2, "I6F");
+
+        //                                F  R  H  R  L  Q  _
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATTGCAATT");
+        nt2aaAssert(ntSeq1, ntSeq2, "I6_");
+
+        //                                F  R  H  R  L  _
+        ntSeq1 = new NucleotideSequence("TTTAGACACAGATTGCA");
+        //                                F  R  H  R  L  Q
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATTGCAA");
+        nt2aaAssert(ntSeq1, ntSeq2, "S_5Q");
     }
 
     private void nt2aaAssert(NucleotideSequence ntSeq1, NucleotideSequence ntSeq2,
@@ -150,10 +166,10 @@ public class MutationsUtilTest {
         AminoAcidSequence aaSeq1 = AminoAcidSequence.translateFromLeft(ntSeq1);
         AminoAcidSequence aaSeq2 = AminoAcidSequence.translateFromLeft(ntSeq2);
         //System.out.println(aaSeq2);
-        Mutations<AminoAcidSequence> aaMutations = nt2aa(ntSeq1, al.getAbsoluteMutations(), 3);
+        Mutations<AminoAcidSequence> aaMutations = nt2aa(ntSeq1, al.getAbsoluteMutations(), 2);
         if (expectedMutations != null) {
             Mutations<AminoAcidSequence> expectedMutationsM = Mutations.decode(expectedMutations, AminoAcidSequence.ALPHABET);
-            Assert.assertEquals("Checking assert input.", aaSeq2, aaMutations.mutate(aaSeq1));
+            Assert.assertEquals("Checking assert input.", aaSeq2, expectedMutationsM.mutate(aaSeq1));
             Assert.assertEquals("Actual assert.", expectedMutationsM, aaMutations);
         } else {
             Assert.assertNull(aaMutations);

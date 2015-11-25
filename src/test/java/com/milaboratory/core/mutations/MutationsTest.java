@@ -23,6 +23,8 @@ import com.milaboratory.core.io.util.IOTestUtil;
 import com.milaboratory.core.mutations.generator.MutationModels;
 import com.milaboratory.core.mutations.generator.MutationsGenerator;
 import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
+import com.milaboratory.core.sequence.Alphabet;
+import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import org.junit.Assert;
@@ -222,6 +224,15 @@ public class MutationsTest {
 
     public static void checkMutations(Mutations mutations) {
         assertEquals("Encode/Decode", mutations, decode(mutations.encode(), NucleotideSequence.ALPHABET));
+    }
+
+    @Test
+    public void testEncodeDecode() throws Exception {
+        checkMutations("I2_", AminoAcidSequence.ALPHABET);
+    }
+
+    public static void checkMutations(String mutationsString, Alphabet<?> alphabet) {
+        assertEquals("Decode/Encode", mutationsString, decode(mutationsString, alphabet).encode());
     }
 
     @Test

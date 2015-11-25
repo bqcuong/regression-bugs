@@ -300,20 +300,27 @@ public final class MutationsUtil {
         int shiftedTriplets = 0;
         for (int aaP1 = 0; aaP1 <= aaSeq1.size(); aaP1++) {
             ntP1 = aaP1 * 3;
-            ntP2 = mutations.convertPosition(ntP1);
-            if (ntP2 < 0)
-                ntP2 = -ntP2 - 2;
 
-            // Detecting shifted triplets
-            if (ntP2 % 3 != 0)
-                if (shiftedTriplets++ > maxShiftedTriplets)
-                    return null;
+            if (aaP1 != aaSeq1.size()) {
+                ntP2 = mutations.convertPosition(ntP1);
+                if (ntP2 < 0)
+                    ntP2 = -ntP2 - 2;
 
-            // Not a simple division (e.g. ntP2/3) to overcome Java's strange division rules for negative numbers
-            aaP2 = (ntP2 + 3) / 3 - 1;
-            if (aaP2 == prevAAP2) // Deletion
-                result.appendDeletion(aaP1, aaSeq1.codeAt(aaP1));
-            else {
+                // Detecting shifted triplets
+                if (ntP2 % 3 != 0)
+                    if (shiftedTriplets++ > maxShiftedTriplets)
+                        return null;
+
+                // Not a simple division (e.g. ntP2/3) to overcome Java's strange division rules for negative numbers
+                aaP2 = (ntP2 + 3) / 3 - 1;
+            } else {
+                aaP2 = aaSeq2.size();
+            }
+
+            if (aaP2 == prevAAP2) { // Deletion
+                if (aaP1 < aaSeq1.size())
+                    result.appendDeletion(aaP1, aaSeq1.codeAt(aaP1));
+            } else {
                 if (aaP2 > prevAAP2 + 1) // Insertion
                     for (int i = prevAAP2 + 1; i < aaP2; i++)
                         result.appendInsertion(aaP1, aaSeq2.codeAt(i));
