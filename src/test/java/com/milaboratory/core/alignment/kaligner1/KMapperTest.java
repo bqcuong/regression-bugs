@@ -125,7 +125,7 @@ public class KMapperTest extends AlignmentTest {
             else
                 target = randomSequence(NucleotideSequence.ALPHABET, rdi, 20, 30).concatenate(seq.getRange(0, subSize));
 
-            int[] muts = generateMutations(target, model).getAllMutations();
+            int[] muts = generateMutations(target, model).getRAWMutations();
             target = mutate(target, muts);
 
             KMappingResult result = ka.align(target);

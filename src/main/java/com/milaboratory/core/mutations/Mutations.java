@@ -76,7 +76,7 @@ public final class Mutations<S extends Sequence<S>>
         return mutations[index];
     }
 
-    public int[] getAllMutations() {
+    public int[] getRAWMutations() {
         return mutations.clone();
     }
 

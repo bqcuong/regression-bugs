@@ -280,7 +280,7 @@ public class AlignerTest {
             TIntHashSet positions = new TIntHashSet();
             for (int j = 0; j < seq1.size(); ++j)
                 positions.add(j);
-            for (int mut : m1.getAllMutations())
+            for (int mut : m1.getRAWMutations())
                 positions.remove(Mutation.getPosition(mut));
             TIntIterator it = positions.iterator();
             int position;

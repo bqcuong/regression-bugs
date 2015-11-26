@@ -35,7 +35,7 @@ public class AlignmentTest {
     }
 
     static int[] move(int[] mutations, int offset) {
-        return new Mutations<NucleotideSequence>(NucleotideSequence.ALPHABET, mutations).move(offset).getAllMutations();
+        return new Mutations<NucleotideSequence>(NucleotideSequence.ALPHABET, mutations).move(offset).getRAWMutations();
     }
 
     @Before
