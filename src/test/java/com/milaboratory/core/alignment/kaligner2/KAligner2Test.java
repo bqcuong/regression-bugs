@@ -9,6 +9,9 @@ import com.milaboratory.util.RandomUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
+import static com.milaboratory.core.alignment.AffineGapAlignmentScoring.IGBLAST_NUCLEOTIDE_SCORING;
+import static com.milaboratory.core.alignment.AffineGapAlignmentScoring.IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
+import static com.milaboratory.core.alignment.benchmark.ChallengeProvider.getParamsOneCluster;
 import static com.milaboratory.test.TestUtil.its;
 
 /**
@@ -55,9 +58,9 @@ public class KAligner2Test {
 
     @Test
     public void testSimpleRandomTest() throws Exception {
-        AffineGapAlignmentScoring<NucleotideSequence> scoring = AffineGapAlignmentScoring.IGBLAST_NUCLEOTIDE_SCORING;
-        int absoluteMinScore = AffineGapAlignmentScoring.IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
-        Challenge challenge = new ChallengeProvider(ChallengeProvider.getParamsOneCluster(scoring, absoluteMinScore, Integer.MAX_VALUE, 20.0).setQueryCount(its(5000, 100000)), 123).take();
+        AffineGapAlignmentScoring<NucleotideSequence> scoring = IGBLAST_NUCLEOTIDE_SCORING;
+        int absoluteMinScore = IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
+        Challenge challenge = new ChallengeProvider(getParamsOneCluster(scoring, absoluteMinScore, Integer.MAX_VALUE, 20.0).setQueryCount(its(5000, 100000)), 123).take();
         Benchmark bm = new Benchmark(its(15_000_000_000L, 150_000_000_000L));
         KAlignerParameters2 alParams = new KAlignerParameters2(9, 3,
                 true, true,
@@ -119,6 +122,51 @@ public class KAligner2Test {
 
     static NucleotideSequence nt(String str) {
         return new NucleotideSequence(str.replace(" ", ""));
+    }
+
+    @Test
+    public void testCase0() throws Exception {
+        KAlignerParameters2 parameters = GlobalObjectMappers.ONE_LINE.readValue("{\n" +
+                " \"type\" : \"kaligner2\",\n" +
+                " \"mapperNValue\" : 9,\n" +
+                " \"mapperKValue\" : 3,\n" +
+                " \"floatingLeftBound\" : true,\n" +
+                " \"floatingRightBound\" : true,\n" +
+                " \"mapperAbsoluteMinClusterScore\" : 101,\n" +
+                " \"mapperExtraClusterScore\" : -100,\n" +
+                " \"mapperMatchScore\" : 100,\n" +
+                " \"mapperMismatchScore\" : -1,\n" +
+                " \"mapperOffsetShiftScore\" : -1,\n" +
+                " \"mapperSlotCount\" : 1,\n" +
+                " \"mapperMaxClusters\" : 2,\n" +
+                " \"mapperMaxClusterIndels\" : 4,\n" +
+                " \"mapperKMersPerPosition\" : 3,\n" +
+                " \"mapperAbsoluteMinScore\" : 100,\n" +
+                " \"mapperRelativeMinScore\" : 0.8,\n" +
+                " \"mapperMinSeedsDistance\" : 1,\n" +
+                " \"mapperMaxSeedsDistance\" : 1,\n" +
+                " \"alignmentStopPenalty\" : 0,\n" +
+                " \"absoluteMinScore\" : 150,\n" +
+                " \"relativeMinScore\" : 0.8,\n" +
+                " \"maxHits\" : 3,\n" +
+                " \"scoring\" : {\n" +
+                " \"type\" : \"affine\",\n" +
+                " \"subsMatrix\" : \"raw(10, -30, -30, -30, -20, -10, -30, -30, -10, -30, -10, -30, -16, -16, -16, -30, 10, -30, -30, -20, -10, -30, -10, -30, -10, -30, -16, -16, -30, -16, -30, -30, 10, -30, -20, -30, -10, -10, -30, -30, -10, -16, -30, -16, -16, -30, -30, -30, 10, -20, -30, -10, -30, -10, -10, -30, -16, -16, -16, -30, -20, -20, -20, -20, -20, -20, -20, -20, -20, -20, -20, -20, -20, -20, -20, -10, -10, -30, -30, -20, -10, -30, -20, -20, -20, -20, -23, -16, -23, -16, -30, -30, -10, -10, -20, -30, -10, -20, -20, -20, -20, -16, -23, -16, -23, -30, -10, -10, -30, -20, -20, -20, -10, -30, -20, -20, -16, -23, -23, -16, -10, -30, -30, -10, -20, -20, -20, -30, -10, -20, -20, -23, -16, -16, -23, -30, -10, -30, -10, -20, -20, -20, -20, -20, -10, -30, -16, -16, -23, -23, -10, -30, -10, -30, -20, -20, -20, -20, -20, -30, -10, -23, -23, -16, -16, -30, -16, -16, -16, -20, -23, -16, -16, -23, -16, -23, -16, -21, -21, -21, -16, -16, -30, -16, -20, -16, -23, -23, -16, -16, -23, -21, -16, -21, -21, -16, -30, -16, -16, -20, -23, -16, -23, -16, -23, -16, -21, -21, -16, -21, -16, -16, -16, -30, -20, -16, -23, -16, -23, -23, -16, -21, -21, -21, -16)\",\n" +
+                " \"gapOpenPenalty\" : -40,\n" +
+                " \"gapExtensionPenalty\" : -10,\n" +
+                " \"uniformBasicMatch\" : true\n" +
+                " }\n" +
+                "}", KAlignerParameters2.class);
+        Challenge ch = new ChallengeProvider(getParamsOneCluster(IGBLAST_NUCLEOTIDE_SCORING, IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD, Integer.MAX_VALUE, 30), 11).take();
+
+        Benchmark bm = new Benchmark(100_000_000_000L, 1000);
+        BenchmarkInput bi = new BenchmarkInput(parameters, ch);
+        BenchmarkResults result = bm.process(bi);
+        System.out.println("Time per query: " + TestUtil.time(result.getAverageTiming()));
+        System.out.println("Processed queries: " + result.getProcessedGoodQueries());
+        System.out.println("Bad percent: " + result.getBadFraction() * 100);
+        System.out.println("False positive percent: " + result.getFalsePositiveFraction() * 100);
+        System.out.println("Scoring error percent: " + result.getScoreErrorFraction() * 100);
     }
 
     //@Test
@@ -183,6 +231,19 @@ public class KAligner2Test {
     //        Bad fraction: 0.07100000000000001%
     //     */
     //}
+
+    public String recordsToString(int[] records) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < records.length; i++) {
+            int record = records[i];
+            builder.append(i).append(": i")
+                    .append(KMapper2.index(record))
+                    .append(" o")
+                    .append(KMapper2.offset(record))
+                    .append("\n");
+        }
+        return builder.toString();
+    }
 
     public void printResult(String title, BenchmarkResults result) {
         System.out.println(title);
