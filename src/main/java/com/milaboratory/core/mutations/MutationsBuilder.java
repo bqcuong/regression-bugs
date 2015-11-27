@@ -45,10 +45,24 @@ public final class MutationsBuilder<S extends Sequence<S>> {
         this.reversed = reversed;
     }
 
-    public int get(int index) { return mutations[index]; }
+    public int get(int index) {
+        return mutations[index];
+    }
 
     public int size() {
         return size;
+    }
+
+    public void set(int index, int mutation) {
+        mutations[index] = mutation;
+    }
+
+    public int getLast() {
+        return mutations[size - 1];
+    }
+
+    public void removeLast() {
+        --size;
     }
 
     private void ensureInternalCapacity(int newSize) {
