@@ -191,17 +191,8 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return convertAAPositionToNt(aaPosition, ntSequenceLength, FromRightWithIncompleteCodon);
     }
 
-    /**
-     * Use one of specialized method instead:
-     *
-     * <ul>
-     * <li>{@link #convertNtPositionToAAFromLeft(int, int)}</li>
-     * <li>{@link #convertNtPositionToAAFromRight(int, int)}</li>
-     * <li>{@link #convertNtPositionToAAFromCenter(int, int)}</li>
-     * </ul>
-     */
     public static AminoAcidSequencePosition convertNtPositionToAA(int ntPosition, int ntSequenceLength, TranslationType translationType) {
-        int aaSequenceSize = (ntSequenceLength + 2) / 3;
+        //int aaSequenceSize = (ntSequenceLength + 2) / 3;
         if (translationType.fromLeft == null) {
             int aaLength = ntSequenceLength / 3;
             int leftAALength = (aaLength + 1) / 2;
@@ -212,11 +203,15 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
                     convertNtPositionToAA(ntPosition, ntSequenceLength, FromRightWithIncompleteCodon);
         } else if (translationType.fromLeft) {
             int aa = ntPosition / 3;
+            if (!translationType.includeIncomplete && aa >= ntSequenceLength / 3)
+                return null;
             return new AminoAcidSequencePosition(aa, ntPosition % 3);
         } else {
             ntPosition -= (ntSequenceLength % 3);
             if (translationType.includeIncomplete && (ntSequenceLength % 3) != 0)
                 ntPosition += 3;
+            if (ntPosition < 0)
+                return null;
             return new AminoAcidSequencePosition(ntPosition / 3, ntPosition % 3);
         }
     }

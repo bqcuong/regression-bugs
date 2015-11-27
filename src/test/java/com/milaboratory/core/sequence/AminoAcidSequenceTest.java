@@ -172,8 +172,12 @@ public class AminoAcidSequenceTest {
                 System.out.println(length);
                 for (int i = 0; i < length; i++) {
                     AminoAcidSequencePosition pos = AminoAcidSequence.convertNtPositionToAA(i, length, tt);
-                    int actual = AminoAcidSequence.convertAAPositionToNt(pos.aminoAcidPosition, length, tt);
+                    int actual = pos != null ? AminoAcidSequence.convertAAPositionToNt(pos.aminoAcidPosition, length, tt) : -1;
                     //System.out.println(pos + "\t" + i + "\t" + actual);
+                    if (pos == null) {
+                        Assert.assertFalse(tt.includeIncomplete);
+                        continue;
+                    }
                     Assert.assertEquals("TT=" + tt + " i=" + i + " length=" + length, Math.max(i - pos.positionInTriplet, 0),
                             actual);
                 }
