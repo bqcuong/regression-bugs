@@ -299,9 +299,8 @@ public final class MutationsUtil {
         int ntP1, ntP2;
         int shiftedTriplets = 0;
         for (int aaP1 = 0; aaP1 <= aaSeq1.size(); aaP1++) {
-            ntP1 = aaP1 * 3;
-
             if (aaP1 != aaSeq1.size()) {
+                ntP1 = aaP1 * 3;
                 ntP2 = mutations.convertPosition(ntP1);
                 if (ntP2 < 0)
                     ntP2 = -ntP2 - 2;
