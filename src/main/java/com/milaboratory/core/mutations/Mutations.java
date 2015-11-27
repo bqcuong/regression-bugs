@@ -608,6 +608,14 @@ public final class Mutations<S extends Sequence<S>>
         return MutationsUtil.encodeFixed(mutations, alphabet);
     }
 
+    public static Mutations<NucleotideSequence> decodeNuc(String string) {
+        return decode(string, NucleotideSequence.ALPHABET);
+    }
+
+    public static Mutations<AminoAcidSequence> decodeAA(String string) {
+        return decode(string, AminoAcidSequence.ALPHABET);
+    }
+
     public static <S extends Sequence<S>> Mutations<S> decode(String string, Alphabet<S> alphabet) {
         return new Mutations<>(alphabet, MutationsUtil.decode(string, alphabet), true);
     }
