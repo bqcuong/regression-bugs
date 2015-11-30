@@ -15,17 +15,12 @@
  */
 package com.milaboratory.core.sequence;
 
-public enum TranslationType {
-    FromCenter(null, true),
-    FromLeftWithIncompleteCodon(Boolean.TRUE, true),
-    FromLeftWithoutIncompleteCodon(Boolean.TRUE, false),
-    FromRightWithIncompleteCodon(Boolean.FALSE, true),
-    FromRightWithoutIncompleteCodon(Boolean.FALSE, false);
-    final Boolean fromLeft;
-    final boolean includeIncomplete;
+import junit.framework.Assert;
+import org.junit.Test;
 
-    TranslationType(Boolean fromLeft, boolean includeIncomplete) {
-        this.fromLeft = fromLeft;
-        this.includeIncomplete = includeIncomplete;
+public class TranslationParametersTest {
+    @Test
+    public void test1() throws Exception {
+        Assert.assertEquals("FromCenter", TranslationParameters.FromCenter.toString());
     }
 }

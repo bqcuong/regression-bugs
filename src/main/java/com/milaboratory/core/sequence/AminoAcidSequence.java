@@ -18,9 +18,9 @@ package com.milaboratory.core.sequence;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import static com.milaboratory.core.sequence.TranslationType.FromCenter;
-import static com.milaboratory.core.sequence.TranslationType.FromLeftWithIncompleteCodon;
-import static com.milaboratory.core.sequence.TranslationType.FromRightWithIncompleteCodon;
+import static com.milaboratory.core.sequence.TranslationParameters.FromCenter;
+import static com.milaboratory.core.sequence.TranslationParameters.FromLeftWithIncompleteCodon;
+import static com.milaboratory.core.sequence.TranslationParameters.FromRightWithIncompleteCodon;
 
 /**
  * Representation of amino acid sequences. Methods for translating nucleotide to amino acid and vice versa are placed
@@ -151,8 +151,8 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return new AminoAcidSequence(aaData, true);
     }
 
-    public static int convertAAPositionToNt(int aaPosition, int ntSequenceLength, TranslationType translationType) {
-        if (translationType.fromLeft == null) {
+    public static int convertAAPositionToNt(int aaPosition, int ntSequenceLength, TranslationParameters translationParameters) {
+        if (translationParameters.fromLeft == null) {
             int aaLength = ntSequenceLength / 3;
             int leftAALength = (aaLength + 1) / 2;
             int rightAALength = aaLength - leftAALength;
@@ -163,19 +163,19 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
                 return aaPosition * 3;
             else
                 return lastLeftNt + (aaPosition - leftAALength) * 3;
-        } else if (translationType.fromLeft) {
-            return aaPosition * 3;
-        } else {
-            int offset = (ntSequenceLength % 3);
+        } else if (translationParameters.fromLeft) {
+            int offset = translationParameters.frame;
             if (aaPosition == 0) {
-                if (translationType.includeIncomplete)
+                if (translationParameters.includeIncomplete)
                     return 0;
                 else
                     return offset;
             }
-            if (offset != 0 && translationType.includeIncomplete)
+            if (offset != 0 && translationParameters.includeIncomplete)
                 --aaPosition;
             return offset + aaPosition * 3;
+        } else {
+            return convertAAPositionToNt(aaPosition, ntSequenceLength, translationParameters.convertToLeftBound(ntSequenceLength));
         }
     }
 
@@ -191,9 +191,9 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
         return convertAAPositionToNt(aaPosition, ntSequenceLength, FromRightWithIncompleteCodon);
     }
 
-    public static AminoAcidSequencePosition convertNtPositionToAA(int ntPosition, int ntSequenceLength, TranslationType translationType) {
+    public static AminoAcidSequencePosition convertNtPositionToAA(int ntPosition, int ntSequenceLength, TranslationParameters translationParameters) {
         //int aaSequenceSize = (ntSequenceLength + 2) / 3;
-        if (translationType.fromLeft == null) {
+        if (translationParameters.fromLeft == null) {
             int aaLength = ntSequenceLength / 3;
             int leftAALength = (aaLength + 1) / 2;
             int rightAALength = aaLength - leftAALength;
@@ -201,18 +201,18 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
             int lastLeftNt = ntSequenceLength - rightAALength * 3;
             return ntPosition < lastLeftNt ? convertNtPositionToAA(ntPosition, ntSequenceLength, FromLeftWithIncompleteCodon) :
                     convertNtPositionToAA(ntPosition, ntSequenceLength, FromRightWithIncompleteCodon);
-        } else if (translationType.fromLeft) {
-            int aa = ntPosition / 3;
-            if (!translationType.includeIncomplete && aa >= ntSequenceLength / 3)
-                return null;
-            return new AminoAcidSequencePosition(aa, ntPosition % 3);
-        } else {
-            ntPosition -= (ntSequenceLength % 3);
-            if (translationType.includeIncomplete && (ntSequenceLength % 3) != 0)
+        } else if (translationParameters.fromLeft) {
+            ntPosition -= translationParameters.frame;
+            if (translationParameters.includeIncomplete && translationParameters.frame != 0)
                 ntPosition += 3;
             if (ntPosition < 0)
                 return null;
-            return new AminoAcidSequencePosition(ntPosition / 3, ntPosition % 3);
+            int aa = ntPosition / 3;
+            if (!translationParameters.includeIncomplete && aa >= ntSequenceLength / 3)
+                return null;
+            return new AminoAcidSequencePosition(aa, ntPosition % 3);
+        } else {
+            return convertNtPositionToAA(ntPosition, ntSequenceLength, translationParameters.convertToLeftBound(ntSequenceLength));
         }
     }
 
@@ -261,10 +261,10 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
      * <li>{@link #translateFromCenter(NucleotideSequence)}</li>
      * </ul>
      */
-    public static AminoAcidSequence translate(NucleotideSequence ns, TranslationType translationType) {
+    public static AminoAcidSequence translate(NucleotideSequence ns, TranslationParameters translationParameters) {
         byte[] data;
-        data = new byte[(ns.size() + (translationType.includeIncomplete ? 2 : 0)) / 3];
-        if (translationType.fromLeft == null) {
+        if (translationParameters.fromLeft == null) {
+            data = new byte[(ns.size() + (translationParameters.includeIncomplete ? 2 : 0)) / 3];
             int aaLength = ns.size() / 3;
             int leftAALength = (aaLength + 1) / 2;
             int rightAALength = aaLength - leftAALength;
@@ -272,16 +272,21 @@ public final class AminoAcidSequence extends AbstractArraySequence<AminoAcidSequ
             GeneticCode.translate(data, data.length - rightAALength, ns, ns.size() - rightAALength * 3, rightAALength * 3);
             if (ns.size() % 3 != 0)
                 data[leftAALength] = AminoAcidAlphabet.INCOMPLETE_CODON;
-        } else if (translationType.fromLeft) {
-            GeneticCode.translate(data, 0, ns, 0, ns.size() / 3 * 3);
-            if (translationType.includeIncomplete && ns.size() % 3 != 0)
+        } else if (translationParameters.fromLeft) {
+            int aaLength = (ns.size() - translationParameters.frame + (translationParameters.includeIncomplete ? 2 : 0)) / 3;
+            if (translationParameters.includeIncomplete && translationParameters.frame != 0)
+                ++aaLength;
+            data = new byte[aaLength];
+            int pointer = 0;
+            if (translationParameters.includeIncomplete && translationParameters.frame != 0)
+                data[pointer++] = AminoAcidAlphabet.INCOMPLETE_CODON;
+            int trLength = ((ns.size() - translationParameters.frame) / 3) * 3;
+            GeneticCode.translate(data, pointer, ns, translationParameters.frame, trLength);
+            pointer += trLength / 3;
+            if (pointer != aaLength)
                 data[data.length - 1] = AminoAcidAlphabet.INCOMPLETE_CODON;
-        } else {
-            if (translationType.includeIncomplete && ns.size() % 3 != 0)
-                data[0] = AminoAcidAlphabet.INCOMPLETE_CODON;
-            GeneticCode.translate(data,
-                    (translationType.includeIncomplete && ns.size() % 3 != 0) ? 1 : 0, ns, ns.size() % 3, ns.size() / 3 * 3);
-        }
+        } else
+            return translate(ns, translationParameters.convertToLeftBound(ns.size()));
         return new AminoAcidSequence(data, true);
     }
 

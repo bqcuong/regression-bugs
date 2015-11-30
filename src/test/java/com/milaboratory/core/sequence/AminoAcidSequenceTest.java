@@ -21,7 +21,7 @@ import com.milaboratory.test.TestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static com.milaboratory.core.sequence.TranslationType.*;
+import static com.milaboratory.core.sequence.TranslationParameters.*;
 
 /**
  * @author Dmitry Bolotin
@@ -38,7 +38,7 @@ public class AminoAcidSequenceTest {
         Assert.assertEquals(new AminoAcidSequence("I_T"),
                 AminoAcidSequence.translate(new NucleotideSequence("ATTAGACA"), FromCenter));
 
-        for (TranslationType tt : TranslationType.values())
+        for (TranslationParameters tt : TranslationParameters.getPreDefinedParameters())
             Assert.assertEquals("TT=" + tt, new AminoAcidSequence("IR"),
                     AminoAcidSequence.translate(new NucleotideSequence("ATTAGA"), tt));
     }
@@ -51,18 +51,18 @@ public class AminoAcidSequenceTest {
                 AminoAcidSequence.translate(new NucleotideSequence("ATTAGACA"), FromRightWithoutIncompleteCodon));
     }
 
-    public static final TranslationType[] ALL_WITH_INCOMPLETE = {FromCenter, FromLeftWithIncompleteCodon, FromRightWithIncompleteCodon};
-    public static final TranslationType[] ALL_WITHOUT_INCOMPLETE = {FromLeftWithoutIncompleteCodon, FromRightWithoutIncompleteCodon};
+    public static final TranslationParameters[] ALL_WITH_INCOMPLETE = {FromCenter, FromLeftWithIncompleteCodon, FromRightWithIncompleteCodon};
+    public static final TranslationParameters[] ALL_WITHOUT_INCOMPLETE = {FromLeftWithoutIncompleteCodon, FromRightWithoutIncompleteCodon};
 
     @Test
     public void test3() throws Exception {
-        for (TranslationType tt : ALL_WITH_INCOMPLETE)
+        for (TranslationParameters tt : ALL_WITH_INCOMPLETE)
             Assert.assertEquals("TT=" + tt, new AminoAcidSequence("_"),
                     AminoAcidSequence.translate(new NucleotideSequence("AT"), tt));
-        for (TranslationType tt : ALL_WITHOUT_INCOMPLETE)
+        for (TranslationParameters tt : ALL_WITHOUT_INCOMPLETE)
             Assert.assertEquals("TT=" + tt, new AminoAcidSequence(""),
                     AminoAcidSequence.translate(new NucleotideSequence("AT"), tt));
-        for (TranslationType tt : TranslationType.values())
+        for (TranslationParameters tt : TranslationParameters.getPreDefinedParameters())
             Assert.assertEquals("TT=" + tt, new AminoAcidSequence(""),
                     AminoAcidSequence.translate(new NucleotideSequence(""), tt));
     }
@@ -166,7 +166,7 @@ public class AminoAcidSequenceTest {
 
     @Test
     public void testConvertPositionSync1() throws Exception {
-        for (TranslationType tt : TranslationType.values()) {
+        for (TranslationParameters tt : TranslationParameters.getPreDefinedParameters()) {
             System.out.println(tt);
             for (int length = 2; length < 20; length++) {
                 System.out.println(length);

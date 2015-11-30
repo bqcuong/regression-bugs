@@ -26,8 +26,8 @@ import org.junit.Test;
 
 import static com.milaboratory.core.mutations.MutationsUtil.btopDecode;
 import static com.milaboratory.core.mutations.MutationsUtil.nt2aa;
-import static com.milaboratory.core.sequence.TranslationType.FromLeftWithIncompleteCodon;
-import static com.milaboratory.core.sequence.TranslationType.FromRightWithIncompleteCodon;
+import static com.milaboratory.core.sequence.TranslationParameters.FromLeftWithIncompleteCodon;
+import static com.milaboratory.core.sequence.TranslationParameters.FromRightWithIncompleteCodon;
 
 /**
  * @author Dmitry Bolotin
@@ -225,7 +225,7 @@ public class MutationsUtilTest {
     }
 
     private void nt2aaAssert(NucleotideSequence ntSeq1, NucleotideSequence ntSeq2,
-                             String expectedMutations, TranslationType tt) {
+                             String expectedMutations, TranslationParameters tt) {
         Alignment<NucleotideSequence> al = null;
         AminoAcidSequence aaSeq1 = null, aaSeq2 = null;
         try {

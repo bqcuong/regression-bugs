@@ -61,7 +61,7 @@ public class KAligner2Test {
         AffineGapAlignmentScoring<NucleotideSequence> scoring = IGBLAST_NUCLEOTIDE_SCORING;
         int absoluteMinScore = IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
         Challenge challenge = new ChallengeProvider(getParamsOneCluster(scoring, absoluteMinScore, Integer.MAX_VALUE, 20.0).setQueryCount(its(5000, 100000)), 123).take();
-        Benchmark bm = new Benchmark(its(15_000_000_000L, 150_000_000_000L));
+        Benchmark bm = new Benchmark(its(10_000_000_000L, 150_000_000_000L));
         KAlignerParameters2 alParams = new KAlignerParameters2(9, 3,
                 true, true,
                 75, -50, 115, 0.87f, 45, -10, -15,

@@ -286,16 +286,16 @@ public final class MutationsUtil {
     }
 
     public static Mutations<AminoAcidSequence> nt2aa(NucleotideSequence seq1, Mutations<NucleotideSequence> mutations,
-                                                     TranslationType translationType) {
-        return nt2aa(seq1, mutations, translationType, Integer.MAX_VALUE);
+                                                     TranslationParameters translationParameters) {
+        return nt2aa(seq1, mutations, translationParameters, Integer.MAX_VALUE);
     }
 
     public static Mutations<AminoAcidSequence> nt2aa(NucleotideSequence seq1, Mutations<NucleotideSequence> mutations,
-                                                     TranslationType translationType,
+                                                     TranslationParameters translationParameters,
                                                      int maxShiftedTriplets) {
-        AminoAcidSequence aaSeq1 = AminoAcidSequence.translate(seq1, translationType);
+        AminoAcidSequence aaSeq1 = AminoAcidSequence.translate(seq1, translationParameters);
         NucleotideSequence seq2 = mutations.mutate(seq1);
-        AminoAcidSequence aaSeq2 = AminoAcidSequence.translate(seq2, translationType);
+        AminoAcidSequence aaSeq2 = AminoAcidSequence.translate(seq2, translationParameters);
         MutationsBuilder<AminoAcidSequence> result = new MutationsBuilder<>(AminoAcidSequence.ALPHABET);
 
         int aaP2, prevAAP2 = -1;
@@ -303,7 +303,7 @@ public final class MutationsUtil {
         int shiftedTriplets = 0;
         for (int aaP1 = 0; aaP1 <= aaSeq1.size(); aaP1++) {
             if (aaP1 != aaSeq1.size()) {
-                ntP1 = AminoAcidSequence.convertAAPositionToNt(aaP1, seq1.size(), translationType);
+                ntP1 = AminoAcidSequence.convertAAPositionToNt(aaP1, seq1.size(), translationParameters);
                 ntP2 = mutations.convertPosition(ntP1);
                 if (ntP2 < 0)
                     ntP2 = -ntP2 - 2;
@@ -311,7 +311,7 @@ public final class MutationsUtil {
                 if (ntP2 < 0)
                     aaP2 = -1;
                 else {
-                    AminoAcidSequencePosition pos = AminoAcidSequence.convertNtPositionToAA(ntP2, seq2.size(), translationType);
+                    AminoAcidSequencePosition pos = AminoAcidSequence.convertNtPositionToAA(ntP2, seq2.size(), translationParameters);
                     if (pos == null)
                         continue;
 
