@@ -99,4 +99,36 @@ public final class ScoringUtils {
 
         return matrix;
     }
+
+    ///**
+    // * Returns true if scores for wildcard symbols is the same as {@link #fillWildcardScores(int[], Alphabet, byte...)}
+    // * with no exclude symbols would produce.
+    // *
+    // * @param matrix matrix to test
+    // * @return {@literal true} if scores for wildcards are the same as would be calculated automatically by {@link
+    // * #fillWildcardScores(int[], Alphabet, byte...)} method
+    // */
+    //public static boolean isDefaultWildcardScores(int[] matrix, Alphabet<?> alphabet) {
+    //    int alSize = alphabet.size();
+    //
+    //    if (matrix.length != alSize * alSize)
+    //        throw new IllegalArgumentException("Wrong matrix size.");
+    //
+    //    for (Wildcard wc1 : alphabet.getAllWildcards())
+    //        for (Wildcard wc2 : alphabet.getAllWildcards()) {
+    //            if (wc1.isBasic())
+    //                continue;
+    //            int sumScore = 0;
+    //            for (int i = 0; i < wc1.count(); i++)
+    //                for (int j = 0; j < wc2.count(); j++) {
+    //                    sumScore += matrix[wc1.getMatchingCode(i) + wc2.getMatchingCode(j) * alSize];
+    //                }
+    //            sumScore /= wc1.count() * wc2.count();
+    //
+    //            if (matrix[wc1.getCode() + wc2.getCode() * alSize] != sumScore)
+    //                return false;
+    //        }
+    //
+    //    return true;
+    //}
 }
