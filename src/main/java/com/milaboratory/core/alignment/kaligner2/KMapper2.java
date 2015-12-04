@@ -585,34 +585,45 @@ public final class KMapper2 implements java.io.Serializable {
         if (stat != null)
             stat.trimmingEvent(byIndex ? TrimRightQuery : TrimRightTarget);
 
-        int lastRecordId = results.get(clusterPointer + FIRST_RECORD_ID),
-                record = data[lastRecordId],
+        int recordId = results.get(clusterPointer + FIRST_RECORD_ID), // Going from the left side of the cluster
+                lastRecordId = results.get(clusterPointer + LAST_RECORD_ID),
+                record = data[recordId],
                 prevOffset = offset(record),
                 prevIndex = index(record),
                 score = matchScore;
 
-        //roll right in stretch
-        int i = lastRecordId;
-        while (++i < dataTo && prevIndex == index(data[i])) ;
+        // Last record id is inside the working range of data array
+        assert lastRecordId < dataTo;
 
-        //calculate score
+        // Roll right in stretch
+        int i = recordId;
+        while (++i <= lastRecordId && prevIndex == index(data[i])) ;
+
+        // Calculate score and searching for truncation point
         int offset, index;
-        for (; i < dataTo &&
-                (byIndex ?
-                        index(data[i]) < truncationPoint :
-                        (positionInTarget(seedPositions, data[i]) < truncationPoint));
-             ++i) {
+        for (; i <= lastRecordId; ++i) {
+            // Detecting truncation point in case of by-index truncation
+            if (byIndex && index(data[i]) >= truncationPoint)
+                break;
+
             index = index(data[i]);
             offset = offset(data[i]);
             if (inDelta(prevOffset, offset, maxClusterIndels)) {
                 // Processing exceptional cases for self-correlated K-Mers
                 // If next record has same index and better offset
                 // (closer to current island LAST_VALUE)
-                if (i < dataTo - 1
+                if (i < lastRecordId
                         && index == index(data[i + 1])
                         && abs(prevOffset - offset) > abs(prevOffset - offset(data[i + 1])))
                     // Skip current record
                     continue;
+
+                // Indices are sorted in ascending order
+                assert index - prevIndex - 1 >= 0;
+
+                // Detecting truncation point for by-position-in-target truncation
+                if (!byIndex && positionInTarget(seedPositions, data[i]) >= truncationPoint)
+                    break;
 
                 // Score for this point
                 int scoreDelta = matchScore + (index - prevIndex - 1) * mismatchScore +
@@ -623,13 +634,16 @@ public final class KMapper2 implements java.io.Serializable {
                     score += scoreDelta;
                     prevOffset = offset;
                     prevIndex = index;
-                    lastRecordId = i;
+                    recordId = i;
                 }
+
+                // Skipping other records with the same index (they must have worse offsets)
+                while (++i <= lastRecordId && prevIndex == index(data[i])) ;
             }
         }
 
         // Adjusting cluster data
-        results.set(clusterPointer + LAST_RECORD_ID, lastRecordId);
+        results.set(clusterPointer + LAST_RECORD_ID, recordId);
         results.set(clusterPointer + SCORE, score);
 
         // Testing if cluster still have enough score
@@ -669,31 +683,34 @@ public final class KMapper2 implements java.io.Serializable {
         if (stat != null)
             stat.trimmingEvent(byIndex ? TrimLeftQuery : TrimLeftTarget);
 
-        int lastRecordId = results.get(clusterPointer + FIRST_RECORD_ID),
-                record = data[lastRecordId],
+        int firstRecordId = results.get(clusterPointer + FIRST_RECORD_ID),
+                recordId = results.get(clusterPointer + LAST_RECORD_ID), // Going from the right side of the cluster
+                record = data[recordId],
                 prevOffset = offset(record),
                 prevIndex = index(record),
                 score = matchScore;
 
-        //roll right in stretch
-        int i = lastRecordId;
-        while (--i >= dataFrom && prevIndex == index(data[i])) ;
+        // Last record id is inside the working range of data array
+        assert firstRecordId >= dataFrom;
 
-        //calculate score
+        // Roll right in stretch
+        int i = recordId;
+        while (--i >= firstRecordId && prevIndex == index(data[i])) ;
+
+        // Calculate score and searching for truncation point
         int offset, index;
-        for (; i >= dataFrom &&
-                (byIndex ?
-                        index(data[i]) > truncationPoint :
-                        (positionInTarget(seedPositions, data[i]) > truncationPoint));
-             --i) {
+        for (; i >= firstRecordId; --i) {
+            // Detecting truncation point in case of by-index truncation
+            if (byIndex && index(data[i]) <= truncationPoint)
+                break;
+
             index = index(data[i]);
             offset = offset(data[i]);
             if (inDelta(prevOffset, offset, maxClusterIndels)) {
                 // Processing exceptional cases for self-correlated K-Mers
-
                 // If next record has same index and better offset
                 // (closer to current island LAST_VALUE)
-                if (i > dataFrom
+                if (i > firstRecordId
                         && index == index(data[i - 1])
                         && abs(prevOffset - offset) > abs(prevOffset - offset(data[i - 1])))
                     // Skip current record
@@ -701,6 +718,10 @@ public final class KMapper2 implements java.io.Serializable {
 
                 // Indices are sorted in ascending order
                 assert prevIndex - index - 1 >= 0;
+
+                // Detecting truncation point for by-position-in-target truncation
+                if(!byIndex && positionInTarget(seedPositions, data[i]) <= truncationPoint)
+                    break;
 
                 // Score for this point
                 int scoreDelta = matchScore + (prevIndex - index - 1) * mismatchScore +
@@ -711,13 +732,16 @@ public final class KMapper2 implements java.io.Serializable {
                     score += scoreDelta;
                     prevOffset = offset;
                     prevIndex = index;
-                    lastRecordId = i;
+                    recordId = i;
                 }
+
+                // Skipping other records with the same index (they must have worse offsets)
+                while (--i >= firstRecordId && prevIndex == index(data[i])) ;
             }
         }
 
         // Adjusting cluster data
-        results.set(clusterPointer + FIRST_RECORD_ID, lastRecordId);
+        results.set(clusterPointer + FIRST_RECORD_ID, recordId);
         results.set(clusterPointer + SCORE, score);
 
         // Testing if cluster still have enough score
