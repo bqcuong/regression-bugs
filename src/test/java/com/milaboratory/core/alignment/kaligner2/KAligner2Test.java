@@ -1,11 +1,12 @@
 package com.milaboratory.core.alignment.kaligner2;
 
-import com.milaboratory.core.alignment.*;
+import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
+import com.milaboratory.core.alignment.Alignment;
+import com.milaboratory.core.alignment.AlignmentUtils;
 import com.milaboratory.core.alignment.benchmark.*;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
-import com.milaboratory.util.RandomUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -99,25 +100,6 @@ public class KAligner2Test {
         Assert.assertTrue(result.getBadFraction() < 0.005);
         Assert.assertTrue(result.getFalsePositiveFraction() < 0.01);
         Assert.assertTrue(result.getScoreErrorFraction() < 0.01);
-    }
-
-    @Test
-    public void test2() throws Exception {
-        RandomUtil.reseedThreadLocal(System.currentTimeMillis());
-        KAlignerParameters2 gParams = KAligner2Test.gParams.clone();
-        gParams.setAbsoluteMinScore(0);
-        gParams.setMapperAbsoluteMinClusterScore(-10000);
-        gParams.setMapperMaxClusterIndels(10);
-
-        KAligner2<Object> aligner = new KAligner2<>(gParams);
-        aligner.addReference(nt("ttttttt   attggcatgcccgatcgac   atatatatatgatgatgat   atttgtagaagtggatgagcgcg  aaaaaaaaa"));
-
-        KAlignmentResult2<Object> al = aligner.align(nt("gcat  attggcatgtgcgatcgac atttcaagaagtatgagcgcg  tgc"));
-        System.out.println(al.hasHits());
-        Alignment<NucleotideSequence> val = al.getHits().get(0).getAlignment();
-        System.out.println(val.getScore());
-        System.out.println(val);
-
     }
 
     static NucleotideSequence nt(String str) {
