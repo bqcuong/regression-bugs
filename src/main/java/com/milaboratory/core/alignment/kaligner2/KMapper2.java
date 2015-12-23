@@ -45,7 +45,6 @@ import static java.util.Arrays.copyOf;
  * <p><b>Algorithm inspired by:</b> <i>Liao Y et al.</i> The Subread aligner: fast, accurate and scalable read mapping
  * by seed-and-vote. <i>Nucleic Acids Res. 2013 May 1;41(10):e108. doi: 10.1093/nar/gkt214. Epub 2013 Apr 4.</i></p>
  */
-//TODO visuzlization for hits
 public final class KMapper2 implements java.io.Serializable {
     public static final int SEED_NOT_FOUND_OFFSET = Integer.MIN_VALUE + 1;
 
@@ -204,7 +203,7 @@ public final class KMapper2 implements java.io.Serializable {
                     boolean floatingLeftBound, boolean floatingRightBound,
                     KAligner2Statistics stat) {
         if (nValue - kValue <= 2)
-            throw new IllegalArgumentException("Wrong value for K and N values. K = " + kValue + " N = " + nValue + ".");
+            throw new IllegalArgumentException("Wrong combination of K and N values. K = " + kValue + " N = " + nValue + ".");
 
         this.nValue = nValue;
         this.kValue = kValue;

@@ -16,27 +16,6 @@ import com.milaboratory.util.GlobalObjectMappers;
  */
 public final class KAlignerParameters2 implements BatchAlignerWithBaseParameters, Cloneable, java.io.Serializable {
     private static final long serialVersionUID = 1L;
-//    /**
-//     * List of known parameters presets
-//     */
-//    private static final Map<String, KAlignerParameters> knownParameters;
-//
-//    static {
-//        Map<String, KAlignerParameters> map = null;
-//        try {
-//            InputStream is = KAlignerParameters.class.getClassLoader().getResourceAsStream("parameters/kaligner_parameters.json");
-//            TypeReference<HashMap<String, KAlignerParameters>> typeRef
-//                    = new TypeReference<
-//                    HashMap<String, KAlignerParameters>
-//                    >() {
-//            };
-//            map = GlobalObjectMappers.ONE_LINE.readValue(is, typeRef);
-//        } catch (IOException ioe) {
-//            System.out.println("ERROR!");
-//            ioe.printStackTrace();
-//        }
-//        knownParameters = map;
-//    }
 
     /* MAPPER PARAMETERS BEGIN */
 
@@ -52,13 +31,14 @@ public final class KAlignerParameters2 implements BatchAlignerWithBaseParameters
      * Defines floating bounds of alignment
      */
     private boolean floatingLeftBound, floatingRightBound;
-
     /**
      * Minimal allowed absolute hit score obtained by {@link KMapper} to
      * consider hit as reliable candidate
      */
     private int mapperAbsoluteMinClusterScore,
-    //TODO
+    /**
+     * Penalty value for starting new cluster
+     */
     mapperExtraClusterScore,
     /**
      * Reward for mapped seed, must be > 0
@@ -72,15 +52,45 @@ public final class KAlignerParameters2 implements BatchAlignerWithBaseParameters
      * Penalty for different offset between adjacent seeds, must be < 0
      */
     mapperOffsetShiftScore,
-
+    /**
+     * Number of simultaneously constructed clusters in one-pass initial cluster detection algorithm
+     */
     mapperSlotCount,
-
+    /**
+     * Max allowed clusters
+     */
     mapperMaxClusters,
-
+    /**
+     * Max indels inside a cluster (if indel is bigger, alignment will be divided into several clusters)
+     */
     mapperMaxClusterIndels,
-
+    /**
+     * If mapperKValue > 0, it is possible to map several seeds with holes in different places to the same position in
+     * target sequence.
+     *
+     * e.g.
+     *
+     * if mapperKValue = 1 and mapperNValue = 5
+     *
+     * there ara 5 different sets of KMers:
+     * X = must match; 0 = allow mismatch:
+     * 0XXXX
+     * X0XXX
+     * XX0XX
+     * XXX0X
+     * XXXX0
+     *
+     * and if mapperKMersPerPosition == 5 (which means: try to map all kMer variants listed above to each seed position
+     * in target sequence)
+     *
+     * mapping will be made even if 5-met in the target seed position has 1 substitution compared to database.
+     *
+     * Constraint: kMersPerPosition <= nValue / kValue
+     */
     mapperKMersPerPosition;
-
+    /**
+     * Minimal value of total mapping score (sum of cluster scores and mapperExtraClusterScore * (nClusters - 1))
+     */
     private int mapperAbsoluteMinScore;
     /**
      * Minimal allowed ratio between best hit score and other hits obtained by {@link
@@ -124,35 +134,6 @@ public final class KAlignerParameters2 implements BatchAlignerWithBaseParameters
     public KAlignerParameters2() {
     }
 
-    ///**
-    // * Creates new KAligner
-    // *
-    // * @param mapperKValue             length of k-mers (seeds) used by {@link com.milaboratory.core.alignment.KMapper}
-    // * @param floatingLeftBound        {@code true} if left bound of alignment could be floating
-    // * @param floatingRightBound       {@code true} if right bound of alignment could be floating
-    // * @param mapperAbsoluteMinScore   minimal allowed absolute hit score obtained by {@link com.milaboratory.core.alignment.KMapper}
-    // *                                 to consider hit as reliable candidate
-    // * @param mapperRelativeMinScore   minimal allowed ratio between best hit score and scores of other hits obtained by
-    // *                                 {@link com.milaboratory.core.alignment.KMapper} to consider hit as
-    // *                                 reliable candidate
-    // * @param mapperMatchScore         reward for successfully mapped seeds (used in {@link com.milaboratory.core.alignment.KMapper}),
-    // *                                 must be > 0
-    // * @param mapperMismatchScore    penalty for not mapped seed (used in {@link com.milaboratory.core.alignment.KMapper}),
-    // *                                 must be < 0
-    // * @param mapperOffsetShiftScore penalty for different offset between adjacent seeds (used in {@link
-    // *                                 com.milaboratory.core.alignment.KMapper}), must be < 0
-    // * @param mapperMinSeedsDistance   minimal distance between randomly chosen seeds during alignment in {@link
-    // *                                 com.milaboratory.core.alignment.KMapper}
-    // * @param mapperMaxSeedsDistance   maximal distance between randomly chosen seeds during alignment in {@link
-    // *                                 com.milaboratory.core.alignment.KMapper}
-    // * @param alignmentStopPenalty     penalty score defining when to stop alignment procedure performed by {@link
-    // *                                 KAlignmentHit#calculateAlignment()}
-    // * @param absoluteMinScore         minimal absolute score of a hit obtained by {@link com.milaboratory.core.alignment.KAligner}
-    // * @param relativeMinScore         maximal ratio between best hit score and scores of other hits obtained by {@link
-    // *                                 com.milaboratory.core.alignment.KAligner}
-    // * @param maxHits                  maximal number of hits stored by {@link com.milaboratory.core.alignment.KAlignmentResult}
-    // * @param scoring                  scoring system used for building alignments
-    // */
     public KAlignerParameters2(int mapperNValue, int mapperKValue, boolean floatingLeftBound, boolean floatingRightBound,
                                int mapperAbsoluteMinClusterScore, int mapperExtraClusterScore, int mapperAbsoluteMinScore, float mapperRelativeMinScore,
                                int mapperMatchScore, int mapperMismatchScore, int mapperOffsetShiftScore, int mapperMinSeedsDistance,
@@ -184,30 +165,7 @@ public final class KAlignerParameters2 implements BatchAlignerWithBaseParameters
         this.maxHits = maxHits;
         this.scoring = scoring;
     }
-
-
-//    /**
-//     * Returns parameters by specified preset name
-//     *
-//     * @param name parameters preset name
-//     * @return parameters with specified preset name
-//     */
-//    public static KAlignerParameters2 getByName(String name) {
-//        KAlignerParameters2 params = knownParameters.get(name);
-//        if (params == null)
-//            return null;
-//        return params.clone();
-//    }
-
-//    /**
-//     * Returns all available parameters presets
-//     *
-//     * @return all available parameters presets
-//     */
-//    public static Set<String> getAvailableNames() {
-//        return knownParameters.keySet();
-//    }
-
+    
     @Override
     public <P> KAligner2<P> createAligner() {
         return new KAligner2<>(this);
@@ -404,45 +362,102 @@ public final class KAlignerParameters2 implements BatchAlignerWithBaseParameters
         return this;
     }
 
-    //TODO
+    /**
+     * Number of simultaneously constructed clusters in one-pass initial cluster detection algorithm
+     */
     public int getMapperSlotCount() {
         return mapperSlotCount;
     }
 
-    //TODO
+    /**
+     * Number of simultaneously constructed clusters in one-pass initial cluster detection algorithm
+     */
     public KAlignerParameters2 setMapperSlotCount(int mapperSlotCount) {
         this.mapperSlotCount = mapperSlotCount;
         return this;
     }
 
-    //TODO
+    /**
+     * Max indels inside a cluster (if indel is bigger, alignment will be divided into several clusters)
+     */
     public int getMapperMaxClusterIndels() {
         return mapperMaxClusterIndels;
     }
 
-    //TODO
+    /**
+     * Max indels inside a cluster (if indel is bigger, alignment will be divided into several clusters)
+     */
     public KAlignerParameters2 setMapperMaxClusterIndels(int mapperMaxClusterIndels) {
         this.mapperMaxClusterIndels = mapperMaxClusterIndels;
         return this;
     }
 
-    //TODO
+    /**
+     * If mapperKValue > 0, it is possible to map several seeds with holes in different places to the same position in
+     * target sequence.
+     *
+     * e.g.
+     *
+     * if mapperKValue = 1 and mapperNValue = 5
+     *
+     * there ara 5 different sets of KMers:
+     * X = must match; 0 = allow mismatch:
+     * 0XXXX
+     * X0XXX
+     * XX0XX
+     * XXX0X
+     * XXXX0
+     *
+     * and if mapperKMersPerPosition == 5 (which means: try to map all kMer variants listed above to each seed position
+     * in target sequence)
+     *
+     * mapping will be made even if 5-met in the target seed position has 1 substitution compared to database.
+     *
+     * Constraint: kMersPerPosition <= nValue / kValue
+     */
+
     public int getMapperKMersPerPosition() {
         return mapperKMersPerPosition;
     }
 
-    //TODO
+    /**
+     * If mapperKValue > 0, it is possible to map several seeds with holes in different places to the same position in
+     * target sequence.
+     *
+     * e.g.
+     *
+     * if mapperKValue = 1 and mapperNValue = 5
+     *
+     * there ara 5 different sets of KMers:
+     * X = must match; 0 = allow mismatch:
+     * 0XXXX
+     * X0XXX
+     * XX0XX
+     * XXX0X
+     * XXXX0
+     *
+     * and if mapperKMersPerPosition == 5 (which means: try to map all kMer variants listed above to each seed position
+     * in target sequence)
+     *
+     * mapping will be made even if 5-met in the target seed position has 1 substitution compared to database.
+     *
+     * Constraint: kMersPerPosition <= nValue / kValue
+     */
     public KAlignerParameters2 setMapperKMersPerPosition(int mapperKMersPerPosition) {
         this.mapperKMersPerPosition = mapperKMersPerPosition;
         return this;
     }
 
-    //TODO
+    /**
+     * Max allowed clusters
+     */
     public int getMapperMaxClusters() {
         return mapperMaxClusters;
     }
 
-    //TODO
+    /**
+     * Max allowed clusters
+     */
     public KAlignerParameters2 setMapperMaxClusters(int mapperMaxClusters) {
         this.mapperMaxClusters = mapperMaxClusters;
         return this;
@@ -532,10 +547,16 @@ public final class KAlignerParameters2 implements BatchAlignerWithBaseParameters
         return this;
     }
 
+    /**
+     * Minimal value of total mapping score (sum of cluster scores and mapperExtraClusterScore * (nClusters - 1))
+     */
     public int getMapperAbsoluteMinScore() {
         return mapperAbsoluteMinScore;
     }
 
+    /**
+     * Minimal value of total mapping score (sum of cluster scores and mapperExtraClusterScore * (nClusters - 1))
+     */
     public KAlignerParameters2 setMapperAbsoluteMinScore(int mapperAbsoluteMinScore) {
         this.mapperAbsoluteMinScore = mapperAbsoluteMinScore;
         return this;
