@@ -4,9 +4,14 @@ import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.alignment.Alignment;
 import com.milaboratory.core.alignment.AlignmentUtils;
 import com.milaboratory.core.alignment.benchmark.*;
+import com.milaboratory.core.mutations.generator.MutationModels;
+import com.milaboratory.core.mutations.generator.MutationsGenerator;
+import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import com.milaboratory.util.GlobalObjectMappers;
+import com.milaboratory.util.RandomUtil;
+import org.apache.commons.math3.random.Well19937c;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -105,12 +110,74 @@ public class KAligner2Test {
                 result.getScoreErrorFraction() < 0.01);
     }
 
+    @Test
+    public void testBoundaries() throws Exception {
+        AffineGapAlignmentScoring<NucleotideSequence> scoring = IGBLAST_NUCLEOTIDE_SCORING;
+        int absoluteMinScore = IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
+        KAlignerParameters2 alParams = new KAlignerParameters2(9, 3,
+                true, true,
+                75, -50, 115, 0.87f, 45, -10, -15,
+                2, 5, 5, 3, 3, 3,
+                0, absoluteMinScore, 0.87f, 5,
+                scoring);
+        alParams.setMapperNValue(9);
+        alParams.setMapperKValue(1);
+        alParams.setMapperKMersPerPosition(9);
+        alParams.setMapperOffsetShiftScore(-22);
+        alParams.setMapperMaxSeedsDistance(4);
+        alParams.setMapperAbsoluteMinScore(100);
+        alParams.setFloatingLeftBound(true);
+        alParams.setAbsoluteMinScore(150);
+        alParams.setMaxHits(3);
+        alParams.setMapperMismatchScore(-36);
+        alParams.setMapperAbsoluteMinClusterScore(128);
+        alParams.setFloatingRightBound(true);
+        alParams.setMapperSlotCount(1);
+        alParams.setMapperMaxClusters(1);
+        alParams.setAlignmentStopPenalty(0);
+        alParams.setRelativeMinScore(0.8f);
+        alParams.setMapperExtraClusterScore(-78);
+        alParams.setMapperMatchScore(90);
+        alParams.setMapperRelativeMinScore(0.8f);
+        alParams.setMapperMaxClusterIndels(3);
+        alParams.setMapperMinSeedsDistance(4);
+
+        KAligner2<Integer> aligner = new KAligner2<Integer>(alParams);
+        aligner.addReference(new NucleotideSequence("TAGATCGATATCGTGCTCAGTAGTCGCTATATAGCTGTCGGTAGTATAGATGATGTGAAATCGTGCTGTCGTGCAT"));
+        aligner.addReference(new NucleotideSequence("TATGGGCGTAAGTGATGCTGCTGATGTAATCGCGCGCTAGAACCCCGATGTGTAGCTGCCACCGTACCCGATCCGTGACCCC"));
+        aligner.addReference(new NucleotideSequence("ATAGTTCGTCGATGGGTCGCTGCGGCGCAGCAGCGCATATACACAGCTAGCGA"));
+
+        NucleotideMutationModel model = MutationModels.getEmpiricalNucleotideMutationModel();
+
+        Well19937c r = RandomUtil.getThreadLocalRandom();
+
+        int checked = 0;
+        for (int i = 0; i < its(5000, 50000); i++) {
+            int n = r.nextInt(3);
+            NucleotideSequence ref = aligner.getReference(n);
+            int b = ref.size() / 3;
+            int from = r.nextInt(b);
+            int to = from + b + r.nextInt(b);
+            NucleotideSequence q = MutationsGenerator.generateMutations(ref, model).mutate(ref);
+            KAlignmentResult2<Integer> res = aligner.align(q, from, to);
+            for (KAlignmentHit2<Integer> hit2 : res.getHits()) {
+                Assert.assertTrue(hit2.getAlignment().getSequence2Range().getFrom() >= from);
+                Assert.assertTrue(hit2.getAlignment().getSequence2Range().getTo() <= to);
+                ++checked;
+            }
+        }
+
+        System.out.println(checked);
+    }
+
     static NucleotideSequence nt(String str) {
         return new NucleotideSequence(str.replace(" ", ""));
     }
 
     @Test
     public void testCase0() throws Exception {
+        // Tests no Assertion errors inside KAligner2/KMapper2 code
+
         KAlignerParameters2 parameters = GlobalObjectMappers.ONE_LINE.readValue("{\n" +
                 " \"type\" : \"kaligner2\",\n" +
                 " \"mapperNValue\" : 9,\n" +
@@ -153,6 +220,7 @@ public class KAligner2Test {
         System.out.println("False positive percent: " + result.getFalsePositiveFraction() * 100);
         System.out.println("Scoring error percent: " + result.getScoreErrorFraction() * 100);
     }
+
 
     //@Test
     //public void testSpeed1() throws Exception {
