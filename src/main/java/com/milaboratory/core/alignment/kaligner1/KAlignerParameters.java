@@ -422,6 +422,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
      *
      * @return scoring system
      */
+    @Override
     public LinearGapAlignmentScoring getScoring() {
         return scoring;
     }

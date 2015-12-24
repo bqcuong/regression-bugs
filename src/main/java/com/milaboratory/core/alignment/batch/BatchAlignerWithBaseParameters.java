@@ -18,6 +18,7 @@ package com.milaboratory.core.alignment.batch;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.milaboratory.core.alignment.AlignmentScoring;
 import com.milaboratory.core.alignment.kaligner1.KAlignerParameters;
 import com.milaboratory.core.alignment.kaligner2.KAlignerParameters2;
 import com.milaboratory.core.sequence.NucleotideSequence;
@@ -35,6 +36,8 @@ import com.milaboratory.primitivio.annotations.Serializable;
 @Serializable(asJson = true)
 public interface BatchAlignerWithBaseParameters {
     <P> BatchAlignerWithBase<NucleotideSequence, P, ? extends AlignmentHit<NucleotideSequence, P>> createAligner();
+
+    AlignmentScoring<NucleotideSequence> getScoring();
 
     BatchAlignerWithBaseParameters clone();
 }

@@ -132,7 +132,8 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
             int seedPosition1 = seedPosition2 + mappingHit.offsetById(0);
 
             length1 = seedPosition1;
-            length2 = seedPosition2;
+            length2 = seedPosition2 - from;
+            assert length2 >= 0;
 
             if (length1 >= length2) {
                 delta = Math.min(length1 - length2, maxIndels);
@@ -210,7 +211,7 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
             offset1 = previousSeedPosition1;
 
             length1 = target.size() - offset1;
-            length2 = query.size() - offset2;
+            length2 = to - offset2;
 
             if (length1 >= length2) {
                 delta = Math.min(length1 - length2, maxIndels);

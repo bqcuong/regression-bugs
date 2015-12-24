@@ -490,6 +490,7 @@ public final class KAlignerParameters2 implements BatchAlignerWithBaseParameters
      *
      * @return scoring system
      */
+    @Override
     public AffineGapAlignmentScoring<NucleotideSequence> getScoring() {
         return scoring;
     }
