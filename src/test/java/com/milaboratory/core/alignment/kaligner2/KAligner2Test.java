@@ -97,9 +97,12 @@ public class KAligner2Test {
         System.out.println("Bad percent: " + result.getBadFraction() * 100);
         System.out.println("False positive percent: " + result.getFalsePositiveFraction() * 100);
         System.out.println("Scoring error percent: " + result.getScoreErrorFraction() * 100);
-        Assert.assertTrue(result.getBadFraction() < 0.005);
-        Assert.assertTrue(result.getFalsePositiveFraction() < 0.01);
-        Assert.assertTrue(result.getScoreErrorFraction() < 0.01);
+        Assert.assertTrue("Bad fraction = " + result.getBadFraction(),
+                result.getBadFraction() < 0.005);
+        Assert.assertTrue("False positive fraction = " + result.getFalsePositiveFraction(),
+                result.getFalsePositiveFraction() < 0.01);
+        Assert.assertTrue("Score error fraction = " + result.getScoreErrorFraction(),
+                result.getScoreErrorFraction() < 0.01);
     }
 
     static NucleotideSequence nt(String str) {
