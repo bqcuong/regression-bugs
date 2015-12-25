@@ -719,7 +719,7 @@ public final class KMapper2 implements java.io.Serializable {
                 assert prevIndex - index - 1 >= 0;
 
                 // Detecting truncation point for by-position-in-target truncation
-                if(!byIndex && positionInTarget(seedPositions, data[i]) <= truncationPoint)
+                if (!byIndex && positionInTarget(seedPositions, data[i]) <= truncationPoint)
                     break;
 
                 // Score for this point
@@ -875,8 +875,11 @@ public final class KMapper2 implements java.io.Serializable {
             return null;
 
         final long[] forPreFiltering = new long[numberOfClusters];
-        for (int i = 0; i < numberOfClusters; i++)
-            forPreFiltering[i] = (i * OUTPUT_RECORD_SIZE) | (((long) (-results.get(i * OUTPUT_RECORD_SIZE + SCORE))) << 33);
+        int j = 0;
+        for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE)
+            if (results.get(i + FIRST_RECORD_ID) != DROPPED_CLUSTER)
+                forPreFiltering[j++] = i | (((long) (-results.get(i + SCORE))) << 33);
+        assert j == numberOfClusters;
         Arrays.sort(forPreFiltering);
 
         numberOfClusters = min(numberOfClusters, maxClusters);

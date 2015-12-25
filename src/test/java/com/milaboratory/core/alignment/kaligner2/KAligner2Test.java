@@ -221,6 +221,54 @@ public class KAligner2Test {
         System.out.println("Scoring error percent: " + result.getScoreErrorFraction() * 100);
     }
 
+    @Test
+    public void testCase1() throws Exception {
+        NucleotideSequence query = nt("TCCCTGAGACTCCCTGAGACTCTCCTGTGCAGCCTCTGGATTCACCTTCAGTAGCTATAGCATGAACTGGGTCCGCCAG" +
+                "GCTCCAGGGAAGGGGCTGGAGTGGGTCTCATCCATTAGTAGTAATAATAATTACATATACTACGCAGACTCAGTGAAGGGCCGATTCACCATCTCCAGAGA" +
+                "CAACGCCAAGAACTCACTGTATCTGCAAGACTCACTGTATCTGCAAATGAACAGCCTGAGAGCCGAGGACACGGCTGTGTATTATTGTGCGAGAGATACAG" +
+                "ATGGTATGGACGTCTGGGGCCAAGGGACCACGGTCACCGTCTCCTCAGGGAGTGCATCCGCCCCAACCCTTTTCCCCCTCTCTGCGTTGATACCACTGTGA" +
+                "TACCACT");
+        AffineGapAlignmentScoring<NucleotideSequence> scoring = IGBLAST_NUCLEOTIDE_SCORING;
+        int absoluteMinScore = IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
+        KAlignerParameters2 params = new KAlignerParameters2(9, 3,
+                true, true,
+                75, -50, 115, 0.87f, 45, -10, -15,
+                2, 5, 5, 3, 3, 3,
+                0, absoluteMinScore, 0.87f, 5,
+                scoring);
+        params.setMapperOffsetShiftScore(-78);
+        params.setMapperMaxSeedsDistance(3);
+        params.setMapperKValue(3);
+        params.setMapperAbsoluteMinScore(100);
+        params.setFloatingLeftBound(true);
+        params.setAbsoluteMinScore(150);
+        params.setMaxHits(3);
+        params.setMapperMismatchScore(-38);
+        params.setMapperAbsoluteMinClusterScore(41);
+        params.setFloatingRightBound(true);
+        params.setMapperSlotCount(4);
+        params.setMapperMaxClusters(6);
+        params.setMapperMatchScore(28);
+        params.setAlignmentStopPenalty(0);
+        params.setRelativeMinScore(0.8f);
+        params.setMapperExtraClusterScore(-3);
+        params.setMapperKMersPerPosition(2);
+        params.setMapperNValue(11);
+        params.setMapperRelativeMinScore(0.8f);
+        params.setMapperMaxClusterIndels(4);
+        params.setMapperMinSeedsDistance(2);
+
+        KAligner2<Integer> aligner = new KAligner2<>(params);
+        aligner.addReference(nt("GAGGTGCAGCTGGTGGAGTCTGGGGGAGGCCTGGTCAAGCCTGGGGGGTCCCTGAGACTCTCCTGTGCAGCCTCTGGATTCACCTTCAGTAGCTATAGCATGAACTGGGTCCGCCAGGCTCCAGGGAAGGGGCTGGAGTGGGTCTCATCCATTAGTAGTAGTAGTAGTTACATATACTACGCAGACTCAGTGAAGGGCCGATTCACCATCTCCAGAGACAACGCCAAGAACTCACTGTATCTGCAAATGAACAGCCTGAGAGCCGAGGACACGGCTGTGTATTACTGTGCGAGAGA"));
+
+        int correct = 0;
+        for (int i = 0; i < 100; i++) {
+            KAlignmentResult2<Integer> res = aligner.align(query);
+            if (res.getBestHit().alignment.getSequence2Range().getTo() == 276)
+                ++correct;
+        }
+        Assert.assertEquals(correct, 100);
+    }
 
     //@Test
     //public void testSpeed1() throws Exception {
