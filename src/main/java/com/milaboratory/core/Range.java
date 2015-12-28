@@ -15,6 +15,9 @@
  */
 package com.milaboratory.core;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.milaboratory.core.io.binary.RangeSerializer;
 import com.milaboratory.primitivio.annotations.Serializable;
 
@@ -26,14 +29,19 @@ import java.util.Comparator;
  *
  * <p><b>Main contract:</b> upper limit (with biggest value) is always exclusive, and lower is always inclusive.</p>
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
+        getterVisibility = JsonAutoDetect.Visibility.NONE)
 @Serializable(by = RangeSerializer.class)
 public final class Range implements java.io.Serializable {
     static final long serialVersionUID = 1L;
 
     private final int lower, upper;
     private final boolean reversed;
-
-    public Range(int lower, int upper, boolean reversed) {
+    
+    @JsonCreator
+    public Range(@JsonProperty("lower") int lower,
+                 @JsonProperty("upper") int upper,
+                 @JsonProperty("reversed") boolean reversed) {
         if (lower > upper)
             throw new IllegalArgumentException();
 

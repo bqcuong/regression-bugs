@@ -23,6 +23,8 @@ import com.milaboratory.core.io.util.IOTestUtil;
 import com.milaboratory.core.mutations.generator.MutationModels;
 import com.milaboratory.core.mutations.generator.MutationsGenerator;
 import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
+import com.milaboratory.core.sequence.Alphabet;
+import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import org.junit.Assert;
@@ -225,6 +227,15 @@ public class MutationsTest {
     }
 
     @Test
+    public void testEncodeDecode() throws Exception {
+        checkMutations("I2_", AminoAcidSequence.ALPHABET);
+    }
+
+    public static void checkMutations(String mutationsString, Alphabet<?> alphabet) {
+        assertEquals("Decode/Encode", mutationsString, decode(mutationsString, alphabet).encode());
+    }
+
+    @Test
     public void test1() throws Exception {
         MutationsBuilder<NucleotideSequence> builder = new MutationsBuilder<>(NucleotideSequence.ALPHABET);
         builder.appendDeletion(1, 2);
@@ -310,5 +321,18 @@ public class MutationsTest {
                 new Range(0, seq0.size()), 0.0f);
         System.out.println(mutsABnAB);
         System.out.println(alignment0.getAlignmentHelper());
+    }
+
+    @Test
+    public void testSerialize1() throws Exception {
+        NucleotideSequence seq1 = new NucleotideSequence("ATTAGACA"),
+                seq2 = new NucleotideSequence("CATTACCA"),
+                seq3 = new NucleotideSequence("CATAGCCA");
+
+        Mutations<NucleotideSequence> m1 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq1, seq2).getAbsoluteMutations(),
+                m2 = Aligner.alignGlobal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(), seq2, seq3).getAbsoluteMutations();
+
+        TestUtil.assertJson(m1);
+        TestUtil.assertJson(m2);
     }
 }

@@ -15,6 +15,9 @@
  */
 package com.milaboratory.core.mutations;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.milaboratory.core.Range;
 import com.milaboratory.core.sequence.*;
 import com.milaboratory.primitivio.annotations.Serializable;
@@ -28,6 +31,8 @@ import static com.milaboratory.core.mutations.Mutation.*;
  * @author Dmitry Bolotin
  * @author Stanislav Poslavsky
  */
+@JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.NONE, isGetterVisibility = JsonAutoDetect.Visibility.NONE,
+        getterVisibility = JsonAutoDetect.Visibility.NONE)
 @Serializable(by = IO.MutationsSerializer.class)
 public final class Mutations<S extends Sequence<S>>
         implements java.io.Serializable {
@@ -36,6 +41,12 @@ public final class Mutations<S extends Sequence<S>>
 
     public Mutations(Alphabet<S> alphabet, IntArrayList mutations) {
         this(alphabet, mutations.toArray(), true);
+    }
+
+    @JsonCreator
+    public Mutations(@JsonProperty("alphabet") Alphabet<S> alphabet,
+                     @JsonProperty("mutations") String encodedMutations) {
+        this(alphabet, MutationsUtil.decode(encodedMutations, alphabet), true);
     }
 
     public Mutations(Alphabet<S> alphabet, int... mutations) {
@@ -56,11 +67,16 @@ public final class Mutations<S extends Sequence<S>>
         return mutations.length;
     }
 
+    @JsonProperty("alphabet")
+    public Alphabet<S> getAlphabet() {
+        return alphabet;
+    }
+
     public int getMutation(int index) {
         return mutations[index];
     }
 
-    public int[] getAllMutations() {
+    public int[] getRAWMutations() {
         return mutations.clone();
     }
 
@@ -583,12 +599,21 @@ public final class Mutations<S extends Sequence<S>>
         return builder.toString();
     }
 
+    @JsonProperty("mutations")
     public String encode() {
         return MutationsUtil.encode(mutations, alphabet);
     }
 
     public String encodeFixed() {
         return MutationsUtil.encodeFixed(mutations, alphabet);
+    }
+
+    public static Mutations<NucleotideSequence> decodeNuc(String string) {
+        return decode(string, NucleotideSequence.ALPHABET);
+    }
+
+    public static Mutations<AminoAcidSequence> decodeAA(String string) {
+        return decode(string, AminoAcidSequence.ALPHABET);
     }
 
     public static <S extends Sequence<S>> Mutations<S> decode(String string, Alphabet<S> alphabet) {

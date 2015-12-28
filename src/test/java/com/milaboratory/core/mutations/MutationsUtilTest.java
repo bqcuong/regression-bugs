@@ -26,6 +26,8 @@ import org.junit.Test;
 
 import static com.milaboratory.core.mutations.MutationsUtil.btopDecode;
 import static com.milaboratory.core.mutations.MutationsUtil.nt2aa;
+import static com.milaboratory.core.sequence.TranslationParameters.FromLeftWithIncompleteCodon;
+import static com.milaboratory.core.sequence.TranslationParameters.FromRightWithIncompleteCodon;
 
 /**
  * @author Dmitry Bolotin
@@ -102,61 +104,148 @@ public class MutationsUtilTest {
             NucleotideSequence.ALPHABET, 1, -3, -5, -2);
 
     @Test
-    public void testNT2AA() throws Exception {
+    public void testNT2AA1() throws Exception {
         //                                                   F  R  H  R  L  Q
         NucleotideSequence ntSeq1 = new NucleotideSequence("TTTAGACACAGATTGCAA");
 
-        //                                                   F  Shift..
-        NucleotideSequence ntSeq2 = new NucleotideSequence("TTTAGCACAGATCGCAG");
-        nt2aaAssert(ntSeq1, ntSeq2, null);
+        NucleotideSequence ntSeq2;
+
+        //                                F  Shift..
+        ntSeq2 = new NucleotideSequence("TTTAGCACAGATCGCAG");
+        nt2aaAssert(ntSeq1, ntSeq2, null, FromLeftWithIncompleteCodon);
 
         //                                F  R  R  S  Q
         ntSeq2 = new NucleotideSequence("TTTAGAAGATCGCAG");
-        nt2aaAssert(ntSeq1, ntSeq2, "DH2 SL4S");
+        nt2aaAssert(ntSeq1, ntSeq2, "DH2 SL4S", FromLeftWithIncompleteCodon);
 
         //                                F  R  H  R  L  Q
         ntSeq2 = new NucleotideSequence("TTTAGACACAGATCGCAG");
-        nt2aaAssert(ntSeq1, ntSeq2, "SL4S");
+        nt2aaAssert(ntSeq1, ntSeq2, "SL4S", FromLeftWithIncompleteCodon);
 
         //                                F  R  H  R  L
         ntSeq2 = new NucleotideSequence("TTTAGACACAGATTG");
-        nt2aaAssert(ntSeq1, ntSeq2, "DQ5");
+        nt2aaAssert(ntSeq1, ntSeq2, "DQ5", FromLeftWithIncompleteCodon);
 
         //                                R  H  R  L
         ntSeq2 = new NucleotideSequence("AGACACAGATTG");
-        nt2aaAssert(ntSeq1, ntSeq2, "DF0 DQ5");
+        nt2aaAssert(ntSeq1, ntSeq2, "DF0 DQ5", FromLeftWithIncompleteCodon);
 
         //                                *  H  R  L
         ntSeq2 = new NucleotideSequence("TGACACAGATTG");
-        nt2aaAssert(ntSeq1, ntSeq2, "SF0* DR1 DQ5");
+        nt2aaAssert(ntSeq1, ntSeq2, "SF0* DR1 DQ5", FromLeftWithIncompleteCodon);
 
         //                                R  H  L  R  L
         ntSeq2 = new NucleotideSequence("AGACACTTGAGATTG");
-        nt2aaAssert(ntSeq1, ntSeq2, "DF0 I3L DQ5");
+        nt2aaAssert(ntSeq1, ntSeq2, "DF0 I3L DQ5", FromLeftWithIncompleteCodon);
 
         //                                F  R  H  R  L  Q
         ntSeq2 = new NucleotideSequence("TTTAGACACCGTTTGCAG");
-        nt2aaAssert(ntSeq1, ntSeq2, "");
+        nt2aaAssert(ntSeq1, ntSeq2, "", FromLeftWithIncompleteCodon);
 
         //                                F  R  H  R  L
         ntSeq2 = new NucleotideSequence("TTTAGACACCGTTTA");
-        nt2aaAssert(ntSeq1, ntSeq2, "DQ5");
+        nt2aaAssert(ntSeq1, ntSeq2, "DQ5", FromLeftWithIncompleteCodon);
+
+        //                                F  R  H  R  L  Q  F
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATTGCAATTT");
+        nt2aaAssert(ntSeq1, ntSeq2, "I6F", FromLeftWithIncompleteCodon);
+
+        //                                F  R  H  R  L  Q  _
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATTGCAATT");
+        nt2aaAssert(ntSeq1, ntSeq2, "I6_", FromLeftWithIncompleteCodon);
+
+        //                                F  R  H  R  L  _
+        ntSeq1 = new NucleotideSequence("TTTAGACACAGATTGCA");
+        //                                F  R  H  R  L  Q
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATTGCAA");
+        nt2aaAssert(ntSeq1, ntSeq2, "S_5Q", FromLeftWithIncompleteCodon);
+    }
+
+    @Test
+    public void testNT2AA2() throws Exception {
+        //                                                   F  R  H  R  L  Q
+        NucleotideSequence ntSeq1 = new NucleotideSequence("TTTAGACACAGATTGCAA");
+
+        NucleotideSequence ntSeq2;
+
+        //                                 Shift..
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATGCAA");
+        nt2aaAssert(ntSeq1, ntSeq2, null, FromRightWithIncompleteCodon);
+
+        //                                F  R  R  S  Q
+        ntSeq2 = new NucleotideSequence("TTTAGAAGATCGCAG");
+        nt2aaAssert(ntSeq1, ntSeq2, "DH2 SL4S", FromRightWithIncompleteCodon);
+
+        //                                F  R  H  R  L  Q
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATCGCAG");
+        nt2aaAssert(ntSeq1, ntSeq2, "SL4S", FromRightWithIncompleteCodon);
+
+        //                                F  R  H  R  L
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATTG");
+        nt2aaAssert(ntSeq1, ntSeq2, "DQ5", FromRightWithIncompleteCodon);
+
+        //                                R  H  R  L
+        ntSeq2 = new NucleotideSequence("AGACACAGATTG");
+        nt2aaAssert(ntSeq1, ntSeq2, "DF0 DQ5", FromRightWithIncompleteCodon);
+
+        //                                *  H  R  L
+        ntSeq2 = new NucleotideSequence("TGACACAGATTG");
+        nt2aaAssert(ntSeq1, ntSeq2, "SF0* DR1 DQ5", FromRightWithIncompleteCodon);
+
+        //                                R  H  L  R  L
+        ntSeq2 = new NucleotideSequence("AGACACTTGAGATTG");
+        nt2aaAssert(ntSeq1, ntSeq2, "DF0 I3L DQ5", FromRightWithIncompleteCodon);
+
+        //                                F  R  H  R  L  Q
+        ntSeq2 = new NucleotideSequence("TTTAGACACCGTTTGCAG");
+        nt2aaAssert(ntSeq1, ntSeq2, "", FromRightWithIncompleteCodon);
+
+        //                                F  R  H  R  L
+        ntSeq2 = new NucleotideSequence("TTTAGACACCGTTTA");
+        nt2aaAssert(ntSeq1, ntSeq2, "DQ5", FromRightWithIncompleteCodon);
+
+        //                                F  R  H  R  L  Q  F
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATTGCAATTT");
+        nt2aaAssert(ntSeq1, ntSeq2, "I6F", FromRightWithIncompleteCodon);
+
+        //                               _  F  R  H  R  L  Q
+        ntSeq2 = new NucleotideSequence("AATTTAGACACAGATTGCAA");
+        nt2aaAssert(ntSeq1, ntSeq2, "I0_", FromRightWithIncompleteCodon);
+
+        //                               _  F  R  H  R  L  Q
+        ntSeq2 = new NucleotideSequence("TTTTTAGACACAGATTGCAA");
+        nt2aaAssert(ntSeq1, ntSeq2, "I0_", FromRightWithIncompleteCodon);
+
+        //
+        //                               _  F  R  H  R  L  Q
+        ntSeq1 = new NucleotideSequence("AATTTAGACACAGATTGCAA");
+        //                                F  R  H  R  L  Q
+        ntSeq2 = new NucleotideSequence("TTTAGACACAGATTGCAA");
+        nt2aaAssert(ntSeq1, ntSeq2, "D_0", FromRightWithIncompleteCodon);
     }
 
     private void nt2aaAssert(NucleotideSequence ntSeq1, NucleotideSequence ntSeq2,
-                             String expectedMutations) {
-        Alignment<NucleotideSequence> al = Aligner.alignGlobal(SCORE_NT2AA, ntSeq1, ntSeq2);
-        //System.out.println(al.getAlignmentHelper());
-        AminoAcidSequence aaSeq1 = AminoAcidSequence.translateFromLeft(ntSeq1);
-        AminoAcidSequence aaSeq2 = AminoAcidSequence.translateFromLeft(ntSeq2);
-        //System.out.println(aaSeq2);
-        Mutations<AminoAcidSequence> aaMutations = nt2aa(ntSeq1, al.getAbsoluteMutations(), 3);
-        if (expectedMutations != null) {
-            Mutations<AminoAcidSequence> expectedMutationsM = Mutations.decode(expectedMutations, AminoAcidSequence.ALPHABET);
-            Assert.assertEquals("Checking assert input.", aaSeq2, aaMutations.mutate(aaSeq1));
-            Assert.assertEquals("Actual assert.", expectedMutationsM, aaMutations);
-        } else {
-            Assert.assertNull(aaMutations);
+                             String expectedMutations, TranslationParameters tt) {
+        Alignment<NucleotideSequence> al = null;
+        AminoAcidSequence aaSeq1 = null, aaSeq2 = null;
+        try {
+            al = Aligner.alignGlobal(SCORE_NT2AA, ntSeq1, ntSeq2);
+
+            aaSeq1 = AminoAcidSequence.translate(ntSeq1, tt);
+            aaSeq2 = AminoAcidSequence.translate(ntSeq2, tt);
+
+            Mutations<AminoAcidSequence> aaMutations = nt2aa(ntSeq1, al.getAbsoluteMutations(), tt, 2);
+            if (expectedMutations != null) {
+                Mutations<AminoAcidSequence> expectedMutationsM = Mutations.decode(expectedMutations, AminoAcidSequence.ALPHABET);
+                Assert.assertEquals("Checking assert input.", aaSeq2, expectedMutationsM.mutate(aaSeq1));
+                Assert.assertEquals("Actual assert.", expectedMutationsM, aaMutations);
+            } else {
+                Assert.assertNull(aaMutations);
+            }
+        } catch (Throwable e) {
+            System.out.println(al.getAlignmentHelper());
+            System.out.println(aaSeq2);
+            throw e;
         }
     }
 

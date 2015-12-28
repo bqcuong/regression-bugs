@@ -34,6 +34,11 @@ public final class AlignmentHelper implements java.io.Serializable {
     }
 
     public AlignmentHelper(String seq1String, String seq2String, int[] seq1Position, int[] seq2Position, BitArray match, int offset) {
+        if (seq1Position.length == 0)
+            seq1Position = new int[1];
+        if (seq2Position.length == 0)
+            seq2Position = new int[1];
+
         this.seq1String = seq1String;
         this.seq2String = seq2String;
         this.seq1Position = seq1Position;

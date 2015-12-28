@@ -22,8 +22,12 @@ public final class StringUtil {
     }
 
     public static String spaces(int n) {
+        return chars(' ', n);
+    }
+
+    public static String chars(char cc, int n) {
         char[] c = new char[n];
-        Arrays.fill(c, ' ');
+        Arrays.fill(c, cc);
         return String.valueOf(c);
     }
 }
