@@ -270,6 +270,107 @@ public class KAligner2Test {
         Assert.assertEquals(correct, 100);
     }
 
+    @Test
+    public void testCase2() throws Exception {
+        NucleotideSequence query = nt("TCTGAGAGAGGAGCCTTTCTGAGAGAGGAGCCTTAGCCCTGGATTCCAAGGCCTATCCACTTGGTGATCAGCACTGAGCACCGAGGATTCACCATGGAACTGGGGCTCCGCTGGGTTTTCCTTGTTGCTATTTTAGAAGGTGTCCAGTGTGAGGTGCAGCTGGTGGAGTCTGGGGGAGGCCTGGTCAAGCCTGGGGGGTCCCTGAGACTCTCCTGTGTAGCCTCTGGATTCACCTTCAGTAGCTATAGCATGAACTGGGTCGGCCAGGCTGCGGGGAAGGGGGTGGATTGGGTCTCATCCATTAGTAGTAAAAATAATTACATATACTACACAGACTCAGTGAAGGGCCGATTCACCAACTCCAGAGACAACGCCAAGAACTCACTGTATCTGGAAGACAAACTGTATCTACAAATGAACAGACTTAGAGCTGAGGACACGGCTGTGTATTATTGTGCGAGAGATATAGATGGTATGGACGACTGGGGCCAAGGGACCATGGTCACAGTGTCCTCAGGGAGTGCATCCGTCCCAACCCTTTTCCCCCTCACTGCGTTGATACCACTGTGAGTTGATACCACTG");
+        AffineGapAlignmentScoring<NucleotideSequence> scoring = IGBLAST_NUCLEOTIDE_SCORING;
+        int absoluteMinScore = IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
+        KAlignerParameters2 params = new KAlignerParameters2(9, 3,
+                true, true,
+                75, -50, 115, 0.87f, 45, -10, -15,
+                2, 5, 5, 3, 3, 3,
+                0, absoluteMinScore, 0.87f, 5,
+                scoring);
+        params.setMapperOffsetShiftScore(-91);
+        params.setMapperMaxSeedsDistance(5);
+        params.setMapperKValue(0);
+        params.setMapperAbsoluteMinScore(100);
+        params.setFloatingLeftBound(true);
+        params.setAbsoluteMinScore(150);
+        params.setMaxHits(3);
+        params.setMapperMismatchScore(-8);
+        params.setMapperAbsoluteMinClusterScore(118);
+        params.setFloatingRightBound(true);
+        params.setMapperSlotCount(6);
+        params.setMapperMaxClusters(3);
+        params.setMapperMatchScore(71);
+        params.setAlignmentStopPenalty(0);
+        params.setRelativeMinScore(0.8f);
+        params.setMapperExtraClusterScore(-38);
+        params.setMapperKMersPerPosition(1);
+        params.setMapperNValue(8);
+        params.setMapperRelativeMinScore(0.8f);
+        params.setMapperMaxClusterIndels(4);
+        params.setMapperMinSeedsDistance(3);
+
+        System.out.println(GlobalObjectMappers.PRETTY.writeValueAsString(params));
+
+        KAligner2<Integer> aligner = new KAligner2<>(params);
+        aligner.addReference(nt("GAGGTGCAGCTGGTGGAGTCTGGGGGAGGCCTGGTCAAGCCTGGGGGGTCCCTGAGACTCTCCTGTGCAGCCTCTGGATTCACCTTCAGTAGCTATAGCATGAACTGGGTCCGCCAGGCTCCAGGGAAGGGGCTGGAGTGGGTCTCATCCATTAGTAGTAGTAGTAGTTACATATACTACGCAGACTCAGTGAAGGGCCGATTCACCATCTCCAGAGACAACGCCAAGAACTCACTGTATCTGCAAATGAACAGCCTGAGAGCCGAGGACACGGCTGTGTATTACTGTGCGAGAGA"));
+
+        int correct = 0;
+        for (int i = 0; i < 100; i++) {
+            //System.out.println(RandomUtil.reseedThreadLocal(-983489203720096202L));
+            KAlignmentResult2<Integer> res = aligner.align(query);
+            if (res.getBestHit().alignment.getSequence2Range().getTo() == 464)
+                ++correct;
+            //System.out.println(res.getBestHit().alignment.getAlignmentHelper());
+        }
+        Assert.assertEquals(correct, 100);
+    }
+
+    @Test
+    public void testCase3() throws Exception {
+        NucleotideSequence query = nt("TCTGAGAGAGGAGCCTTTCTGAGAGAGGAGCCTTAGCCCTGGATTCCAAGGCCTATCCACTTGGTGATCAGCACTGAGCACCGAGGATTCACCATGGAACTGGGGCTCCGCTGGGTTTTCCTTGTTGCTATTTTAGAAGGTGTCCAGTGTGAGGTGCAGCTGGTGGAGTCTGGGGGAGGCCTGGTCAAGCCTGGGGGGTCCCTGAGACTCTCCTGTGTAGCCTCTGGATTCACCTTCAGTAGCTATAGCATGAACTGGGTCGGCCAGGCTGCGGGGAAGGGGGTGGATTGGGTCTCATCCATTAGTAGTAAAAATAATTACATATACTACACAGACTCAGTGAAGGGCCGATTCACCAACTCCAGAGACAACGCCAAGAACTCACTGTATCTGGAAGACAAACTGTATCTACAAATGAACAGACTTAGAGCTGAGGACACGGCTGTGTATTATTGTGCGAGAGATATAGATGGTATGGACGACTGGGGCCAAGGGACCATGGTCACAGTGTCCTCAGGGAGTGCATCCGTCCCAACCCTTTTCCCCCTCACTGCGTTGATACCACTGTGAGTTGATACCACTG");
+        AffineGapAlignmentScoring<NucleotideSequence> scoring = IGBLAST_NUCLEOTIDE_SCORING;
+        int absoluteMinScore = IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
+        KAlignerParameters2 params = new KAlignerParameters2(9, 3,
+                true, true,
+                75, -50, 115, 0.87f, 45, -10, -15,
+                2, 5, 5, 3, 3, 3,
+                0, absoluteMinScore, 0.87f, 5,
+                scoring);
+        params.setMapperOffsetShiftScore(-82);
+        params.setMapperMaxSeedsDistance(5);
+        params.setMapperKValue(0);
+        params.setMapperAbsoluteMinScore(100);
+        params.setFloatingLeftBound(true);
+        params.setAbsoluteMinScore(150);
+        params.setMaxHits(3);
+        params.setMapperMismatchScore(-14);
+        params.setMapperAbsoluteMinClusterScore(102);
+        params.setFloatingRightBound(true);
+        params.setMapperSlotCount(6);
+        params.setMapperMaxClusters(4);
+        params.setMapperMatchScore(95);
+        params.setAlignmentStopPenalty(0);
+        params.setRelativeMinScore(0.8f);
+        params.setMapperExtraClusterScore(-38);
+        params.setMapperKMersPerPosition(1);
+        params.setMapperNValue(8);
+        params.setMapperRelativeMinScore(0.8f);
+        params.setMapperMaxClusterIndels(4);
+        params.setMapperMinSeedsDistance(5);
+
+        //System.out.println(GlobalObjectMappers.PRETTY.writeValueAsString(params));
+
+        KAligner2<Integer> aligner = new KAligner2<>(params);
+        aligner.addReference(nt("GAGGTGCAGCTGGTGGAGTCTGGGGGAGGCCTGGTCAAGCCTGGGGGGTCCCTGAGACTCTCCTGTGCAGCCTCTGGATTCACCTTCAGTAGCTATAGCATGAACTGGGTCCGCCAGGCTCCAGGGAAGGGGCTGGAGTGGGTCTCATCCATTAGTAGTAGTAGTAGTTACATATACTACGCAGACTCAGTGAAGGGCCGATTCACCATCTCCAGAGACAACGCCAAGAACTCACTGTATCTGCAAATGAACAGCCTGAGAGCCGAGGACACGGCTGTGTATTACTGTGCGAGAGA"));
+
+        //Alignment<NucleotideSequence> al = Aligner.alignLocalAffine(scoring, aligner.getReference(0), query);
+        //System.out.println(al.getAlignmentHelper());
+
+        int correct = 0;
+        for (int i = 0; i < 100; i++) {
+            //System.out.println(RandomUtil.reseedThreadLocal(-983489203720096202L));
+            KAlignmentResult2<Integer> res = aligner.align(query);
+            if (res.getBestHit().alignment.getSequence2Range().getTo() == 464)
+                ++correct;
+            //System.out.println(res.getBestHit().alignment.getAlignmentHelper());
+        }
+        Assert.assertEquals(correct, 100);
+    }
+
     //@Test
     //public void testSpeed1() throws Exception {
     //    new BufferedReader(new InputStreamReader(System.in)).readLine();

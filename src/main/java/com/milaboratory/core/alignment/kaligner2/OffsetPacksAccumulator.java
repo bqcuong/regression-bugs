@@ -274,8 +274,22 @@ public final class OffsetPacksAccumulator {
             sb.append(k++ + "th cloud:\n")
                     .append("  first record id:").append(results.get(i + FIRST_RECORD_ID)).append("\n")
                     .append("  last record id:").append(results.get(i + LAST_RECORD_ID)).append("\n")
-//                    .append("  minimal index:").append(results.get(i + MIN_VALUE)).append("\n")
-//                    .append("  maximal index:").append(results.get(i + MAX_VALUE)).append("\n")
+                    .append("  score:").append(results.get(i + SCORE)).append("\n\n");
+        }
+
+        return sb.toString();
+    }
+
+    public static String toString(IntArrayList results, IntArrayList seedPositions, int[] data) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Number of clusters: ").append(results.size() / OUTPUT_RECORD_SIZE).append("\n\n");
+        int k = 0;
+        for (int i = 0; i < results.size(); i += OUTPUT_RECORD_SIZE) {
+            int firstRID = results.get(i + FIRST_RECORD_ID);
+            int lastRID = results.get(i + LAST_RECORD_ID);
+            sb.append(k++ + "th cloud:\n")
+                    .append("  first record id:").append(firstRID).append(" (").append(recordToString(data[firstRID], seedPositions)).append(")\n")
+                    .append("  last record id:").append(lastRID).append(" (").append(recordToString(data[lastRID], seedPositions)).append(")\n")
                     .append("  score:").append(results.get(i + SCORE)).append("\n\n");
         }
 

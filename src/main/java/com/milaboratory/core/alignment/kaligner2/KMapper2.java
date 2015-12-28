@@ -1096,6 +1096,10 @@ public final class KMapper2 implements java.io.Serializable {
         return (offset << bitsForIndex) | index;
     }
 
+    static String recordToString(int record, IntArrayList seedPositions) {
+        return "O=" + offset(record) + " Q" + seedPositions.get(index(record)) + "->T" + positionInTarget(seedPositions, record);
+    }
+
     static boolean inDelta(final int a, final int b, final int maxAllowedDelta) {
         int diff = a - b;
         return -maxAllowedDelta <= diff && diff <= maxAllowedDelta;
