@@ -1017,6 +1017,15 @@ public final class KMapper2 implements java.io.Serializable {
             score += clusterScore;
         }
 
+        if (floatingLeftBound)
+            score -= index(seedRecords.get(0)) * mismatchScore;
+
+        if (floatingRightBound)
+            score -= (seedPositions.size() - 1 - index(seedRecords.last())) * mismatchScore;
+
+        if (score < absoluteMinScore)
+            return null;
+
         return new KMappingHit2(id, seedRecords.toArray(), packBoundaries.toArray(), score);
     }
 

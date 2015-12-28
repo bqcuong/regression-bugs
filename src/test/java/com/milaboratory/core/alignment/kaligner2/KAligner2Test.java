@@ -222,6 +222,57 @@ public class KAligner2Test {
     }
 
     @Test
+    public void testFloatingBounds() throws Exception {
+        NucleotideSequence query = nt("TCCCTGAGACTCCCTGAGACTCTCCTGTGCAGCCTCTGGATTCACCTTCAGTAGCTATAGCATGAACTGGGTCCGCCAG" +
+                "GCTCCAGGGAAGGGGCTGGAGTGGGTCTCATCCATTAGTAGTAATAATAATTACATATACTACGCAGACTCAGTGAAGGGCCGATTCACCATCTCCAGAGA" +
+                "CAACGCCAAGAACTCACTGTATCTGCAAGACTCACTGTATCTGCAAATGAACAGCCTGAGAGCCGAGGACACGGCTGTGTATTATTGTGCGAGAGATACAG" +
+                "ATGGTATGGACGTCTGGGGCCAAGGGACCACGGTCACCGTCTCCTCAGGGAGTGCATCCGCCCCAACCCTTTTCCCCCTCTCTGCGTTGATACCACTGTGA" +
+                "TACCACT");
+        AffineGapAlignmentScoring<NucleotideSequence> scoring = IGBLAST_NUCLEOTIDE_SCORING;
+        int absoluteMinScore = IGBLAST_NUCLEOTIDE_SCORING_THRESHOLD;
+        KAlignerParameters2 params = new KAlignerParameters2(9, 3,
+                true, true,
+                75, -50, 115, 0.87f, 45, -10, -15,
+                2, 5, 5, 3, 3, 3,
+                0, absoluteMinScore, 0.87f, 5,
+                scoring);
+        params.setMapperOffsetShiftScore(-78);
+        params.setMapperMaxSeedsDistance(3);
+        params.setMapperKValue(3);
+        params.setMapperAbsoluteMinScore(100);
+        params.setFloatingLeftBound(true);
+        params.setAbsoluteMinScore(150);
+        params.setMaxHits(3);
+        params.setMapperMismatchScore(-38);
+        params.setMapperAbsoluteMinClusterScore(41);
+        params.setFloatingRightBound(true);
+        params.setMapperSlotCount(4);
+        params.setMapperMaxClusters(6);
+        params.setMapperMatchScore(28);
+        params.setAlignmentStopPenalty(0);
+        params.setRelativeMinScore(0.8f);
+        params.setMapperExtraClusterScore(-3);
+        params.setMapperKMersPerPosition(2);
+        params.setMapperNValue(11);
+        params.setMapperRelativeMinScore(0.8f);
+        params.setMapperMaxClusterIndels(4);
+        params.setMapperMinSeedsDistance(2);
+
+        params.setFloatingLeftBound(false);
+        params.setFloatingRightBound(false);
+
+        KAligner2<Integer> aligner = new KAligner2<>(params);
+        aligner.addReference(nt("GAGGTGCAGCTGGTGGAGTCTGGGGGAGGCCTGGTCAAGCCTGGGGGGTCCCTGAGACTCTCCTGTGCAGCCTCTGGATTCACCT" +
+                "TCAGTAGCTATAGCATGAACTGGGTCCGCCAGGCTCCAGGGAAGGGGCTGGAGTGGGTCTCATCCATTAGTAGTAGTAGTAGTTACATATACTACGCAGAC" +
+                "TCAGTGAAGGGCCGATTCACCATCTCCAGAGACAACGCCAAGAACTCACTGTATCTGCAAATGAACAGCCTGAGAGCCGAGGACACGGCTGTGTATTACTG" +
+                "TGCGAGAGATTATATGCGTCGTAGCTCGACGATC"));
+
+        KAlignmentResult2<Integer> res = aligner.align(query);
+        Assert.assertEquals(0, res.getBestHit().getAlignment().getSequence2Range().getFrom());
+        Assert.assertEquals(aligner.getReference(0).size(), res.getBestHit().getAlignment().getSequence1Range().getTo());
+    }
+
+    @Test
     public void testCase1() throws Exception {
         NucleotideSequence query = nt("TCCCTGAGACTCCCTGAGACTCTCCTGTGCAGCCTCTGGATTCACCTTCAGTAGCTATAGCATGAACTGGGTCCGCCAG" +
                 "GCTCCAGGGAAGGGGCTGGAGTGGGTCTCATCCATTAGTAGTAATAATAATTACATATACTACGCAGACTCAGTGAAGGGCCGATTCACCATCTCCAGAGA" +

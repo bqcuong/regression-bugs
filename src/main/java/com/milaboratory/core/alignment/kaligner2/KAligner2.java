@@ -273,6 +273,7 @@ public class KAligner2<P> implements BatchAlignerWithBase<NucleotideSequence, P,
             return Double.compare(o2.alignment.getScore(), o1.alignment.getScore());
         }
     };
+
     //@Override
     //public <Q> OutputPort<? extends PipedAlignmentResult<KAlignmentHit2<P>, Q>> align(OutputPort<Q> input, SequenceExtractor<Q, NucleotideSequence> extractor) {
     //    return null;
