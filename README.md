@@ -122,8 +122,8 @@ as well as the section in this README called "Preparing JSP Files for Scanning".
 Download source code from release page or clone directly with git.
 To compile you need java 7 and maven.
 
-Run mvn
-
+	git clone https://github.com/albfernandez/GDS-PMD-Security-Rules.git
+	cd GDS-PMD-Security-Rules/	
 	mvn package
 
 The resulting jar is target/pmd-gds-2.x.x.jar
@@ -136,6 +136,6 @@ Therefore, GDS Secure Coding Ruleset is not officially supported in Eclipse at t
 GDS PMD Secure Coding Ruleset is released under the Reciprocal Public License 1.5 (RPL1.5)
 http://www.opensource.org/licenses/rpl1.5
 
-(C) Copyright 2014-2015 Alberto Fernández 
+(C) Copyright 2014-2016 Alberto Fernández 
 
 (C) Copyright 2012 Gotham Digital Science, LLC -- All Rights Reserved 
