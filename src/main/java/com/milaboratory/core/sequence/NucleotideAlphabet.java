@@ -167,6 +167,19 @@ public final class NucleotideAlphabet extends AbstractArrayAlphabet<NucleotideSe
     public static final Wildcard V_WILDCARD = new Wildcard('V', V, new byte[]{A, C, G});
 
     /**
+     * All wildcards array. Each wildcard has index equals to its code.
+     */
+    private static final Wildcard[] WILDCARDS;
+    /**
+     * COMPLEMENT_CODE[c] = complement code of c
+     */
+    private static final byte[] COMPLEMENT_CODE;
+    /**
+     * COMPLEMENT_CODE[c] = complement wildcard for wildcard with code c
+     */
+    private static final Wildcard[] COMPLEMENT_WILDCARD;
+
+    /**
      * Singleton instance.
      */
     final static NucleotideAlphabet INSTANCE = new NucleotideAlphabet();
@@ -183,16 +196,43 @@ public final class NucleotideAlphabet extends AbstractArrayAlphabet<NucleotideSe
     }
 
     /**
-     * Returns a complement nucleotide.
+     * Returns a complementary nucleotide code.
      *
-     * @param nucleotide byte value of nucleotide
-     * @return complement nucleotide to the specified one
+     * @param code byte code of nucleotide
+     * @return complementary nucleotide code
      */
-    public static byte getComplement(byte nucleotide) {
-        if (nucleotide < 4)
-            return (byte) (nucleotide ^ 3);
-        else
-            throw new UnsupportedOperationException("Not implemeted yet.");
+    public static byte complementCode(byte code) {
+        return COMPLEMENT_CODE[code];
+    }
+
+    /**
+     * Returns a complementary nucleotide code.
+     *
+     * @param wildcard wildcard to convert to complementary code
+     * @return complementary nucleotide code
+     */
+    public static byte complementCode(Wildcard wildcard) {
+        return COMPLEMENT_CODE[wildcard.code];
+    }
+
+    /**
+     * Returns a complementary wildcard object
+     *
+     * @param code byte code of nucleotide
+     * @return complementary wildcard object
+     */
+    public static Wildcard complementWildcard(byte code) {
+        return COMPLEMENT_WILDCARD[code];
+    }
+
+    /**
+     * Returns a complementary wildcard object
+     *
+     * @param wildcard wildcard to convert to complementary
+     * @return complementary wildcard object
+     */
+    public static Wildcard complementWildcard(Wildcard wildcard) {
+        return COMPLEMENT_WILDCARD[wildcard.code];
     }
 
     /**
@@ -214,5 +254,30 @@ public final class NucleotideAlphabet extends AbstractArrayAlphabet<NucleotideSe
     @Override
     NucleotideSequence createUnsafe(byte[] array) {
         return new NucleotideSequence(array, true);
+    }
+
+    /**
+     * Only for basic letters.
+     */
+    private static byte getComplement1(byte nucleotide) {
+        return (byte) (nucleotide ^ 3);
+    }
+
+    private static long getComplementMask(Wildcard wildcard) {
+        long mask = 0;
+        for (byte code : wildcard.matchingCodes)
+            mask |= 1 << getComplement1(code);
+        return mask;
+    }
+
+    static {
+        WILDCARDS = INSTANCE.getAllWildcards().toArray(new Wildcard[INSTANCE.size()]);
+        COMPLEMENT_CODE = new byte[WILDCARDS.length];
+        COMPLEMENT_WILDCARD = new Wildcard[WILDCARDS.length];
+        for (int i = 0; i < WILDCARDS.length; i++) {
+            Wildcard complementWildcard = INSTANCE.maskToWildcard(getComplementMask(WILDCARDS[i]));
+            COMPLEMENT_WILDCARD[i] = complementWildcard;
+            COMPLEMENT_CODE[i] = complementWildcard.code;
+        }
     }
 }

@@ -41,6 +41,11 @@ public final class Wildcard {
      * Code representing this wildcard (e.g. code == codes[0] for pure letters)
      */
     final byte code;
+    /**
+     * Wildcard bit mask is a long integer where:
+     * (mask >>> i) & 1 == 1, if wildcard includes i-th code
+     */
+    final long mask;
 
     /**
      * Pure letter constructor
@@ -75,6 +80,14 @@ public final class Wildcard {
         if (matchingCodes.length == 1 && code != matchingCodes[0])
             throw new IllegalArgumentException();
 
+        // Creating mask representation
+        long mask = 0;
+        for (byte c : matchingCodes) {
+            if (c >= 64)
+                throw new IllegalArgumentException("Don't allow matching codes greater then 63.");
+            mask |= 1 << c;
+        }
+        this.mask = mask;
     }
 
     /**
@@ -84,6 +97,18 @@ public final class Wildcard {
      */
     public char getSymbol() {
         return cSymbol;
+    }
+
+    /**
+     * Returns mask representation of the wildcard.
+     *
+     * Wildcard bit mask is a long integer where:
+     * (mask >>> i) & 1 == 1, if wildcard includes i-th code
+     *
+     * @return mask representation of the wildcard
+     */
+    public long getMask() {
+        return mask;
     }
 
     /**
