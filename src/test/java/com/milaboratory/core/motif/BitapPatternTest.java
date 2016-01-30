@@ -94,7 +94,7 @@ public class BitapPatternTest {
 
         // Exact
         seq = new NucleotideSequence("ACTGCGATAAATTAGACAGTACGTA");
-        bitapMatcher = motif.getBitapPattern().mismatchAndIndelMatcherFirst(1, seq);
+        bitapMatcher = motif.getBitapPattern().substitutionAndIndelMatcherFirst(1, seq);
         boolean t = false;
         int pos;
         while ((pos = bitapMatcher.findNext()) > 0)
@@ -107,7 +107,7 @@ public class BitapPatternTest {
 
         // Deletion
         seq = new NucleotideSequence("ACTGCGATAAATAGACAGTACGTA");
-        bitapMatcher = motif.getBitapPattern().mismatchAndIndelMatcherFirst(1, seq);
+        bitapMatcher = motif.getBitapPattern().substitutionAndIndelMatcherFirst(1, seq);
         assertEquals(10, bitapMatcher.findNext());
         assertEquals(1, bitapMatcher.getNumberOfErrors());
         assertEquals(9, bitapMatcher.findNext());
@@ -116,14 +116,14 @@ public class BitapPatternTest {
 
         // Insertion
         seq = new NucleotideSequence("ACTGCGATAAATTATGACAGTACGTA");
-        bitapMatcher = motif.getBitapPattern().mismatchAndIndelMatcherFirst(1, seq);
+        bitapMatcher = motif.getBitapPattern().substitutionAndIndelMatcherFirst(1, seq);
         assertEquals(10, bitapMatcher.findNext());
         assertEquals(1, bitapMatcher.getNumberOfErrors());
         assertEquals(-1, bitapMatcher.findNext());
 
         // Mismatch
         seq = new NucleotideSequence("ACTGCGATAAATTACACAGTACGTA");
-        bitapMatcher = motif.getBitapPattern().mismatchAndIndelMatcherFirst(1, seq);
+        bitapMatcher = motif.getBitapPattern().substitutionAndIndelMatcherFirst(1, seq);
         assertEquals(10, bitapMatcher.findNext());
         assertEquals(1, bitapMatcher.getNumberOfErrors());
         assertEquals(-1, bitapMatcher.findNext());
@@ -298,7 +298,7 @@ public class BitapPatternTest {
 
             Motif<NucleotideSequence> motif = new Motif<>(seq);
             BitapPattern bitapPattern = motif.getBitapPattern();
-            BitapMatcher bitapMatcher = bitapPattern.mismatchAndIndelMatcherFirst(muts, fullSeq);
+            BitapMatcher bitapMatcher = bitapPattern.substitutionAndIndelMatcherFirst(muts, fullSeq);
 
             boolean found = false;
 

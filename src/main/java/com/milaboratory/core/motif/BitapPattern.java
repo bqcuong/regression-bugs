@@ -246,8 +246,8 @@ public final class BitapPattern implements java.io.Serializable {
      * @param sequence          target sequence
      * @return matcher which will return positions of first matched letter in the motif in descending order
      */
-    public BitapMatcher mismatchAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence) {
-        return mismatchAndIndelMatcherFirst(maxNumberOfErrors, sequence, 0, sequence.size());
+    public BitapMatcher substitutionAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence) {
+        return substitutionAndIndelMatcherFirst(maxNumberOfErrors, sequence, 0, sequence.size());
     }
 
     /**
@@ -262,7 +262,7 @@ public final class BitapPattern implements java.io.Serializable {
      * @param to                right boundary of search range (exclusive)
      * @return matcher which will return positions of first matched letter in the motif in descending order
      */
-    public BitapMatcher mismatchAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence, int from, int to) {
+    public BitapMatcher substitutionAndIndelMatcherFirst(int maxNumberOfErrors, final Sequence sequence, int from, int to) {
         if (sequence.getAlphabet().basicSize() != patternMask.length)
             throw new IllegalArgumentException();
 
