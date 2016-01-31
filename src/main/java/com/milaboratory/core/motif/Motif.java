@@ -143,14 +143,27 @@ public final class Motif<S extends Sequence<S>> implements java.io.Serializable 
     }
 
     private final static boolean dataConsistent(BitArray data, int size) {
-        int i = 0;
-        while (i * size < data.size()) {
-            if (data.get(i))
-                i = ((i / size) + 1) * size;
-            ++i;
-            if (i % size == 0)
-                return false;
+        OUTER:
+        for (int i = 0; i < size; i++) {
+            for (int j = i; j < data.size(); j += size)
+                if (data.get(j))
+                    continue OUTER;
+            return false;
         }
         return true;
     }
+
+    //private final static boolean dataConsistent(BitArray data, int size) {
+    //    int i = 0;
+    //    while (i < data.size()) {
+    //        if (data.get(i)) {
+    //            i = ((i / size) + 1) * size;
+    //            continue;
+    //        }
+    //        ++i;
+    //        if (i % size == 0)
+    //            return false;
+    //    }
+    //    return true;
+    //}
 }
