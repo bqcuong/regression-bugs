@@ -16,6 +16,7 @@
 package com.milaboratory.core.sequence;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class NucleotideAlphabetTest {
@@ -27,5 +28,22 @@ public class NucleotideAlphabetTest {
             Assert.assertEquals(NucleotideAlphabet.INSTANCE.symbolToCode(complement),
                     NucleotideAlphabet.complementCode(NucleotideAlphabet.INSTANCE.symbolToCode(original)));
         }
+    }
+
+    @Test
+    public void test2() throws Exception {
+        Assert.assertTrue(NucleotideAlphabet.A_WILDCARD.isBasic());
+        Assert.assertFalse(NucleotideAlphabet.R_WILDCARD.isBasic());
+    }
+
+    @Ignore
+    @Test
+    public void testCalculateIntersections() throws Exception {
+        WildcardTest.calculateAllMatches(NucleotideAlphabet.INSTANCE);
+    }
+
+    @Test
+    public void testMatches() throws Exception {
+        WildcardTest.testMatches(NucleotideAlphabet.INSTANCE);
     }
 }

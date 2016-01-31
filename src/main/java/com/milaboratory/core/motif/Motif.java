@@ -30,6 +30,9 @@ import java.util.Arrays;
 public final class Motif<S extends Sequence<S>> implements java.io.Serializable {
     private final Alphabet<S> alphabet;
     private final int size;
+    /**
+     * data.get(code * size + position)
+     */
     final BitArray data;
     final BitapPattern bitapPattern;
 
@@ -50,11 +53,11 @@ public final class Motif<S extends Sequence<S>> implements java.io.Serializable 
     public Motif(S sequence) {
         this.alphabet = sequence.getAlphabet();
         this.size = sequence.size();
-        int alphabetSize = alphabet.basicSize();
+        int alphabetSize = alphabet.size();
         this.data = new BitArray(alphabetSize * size);
         for (int i = 0; i < size; ++i) {
             Wildcard wildcard = this.alphabet.codeToWildcard(sequence.codeAt(i));
-            for (int j = 0; j < wildcard.count(); j++)
+            for (int j = 0; j < wildcard.size(); j++)
                 data.set(wildcard.getMatchingCode(j) * size + i);
         }
         this.bitapPattern = toBitapPattern();
@@ -87,7 +90,7 @@ public final class Motif<S extends Sequence<S>> implements java.io.Serializable 
     private BitapPattern toBitapPattern() {
         if (size >= 64)
             return null;
-        int aSize = alphabet.basicSize();
+        int aSize = alphabet.size();
         long[] patternMask = new long[aSize],
                 reversePatternMask = new long[aSize];
         Arrays.fill(patternMask, ~0);

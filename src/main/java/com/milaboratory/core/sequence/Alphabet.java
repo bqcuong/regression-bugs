@@ -91,9 +91,13 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
      */
     private final Wildcard wildcardForAnyLetter;
     /**
-     * Mapping between wildcard mask representation (bit representation) and wildcard object
+     * Mapping between wildcard basicMask representation (bit representation) and wildcard object
      */
-    private final TLongObjectMap<Wildcard> maskToWildcard;
+    private final TLongObjectMap<Wildcard> basicMaskToWildcard;
+    ///**
+    // * 0b1111...11 = 2 ^ basicLettersCount - 1
+    // */
+    //final long basicLettersMask;
 
     Alphabet(String alphabetName, byte alphabetId, int countOfBasicLetters, Wildcard wildcardForAnyLetter,
              Wildcard... wildcards) {
@@ -111,7 +115,7 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
         // -1 in constructor here is to simplify return of -1 for undefined symbols in symbolToCode
         symbolToCode = new TCharByteHashMap(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR,
                 (char) -1, (byte) -1);
-        this.maskToWildcard = new TLongObjectHashMap<>();
+        this.basicMaskToWildcard = new TLongObjectHashMap<>();
 
         // Filling internal maps/arrays
         for (Wildcard wildcard : wildcards) {
@@ -123,7 +127,7 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
             codeToWildcard[wildcard.getCode()] = wildcard;
             symbolToCode.put(wildcard.getSymbol(), wildcard.getCode());
             symbolToCode.put(Character.toLowerCase(wildcard.getSymbol()), wildcard.getCode());
-            maskToWildcard.put(wildcard.getMask(), wildcard);
+            basicMaskToWildcard.put(wildcard.getBasicMask(), wildcard);
         }
 
         // Error checking
@@ -133,6 +137,7 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
 
         // To be returned by corresponding getter
         this.wildcardsList = Collections.unmodifiableList(Arrays.asList(codeToWildcard));
+        //this.basicLettersMask = ~(0xFFFFFFFFFFFFFFFFL << countOfBasicLetters);
     }
 
     /**
@@ -204,13 +209,13 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
     }
 
     /**
-     * Converts wildcard mask to mast object.
+     * Converts wildcard basicMask to Wildcard object.
      *
-     * @param mask bit represenatation of wildcard
+     * @param basicMask bit represenatation of wildcard
      * @return wildcard object; {@literal null} if there is no such wildcard in the alphabet
      */
-    public Wildcard maskToWildcard(long mask) {
-        return maskToWildcard.get(mask);
+    public Wildcard maskToWildcard(long basicMask) {
+        return basicMaskToWildcard.get(basicMask);
     }
 
     /* Conversion */

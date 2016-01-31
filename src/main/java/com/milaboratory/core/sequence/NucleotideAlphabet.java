@@ -102,69 +102,69 @@ public final class NucleotideAlphabet extends AbstractArrayAlphabet<NucleotideSe
     /**
      * Adenine byte representation
      */
-    public static final Wildcard A_WILDCARD = new Wildcard('A', A);
+    public static final Wildcard A_WILDCARD = new Wildcard('A', A, 1, new byte[]{A, N, R, W, M, D, H, V});
     /**
      * Guanine byte representation
      */
-    public static final Wildcard G_WILDCARD = new Wildcard('G', G);
+    public static final Wildcard G_WILDCARD = new Wildcard('G', G, 1, new byte[]{G, N, R, S, K, B, D, V});
     /**
      * Cytosine byte representation
      */
-    public static final Wildcard C_WILDCARD = new Wildcard('C', C);
+    public static final Wildcard C_WILDCARD = new Wildcard('C', C, 1, new byte[]{C, N, Y, S, M, B, H, V});
     /**
      * Thymine byte representation
      */
-    public static final Wildcard T_WILDCARD = new Wildcard('T', T);
+    public static final Wildcard T_WILDCARD = new Wildcard('T', T, 1, new byte[]{T, N, Y, W, K, B, D, H});
 
     /* N wildcard */
     /**
      * any Nucleotide
      */
-    public static final Wildcard N_WILDCARD = new Wildcard('N', N, new byte[]{A, T, G, C});
+    public static final Wildcard N_WILDCARD = new Wildcard('N', N, 4, new byte[]{A, G, C, T, N, R, Y, S, W, K, M, B, D, H, V});
 
     /* Two-letter wildcards */
     /**
      * puRine
      */
-    public static final Wildcard R_WILDCARD = new Wildcard('R', R, new byte[]{A, G});
+    public static final Wildcard R_WILDCARD = new Wildcard('R', R, 2, new byte[]{A, G, N, R, S, W, K, M, B, D, H, V});
     /**
      * pYrimidine
      */
-    public static final Wildcard Y_WILDCARD = new Wildcard('Y', Y, new byte[]{C, T});
+    public static final Wildcard Y_WILDCARD = new Wildcard('Y', Y, 2, new byte[]{C, T, N, Y, S, W, K, M, B, D, H, V});
     /**
      * Strong
      */
-    public static final Wildcard S_WILDCARD = new Wildcard('S', S, new byte[]{G, C});
+    public static final Wildcard S_WILDCARD = new Wildcard('S', S, 2, new byte[]{G, C, N, R, Y, S, K, M, B, D, H, V});
     /**
      * Weak
      */
-    public static final Wildcard W_WILDCARD = new Wildcard('W', W, new byte[]{A, T});
+    public static final Wildcard W_WILDCARD = new Wildcard('W', W, 2, new byte[]{A, T, N, R, Y, W, K, M, B, D, H, V});
     /**
      * Keto
      */
-    public static final Wildcard K_WILDCARD = new Wildcard('K', K, new byte[]{G, T});
+    public static final Wildcard K_WILDCARD = new Wildcard('K', K, 2, new byte[]{G, T, N, R, Y, S, W, K, B, D, H, V});
     /**
      * aMino
      */
-    public static final Wildcard M_WILDCARD = new Wildcard('M', M, new byte[]{A, C});
+    public static final Wildcard M_WILDCARD = new Wildcard('M', M, 2, new byte[]{A, C, N, R, Y, S, W, M, B, D, H, V});
 
     /* Three-letter wildcards */
     /**
      * not A (B comes after A)
      */
-    public static final Wildcard B_WILDCARD = new Wildcard('B', B, new byte[]{C, G, T});
+    public static final Wildcard B_WILDCARD = new Wildcard('B', B, 3, new byte[]{G, C, T, N, R, Y, S, W, K, M, B, D, H, V});
     /**
      * not C (D comes after C)
      */
-    public static final Wildcard D_WILDCARD = new Wildcard('D', D, new byte[]{A, G, T});
+    public static final Wildcard D_WILDCARD = new Wildcard('D', D, 3, new byte[]{A, G, T, N, R, Y, S, W, K, M, B, D, H, V});
     /**
      * not G (H comes after G)
      */
-    public static final Wildcard H_WILDCARD = new Wildcard('H', H, new byte[]{A, C, T});
+    public static final Wildcard H_WILDCARD = new Wildcard('H', H, 3, new byte[]{A, C, T, N, R, Y, S, W, K, M, B, D, H, V});
     /**
      * not T (V comes after T and U)
      */
-    public static final Wildcard V_WILDCARD = new Wildcard('V', V, new byte[]{A, C, G});
+    public static final Wildcard V_WILDCARD = new Wildcard('V', V, 3, new byte[]{A, G, C, N, R, Y, S, W, K, M, B, D, H, V});
 
     /**
      * All wildcards array. Each wildcard has index equals to its code.
@@ -264,10 +264,10 @@ public final class NucleotideAlphabet extends AbstractArrayAlphabet<NucleotideSe
     }
 
     private static long getComplementMask(Wildcard wildcard) {
-        long mask = 0;
-        for (byte code : wildcard.matchingCodes)
-            mask |= 1 << getComplement1(code);
-        return mask;
+        long basic = 0;
+        for (int i = 0; i < wildcard.basicSize(); i++)
+            basic |= 1 << getComplement1(wildcard.matchingCodes[i]);
+        return basic;
     }
 
     static {
