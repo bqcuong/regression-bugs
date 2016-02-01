@@ -16,7 +16,10 @@
 package com.milaboratory.util;
 
 import org.apache.commons.math3.random.Well19937c;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 /**
  * Created by dbolotin on 01/02/16.
@@ -24,6 +27,20 @@ import org.junit.Test;
 public class IntArrayListTest {
     @Test
     public void testSort1() throws Exception {
-        Well19937c random = RandomUtil.getThreadLocalRandom();
+        for (int j = 0; j < 100; j++) {
+            Well19937c random = RandomUtil.getThreadLocalRandom();
+            IntArrayList list = new IntArrayList();
+            for (int i = 0; i < 1000; i++)
+                list.add(random.nextInt());
+            int[] arr = list.toArray();
+            Arrays.sort(arr);
+            list.stableSort(new IntArrayList.IntComparator() {
+                @Override
+                public int compare(int i1, int i2) {
+                    return Integer.compare(i1, i2);
+                }
+            });
+            Assert.assertArrayEquals(arr, list.toArray());
+        }
     }
 }
