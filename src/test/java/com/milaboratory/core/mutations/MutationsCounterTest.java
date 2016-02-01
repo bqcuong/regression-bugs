@@ -15,7 +15,14 @@
  */
 package com.milaboratory.core.mutations;
 
+import com.milaboratory.core.mutations.generator.MutationModels;
+import com.milaboratory.core.mutations.generator.MutationsGenerator;
+import com.milaboratory.core.sequence.NucleotideSequence;
+import com.milaboratory.test.TestUtil;
+import org.junit.Assert;
 import org.junit.Test;
+
+import static com.milaboratory.core.sequence.NucleotideSequence.ALPHABET;
 
 /**
  * Created by dbolotin on 01/02/16.
@@ -23,13 +30,40 @@ import org.junit.Test;
 public class MutationsCounterTest {
     @Test
     public void test1() throws Exception {
+        Mutations<NucleotideSequence> original1 = Mutations.decodeNuc("SA1T ST12C DG13 I16T I16G SA20G");
+        Mutations<NucleotideSequence> original2 = Mutations.decodeNuc("SA1T       DG13 I16T I16G SA20G");
+        Mutations<NucleotideSequence> original3 = Mutations.decodeNuc("SA1T ST12C DG13 I16T      SA20G");
+        Mutations<NucleotideSequence> _expected = Mutations.decodeNuc("SA1T       DG13           SA20G");
+
         MutationsCounter counter = new MutationsCounter();
-        int[] mutations = Mutations.decodeNuc("SA1T ST12C DG13 I16T I16G SA20G").mutations;
-        counter.adjust(mutations, 0, 1, 1);
-        counter.adjust(mutations, 1, 1, 1);
-        counter.adjust(mutations, 2, 1, 1);
-        counter.adjust(mutations, 3, 2, 1);
-        counter.adjust(mutations, 5, 1, 1);
-        int i =0;
+        counter.adjust(original1, 1);
+        counter.adjust(original2, 1);
+        counter.adjust(original3, 1);
+
+
+        Mutations<NucleotideSequence> build = counter.build(ALPHABET, new MutationsCounter.Filter() {
+            @Override
+            public boolean accept(long count, int position, int mutation, int[] mutations) {
+                return count == 3;
+            }
+        });
+
+        Assert.assertEquals(_expected, build);
+    }
+
+    @Test
+    public void test2() throws Exception {
+        for (int c = 0; c < TestUtil.its(100, 1000); c++) {
+            Mutations<NucleotideSequence> mutations = MutationsGenerator.generateMutations(TestUtil.randomSequence(ALPHABET, 10, 100), MutationModels.getEmpiricalNucleotideMutationModel().multiplyProbabilities(500));
+            MutationsCounter counter = new MutationsCounter();
+            counter.adjust(mutations, 1);
+            Mutations<NucleotideSequence> build = counter.build(ALPHABET, new MutationsCounter.Filter() {
+                @Override
+                public boolean accept(long count, int position, int mutation, int[] mutations) {
+                    return true;
+                }
+            });
+            Assert.assertEquals(mutations, build);
+        }
     }
 }

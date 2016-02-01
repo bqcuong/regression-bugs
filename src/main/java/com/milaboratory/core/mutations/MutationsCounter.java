@@ -15,7 +15,12 @@
  */
 package com.milaboratory.core.mutations;
 
+import com.milaboratory.core.sequence.Alphabet;
+import com.milaboratory.core.sequence.Sequence;
+import com.milaboratory.util.IntArrayList;
 import gnu.trove.impl.Constants;
+import gnu.trove.iterator.TIntLongIterator;
+import gnu.trove.iterator.TObjectIntIterator;
 import gnu.trove.map.custom_hash.TObjectIntCustomHashMap;
 import gnu.trove.map.hash.TIntLongHashMap;
 import gnu.trove.strategy.HashingStrategy;
@@ -35,6 +40,16 @@ public final class MutationsCounter {
     public MutationsCounter() {
     }
 
+    public void adjust(Mutations<?> mutations, int delta) {
+        MutationsEnumerator enumerator = new MutationsEnumerator(mutations);
+        while (enumerator.next())
+            adjust(mutations, enumerator, delta);
+    }
+
+    public void adjust(Mutations<?> mutations, MutationsEnumerator enumerator, int delta) {
+        adjust(mutations.mutations, enumerator.getOffset(), enumerator.getLength(), delta);
+    }
+
     void adjust(int[] mutationsArray, int offset, int length, int delta) {
         assert length != 0;
         if (length == 1)
@@ -42,6 +57,34 @@ public final class MutationsCounter {
         else
             adjustLongInsert(Arrays.copyOfRange(mutationsArray, offset, offset + length),
                     delta);
+    }
+
+    public <S extends Sequence<S>> Mutations<S> build(Alphabet<S> alphabet, Filter filter) {
+        IntArrayList mutations = new IntArrayList();
+
+        TIntLongIterator it = counter.iterator();
+        while (it.hasNext()) {
+            it.advance();
+            int mutation = it.key();
+            long count = it.value();
+            if ((mutation & Mutation.MUTATION_TYPE_MASK) != 0
+                    && filter.accept(count, Mutation.getPosition(mutation), mutation, null))
+                mutations.add(mutation);
+        }
+
+        if (insertMapping != null) {
+            TObjectIntIterator<int[]> itO = insertMapping.iterator();
+            while (itO.hasNext()) {
+                itO.advance();
+                int[] muts = itO.key();
+                long count = counter.get(itO.value());
+                if (filter.accept(count, Mutation.getPosition(muts[0]), Mutation.NON_MUTATION, muts))
+                    mutations.addAll(muts);
+            }
+        }
+        mutations.stableSort(Mutation.POSITION_COMPARATOR);
+
+        return new Mutations<>(alphabet, mutations);
     }
 
     private void adjustSingleMutation(int mutation, int delta) {
@@ -76,5 +119,9 @@ public final class MutationsCounter {
         public boolean equals(int[] o1, int[] o2) {
             return Arrays.equals(o1, o2);
         }
+    }
+
+    public interface Filter {
+        boolean accept(long count, int position, int mutation, int[] mutations);
     }
 }
