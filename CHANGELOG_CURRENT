@@ -1,0 +1,5 @@
+Major refactoring of wildcards
+Reverse-complement for sequences with wildcards
+Motif matching in sequences with wildcards
+Bitap search in sequences with wildcards
+Rename of `mismatchAndIndelMatcherFirst()` -> `substitutionAndIndelMatcherFirst()`
