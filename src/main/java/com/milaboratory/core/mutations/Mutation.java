@@ -22,6 +22,7 @@ public final class Mutation {
     public static final int RAW_MUTATION_TYPE_SUBSTITUTION = 0x20,
             RAW_MUTATION_TYPE_DELETION = 0x40,
             RAW_MUTATION_TYPE_INSERTION = 0x60,
+            RAW_MUTATION_TYPE_RESERVED = 0x00,
             MUTATION_TYPE_MASK = 0x60,
             LETTER_MASK = 0x1F,
             FROM_OFFSET = 7,
@@ -152,7 +153,8 @@ public final class Mutation {
      * <li><b>Deletion</b>: starts with {@code D} then nucleotide that was deleted encoded in one letter (<b>from</b>)
      * then <b>position</b>. (Example: {@code DG43} = G deleted at position 43).</li>
      *
-     * <li><b>Insertion</b>: starts with {@code I} then <b>position</b> then inserted letter <b>to</b>. (Example: {@code
+     * <li><b>Insertion</b>: starts with {@code I} then <b>position</b> then inserted letter <b>to</b>. (Example:
+     * {@code
      * I54C} = C inserted before letter at position 54).</li>
      *
      * </ul>
