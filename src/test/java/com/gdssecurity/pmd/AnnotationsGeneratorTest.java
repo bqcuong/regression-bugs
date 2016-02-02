@@ -46,4 +46,9 @@ public class AnnotationsGeneratorTest {
 	public void testGeneratorTwoCallsInTwoFiles() throws Exception {
 		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/annotations/generator/twocallstwofiles", RULESET_ANNOTATIONS));
 	}
+	
+	@Test
+	public void testGeneratorStringBuilder() throws Exception {
+		Assert.assertEquals(2, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorStringBuilder.java", RULESET_ANNOTATIONS));
+	}
 }
