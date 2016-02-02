@@ -16,7 +16,7 @@ public class StringManipulationExample {
 	
 	public void example2 (String badValue) throws SQLException {
 		String query = " update table set value="+ 
-				"'"+(badValue      ==null  ? "" : badValue.replaceAll("'", "''"))+"'," ;
+				"'"+(badValue      ==null  ? "" : badValue.replaceAll("'", "''"))+"' " ;
 		this.connection.prepareStatement(query);
 	}
 

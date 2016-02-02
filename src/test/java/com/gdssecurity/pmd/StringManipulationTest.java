@@ -6,7 +6,7 @@ import org.junit.Test;
 
 public class StringManipulationTest {
 	@Test
-	@Ignore
+	@Ignore("Not yet implemented")
 	public void testStringManipulation () throws Exception {
 		Assert.assertEquals(2, PMDRunner.run("src/test/java/resources/others/StringManipulationExample.java", PMDRunner.RULESET_SQL_INJECTION));
 	}
