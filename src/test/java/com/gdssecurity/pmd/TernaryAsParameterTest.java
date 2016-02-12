@@ -18,6 +18,11 @@ public class TernaryAsParameterTest {
 	
 	@Test
 	public void testTernaryInStringConcatenation () throws Exception {
-		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/TernaryAsParameterWithParenthesis.java", PMDRunner.RULESET_SQL_INJECTION));
+		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/TernaryInStringConcatenation.java", PMDRunner.RULESET_SQL_INJECTION));
+	}
+	
+	@Test
+	public void testTernaryInStringConcatenationMultipleConditions () throws Exception {
+		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/TernaryInStringConcatenationMultipleConditions.java", PMDRunner.RULESET_SQL_INJECTION));
 	}
 }

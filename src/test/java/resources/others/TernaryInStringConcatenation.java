@@ -12,5 +12,5 @@ public class TernaryInStringConcatenation {
 		
 		con.prepareStatement(sql); // it's ok
 		
-	}	
+	}
 }
