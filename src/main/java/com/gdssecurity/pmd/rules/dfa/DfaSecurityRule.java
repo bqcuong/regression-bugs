@@ -416,18 +416,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 		Node simpleNode = iDataFlowNode.getNode();
 		if (isStringConcatenation(simpleNode)) {			
-			Node node = simpleNode.jjtGetChild(0);
-			if (node.jjtGetNumChildren() > 0) {
-				node = node. jjtGetChild(0);
-			}
-			if (node instanceof ASTPrimaryPrefix) {
-				if (node.jjtGetNumChildren() > 0) {
-					Node name = node.jjtGetChild(0);
-					if (name instanceof ASTName) {
-						handleVariableDefinition(iDataFlowNode, name.getImage());
-					}
-				}
-			}
+			handleStringConcatenation(iDataFlowNode, simpleNode);			
 		}
 		else if (isMethodCall(simpleNode)) {
 
@@ -458,10 +447,25 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		}
 		
 	}
+
+	private void handleStringConcatenation(DataFlowNode iDataFlowNode, Node simpleNode) {
+		Node node = simpleNode.jjtGetChild(0);
+		if (node.jjtGetNumChildren() > 0) {
+			node = node. jjtGetChild(0);
+			if (node.getClass() == ASTPrimaryPrefix.class) {
+				if (node.jjtGetNumChildren() > 0) {
+					Node name = node.jjtGetChild(0);
+					if (name.getClass() == ASTName.class) {
+						handleVariableDefinition(iDataFlowNode, name.getImage());
+					}
+				}
+			}
+		}
+	}
 	private boolean isStringConcatenation(Node simpleNode) {
 		if(simpleNode.jjtGetNumChildren() > 2) {
 			Node asign = simpleNode.jjtGetChild(1);
-			if (asign instanceof ASTAssignmentOperator) {
+			if (asign.getClass() == ASTAssignmentOperator.class) {
 				return "+=".equals(asign.getImage());
 			}
 		}
@@ -549,7 +553,8 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				}
 			}
 		}
-		// TODO Optimizaría darle la vuelta ?
+		// dando la vuelta se optimizaría, pero no se puede ya que nos saltariamos las validaciones
+		// de los posibles sinks que hubiese en la parte derecha de la expresion 
 		if (isTainted(simpleNode) && isUnsafeType(clazz)) {
 			this.currentPathTaintedVariables.add(variable);
 		}
