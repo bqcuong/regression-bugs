@@ -61,5 +61,15 @@ public class CWE89SqlInjectionTest {
 		Assert.assertEquals(3, run("JPAInjection.java"));
 	}
 	
+	@Test
+	public void testConditional() throws Exception {
+		Assert.assertEquals(2, run("SqliConditional.java"));
+	}
+	
+	@Test
+	public void testStringAppend() throws Exception {
+		Assert.assertEquals(1, run("SqliAppendString.java"));
+	}
+	
 
 }

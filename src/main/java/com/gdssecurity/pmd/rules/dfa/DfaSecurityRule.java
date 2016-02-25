@@ -415,8 +415,19 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	private void handleVariableReference(DataFlowNode iDataFlowNode) {
 
 		Node simpleNode = iDataFlowNode.getNode();
-
-		if (isMethodCall(simpleNode)) {
+		if (isStringConcatenation(simpleNode)) {			
+			Node node = simpleNode.jjtGetChild(0);
+			if (node.jjtGetNumChildren() > 0) {
+				node = node. jjtGetChild(0);
+			}
+			if (node instanceof ASTPrimaryPrefix) {
+				Node name = node.jjtGetChild(0);
+				if (name instanceof ASTName) {
+					handleVariableDefinition(iDataFlowNode, name.getImage());
+				}
+			}
+		}
+		else if (isMethodCall(simpleNode)) {
 
 			Class<?> type = null;
 			String method = "";
@@ -442,8 +453,18 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			if (isSink(type, method)) {
 				analyzeSinkMethodArgs(simpleNode);
 			}
-
 		}
+		
+	}
+	private boolean isStringConcatenation(Node simpleNode) {
+		if(simpleNode.jjtGetNumChildren() > 2) {
+			Node asign = simpleNode.jjtGetChild(1);
+			System.out.println(asign.getClass());
+			if (asign instanceof ASTAssignmentOperator) {
+				return "+=".equals(asign.getImage());
+			}
+		}
+		return false;
 	}
 
 	private boolean isSink(Class<?> type, String methodName) {
@@ -527,7 +548,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				}
 			}
 		}
-
+		// TODO Optimizaría darle la vuelta ?
 		if (isTainted(simpleNode) && isUnsafeType(clazz)) {
 			this.currentPathTaintedVariables.add(variable);
 		}
