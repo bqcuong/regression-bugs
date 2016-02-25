@@ -459,7 +459,6 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	private boolean isStringConcatenation(Node simpleNode) {
 		if(simpleNode.jjtGetNumChildren() > 2) {
 			Node asign = simpleNode.jjtGetChild(1);
-			System.out.println(asign.getClass());
 			if (asign instanceof ASTAssignmentOperator) {
 				return "+=".equals(asign.getImage());
 			}
