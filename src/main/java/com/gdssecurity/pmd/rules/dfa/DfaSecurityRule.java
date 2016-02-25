@@ -421,9 +421,11 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				node = node. jjtGetChild(0);
 			}
 			if (node instanceof ASTPrimaryPrefix) {
-				Node name = node.jjtGetChild(0);
-				if (name instanceof ASTName) {
-					handleVariableDefinition(iDataFlowNode, name.getImage());
+				if (node.jjtGetNumChildren() > 0) {
+					Node name = node.jjtGetChild(0);
+					if (name instanceof ASTName) {
+						handleVariableDefinition(iDataFlowNode, name.getImage());
+					}
 				}
 			}
 		}
