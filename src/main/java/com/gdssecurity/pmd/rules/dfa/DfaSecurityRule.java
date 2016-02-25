@@ -451,17 +451,16 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	private void handleStringConcatenation(DataFlowNode iDataFlowNode, Node simpleNode) {
 		Node node = simpleNode.jjtGetChild(0);
 		if (node.jjtGetNumChildren() > 0) {
-			node = node. jjtGetChild(0);
-			if (node.getClass() == ASTPrimaryPrefix.class) {
-				if (node.jjtGetNumChildren() > 0) {
-					Node name = node.jjtGetChild(0);
-					if (name.getClass() == ASTName.class) {
-						handleVariableDefinition(iDataFlowNode, name.getImage());
-					}
+			node = node.jjtGetChild(0);
+			if (node.getClass() == ASTPrimaryPrefix.class && node.jjtGetNumChildren() > 0) {
+				Node name = node.jjtGetChild(0);
+				if (name.getClass() == ASTName.class) {
+					handleVariableDefinition(iDataFlowNode, name.getImage());
 				}
 			}
 		}
 	}
+
 	private boolean isStringConcatenation(Node simpleNode) {
 		if(simpleNode.jjtGetNumChildren() > 2) {
 			Node asign = simpleNode.jjtGetChild(1);
