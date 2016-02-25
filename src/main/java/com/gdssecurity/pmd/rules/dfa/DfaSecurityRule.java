@@ -858,7 +858,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 					if (field != null) {
 						break;
 					}
-				} catch (SecurityException e) {
+				} catch (SecurityException | NoClassDefFoundError e) {
 					field = null;
 				}
 			}
