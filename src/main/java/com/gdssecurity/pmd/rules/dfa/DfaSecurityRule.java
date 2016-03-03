@@ -735,7 +735,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		}
 		String method = getFullMethodName(node);
 		if (method.indexOf('.') != -1) {
-			method = method.substring(method.indexOf('.') + 1);
+			method = method.substring(method.lastIndexOf('.') + 1);
 		}
 		return method;
 	}
@@ -818,6 +818,16 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 					if (type == null) {
 						String parameterName = astName.getImage();
 						if (parameterName.indexOf('.') > 0) {
+							parameterName = parameterName.substring(0, parameterName.lastIndexOf('.'));
+							try {
+								return Class.forName(parameterName);
+							}
+							catch (Throwable e) {
+								type = null;
+							}
+						}
+						parameterName = astName.getImage();
+						if (parameterName.indexOf('.') > 0) {
 							parameterName = parameterName.substring(0, parameterName.indexOf('.'));
 						}
 						if (this.functionParameterTypes.containsKey(parameterName)) {
@@ -852,9 +862,10 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 	private Class<?> getTypeFromAttribute(Node node, String attributeName) {
 		Class<?> type = getContainingType(node);
-		Field field = null;
+
 
 		if (type != null) {
+			Field field = null;
 			List<Class<?>> inheritanceList = getInheritance(type);
 
 			for (Class<?> clazz : inheritanceList) {
@@ -867,11 +878,12 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 					field = null;
 				}
 			}
+			if (field != null) {
+				type = field.getType();
+			}
 		}
 
-		if (field != null) {
-			type = field.getType();
-		}
+
 		return type;
 	}
 
