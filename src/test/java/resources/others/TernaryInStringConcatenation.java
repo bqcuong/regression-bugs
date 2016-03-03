@@ -13,4 +13,17 @@ public class TernaryInStringConcatenation {
 		con.prepareStatement(sql); // it's ok
 		
 	}
+	public void function2(Connection con, String email) throws SQLException {
+		String sql = "select count(1) from users where active = 1 ";
+		sql += email != null ? "" : " and email = ?";
+		con.prepareStatement(sql); // it's ok
+		
+	}
+	
+	public void function3(Connection con, String email) throws SQLException {
+		String sql = "select count(1) from users where active = 1 ";
+		sql += (email != null ? "" : " and email = ?");
+		con.prepareStatement(sql); // it's ok
+		
+	}
 }

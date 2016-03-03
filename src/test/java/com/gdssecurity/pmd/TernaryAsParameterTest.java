@@ -1,6 +1,7 @@
 package com.gdssecurity.pmd;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TernaryAsParameterTest {
@@ -17,6 +18,7 @@ public class TernaryAsParameterTest {
 	}
 	
 	@Test
+
 	public void testTernaryInStringConcatenation () throws Exception {
 		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/others/TernaryInStringConcatenation.java", PMDRunner.RULESET_SQL_INJECTION));
 	}

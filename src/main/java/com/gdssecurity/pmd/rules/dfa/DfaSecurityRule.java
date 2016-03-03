@@ -51,10 +51,12 @@ import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceDeclaration;
 import net.sourceforge.pmd.lang.java.ast.ASTClassOrInterfaceType;
 import net.sourceforge.pmd.lang.java.ast.ASTConditionalExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTConstructorDeclaration;
+import net.sourceforge.pmd.lang.java.ast.ASTEqualityExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTFieldDeclaration;
 import net.sourceforge.pmd.lang.java.ast.ASTFormalParameter;
 import net.sourceforge.pmd.lang.java.ast.ASTFormalParameters;
+import net.sourceforge.pmd.lang.java.ast.ASTLiteral;
 import net.sourceforge.pmd.lang.java.ast.ASTMethodDeclaration;
 import net.sourceforge.pmd.lang.java.ast.ASTMethodDeclarator;
 import net.sourceforge.pmd.lang.java.ast.ASTName;
@@ -333,7 +335,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	private void handeReturnNode(Node node, DataFlowNode iDataFlowNode) {
 		
 		handleVariableReference(iDataFlowNode);
-		if (this.generator && !isSafeType(this.getType(node)) && isTainted(node)) {
+		if (isTainted(node) && this.generator && !isSafeType(this.getType(node))) {
 			addSecurityViolation(this, this.rc, node, getMessage(), "");
 
 		}
@@ -561,8 +563,21 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 	private boolean isTainted(Node node2) {
 		List<ASTPrimaryExpression> primaryExpressions = getExp(node2);
+		boolean tainted = false;
 		for (ASTPrimaryExpression node : primaryExpressions) {
+			if (node.jjtGetNumChildren() == 1 && node.jjtGetChild(0).jjtGetNumChildren() == 1 && node.jjtGetChild(0).jjtGetChild(0).getClass() == ASTLiteral.class){
+				continue;
+			}
+			if (node.jjtGetNumChildren() == 1 && node.jjtGetChild(0).jjtGetNumChildren() == 1 && node.jjtGetChild(0).jjtGetChild(0).getClass() == ASTExpression.class){
+				boolean t1 = isTainted(node);
+				tainted = tainted || t1;
+				continue;
+			}
 			if (node.jjtGetParent().getClass() == ASTConditionalExpression.class && node.jjtGetParent().jjtGetChild(0) == node) {
+				isTainted(node);
+				continue;
+			}
+			if (node.jjtGetParent().getClass() == ASTEqualityExpression.class) {
 				isTainted(node);
 				continue;
 			}
@@ -596,7 +611,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				return true;
 			}
 		}
-		return false;
+		return tainted;
 
 	}
 
