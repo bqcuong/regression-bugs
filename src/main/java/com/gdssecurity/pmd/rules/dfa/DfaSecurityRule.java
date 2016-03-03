@@ -119,7 +119,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 	private List<DataFlowNode> additionalDataFlowNodes = new ArrayList<DataFlowNode>();
 
-	private static final int MAX_DATAFLOWS = 250;
+	private static final int MAX_DATAFLOWS = 40;
 	private boolean generator = false;
 	private boolean initialized = false;
 
