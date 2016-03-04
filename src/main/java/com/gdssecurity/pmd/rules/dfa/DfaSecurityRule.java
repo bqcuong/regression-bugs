@@ -76,6 +76,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.jaxen.JaxenException;
 
+import com.gdssecurity.pmd.TypeUtils;
 import com.gdssecurity.pmd.Utils;
 import com.gdssecurity.pmd.rules.BaseSecurityRule;
 
@@ -834,21 +835,18 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 						String parameterName = astName.getImage();
 						if (parameterName.indexOf('.') > 0) {
 							parameterName = parameterName.substring(0, parameterName.lastIndexOf('.'));
-							try {
-								return Class.forName(parameterName);
-							}
-							catch (Throwable e) {
-								type = null;
-							}
+							type = TypeUtils.INSTANCE.getClassForName(parameterName);						
 						}
-						parameterName = astName.getImage();
-						if (parameterName.indexOf('.') > 0) {
-							parameterName = parameterName.substring(0, parameterName.indexOf('.'));
-						}
-						if (this.functionParameterTypes.containsKey(parameterName)) {
-							type = this.functionParameterTypes.get(parameterName);
-						} else {
-							type = getTypeFromAttribute(node, parameterName);
+						if (type == null) {
+							parameterName = astName.getImage();
+							if (parameterName.indexOf('.') > 0) {
+								parameterName = parameterName.substring(0, parameterName.indexOf('.'));
+							}
+							if (this.functionParameterTypes.containsKey(parameterName)) {
+								type = this.functionParameterTypes.get(parameterName);
+							} else {
+								type = getTypeFromAttribute(node, parameterName);
+							}
 						}
 					}
 				} else {
