@@ -28,7 +28,7 @@ public class TypeUtils {
 	 * @return
 	 */
 	public Class<?> getClassForName(String className) {
-		if (StringUtils.isBlank(className)){
+		if (StringUtils.isBlank(className)) {
 			return null;
 		}
 		if (misses.contains(className)) {
@@ -38,18 +38,17 @@ public class TypeUtils {
 		if (cached != null) {
 			return cached;
 		}
-		
+
 		try {
-			Class<?> clazz = Class.forName(className, false, this.getClass().getClassLoader());
+			Class<?> clazz = Class.forName(className, false, this.getClass()
+					.getClassLoader());
 			hits.put(className, clazz);
 			return clazz;
-		}
-		catch (Throwable t) {
+
+		} catch (NoClassDefFoundError | ExceptionInInitializerError	| ClassNotFoundException err) { 
 			misses.add(className);
 			return null;
-		}
-		
-		
+		}		
 	}
 
 }

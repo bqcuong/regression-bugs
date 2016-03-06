@@ -668,48 +668,47 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		}
 		this.cacheReturnTypes.put(realType, realType);
 		Class<?> clazz = clz;
-		try {
-			if (clazz == null) {
-				clazz = Class.forName(realType, false, this.getClass().getClassLoader());
+		if (clazz == null) {
+			clazz = TypeUtils.INSTANCE.getClassForName(realType);
+		}
+		if (clazz == null) {
+			return;
+		}
+		
+		for (Method method : Utils.getMethods(clazz)) {
+			Class<?> returnType = method.getReturnType();
+			String methodName = method.getName();
+			String key = clazz.getCanonicalName() + "." + methodName;
+
+			String returnTypeName = UNKNOWN_TYPE;
+			if (returnType != null) {
+				returnTypeName = returnType.getCanonicalName();
 			}
-			if (clazz != null) {
-				
-				for (Method method : Utils.getMethods(clazz)) {
-					Class<?> returnType = method.getReturnType();
-					String methodName = method.getName();
-					String key = clazz.getCanonicalName() + "." + methodName;
-					
-					String returnTypeName = UNKNOWN_TYPE;
-					if (returnType != null) {
-						returnTypeName = returnType.getCanonicalName();
-					}
-					String old = this.cacheReturnTypes.get(key);
-					if (old == null || StringUtils.equals(old, returnTypeName)) {
-						this.cacheReturnTypes.put(key, returnTypeName);
-					}
-					// else {
-					// // various return types for same method
-					// cacheReturnTypes.put(key, UNKNOWN_TYPE);
-					// }
+			String old = this.cacheReturnTypes.get(key);
+			if (old == null || StringUtils.equals(old, returnTypeName)) {
+				this.cacheReturnTypes.put(key, returnTypeName);
+			}
+			// else {
+			// // various return types for same method
+			// cacheReturnTypes.put(key, UNKNOWN_TYPE);
+			// }
 
-					if (analizeTypeWithReflectionForAnnotations(clazz)) {
-						Annotation[] annotations = method.getAnnotations();
-						for (Annotation annotation : annotations) {
-							if (this.sinkAnnotations.contains(annotation.annotationType().getCanonicalName())) {
-								this.annotatedSinks.add(key);
-							}
-							if (this.generatorAnnotations.contains(annotation.annotationType().getCanonicalName())) {
-								this.annotatedGenerators.add(key);
-							}
-						}
+			if (analizeTypeWithReflectionForAnnotations(clazz)) {
+				Annotation[] annotations = method.getAnnotations();
+				for (Annotation annotation : annotations) {
+					if (this.sinkAnnotations.contains(annotation
+							.annotationType().getCanonicalName())) {
+						this.annotatedSinks.add(key);
 					}
-
+					if (this.generatorAnnotations.contains(annotation
+							.annotationType().getCanonicalName())) {
+						this.annotatedGenerators.add(key);
+					}
 				}
 			}
-		} catch (NoClassDefFoundError err) { // NOPMD
-		} catch (ExceptionInInitializerError err) { // NOPMD
-		} catch (ClassNotFoundException e) { // NOPMD
+
 		}
+		
 	}
 
 	private String getReturnType(ASTPrimaryExpression node, String type, String methodName) {
