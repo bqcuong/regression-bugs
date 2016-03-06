@@ -132,9 +132,16 @@ public final class Utils {
 	
 	public static Method[] getMethods (Class<?> clazz) {
 		Set<Method> set = new HashSet<Method>();
-		set.addAll(Arrays.asList(clazz.getDeclaredMethods()));
-		set.addAll(Arrays.asList(clazz.getMethods()));		
-		return set.toArray(new Method[set.size()]);
+		try {
+			if (clazz != null) {
+				set.addAll(Arrays.asList(clazz.getDeclaredMethods()));
+				set.addAll(Arrays.asList(clazz.getMethods()));
+			}
+			return set.toArray(new Method[set.size()]);
+		}
+		catch (NoClassDefFoundError | ExceptionInInitializerError  err) { 
+			return new Method[0];
+		}
 	}
 
 }
