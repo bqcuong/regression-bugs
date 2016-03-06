@@ -131,7 +131,6 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		this.propertyDescriptors.add(this.sinkAnnotationsDescriptor);
 		this.propertyDescriptors.add(this.generatorAnnotationsDescriptor);
 		this.propertyDescriptors.add(this.annotationsPackagesDescriptor);
-
 	}
 
 	@Override
@@ -675,6 +674,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			return;
 		}
 		
+		boolean analizeAnnotations = analizeTypeWithReflectionForAnnotations(clazz); 
 		for (Method method : Utils.getMethods(clazz)) {
 			Class<?> returnType = method.getReturnType();
 			String methodName = method.getName();
@@ -693,7 +693,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			// cacheReturnTypes.put(key, UNKNOWN_TYPE);
 			// }
 
-			if (analizeTypeWithReflectionForAnnotations(clazz)) {
+			if (analizeAnnotations) {
 				Annotation[] annotations = method.getAnnotations();
 				for (Annotation annotation : annotations) {
 					if (this.sinkAnnotations.contains(annotation
