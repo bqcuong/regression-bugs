@@ -37,7 +37,6 @@ import net.sourceforge.pmd.PropertyDescriptor;
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.dfa.DataFlowNode;
-import net.sourceforge.pmd.lang.dfa.NodeType;
 import net.sourceforge.pmd.lang.dfa.VariableAccess;
 import net.sourceforge.pmd.lang.dfa.pathfinder.CurrentPath;
 import net.sourceforge.pmd.lang.dfa.pathfinder.DAAPathFinder;
@@ -316,9 +315,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				for (Node statement : statements) {
 					if (current.equals(statement.getDataFlowNode())) {
 						DataFlowNode next = node.getDataFlowNode().getFlow().get(i + 1);
-						if (!next.isType(NodeType.IF_EXPR)) {
-							this.additionalDataFlowNodes.add(next);
-						}
+						this.additionalDataFlowNodes.add(next);
 					}
 				}
 				i++;
