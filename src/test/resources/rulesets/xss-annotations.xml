@@ -21,6 +21,9 @@
       <priority>1</priority>
       
       <properties>
+      	<property name="max-dataflows">
+      		<value>10</value>
+      	</property>
          <property name="sinks">
          	<value>
          		|javax.servlet.jsp.JspWriter.print

@@ -69,6 +69,7 @@ import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclarator;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclaratorId;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableInitializer;
 import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
+import net.sourceforge.pmd.lang.rule.properties.StringProperty;
 import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 
 import org.apache.commons.lang3.StringUtils;
@@ -113,13 +114,15 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 	private final PropertyDescriptor<String[]> generatorAnnotationsDescriptor = new StringMultiProperty("generator-annotations",
 			"TODO", new String[] {  }, 1.0f, '|');
+	
+	private final PropertyDescriptor<String> maxDataFlowsDescriptor = new StringProperty("max-dataflows", "TODO", "30", 1.0f);
 
 	private RuleContext rc;
 	private int methodDataFlowCount;
 
 	private List<DataFlowNode> additionalDataFlowNodes = new ArrayList<DataFlowNode>();
 
-	private static final int MAX_DATAFLOWS = 30;
+	private int MAX_DATAFLOWS = 30;
 	private boolean generator = false;
 	private boolean initialized = false;
 
@@ -130,6 +133,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		this.propertyDescriptors.add(this.sinkAnnotationsDescriptor);
 		this.propertyDescriptors.add(this.generatorAnnotationsDescriptor);
 		this.propertyDescriptors.add(this.annotationsPackagesDescriptor);
+		this.propertyDescriptors.add(this.maxDataFlowsDescriptor);
 	}
 
 	@Override
@@ -146,8 +150,13 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		this.sinkAnnotations = Utils.arrayAsSet(getProperty(this.sinkAnnotationsDescriptor));
 		this.generatorAnnotations = Utils.arrayAsSet(getProperty(this.generatorAnnotationsDescriptor));
 		this.searchAnnotationsInPackages = Utils.arrayAsSet(getProperty(this.annotationsPackagesDescriptor));
-		this.searchAnnotationsInPackagesArray = this.searchAnnotationsInPackages
-				.toArray(new String[this.searchAnnotationsInPackages.size()]);
+		this.searchAnnotationsInPackagesArray = this.searchAnnotationsInPackages.toArray(new String[0]);
+		try {
+			this.MAX_DATAFLOWS = Integer.parseInt(getProperty(this.maxDataFlowsDescriptor));
+		}
+		catch (Exception e) {
+			this.MAX_DATAFLOWS = 30;
+		}
 	}
 	@Override
 	public void execute(CurrentPath currentPath) {
