@@ -19,13 +19,14 @@ import com.milaboratory.core.io.sequence.PairedRead;
 import com.milaboratory.core.sequence.NSequenceWithQuality;
 
 public class PairedReadMergingResult implements java.io.Serializable {
-    private static final int MATCH_SCORE = 2;
-    private static final int MISMATCH_SCORE = -5;
+    public static final int MATCH_SCORE = 2;
+    public static final int MISMATCH_SCORE = -5;
 
     final PairedRead originalRead;
     final NSequenceWithQuality overlappedSequence;
     final int overlap;
     final int errors;
+    final int offset;
 
     /**
      * Constructor for failed merging result.
@@ -37,6 +38,7 @@ public class PairedReadMergingResult implements java.io.Serializable {
         this.overlappedSequence = null;
         this.overlap = 0;
         this.errors = -1;
+        this.offset = Integer.MAX_VALUE;
     }
 
     /**
@@ -48,11 +50,12 @@ public class PairedReadMergingResult implements java.io.Serializable {
      * @param errors             number of mismatches/insertions/deletions found in overlapping region
      */
     public PairedReadMergingResult(PairedRead originalRead, NSequenceWithQuality overlappedSequence,
-                                   int overlap, int errors) {
+                                   int overlap, int errors, int offset) {
         this.originalRead = originalRead;
         this.overlappedSequence = overlappedSequence;
         this.overlap = overlap;
         this.errors = errors;
+        this.offset = offset;
     }
 
     public boolean isSuccessful() {
@@ -69,6 +72,10 @@ public class PairedReadMergingResult implements java.io.Serializable {
 
     public int getOverlap() {
         return overlap;
+    }
+
+    public int getOffset() {
+        return offset;
     }
 
     public int getErrors() {

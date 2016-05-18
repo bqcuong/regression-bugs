@@ -131,7 +131,7 @@ public final class MismatchOnlyPairedReadMerger implements Processor<PairedRead,
                         read2.getSequence(), 0,
                         overlap)) <= overlap * maxMismatchesPart) {
                     tmp = new PairedReadMergingResult(pairedRead, overlap(read1, read2, matchPosition),
-                            overlap, mismatches);
+                            overlap, mismatches, matchPosition);
                     break;
                 }
 
@@ -142,8 +142,9 @@ public final class MismatchOnlyPairedReadMerger implements Processor<PairedRead,
                         read1.getSequence(), matchPosition - overlap,
                         read2.getSequence(), max(0, read2.size() - overlap),
                         overlap)) <= overlap * maxMismatchesPart) {
-                    tmp = new PairedReadMergingResult(pairedRead, overlap(read1, read2, min(matchPosition - read2.size(), 0)),
-                            overlap, mismatches);
+                    final int offset = min(matchPosition - read2.size(), 0);
+                    tmp = new PairedReadMergingResult(pairedRead, overlap(read1, read2, offset),
+                            overlap, mismatches, offset);
                     break;
                 }
             }
