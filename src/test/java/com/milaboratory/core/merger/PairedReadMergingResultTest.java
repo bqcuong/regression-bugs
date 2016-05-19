@@ -32,7 +32,7 @@ public class PairedReadMergingResultTest {
         PairedReadMergingResult se = new PairedReadMergingResult(new PairedRead(
                 new SingleReadImpl(12, new NSequenceWithQuality(new NucleotideSequence("atgc"), new SequenceQuality("++++")), "x"),
                 new SingleReadImpl(12, new NSequenceWithQuality(new NucleotideSequence("atgc"), new SequenceQuality("++++")), "x")),
-                new NSequenceWithQuality(new NucleotideSequence("atgc"), new SequenceQuality("++++")), 12, 3, 9);
+                new NSequenceWithQuality(new NucleotideSequence("atgc"), new SequenceQuality("++++")), 12, 3,false, 9);
         IOTestUtil.assertJavaSerialization(se);
     }
 }

@@ -26,6 +26,7 @@ public class PairedReadMergingResult implements java.io.Serializable {
     final NSequenceWithQuality overlappedSequence;
     final int overlap;
     final int errors;
+    final boolean reversed;
     final int offset;
 
     /**
@@ -38,6 +39,7 @@ public class PairedReadMergingResult implements java.io.Serializable {
         this.overlappedSequence = null;
         this.overlap = 0;
         this.errors = -1;
+        this.reversed = false;
         this.offset = Integer.MAX_VALUE;
     }
 
@@ -50,11 +52,12 @@ public class PairedReadMergingResult implements java.io.Serializable {
      * @param errors             number of mismatches/insertions/deletions found in overlapping region
      */
     public PairedReadMergingResult(PairedRead originalRead, NSequenceWithQuality overlappedSequence,
-                                   int overlap, int errors, int offset) {
+                                   int overlap, int errors, boolean reversed, int offset) {
         this.originalRead = originalRead;
         this.overlappedSequence = overlappedSequence;
         this.overlap = overlap;
         this.errors = errors;
+        this.reversed = reversed;
         this.offset = offset;
     }
 

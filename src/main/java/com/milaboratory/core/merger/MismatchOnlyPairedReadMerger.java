@@ -99,11 +99,13 @@ public final class MismatchOnlyPairedReadMerger implements Processor<PairedRead,
             // (if reads configuration is opposite)
             NSequenceWithQuality read2 = strand ? read2p.getReverseComplement() : read2p;
 
+            boolean swapped = false;
             // read2 always smaller then read1
             if (read2.size() > read1.size()) {
                 NSequenceWithQuality tmp = read1;
                 read1 = read2;
                 read2 = tmp;
+                swapped = true;
             }
 
             // Searching
@@ -131,7 +133,7 @@ public final class MismatchOnlyPairedReadMerger implements Processor<PairedRead,
                         read2.getSequence(), 0,
                         overlap)) <= overlap * maxMismatchesPart) {
                     tmp = new PairedReadMergingResult(pairedRead, overlap(read1, read2, matchPosition),
-                            overlap, mismatches, matchPosition);
+                            overlap, mismatches, strand, swapped ? -matchPosition : matchPosition);
                     break;
                 }
 
@@ -144,7 +146,7 @@ public final class MismatchOnlyPairedReadMerger implements Processor<PairedRead,
                         overlap)) <= overlap * maxMismatchesPart) {
                     final int offset = min(matchPosition - read2.size(), 0);
                     tmp = new PairedReadMergingResult(pairedRead, overlap(read1, read2, offset),
-                            overlap, mismatches, offset);
+                            overlap, mismatches, strand, swapped ? -offset : offset);
                     break;
                 }
             }
