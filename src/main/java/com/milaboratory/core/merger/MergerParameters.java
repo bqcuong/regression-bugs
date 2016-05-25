@@ -74,6 +74,10 @@ public final class MergerParameters implements java.io.Serializable {
         return new MergerParameters(qualityMergingAlgorithm, partsLayout, minimalOverlap, maxQuality, minimalIdentity);
     }
 
+    public MergerParameters overrideMinimalIdentity(double newIdentity) {
+        return new MergerParameters(qualityMergingAlgorithm, partsLayout, minimalOverlap, maxQuality, newIdentity);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
