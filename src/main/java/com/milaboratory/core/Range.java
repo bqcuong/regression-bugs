@@ -70,6 +70,15 @@ public final class Range implements java.io.Serializable {
     }
 
     /**
+     * Returns {@literal true} if {@code length() == 0}.
+     *
+     * @return {@literal true} if {@code length() == 0}.
+     */
+    public boolean isEmpty() {
+        return upper == lower;
+    }
+
+    /**
      * Returns the length of this range.
      *
      * @return length of this range
@@ -167,7 +176,9 @@ public final class Range implements java.io.Serializable {
      * @return {@code true} if range intersects with {@code other} range
      */
     public boolean intersectsWith(Range other) {
-        return contains(other.lower) || contains(other.upper - 1) || (other.upper > upper && other.lower < lower);
+        return (this.contains(other.lower) && !other.isEmpty())
+                || (other.contains(this.lower) && !this.isEmpty())
+                || (other.upper > upper && other.lower < lower);
     }
 
     /**
