@@ -94,6 +94,10 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
      * Mapping between wildcard basicMask representation (bit representation) and wildcard object
      */
     private final TLongObjectMap<Wildcard> basicMaskToWildcard;
+    /**
+     * Singleton empty sequence
+     */
+    private final S empty;
     ///**
     // * 0b1111...11 = 2 ^ basicLettersCount - 1
     // */
@@ -138,6 +142,8 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
         // To be returned by corresponding getter
         this.wildcardsList = Collections.unmodifiableList(Arrays.asList(codeToWildcard));
         //this.basicLettersMask = ~(0xFFFFFFFFFFFFFFFFL << countOfBasicLetters);
+
+        this.empty = this.getBuilder().createAndDestroy();
     }
 
     /**
@@ -262,6 +268,15 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
      * @return sequence builder for corresponding sequence type
      */
     public abstract SequenceBuilder<S> getBuilder();
+
+    /**
+     * Returns empty sequence singleton
+     *
+     * @return empty sequence singleton
+     */
+    public S getEmptySequence() {
+        return empty;
+    }
 
     /**
      * Returns the human readable name of this alphabet.
