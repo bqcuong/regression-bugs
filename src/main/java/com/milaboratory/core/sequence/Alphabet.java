@@ -18,6 +18,7 @@ package com.milaboratory.core.sequence;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.milaboratory.primitivio.annotations.Serializable;
+import com.milaboratory.util.HashFunctions;
 import gnu.trove.impl.Constants;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TCharByteHashMap;
@@ -64,6 +65,8 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
      */
     private final String alphabetName;
 
+    private final int hashCode;
+
     /* Content */
 
     /**
@@ -97,7 +100,8 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
     /**
      * Singleton empty sequence
      */
-    private final S empty;
+    private volatile S empty;
+
     ///**
     // * 0b1111...11 = 2 ^ basicLettersCount - 1
     // */
@@ -107,6 +111,7 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
              Wildcard... wildcards) {
         this.alphabetName = alphabetName;
         this.alphabetId = alphabetId;
+        this.hashCode = HashFunctions.JenkinWang32shift(alphabetId);
         this.countOfBasicLetters = countOfBasicLetters;
         this.wildcardForAnyLetter = wildcardForAnyLetter;
 
@@ -142,8 +147,6 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
         // To be returned by corresponding getter
         this.wildcardsList = Collections.unmodifiableList(Arrays.asList(codeToWildcard));
         //this.basicLettersMask = ~(0xFFFFFFFFFFFFFFFFL << countOfBasicLetters);
-
-        this.empty = this.getBuilder().createAndDestroy();
     }
 
     /**
@@ -275,6 +278,11 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
      * @return empty sequence singleton
      */
     public S getEmptySequence() {
+        if (empty == null)
+            synchronized (this) {
+                if (empty == null)
+                    empty = getBuilder().createAndDestroy();
+            }
         return empty;
     }
 
@@ -333,7 +341,7 @@ public abstract class Alphabet<S extends Sequence<S>> implements java.io.Seriali
      */
     @Override
     public final int hashCode() {
-        return super.hashCode();
+        return hashCode;
     }
 
     /**
