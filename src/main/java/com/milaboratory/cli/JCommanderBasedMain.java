@@ -108,7 +108,9 @@ public class JCommanderBasedMain implements ActionHelper {
                 }
 
                 // Print complete help if requested
-                if (mainParameters.help()) {
+                if (mainParameters.help() || args.length == 1) {
+                    if(args.length == 1)
+                        System.out.println("Error: missing required arguments.\n");
                     // Creating new instance of jCommander to add only non-hidden actions
                     JCommander tmpCommander = new JCommander(mainParameters);
                     tmpCommander.setProgramName(command);
