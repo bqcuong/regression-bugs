@@ -36,7 +36,7 @@ public class FragmentedSequenceCacheTest {
         final List<Range> requests = new ArrayList<>();
 
         FragmentedSequenceCache<NucleotideSequence> cache = new FragmentedSequenceCache<>(NucleotideSequence.ALPHABET,
-                new FragmentedSequenceCache.SequenceProvider<NucleotideSequence>() {
+                new SequenceProvider<NucleotideSequence>() {
                     @Override
                     public NucleotideSequence getRegion(Range range) {
                         requests.add(range);
@@ -71,7 +71,6 @@ public class FragmentedSequenceCacheTest {
                 10, 45);
     }
 
-
     @Test
     public void test2() throws Exception {
         test2i(NucleotideSequence.ALPHABET);
@@ -84,7 +83,7 @@ public class FragmentedSequenceCacheTest {
             final S sequence = TestUtil.randomSequence(alphabet, 1000, 2000);
 
             FragmentedSequenceCache<S> cache = new FragmentedSequenceCache<>(alphabet,
-                    new FragmentedSequenceCache.SequenceProvider<S>() {
+                    new SequenceProvider<S>() {
                         @Override
                         public S getRegion(Range range) {
                             return sequence.getRange(range);

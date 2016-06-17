@@ -431,6 +431,37 @@ public class KAligner2Test {
         Assert.assertEquals(correct, 100);
     }
 
+    @Test
+    public void caseJ1() throws Exception {
+        String paramsS = "{\"type\":\"kaligner2\",\"mapperNValue\":8," +
+                "\"mapperKValue\":1,\"floatingLeftBound\":true," +
+                "\"floatingRightBound\":false,\"mapperAbsoluteMinClusterScore\":102," +
+                "\"mapperExtraClusterScore\":-38,\"mapperMatchScore\":95," +
+                "\"mapperMismatchScore\":-14,\"mapperOffsetShiftScore\":-82," +
+                "\"mapperSlotCount\":6,\"mapperMaxClusters\":4,\"mapperMaxClusterIndels\":4," +
+                "\"mapperKMersPerPosition\":4,\"mapperAbsoluteMinScore\":100," +
+                "\"mapperRelativeMinScore\":0.8,\"mapperMinSeedsDistance\":5," +
+                "\"mapperMaxSeedsDistance\":5,\"alignmentStopPenalty\":0," +
+                "\"absoluteMinScore\":150,\"relativeMinScore\":0.8," +
+                "\"maxHits\":3,\"scoring\":{\"type\":\"affine\"," +
+                "\"subsMatrix\":\"simple(match = 10, mismatch = -19)\"," +
+                "\"gapOpenPenalty\":-40,\"gapExtensionPenalty\":-11}}";
+
+        KAlignerParameters2 params = GlobalObjectMappers.ONE_LINE.readValue(paramsS, KAlignerParameters2.class);
+
+        KAligner2<Integer> aligner = new KAligner2<>(params);
+        NucleotideSequence j = nt("tgatgcttttgatatctggggccaagggacaatggtcaccgtctcttcagga");
+        System.out.println(j.size());
+        aligner.addReference(j);
+        NucleotideSequence target = nt("CGAAAGATCGGGGTTCTCCTCGGATCCCCCTGCTGTGGTTCGGGGAGTTGGGGGATGATGCTTTTGATATCTG" +
+                "GGGCCAAGGGACAATGGTCACCGTCTCTTCAGGGAGTGCATCCGCCCCAACCCTTTTCCCCCT");
+        KAlignmentResult2<Integer> align = aligner.align(target);
+        Alignment<NucleotideSequence> alignment = align.getBestHit().getAlignment();
+        System.out.println(alignment.getAlignmentHelper());
+        System.out.println(alignment.getAbsoluteMutations());
+        System.out.println(alignment.getSequence1Range());
+        System.out.println(alignment.getSequence2Range());
+    }
     //@Test
     //public void testSpeed1() throws Exception {
     //    new BufferedReader(new InputStreamReader(System.in)).readLine();

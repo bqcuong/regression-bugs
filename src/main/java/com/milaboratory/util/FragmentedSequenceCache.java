@@ -152,10 +152,6 @@ public final class FragmentedSequenceCache<S extends Sequence<S>> {
         sequences.put(range, seq);
     }
 
-    public interface SequenceProvider<S extends Sequence<S>> {
-        S getRegion(Range range);
-    }
-
     private static final SequenceProvider NO_PROVIDER = new SequenceProvider() {
         @Override
         public Sequence getRegion(Range range) {
