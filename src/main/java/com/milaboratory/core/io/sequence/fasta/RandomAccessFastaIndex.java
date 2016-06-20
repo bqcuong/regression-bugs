@@ -104,22 +104,91 @@ public class RandomAccessFastaIndex {
     }
 
     public static final class StreamIndexBuilder {
+        /**
+         * Common HDD cluster size
+         */
+        public static final int DEFAULT_INDEX_STEP = 512;
+        /**
+         * Internal builder
+         */
         final IndexBuilder builder;
         /**
-         * -1 = builder finish it's work and invalidated.
+         * -1 = builder finished it's work and invalidated
          */
-        long currentPosition = 0;
+        long currentStreamPosition = 0;
+        long lastNonLineBreakPosition = -1;
+        /**
+         * Counter of sequence position
+         */
+        long currentSequencePosition = -1;
+        /**
+         * true if on first char of the line
+         */
+        boolean onLineStart = true;
+        /**
+         * -1 = not on header
+         * >0 = on header
+         */
+        int headerBufferPointer = -1;
+        /**
+         * Stores header string before record creation
+         */
+        byte[] headerBuffer = new byte[32768];
 
         public StreamIndexBuilder(int indexStep) {
-            this.builder = new IndexBuilder(indexStep);
+            this(new IndexBuilder(indexStep), 0L);
         }
 
-        public StreamIndexBuilder(IndexBuilder builder) {
+        public StreamIndexBuilder(int indexStep, long streamPosition) {
+            this(new IndexBuilder(indexStep), streamPosition);
+        }
+
+        public StreamIndexBuilder(IndexBuilder builder, long streamPosition) {
+            this.currentStreamPosition = streamPosition;
             this.builder = builder;
         }
 
         public void processBuffer(byte[] buffer, int offset, int length) {
+            // Throw exception if builder invalidated
+            if (currentStreamPosition == -1)
+                throw new IllegalStateException();
 
+            for (int i = 0; i < length; i++) {
+                long streamPosition = currentStreamPosition++;
+                byte b = buffer[offset + i];
+
+                // Processing line breaks
+                if (b == '\n' || b == '\r') {
+                    if (!onLineStart)
+                        lastNonLineBreakPosition = streamPosition - 1;
+                    onLineStart = true;
+                    continue;
+                }
+
+                // Detecting record header start
+                if (onLineStart && b == '>') {
+                    // End of record detected
+                    if(builder.isOnRecord()){
+                        builder.setLastRecordLength(currentSequencePosition);
+                    }
+                    headerBufferPointer = 0;
+                    onLineStart = false;
+                    continue;
+                }
+
+                // End of record header
+                if (onLineStart && headerBufferPointer >= 0) {
+                    builder.addRecord(new String(headerBuffer, 0, headerBufferPointer), streamPosition);
+                    headerBufferPointer = -1;
+                }
+
+                if (headerBufferPointer == -1) {
+                    long sequencePosition = currentSequencePosition++;
+                    if (sequencePosition != 0 && sequencePosition % builder.indexStep == 0)
+                        builder.addIndexPoint(streamPosition);
+                } else
+                    headerBuffer[headerBufferPointer++] = b;
+            }
         }
 
         public RandomAccessFastaIndex finish() {
@@ -136,6 +205,10 @@ public class RandomAccessFastaIndex {
 
         public IndexBuilder(int indexStep) {
             this.indexStep = indexStep;
+        }
+
+        public boolean isOnRecord() {
+            return lengths.size() + 1 == descriptions.size();
         }
 
         public void addRecord(String description, long position) {
