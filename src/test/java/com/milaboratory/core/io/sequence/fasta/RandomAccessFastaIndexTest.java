@@ -18,6 +18,9 @@ package com.milaboratory.core.io.sequence.fasta;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 public class RandomAccessFastaIndexTest {
     @Test(expected = IllegalStateException.class)
     public void test1() throws Exception {
@@ -59,5 +62,93 @@ public class RandomAccessFastaIndexTest {
         Assert.assertEquals((2013L + 1024 + 13) << RandomAccessFastaIndex.FILE_POSITION_OFFSET, index.getRecordByIndex(1).queryPosition(1024));
         Assert.assertEquals(((2013L + 1024 + 13) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 6, index.getRecordByIndex(1).queryPosition(1030));
         Assert.assertEquals(((2013L + 1024 * 2 + 24) << RandomAccessFastaIndex.FILE_POSITION_OFFSET), index.getRecordByIndex(1).queryPosition(2048));
+    }
+
+    @Test
+    public void test4() throws Exception {
+        RandomAccessFastaIndex.StreamIndexBuilder builder = new RandomAccessFastaIndex.StreamIndexBuilder(4);
+        String lineBreak = "\r\n";
+        // 0
+        builder.processBuffer(">record1" + lineBreak);
+        // 10
+        builder.processBuffer("ATTAGACAGACATATATGCA" + lineBreak);
+        // 32
+        builder.processBuffer("ATTAGACAGACAACC" + lineBreak);
+        // 49
+
+        RandomAccessFastaIndex index = builder.build();
+
+        Assert.assertEquals(1, index.size());
+        Assert.assertEquals("record1", index.getRecordByIndex(0).getDescription());
+        Assert.assertEquals(35, index.getRecordByIndex(0).getLength());
+
+        Assert.assertEquals(((10L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 0, index.getRecordByIndex(0).queryPosition(0));
+        Assert.assertEquals(((32L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 0, index.getRecordByIndex(0).queryPosition(20));
+        Assert.assertEquals(((26L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 3, index.getRecordByIndex(0).queryPosition(19));
+    }
+
+    @Test
+    public void test5() throws Exception {
+        RandomAccessFastaIndex.StreamIndexBuilder builder = new RandomAccessFastaIndex.StreamIndexBuilder(4);
+        String lineBreak = "\r\n";
+        // 0
+        builder.processBuffer(">record1" + lineBreak);
+        // 10
+        builder.processBuffer(lineBreak);
+        // 12
+        builder.processBuffer("ATTAGACAGACATATATGCA" + lineBreak);
+        // 34
+        builder.processBuffer("ATTAGACAGACAACC" + lineBreak);
+        // 51
+
+        RandomAccessFastaIndex index = builder.build();
+
+        Assert.assertEquals(1, index.size());
+        Assert.assertEquals("record1", index.getRecordByIndex(0).getDescription());
+        Assert.assertEquals(35, index.getRecordByIndex(0).getLength());
+
+        Assert.assertEquals(((12L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 0, index.getRecordByIndex(0).queryPosition(0));
+        Assert.assertEquals(((34L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 0, index.getRecordByIndex(0).queryPosition(20));
+        Assert.assertEquals(((28L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 3, index.getRecordByIndex(0).queryPosition(19));
+    }
+
+    @Test
+    public void test6() throws Exception {
+        RandomAccessFastaIndex.StreamIndexBuilder builder = new RandomAccessFastaIndex.StreamIndexBuilder(4);
+        String lineBreak = "\r\n";
+        // 0
+        builder.processBuffer(">record1" + lineBreak);
+        // 10
+        builder.processBuffer("ATTAGACAGACATATATGCA" + lineBreak);
+        // 32
+        builder.processBuffer("ATTAGACAGACAACC" + lineBreak);
+        // 49
+        builder.processBuffer(">record2" + lineBreak);
+        // 59
+        builder.processBuffer("ATTAGACAGACATATATGCA" + lineBreak);
+        // 71
+        builder.processBuffer("ATTAGACAGAC" + lineBreak);
+
+        RandomAccessFastaIndex index = builder.build();
+
+        Assert.assertEquals(2, index.size());
+        Assert.assertEquals("record1", index.getRecordByIndex(0).getDescription());
+        Assert.assertEquals(35, index.getRecordByIndex(0).getLength());
+        Assert.assertEquals("record2", index.getRecordByIndex(1).getDescription());
+        Assert.assertEquals(31, index.getRecordByIndex(1).getLength());
+
+        Assert.assertEquals(((10L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 0, index.getRecordByIndex(0).queryPosition(0));
+        Assert.assertEquals(((32L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 0, index.getRecordByIndex(0).queryPosition(20));
+        Assert.assertEquals(((26L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 3, index.getRecordByIndex(0).queryPosition(19));
+
+        Assert.assertEquals(((49L + 10L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 0, index.getRecordByIndex(1).queryPosition(0));
+        Assert.assertEquals(((49L + 32L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 0, index.getRecordByIndex(1).queryPosition(20));
+        Assert.assertEquals(((49L + 26L) << RandomAccessFastaIndex.FILE_POSITION_OFFSET) | 3, index.getRecordByIndex(1).queryPosition(19));
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        index.write(bos);
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        RandomAccessFastaIndex deserialized = RandomAccessFastaIndex.read(bis);
+        Assert.assertEquals(index, deserialized);
     }
 }

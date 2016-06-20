@@ -15,18 +15,55 @@
  */
 package com.milaboratory.core.io.sequence.fasta;
 
+import com.milaboratory.primitivio.PrimitivI;
+import com.milaboratory.primitivio.PrimitivO;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class RandomAccessFastaIndex {
+public final class RandomAccessFastaIndex {
+    public static int MAGIC = 0xDEC730C5;
+    /**
+     * Default index step = the most common HDD cluster size
+     */
+    public static final int DEFAULT_INDEX_STEP = 4096;
     public static final long SKIP_MASK = 0xFFFFFL;
     public static final int FILE_POSITION_OFFSET = 20;
     private final int indexStep;
     private final long[] indexArray;
     private final IndexRecord[] records;
+
+    RandomAccessFastaIndex(InputStream is) {
+        PrimitivI pi = new PrimitivI(is);
+        int magic = pi.readInt();
+        if (magic != MAGIC)
+            throw new IllegalArgumentException("Wrong stream format.");
+        this.indexStep = pi.readVarInt();
+        this.indexArray = new long[pi.readVarInt()];
+
+        if (indexArray.length == 0) {
+            this.records = new IndexRecord[0];
+            return;
+        }
+
+        this.indexArray[0] = pi.readVarLong();
+        for (int i = 1; i < this.indexArray.length; i++)
+            this.indexArray[i] = this.indexArray[i - 1] + pi.readVarLong();
+
+
+        this.records = new IndexRecord[pi.readVarInt()];
+        for (int i = 0; i < records.length; i++) {
+            int indexStart = pi.readVarInt();
+            long length = pi.readVarLong();
+            String description = pi.readUTF();
+            records[i] = new IndexRecord(description, length, indexStart);
+        }
+    }
 
     RandomAccessFastaIndex(IndexBuilder builder) {
         if (builder.lengths.size() != builder.descriptions.size())
@@ -45,8 +82,57 @@ public class RandomAccessFastaIndex {
         return indexStep;
     }
 
+    public int size() {
+        return records.length;
+    }
+
     public IndexRecord getRecordByIndex(int i) {
         return records[i];
+    }
+
+    public void write(OutputStream stream) {
+        PrimitivO po = new PrimitivO(stream);
+        po.writeInt(MAGIC);
+        po.writeVarInt(indexStep);
+        po.writeVarInt(indexArray.length);
+        if (indexArray.length == 0)
+            return;
+        po.writeVarLong(indexArray[0]);
+        for (int i = 1; i < indexArray.length; i++)
+            po.writeVarLong(indexArray[i] - indexArray[i - 1]);
+
+        po.writeVarInt(records.length);
+        for (IndexRecord record : records) {
+            po.writeVarInt(record.indexStart);
+            po.writeVarLong(record.length);
+            po.writeUTF(record.description);
+        }
+    }
+
+    public static RandomAccessFastaIndex read(InputStream stream) {
+        return new RandomAccessFastaIndex(stream);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RandomAccessFastaIndex)) return false;
+
+        RandomAccessFastaIndex that = (RandomAccessFastaIndex) o;
+
+        if (indexStep != that.indexStep) return false;
+        if (!Arrays.equals(indexArray, that.indexArray)) return false;
+        // Probably incorrect - comparing Object[] arrays with Arrays.equals
+        return Arrays.equals(records, that.records);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = indexStep;
+        result = 31 * result + Arrays.hashCode(indexArray);
+        result = 31 * result + Arrays.hashCode(records);
+        return result;
     }
 
     public final class IndexRecord {
@@ -101,13 +187,30 @@ public class RandomAccessFastaIndex {
             int indexOffset = (int) (offset / indexStep);
             return (indexArray[indexStart + indexOffset] << FILE_POSITION_OFFSET) | (offset - (long) (indexOffset) * indexStep);
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof IndexRecord)) return false;
+
+            IndexRecord that = (IndexRecord) o;
+
+            if (length != that.length) return false;
+            if (indexStart != that.indexStart) return false;
+            return description != null ? description.equals(that.description) : that.description == null;
+
+        }
+
+        @Override
+        public int hashCode() {
+            int result = description != null ? description.hashCode() : 0;
+            result = 31 * result + (int) (length ^ (length >>> 32));
+            result = 31 * result + indexStart;
+            return result;
+        }
     }
 
     public static final class StreamIndexBuilder {
-        /**
-         * Common HDD cluster size
-         */
-        public static final int DEFAULT_INDEX_STEP = 512;
         /**
          * Internal builder
          */
@@ -135,6 +238,10 @@ public class RandomAccessFastaIndex {
          */
         byte[] headerBuffer = new byte[32768];
 
+        public StreamIndexBuilder() {
+            this(DEFAULT_INDEX_STEP);
+        }
+
         public StreamIndexBuilder(int indexStep) {
             this(new IndexBuilder(indexStep), 0L);
         }
@@ -146,6 +253,14 @@ public class RandomAccessFastaIndex {
         public StreamIndexBuilder(IndexBuilder builder, long streamPosition) {
             this.currentStreamPosition = streamPosition;
             this.builder = builder;
+        }
+
+        public void processBuffer(String str) {
+            processBuffer(str.getBytes());
+        }
+
+        public void processBuffer(byte[] buffer) {
+            processBuffer(buffer, 0, buffer.length);
         }
 
         public void processBuffer(byte[] buffer, int offset, int length) {
@@ -168,9 +283,7 @@ public class RandomAccessFastaIndex {
                 // Detecting record header start
                 if (onLineStart && b == '>') {
                     // End of record detected
-                    if(builder.isOnRecord()){
-                        builder.setLastRecordLength(currentSequencePosition);
-                    }
+                    endOfRecord();
                     headerBufferPointer = 0;
                     onLineStart = false;
                     continue;
@@ -179,7 +292,10 @@ public class RandomAccessFastaIndex {
                 // End of record header
                 if (onLineStart && headerBufferPointer >= 0) {
                     builder.addRecord(new String(headerBuffer, 0, headerBufferPointer), streamPosition);
+                    // We left header
                     headerBufferPointer = -1;
+                    // We are at the very first letter of sequence
+                    currentSequencePosition = 0;
                 }
 
                 if (headerBufferPointer == -1) {
@@ -191,8 +307,15 @@ public class RandomAccessFastaIndex {
             }
         }
 
-        public RandomAccessFastaIndex finish() {
-            return null;
+        private void endOfRecord() {
+            if (builder.isOnRecord())
+                builder.setLastRecordLength(currentSequencePosition);
+        }
+
+        public RandomAccessFastaIndex build() {
+            endOfRecord();
+            currentStreamPosition = -1;
+            return builder.build();
         }
     }
 
@@ -203,7 +326,13 @@ public class RandomAccessFastaIndex {
         private final TIntArrayList indexIndex = new TIntArrayList();
         private final TLongArrayList index = new TLongArrayList();
 
+        public IndexBuilder() {
+            this(DEFAULT_INDEX_STEP);
+        }
+
         public IndexBuilder(int indexStep) {
+            if (indexStep <= 0)
+                throw new IllegalArgumentException();
             this.indexStep = indexStep;
         }
 

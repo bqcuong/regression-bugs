@@ -19,7 +19,10 @@ import com.milaboratory.primitivio.test.TestClass1;
 import com.milaboratory.primitivio.test.TestSubClass2;
 import com.milaboratory.primitivio.test.TestSubClass3;
 import com.milaboratory.primitivio.test.TestSubSubClass1;
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 
@@ -44,5 +47,39 @@ public class UtilTest {
     @Test(expected = RuntimeException.class)
     public void test4() throws Exception {
         Util.findSerializableParent(TestSubClass2.class, false, false);
+    }
+
+    @Test
+    public void testZigZag1() throws Exception {
+        assertZigZagLong(Long.MAX_VALUE - 1);
+        assertZigZagLong(Long.MIN_VALUE + 1);
+        assertZigZagLong(Long.MAX_VALUE);
+        assertZigZagLong(Long.MIN_VALUE);
+        assertZigZagLong(0);
+        for (int i = 0; i < 10000; i++)
+            assertZigZagLong(ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, Long.MAX_VALUE));
+    }
+
+    @Test
+    public void testZigZag2() throws Exception {
+        assertZigZagInt(Integer.MAX_VALUE - 1);
+        assertZigZagInt(Integer.MIN_VALUE + 1);
+        assertZigZagInt(Integer.MAX_VALUE);
+        assertZigZagInt(Integer.MIN_VALUE);
+        assertZigZagInt(0);
+        for (int i = 0; i < 10000; i++)
+            assertZigZagInt(ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE));
+    }
+
+    static void assertZigZagLong(long v) {
+        long e = Util.zigZagEncodeLong(v);
+        long d = Util.zigZagDecodeLong(e);
+        Assert.assertEquals(v, d);
+    }
+
+    static void assertZigZagInt(int v) {
+        int e = Util.zigZagEncodeInt(v);
+        int d = Util.zigZagDecodeInt(e);
+        Assert.assertEquals(v, d);
     }
 }
