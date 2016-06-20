@@ -1,8 +1,19 @@
-[![Build Status](https://travis-ci.org/milaboratory/milib.svg?branch=develop)](https://travis-ci.org/milaboratory/milib)
+[![Build Status](https://travis-ci.org/milaboratory/milib.svg)](https://travis-ci.org/milaboratory/milib)
 MiLib
 =====
 
     Yet another Java library for Next Generation Sequencing (NGS) data processing
+    
+## Usage
+
+**Maven:**
+```
+<dependency>
+    <groupId>com.milaboratory</groupId>
+    <artifactId>milib</artifactId>
+    <version>1.4</version>
+</dependency>
+```
 
 ## License
 
