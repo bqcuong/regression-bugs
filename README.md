@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/milaboratory/milib.svg?branch=develop)](https://travis-ci.org/milaboratory/milib)
+[![Build Status](https://travis-ci.org/milaboratory/milib.png?branch=develop)](https://travis-ci.org/milaboratory/milib)
 =====
 
     Yet another Java library for Next Generation Sequencing (NGS) data processing
