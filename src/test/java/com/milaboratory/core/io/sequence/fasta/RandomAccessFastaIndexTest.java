@@ -151,4 +151,16 @@ public class RandomAccessFastaIndexTest {
         RandomAccessFastaIndex deserialized = RandomAccessFastaIndex.read(bis);
         Assert.assertEquals(index, deserialized);
     }
+
+    //@Test
+    //public void name() throws Exception {
+    //    long size = 1000000000;
+    //    size = 100000000;
+    //    long step = size / 131072;
+    //    if (step < 128)
+    //        step = 128;
+    //    int iStep = 1 << (63 - numberOfLeadingZeros(step) + (bitCount(step) > 1 ? 1 : 0));
+    //    System.out.println(iStep);
+    //    System.out.println(size / iStep);
+    //}
 }

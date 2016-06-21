@@ -118,7 +118,7 @@ public final class FragmentedSequenceCache<S extends Sequence<S>> {
 
         if (seq.size() < resTo - resFrom) {
             // Creating new sequence by merging several records
-            SequenceBuilder<S> builder = alphabet.getBuilder()
+            SequenceBuilder<S> builder = alphabet.createBuilder()
                     .ensureCapacity(resTo - resFrom);
 
             if (range.getFrom() > resFrom) {

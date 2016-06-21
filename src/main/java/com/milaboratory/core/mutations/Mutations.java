@@ -127,7 +127,7 @@ public final class Mutations<S extends Sequence<S>>
                     ++length;
                     break;
             }
-        SequenceBuilder<S> builder = alphabet.getBuilder().ensureCapacity(length);
+        SequenceBuilder<S> builder = alphabet.createBuilder().ensureCapacity(length);
         int pointer = 0;
         int mutPointer = 0;
         int mut;

@@ -205,7 +205,7 @@ public class TestUtil {
                                                            int minLength, int maxLength, boolean basicLettersOnly) {
         int length = minLength == maxLength ?
                 minLength : minLength + r.nextInt(maxLength - minLength + 1);
-        SequenceBuilder<S> builder = alphabet.getBuilder();
+        SequenceBuilder<S> builder = alphabet.createBuilder();
         for (int i = 0; i < length; ++i)
             builder.append((byte) r.nextInt(basicLettersOnly ? alphabet.basicSize() : alphabet.size()));
         return builder.createAndDestroy();

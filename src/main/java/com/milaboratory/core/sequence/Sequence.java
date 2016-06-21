@@ -97,7 +97,7 @@ public abstract class Sequence<S extends Sequence<S>> extends AbstractSeq<S> imp
 
     @Override
     public SequenceBuilder<S> getBuilder() {
-        return getAlphabet().getBuilder();
+        return getAlphabet().createBuilder();
     }
 
     @Override
