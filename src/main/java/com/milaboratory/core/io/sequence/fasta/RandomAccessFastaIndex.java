@@ -189,7 +189,7 @@ public final class RandomAccessFastaIndex {
     }
 
     private void fillIdIndex() {
-        List<String> ids = new ArrayList<>();
+        Set<String> ids = new HashSet<>();
         for (IndexRecord record : records) {
             ids.clear();
             extractIds(record.description, ids);
@@ -208,7 +208,7 @@ public final class RandomAccessFastaIndex {
             Pattern.compile("(pir|prf)\\|\\|[^\\|]+")
     };
 
-    private static void extractIds(String descriptionLine, List<String> ids) {
+    private static void extractIds(String descriptionLine, Set<String> ids) {
         // Adding full sequence description as id
         ids.add(descriptionLine.trim());
 

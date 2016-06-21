@@ -41,6 +41,15 @@ public final class FastaWriter<S extends Sequence<S>> implements AutoCloseable {
     /**
      * Creates FASTA writer
      *
+     * @param file output file
+     */
+    public FastaWriter(File file) throws FileNotFoundException {
+        this(file, DEFAULT_MAX_LENGTH);
+    }
+
+    /**
+     * Creates FASTA writer
+     *
      * @param file      output file
      * @param maxLength line length limit after which sequence will be split into several lines
      */
