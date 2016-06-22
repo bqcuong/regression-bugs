@@ -19,10 +19,10 @@ import com.milaboratory.primitivio.test.TestClass1;
 import com.milaboratory.primitivio.test.TestSubClass2;
 import com.milaboratory.primitivio.test.TestSubClass3;
 import com.milaboratory.primitivio.test.TestSubSubClass1;
+import com.milaboratory.util.RandomUtil;
+import org.apache.commons.math3.random.Well19937c;
 import org.junit.Assert;
 import org.junit.Test;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 
@@ -56,8 +56,9 @@ public class UtilTest {
         assertZigZagLong(Long.MAX_VALUE);
         assertZigZagLong(Long.MIN_VALUE);
         assertZigZagLong(0);
+        Well19937c r = RandomUtil.getThreadLocalRandom();
         for (int i = 0; i < 10000; i++)
-            assertZigZagLong(ThreadLocalRandom.current().nextLong(Long.MIN_VALUE, Long.MAX_VALUE));
+            assertZigZagLong(r.nextLong());
     }
 
     @Test
@@ -67,8 +68,9 @@ public class UtilTest {
         assertZigZagInt(Integer.MAX_VALUE);
         assertZigZagInt(Integer.MIN_VALUE);
         assertZigZagInt(0);
+        Well19937c r = RandomUtil.getThreadLocalRandom();
         for (int i = 0; i < 10000; i++)
-            assertZigZagInt(ThreadLocalRandom.current().nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE));
+            assertZigZagInt(r.nextInt());
     }
 
     static void assertZigZagLong(long v) {
