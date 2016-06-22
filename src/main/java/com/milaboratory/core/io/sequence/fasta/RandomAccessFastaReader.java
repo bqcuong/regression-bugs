@@ -19,6 +19,7 @@ import com.milaboratory.core.Range;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
+import com.milaboratory.core.sequence.provider.SequenceProvider;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -75,12 +76,29 @@ public final class RandomAccessFastaReader<S extends Sequence<S>> implements Aut
         return index;
     }
 
+    public SequenceProvider<S> getSequenceProvider(int id) {
+        return getSequenceProvider(index.getRecordByIndex(id));
+    }
+
+    public SequenceProvider<S> getSequenceProvider(String id) {
+        return getSequenceProvider(index.getRecordByIdCheck(id));
+    }
+
     public S getSequence(int id, Range range) {
         return read(index.getRecordByIndex(id), range);
     }
 
     public S getSequence(String id, Range range) {
         return read(index.getRecordByIdCheck(id), range);
+    }
+
+    private SequenceProvider<S> getSequenceProvider(final RandomAccessFastaIndex.IndexRecord record) {
+        return new SequenceProvider<S>() {
+            @Override
+            public S getRegion(Range range) {
+                return read(record, range);
+            }
+        };
     }
 
     private synchronized S read(RandomAccessFastaIndex.IndexRecord record, Range range) {

@@ -15,9 +15,9 @@
  */
 package com.milaboratory.util;
 
-import com.milaboratory.core.Range;
-import com.milaboratory.core.sequence.Sequence;
+public interface LongProcess extends AutoCloseable {
+    void reportStatus(double progress);
 
-public interface SequenceProvider<S extends Sequence<S>> {
-    S getRegion(Range range);
+    @Override
+    void close();
 }

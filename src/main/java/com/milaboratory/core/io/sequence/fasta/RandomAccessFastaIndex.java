@@ -17,6 +17,8 @@ package com.milaboratory.core.io.sequence.fasta;
 
 import com.milaboratory.primitivio.PrimitivI;
 import com.milaboratory.primitivio.PrimitivO;
+import com.milaboratory.util.LongProcess;
+import com.milaboratory.util.LongProcessReporter;
 import gnu.trove.list.array.TIntArrayList;
 import gnu.trove.list.array.TLongArrayList;
 
@@ -266,6 +268,18 @@ public final class RandomAccessFastaIndex {
      * @return index
      */
     public static RandomAccessFastaIndex index(Path file, boolean save) {
+        return index(file, save, LongProcessReporter.DefaultLongProcessReporter.INSTANCE);
+    }
+
+    /**
+     * Index fasta file with automatic step selection or load previously created index
+     *
+     * @param file     file to index
+     * @param save     whether to save index to {input_file_name}.mifdx file
+     * @param reporter indexing reporter
+     * @return index
+     */
+    public static RandomAccessFastaIndex index(Path file, boolean save, LongProcessReporter reporter) {
         try {
             // This calculates indexStep so the final index size will not exceed 1Mb
             // (approximately)
@@ -276,7 +290,7 @@ public final class RandomAccessFastaIndex {
             int iStep = 1 << (64 - numberOfLeadingZeros(step) + (bitCount(step) > 1 ? 1 : 0));
 
             // Index file
-            return index(file, iStep, save);
+            return index(file, iStep, save, reporter);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -291,6 +305,19 @@ public final class RandomAccessFastaIndex {
      * @return index
      */
     public static RandomAccessFastaIndex index(Path file, int indexStep, boolean save) {
+        return index(file, indexStep, save, LongProcessReporter.DefaultLongProcessReporter.INSTANCE);
+    }
+
+    /**
+     * Index fasta file or loads previously created index
+     *
+     * @param file      file to index
+     * @param indexStep index step
+     * @param save      whether to save index to {input_file_name}.mifdx file
+     * @param reporter  reporter
+     * @return index
+     */
+    public static RandomAccessFastaIndex index(Path file, int indexStep, boolean save, LongProcessReporter reporter) {
         Path indexFile = file.resolveSibling(file.getFileName() + INDEX_SUFFIX);
 
         if (Files.exists(indexFile))
@@ -303,7 +330,11 @@ public final class RandomAccessFastaIndex {
                 throw new RuntimeException(e);
             }
 
-        try (FileChannel fc = FileChannel.open(file, StandardOpenOption.READ)) {
+        try (LongProcess lp = reporter.start("Indexing " + file.getFileName());
+             FileChannel fc = FileChannel.open(file, StandardOpenOption.READ)) {
+            // Requesting file size to correctly report status
+            long size = Files.size(file);
+
             // Allocating buffer
             ByteBuffer buffer = ByteBuffer.allocate(65536);
             // Extracting backing byte array
@@ -313,8 +344,11 @@ public final class RandomAccessFastaIndex {
 
             // Indexing file
             int read;
-            while ((read = fc.read((ByteBuffer) buffer.clear())) > 0)
+            long done = 0;
+            while ((read = fc.read((ByteBuffer) buffer.clear())) > 0) {
                 builder.processBuffer(bufferArray, 0, read);
+                lp.reportStatus(1.0 * (done += read) / size);
+            }
 
             // Build index
             RandomAccessFastaIndex index = builder.build();

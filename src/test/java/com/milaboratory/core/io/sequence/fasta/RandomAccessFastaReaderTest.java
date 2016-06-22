@@ -23,10 +23,13 @@ import com.milaboratory.core.sequence.AminoAcidSequence;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.test.TestUtil;
+import com.milaboratory.util.AbstractLongProcessReporter;
+import com.milaboratory.util.LongProcessReporter;
 import com.milaboratory.util.RandomUtil;
 import com.milaboratory.util.TempFileManager;
 import org.apache.commons.math3.random.Well19937c;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -37,6 +40,12 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomAccessFastaReaderTest {
+    @Before
+    public void setUp() throws Exception {
+        LongProcessReporter.DefaultLongProcessReporter.INSTANCE = AbstractLongProcessReporter.stderrReporter();
+    }
+
+
     @Test
     public void test1() throws Exception {
         Path path = new File(SingleFastqReaderTest.class.getClassLoader().getResource("sequences/some_fasta.fasta").toURI()).toPath();
