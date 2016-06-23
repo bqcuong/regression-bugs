@@ -39,6 +39,12 @@ public enum QualityAggregationType {
         public QualityAggregator get(int size) {
             return new AverageQualityAggregator(size);
         }
+    }),
+    MiniMax(new AF() {
+        @Override
+        public QualityAggregator get(int size) {
+            return new MiniMaxQualityAggregator(size);
+        }
     });
     private final AF factory;
 
