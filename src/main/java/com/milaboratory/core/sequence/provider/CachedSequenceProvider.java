@@ -35,6 +35,16 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
         this.provider = provider;
     }
 
+    public CachedSequenceProvider(Alphabet<S> alphabet, final String missingErrorMessage) {
+        this.alphabet = alphabet;
+        this.provider = new SequenceProvider<S>() {
+            @Override
+            public S getRegion(Range range) {
+                throw new RuntimeException(missingErrorMessage + " (range " + range + ")");
+            }
+        };
+    }
+
     public CachedSequenceProvider(Alphabet<S> alphabet) {
         this(alphabet, NO_PROVIDER);
     }
@@ -156,7 +166,7 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
     private static final SequenceProvider NO_PROVIDER = new SequenceProvider() {
         @Override
         public Sequence getRegion(Range range) {
-            throw new IndexOutOfBoundsException("No sequence provider set.");
+            throw new IndexOutOfBoundsException("No sequence provider.");
         }
     };
 }
