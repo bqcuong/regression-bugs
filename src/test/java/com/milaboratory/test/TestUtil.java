@@ -26,6 +26,7 @@ import org.apache.commons.math3.random.RandomGenerator;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
+import org.junit.internal.AssumptionViolatedException;
 
 import java.io.File;
 import java.io.IOException;
@@ -98,6 +99,8 @@ public class TestUtil {
             Assume.assumeNotNull(resource);
             Path path = Paths.get(resource.toURI()).toAbsolutePath().resolveSibling(name);
             return path.toString();
+        } catch (AssumptionViolatedException e) {
+            throw e;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
