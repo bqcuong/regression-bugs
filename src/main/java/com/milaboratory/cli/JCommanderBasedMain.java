@@ -72,13 +72,13 @@ public class JCommanderBasedMain implements ActionHelper {
         actions.put(a.command(), a);
     }
 
-    public void main(String... args) throws Exception {
+    public ProcessResult main(String... args) throws Exception {
         // Saving current arguments
         this.arguments = args;
 
         if (args.length == 0) {
             printGlobalHelp();
-            return;
+            return ProcessResult.Help;
         }
 
         // Setting up JCommander
@@ -104,12 +104,12 @@ public class JCommanderBasedMain implements ActionHelper {
                 if (mainParameters instanceof MainParametersWithVersion &&
                         ((MainParametersWithVersion) mainParameters).version()) {
                     versionInfoCallback.run();
-                    return;
+                    return ProcessResult.Version;
                 }
 
                 // Print complete help if requested
                 if (mainParameters.help() || args.length == 1) {
-                    if(args.length == 1)
+                    if (args.length == 1)
                         System.out.println("Error: missing required arguments.\n");
                     // Creating new instance of jCommander to add only non-hidden actions
                     JCommander tmpCommander = new JCommander(mainParameters);
@@ -120,7 +120,7 @@ public class JCommanderBasedMain implements ActionHelper {
                     StringBuilder builder = new StringBuilder();
                     tmpCommander.usage(builder);
                     outputStream.print(builder);
-                    return;
+                    return ProcessResult.Help;
                 }
 
                 // Getting parsed command
@@ -134,7 +134,7 @@ public class JCommanderBasedMain implements ActionHelper {
                     else
                         outputStream.println("Command " + parsedCommand + " not supported.");
                     outputStream.println("Use -h option to get a list of supported commands.");
-                    return;
+                    return ProcessResult.Error;
                 }
 
                 action = actions.get(parsedCommand);
@@ -146,9 +146,11 @@ public class JCommanderBasedMain implements ActionHelper {
                 action.params().validate();
                 action.go(this);
             }
-        } catch (ParameterException pe) {
+        } catch (ParameterException | ProcessException pe) {
             printException(pe, commander, action);
+            return ProcessResult.Error;
         }
+        return ProcessResult.Ok;
     }
 
     private MainParameters getMainParameters() {
@@ -178,13 +180,17 @@ public class JCommanderBasedMain implements ActionHelper {
         outputStream.print(builder);
     }
 
-    protected void printException(ParameterException e,
+    protected void printException(RuntimeException e,
                                   JCommander commander, Action action) {
         outputStream.println("Error: " + e.getMessage());
         if (printStackTrace)
             e.printStackTrace(new PrintStream(outputStream));
         if (printHelpOnError)
             printActionHelp(commander, action);
+    }
+
+    public enum ProcessResult {
+        Ok, Version, Help, Error
     }
 
     /**
