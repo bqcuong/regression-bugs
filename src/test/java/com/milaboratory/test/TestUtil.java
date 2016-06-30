@@ -16,6 +16,8 @@
 package com.milaboratory.test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
@@ -107,18 +109,22 @@ public class TestUtil {
     }
 
     public static void assertJson(Object object) {
-        assertJson(object, object.getClass(), false);
+        assertJson(object, TypeFactory.defaultInstance().constructType(object.getClass()), false);
     }
 
     public static void assertJson(Object object, boolean sout) {
-        assertJson(object, object.getClass(), sout);
+        assertJson(object, TypeFactory.defaultInstance().constructType(object.getClass()), sout);
     }
 
     public static void assertJson(Object object, Class clazz) {
+        assertJson(object, TypeFactory.defaultInstance().constructType(clazz), false);
+    }
+
+    public static void assertJson(Object object, JavaType clazz) {
         assertJson(object, clazz, false);
     }
 
-    public static void assertJson(Object object, Class clazz, boolean sout) {
+    public static void assertJson(Object object, JavaType clazz, boolean sout) {
         try {
             String str = GlobalObjectMappers.PRETTY.writeValueAsString(object);
             if (sout)
