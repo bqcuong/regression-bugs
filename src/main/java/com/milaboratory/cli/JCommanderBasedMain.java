@@ -107,20 +107,20 @@ public class JCommanderBasedMain implements ActionHelper {
                     return ProcessResult.Version;
                 }
 
-                if (args.length == 1) {
+                // Print complete help if requested
+                if (mainParameters.help()) {
+                    // Creating new instance of jCommander to add only non-hidden actions
+                    printGlobalHelp();
+                    return ProcessResult.Help;
+                }
+
+                if (args.length == 1 && !args[0].startsWith("-")) {
                     action = actions.get(commandName);
                     if (!action.getClass().isAnnotationPresent(AllowNoArguments.class)) {
                         System.out.println("Error: missing required arguments.\n");
                         printActionHelp(commander, action);
                         return ProcessResult.Error;
                     }
-                }
-
-                // Print complete help if requested
-                if (mainParameters.help()) {
-                    // Creating new instance of jCommander to add only non-hidden actions
-                    printGlobalHelp();
-                    return ProcessResult.Help;
                 }
 
                 // Getting parsed command
