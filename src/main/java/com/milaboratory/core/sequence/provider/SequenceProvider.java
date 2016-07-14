@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 MiLaboratory.com
+ * Copyright 2016 MiLaboratory.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.milaboratory.util;
+package com.milaboratory.core.sequence.provider;
 
-import cc.redberry.pipe.CUtils;
-import org.junit.Test;
+import com.milaboratory.core.Range;
+import com.milaboratory.core.sequence.Sequence;
 
-import java.util.Arrays;
-
-/**
- * Created by dbolotin on 03/11/15.
- */
-public class IntCombinationsTest {
-    @Test
-    public void test1() throws Exception {
-        IntCombinations combinations = new IntCombinations(3, 2);
-        for (int[] ints : CUtils.it(combinations)) {
-            System.out.println(Arrays.toString(ints));
-        }
-    }
+public interface SequenceProvider<S extends Sequence<S>> {
+    S getRegion(Range range);
 }

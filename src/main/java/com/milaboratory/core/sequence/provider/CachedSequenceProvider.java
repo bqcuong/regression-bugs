@@ -13,28 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.milaboratory.util;
+package com.milaboratory.core.sequence.provider;
 
 import com.milaboratory.core.Range;
 import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
+import com.milaboratory.util.RangeMap;
 
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 
-public final class FragmentedSequenceCache<S extends Sequence<S>> {
+public final class CachedSequenceProvider<S extends Sequence<S>> implements SequenceProvider<S> {
     final Alphabet<S> alphabet;
     final RangeMap<S> sequences = new RangeMap<>();
     final SequenceProvider<S> provider;
 
-    public FragmentedSequenceCache(Alphabet<S> alphabet, SequenceProvider<S> provider) {
+    public CachedSequenceProvider(Alphabet<S> alphabet, SequenceProvider<S> provider) {
         this.alphabet = alphabet;
         this.provider = provider;
     }
 
-    public FragmentedSequenceCache(Alphabet<S> alphabet) {
+    public CachedSequenceProvider(Alphabet<S> alphabet, final String missingErrorMessage) {
+        this.alphabet = alphabet;
+        this.provider = new SequenceProvider<S>() {
+            @Override
+            public S getRegion(Range range) {
+                throw new RuntimeException(missingErrorMessage + " (range " + range + ")");
+            }
+        };
+    }
+
+    public CachedSequenceProvider(Alphabet<S> alphabet) {
         this(alphabet, NO_PROVIDER);
     }
 
@@ -66,7 +77,7 @@ public final class FragmentedSequenceCache<S extends Sequence<S>> {
             }
         }
 
-        // Depends on requesting type
+        // Depends on requesting strategy
 
         Range rr = new Range(resFrom, resTo);
         S seq = provider.getRegion(rr);
@@ -92,7 +103,7 @@ public final class FragmentedSequenceCache<S extends Sequence<S>> {
         return entry.getValue().getRange(range.move(-entry.getKey().getFrom()));
     }
 
-    public void addRange(Range range, S seq) {
+    public void setRegion(Range range, S seq) {
         Map.Entry<Range, S> containing = sequences.findContaining(range);
         if (containing != null) {
             for (int i = 0, j = range.getFrom() - containing.getKey().getFrom(); i < seq.size(); ++i, ++j)
@@ -118,7 +129,7 @@ public final class FragmentedSequenceCache<S extends Sequence<S>> {
 
         if (seq.size() < resTo - resFrom) {
             // Creating new sequence by merging several records
-            SequenceBuilder<S> builder = alphabet.getBuilder()
+            SequenceBuilder<S> builder = alphabet.createBuilder()
                     .ensureCapacity(resTo - resFrom);
 
             if (range.getFrom() > resFrom) {
@@ -152,14 +163,10 @@ public final class FragmentedSequenceCache<S extends Sequence<S>> {
         sequences.put(range, seq);
     }
 
-    public interface SequenceProvider<S extends Sequence<S>> {
-        S getRegion(Range range);
-    }
-
     private static final SequenceProvider NO_PROVIDER = new SequenceProvider() {
         @Override
         public Sequence getRegion(Range range) {
-            throw new IndexOutOfBoundsException("No sequence provider set.");
+            throw new IndexOutOfBoundsException("No sequence provider.");
         }
     };
 }

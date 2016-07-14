@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 MiLaboratory.com
+ * Copyright 2016 MiLaboratory.com
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,9 @@
  */
 package com.milaboratory.util;
 
-import cc.redberry.pipe.CUtils;
-import org.junit.Test;
+public interface LongProcess extends AutoCloseable {
+    void reportStatus(double progress);
 
-import java.util.Arrays;
-
-/**
- * Created by dbolotin on 03/11/15.
- */
-public class IntCombinationsTest {
-    @Test
-    public void test1() throws Exception {
-        IntCombinations combinations = new IntCombinations(3, 2);
-        for (int[] ints : CUtils.it(combinations)) {
-            System.out.println(Arrays.toString(ints));
-        }
-    }
+    @Override
+    void close();
 }

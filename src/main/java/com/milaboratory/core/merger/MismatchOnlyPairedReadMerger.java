@@ -184,7 +184,7 @@ public final class MismatchOnlyPairedReadMerger implements Processor<PairedRead,
                         max(seq1.size(), seq2.size() + offset) // offset is negative here
                 );
 
-        SequenceBuilder<NucleotideSequence> seqBuilder = NucleotideSequence.ALPHABET.getBuilder()
+        SequenceBuilder<NucleotideSequence> seqBuilder = NucleotideSequence.ALPHABET.createBuilder()
                 .ensureCapacity(length);
         SequenceQualityBuilder qualBuilder = new SequenceQualityBuilder().ensureCapacity(length);
 
