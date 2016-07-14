@@ -22,6 +22,15 @@ public final class SequenceProviderUtils {
     private SequenceProviderUtils() {
     }
 
+    public static <S extends Sequence<S>> SequenceProvider<S> fromSequence(final S sequence) {
+        return new SequenceProvider<S>() {
+            @Override
+            public S getRegion(Range range) {
+                return sequence.getRange(range);
+            }
+        };
+    }
+
     public static <S extends Sequence<S>> SequenceProvider<S> lazyProvider(final SequenceProviderFactory<S> factory) {
         return new SequenceProvider<S>() {
             volatile SequenceProvider<S> innerProvider = null;

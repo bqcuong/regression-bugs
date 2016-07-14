@@ -103,7 +103,7 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
         return entry.getValue().getRange(range.move(-entry.getKey().getFrom()));
     }
 
-    public void addRange(Range range, S seq) {
+    public void setRegion(Range range, S seq) {
         Map.Entry<Range, S> containing = sequences.findContaining(range);
         if (containing != null) {
             for (int i = 0, j = range.getFrom() - containing.getKey().getFrom(); i < seq.size(); ++i, ++j)

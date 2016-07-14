@@ -122,7 +122,7 @@ public class CachedSequenceProviderTest {
                 if (r.isEmpty())
                     continue;
                 ranges.add(r);
-                cache.addRange(r, sequence.getRange(r));
+                cache.setRegion(r, sequence.getRange(r));
                 Assert.assertFalse(cache.sequences.isOverFragmented());
                 for (Range rr : ranges)
                     Assert.assertEquals(sequence.getRange(rr), cache.getRegion(rr));
