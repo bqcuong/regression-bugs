@@ -50,6 +50,9 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
     }
 
     public Map.Entry<Range, S> ensureEntry(Range range) {
+        if (range.isReverse())
+            throw new IllegalArgumentException("Don't support inverse ranges");
+
         Range direct = range.isReverse() ? range.inverse() : range;
 
         Map.Entry<Range, S> entry = sequences.findContaining(direct);
@@ -99,8 +102,8 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
     public S getRegion(Range range) {
         if (range.isEmpty())
             return alphabet.getEmptySequence();
-        Map.Entry<Range, S> entry = ensureEntry(range);
-        return entry.getValue().getRange(range.move(-entry.getKey().getFrom()));
+        Map.Entry<Range, S> entry = range.isReverse() ? ensureEntry(range.inverse()) : ensureEntry(range);
+        return entry.getValue().getRange(entry.getKey().getRelativeRangeOf(range));
     }
 
     public void setRegion(Range range, S seq) {
