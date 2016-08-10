@@ -20,6 +20,7 @@ import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.core.sequence.SequenceBuilder;
 import com.milaboratory.core.sequence.provider.SequenceProvider;
+import com.milaboratory.core.sequence.provider.SequenceProviderIndexOutOfBoundsException;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -102,6 +103,8 @@ public final class RandomAccessFastaReader<S extends Sequence<S>> implements Aut
     }
 
     private synchronized S read(RandomAccessFastaIndex.IndexRecord record, Range range) {
+        if (range.getUpper() > record.getLength())
+            throw new SequenceProviderIndexOutOfBoundsException(range.intersection(new Range(0, (int) record.getLength())));
         try {
             long qResult = record.queryPosition(range.getLower());
             channel.position(extractFilePosition(qResult));

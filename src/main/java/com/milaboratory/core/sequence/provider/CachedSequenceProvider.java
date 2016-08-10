@@ -24,6 +24,7 @@ import com.milaboratory.util.RangeMap;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public final class CachedSequenceProvider<S extends Sequence<S>> implements SequenceProvider<S> {
     final Alphabet<S> alphabet;
@@ -97,6 +98,10 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
         sequences.put(rr, seq);
 
         return new AbstractMap.SimpleEntry<>(rr, seq);
+    }
+
+    public Set<Map.Entry<Range, S>> entrySet() {
+        return sequences.entrySet();
     }
 
     public S getRegion(Range range) {

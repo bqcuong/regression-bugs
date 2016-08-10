@@ -26,6 +26,8 @@ public final class SequenceProviderUtils {
         return new SequenceProvider<S>() {
             @Override
             public S getRegion(Range range) {
+                if (range.getUpper() > sequence.size())
+                    throw new SequenceProviderIndexOutOfBoundsException(range.intersection(new Range(0, sequence.size())));
                 return sequence.getRange(range);
             }
         };
