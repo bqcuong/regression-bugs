@@ -420,14 +420,10 @@ public final class KMapper implements java.io.Serializable {
         //int resultId = 0;
         Info info = new Info();
         int cFrom, cTo, siFrom, siTo;
-        int maxRawScore = 0, j, i;
+        int j, i;
         double preScore;
-        double maxScore = Float.MIN_VALUE;
         for (i = candidates.length - 1; i >= 0; --i) {
-            //TODO reconsider conditions:
-            if (candidates[i] != null &&
-                    candidates[i].size() >= ((minAlignmentLength - kValue + 1) / maxDistance) &&
-                    candidates[i].size() * matchScore >= maxScore * relativeMinScore) {
+            if (candidates[i] != null && candidates[i].size() >= ((minAlignmentLength - kValue + 1) / maxDistance)) {
 
                 //Sorting (important)
                 candidates[i].sort();
@@ -459,15 +455,8 @@ public final class KMapper implements java.io.Serializable {
                 preScore = matchScore * info.score; //+ max(siTo - siFrom - info.score, 0) * mismatchScore;
 
                 //Selecting candidates
-                if (preScore >= absoluteMinScore) {
+                if (preScore >= absoluteMinScore)
                     result.add(new KMappingHit(info.offset, i, (float) preScore, siFrom, siTo));
-
-                    if (maxRawScore < info.score)
-                        maxRawScore = info.score;
-
-                    if (maxScore < preScore)
-                        maxScore = preScore;
-                }
             }
         }
 
@@ -476,7 +465,7 @@ public final class KMapper implements java.io.Serializable {
         float score;
 
         KMappingHit hit;
-        maxScore = 0.0;
+        double maxScore = 0.0;
         for (j = result.size() - 1; j >= 0; --j) {
             hit = result.get(j);
 
