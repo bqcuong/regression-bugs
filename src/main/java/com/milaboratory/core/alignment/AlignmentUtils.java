@@ -89,6 +89,7 @@ public final class AlignmentUtils {
      * @param mutations     array of mutations
      * @return score of alignment
      */
+    // TODO take into account correct match score from matrix (seq1 required)
     public static int calculateScore(LinearGapAlignmentScoring scoring, int initialLength, Mutations mutations) {
         if (!scoring.uniformBasicMatchScore())
             throw new IllegalArgumentException("Scoring with non-uniform match score is not supported.");

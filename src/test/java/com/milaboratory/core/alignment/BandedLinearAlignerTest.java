@@ -28,10 +28,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class BandedLinearAlignerTest {
-    static <T extends Sequence<T>> void assertAlignment(Alignment<T> alignment, T s2) {
+    static <S extends Sequence<S>> void assertAlignment(Alignment<S> alignment, S s2) {
         Assert.assertEquals(
                 alignment.getRelativeMutations().mutate(alignment.sequence1.getRange(
                         alignment.getSequence1Range())), s2.getRange(alignment.getSequence2Range()));
+    }
+
+    static <S extends Sequence<S>> void assertAlignment(Alignment<S> alignment, S s2, AlignmentScoring<S> scoring) {
+        assertAlignment(alignment, s2);
+        if (AlignmentUtils.calculateScore(scoring, alignment.getSequence1Range().length(), alignment.getAbsoluteMutations()) != alignment.getScore()) {
+            System.out.println(alignment.getScore());
+            System.out.println(AlignmentUtils.calculateScore(scoring, alignment.getSequence1Range().length(), alignment.getAbsoluteMutations()));
+            System.out.println(alignment);
+            int i = 0;
+        }
+        Assert.assertEquals(AlignmentUtils.calculateScore(scoring, alignment.getSequence1Range().length(), alignment.getAbsoluteMutations()),
+                alignment.getScore(), 0.1);
     }
 
     @Test
