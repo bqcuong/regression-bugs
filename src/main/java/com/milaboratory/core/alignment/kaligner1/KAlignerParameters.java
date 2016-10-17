@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public final class KAlignerParameters implements BatchAlignerWithBaseParameters, Cloneable, java.io.Serializable {
+public final class KAlignerParameters implements Cloneable, java.io.Serializable, AbstractKAlignerParameters {
     private static final long serialVersionUID = 1L;
     /**
      * List of known parameters presets
@@ -445,6 +445,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
      *
      * @return {@code true} if left bound of alignment is floating
      */
+    @Override
     public boolean isFloatingLeftBound() {
         return floatingLeftBound;
     }
@@ -465,6 +466,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
      *
      * @return {@code true} if right bound of alignment is floating
      */
+    @Override
     public boolean isFloatingRightBound() {
         return floatingRightBound;
     }
@@ -526,6 +528,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
      *
      * @return maximal ratio between best hit score and scores of other hits
      */
+    @Override
     public float getRelativeMinScore() {
         return relativeMinScore;
     }
@@ -547,6 +550,7 @@ public final class KAlignerParameters implements BatchAlignerWithBaseParameters,
      *
      * @return maximal number of stored hits
      */
+    @Override
     public int getMaxHits() {
         return maxHits;
     }
