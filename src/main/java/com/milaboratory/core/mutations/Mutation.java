@@ -31,6 +31,7 @@ public final class Mutation {
             POSITION_OFFSET = 12,
             MAX_POSITION_VALUE = 0xFFFFF,
             NON_MUTATION = 0,
+            NON_MUTATION_1 = 1,
             MUTATION_TYPE_OFFSET = 5;
 
     private Mutation() {

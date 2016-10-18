@@ -15,6 +15,7 @@
  */
 package com.milaboratory.core.alignment;
 
+import com.milaboratory.core.Range;
 import com.milaboratory.core.io.util.IOTestUtil;
 import com.milaboratory.core.mutations.Mutation;
 import com.milaboratory.core.mutations.Mutations;
@@ -43,6 +44,24 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class AlignerTest {
+    public static <S extends Sequence<S>> void assertAlignment(Alignment<S> alignment, S s2) {
+        Assert.assertEquals(
+                alignment.getRelativeMutations().mutate(alignment.sequence1.getRange(
+                        alignment.getSequence1Range())), s2.getRange(alignment.getSequence2Range()));
+    }
+
+    public static <S extends Sequence<S>> void assertAlignment(Alignment<S> alignment, S s2, AlignmentScoring<S> scoring) {
+        assertAlignment(alignment, s2);
+        int calculatedScoring = alignment.calculateScore(scoring);
+        if (calculatedScoring != alignment.getScore()) {
+            System.out.println(alignment.getScore());
+            System.out.println(calculatedScoring);
+            System.out.println(alignment);
+            int i = 0;
+        }
+        Assert.assertEquals(calculatedScoring, alignment.getScore(), 0.1);
+    }
+    
     @Test
     public void testExtractSubstitutions1() throws Exception {
         NucleotideSequence seq1 = new NucleotideSequence("ATTAGACA"),
@@ -409,7 +428,7 @@ public class AlignerTest {
 
             Mutations<NucleotideSequence> mut = MutationsGenerator.generateMutations(subsequence, model);
 
-            int expectedScoring = AlignmentUtils.calculateScore(sc, subsequence.size(), mut);
+            int expectedScoring = AlignmentUtils.calculateScore(subsequence, new Range(0, subsequence.size()), mut, sc);
 
             subsequence = mut.mutate(subsequence);
             Alignment<NucleotideSequence> r = Aligner.alignLocal(sc, sequence, subsequence);
@@ -429,7 +448,7 @@ public class AlignerTest {
             NucleotideSequence seq1 = randomSequence(sc.getAlphabet(), rand, 100, 300);
 
             Mutations<NucleotideSequence> mut = MutationsGenerator.generateMutations(seq1, model);
-            int expectedScoring = AlignmentUtils.calculateScore(sc, seq1.size(), mut);
+            int expectedScoring = AlignmentUtils.calculateScore(seq1, mut, sc);
 
             NucleotideSequence seq2 = mut.mutate(seq1);
 
@@ -463,7 +482,7 @@ public class AlignerTest {
             NucleotideSequence subsequence = sequence.getRange(from, from + length);
 
             Mutations<NucleotideSequence> mut = MutationsGenerator.generateMutations(subsequence, model);
-            float mutScore = AlignmentUtils.calculateScore(sc, subsequence.size(), mut);
+            float mutScore = AlignmentUtils.calculateScore(subsequence, mut, sc);
 
             subsequence = mut.mutate(subsequence);
 
@@ -472,14 +491,14 @@ public class AlignerTest {
             Assert.assertEquals(r.getRelativeMutations().mutate(sequence.getRange(r.getSequence1Range())),
                     subsequence.getRange(r.getSequence2Range()));
 
-            Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getRelativeMutations()));
+            Assert.assertTrue(mutScore <= r.calculateScore(sc));
 
             r = Aligner.alignLocal(sc, subsequence, sequence);
 
             Assert.assertEquals(r.getRelativeMutations().mutate(subsequence.getRange(r.getSequence1Range())),
                     sequence.getRange(r.getSequence2Range()));
 
-            Assert.assertTrue(mutScore <= AlignmentUtils.calculateScore(sc, r.getSequence1Range().length(), r.getRelativeMutations()));
+            Assert.assertTrue(mutScore <= r.calculateScore(sc));
         }
     }
 

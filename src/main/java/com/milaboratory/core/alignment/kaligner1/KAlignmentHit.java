@@ -249,8 +249,7 @@ public final class KAlignmentHit<P> implements java.io.Serializable, AlignmentHi
 
             Mutations<NucleotideSequence> muts = mutations.createAndDestroy();
             alignment = new Alignment<>(
-                    reference, muts, new Range(gRefFrom, gRefTo), new Range(gSeqFrom, gSeqTo),
-                    AlignmentUtils.calculateScore(parameters.getScoring(), gRefTo - gRefFrom, muts));
+                    reference, muts, new Range(gRefFrom, gRefTo), new Range(gSeqFrom, gSeqTo), parameters.getScoring());
         } finally {
             AlignmentCache.release();
         }

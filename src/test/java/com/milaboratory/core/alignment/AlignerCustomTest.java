@@ -24,7 +24,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static com.milaboratory.core.alignment.BandedLinearAlignerTest.assertAlignment;
 import static com.milaboratory.test.TestUtil.its;
 import static com.milaboratory.test.TestUtil.randomSequence;
 import static org.junit.Assert.assertTrue;
@@ -46,7 +45,7 @@ public class AlignerCustomTest {
                 false, true, NucleotideSequence.ALPHABET, new AlignerCustom.AffineMatrixCache());
         //if (AlignmentUtils.calculateScore(scoring, alignment.getSequence1Range().length(), alignment.getAbsoluteMutations()) != alignment.getScore()) {
         System.out.println(alignment.getScore());
-        System.out.println(AlignmentUtils.calculateScore(scoring, alignment.getSequence1Range().length(), alignment.getAbsoluteMutations()));
+        //System.out.println(AlignmentUtils.calculateScore(scoring, alignment.getSequence1Range().length(), alignment.getAbsoluteMutations()));
         System.out.println(alignment);
         int i = 0;
         //}
@@ -117,7 +116,7 @@ public class AlignerCustomTest {
 
             //System.out.println(seq1.getRange(offset1, offset1 + length1));
             //System.out.println(seq2.getRange(offset2, offset2 + length2));
-            assertAlignment(la, seq2, scoring);
+            AlignerTest.assertAlignment(la, seq2, scoring);
             totalAlLength += la.getSequence1Range().length() + la.getSequence2Range().length();
         }
         //System.out.println(totalAlLength / its / 2);
@@ -164,7 +163,7 @@ public class AlignerCustomTest {
             assertTrue(la.getSequence1Range().getFrom() >= offset1);
             assertTrue(la.getSequence2Range().getFrom() >= offset2);
 
-            assertAlignment(la, seq2, scoring);
+            AlignerTest.assertAlignment(la, seq2, scoring);
             totalAlLength += la.getSequence1Range().length() + la.getSequence2Range().length();
         }
         //System.out.println(totalAlLength / its / 2);

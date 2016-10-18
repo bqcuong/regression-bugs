@@ -18,7 +18,7 @@ package com.milaboratory.core.alignment.kaligner1;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.milaboratory.core.alignment.LinearGapAlignmentScoring;
-import com.milaboratory.core.alignment.batch.BatchAlignerWithBaseParameters;
+import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.util.GlobalObjectMappers;
 
 import java.io.IOException;
@@ -135,7 +135,7 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
     /**
      * Scoring system
      */
-    private LinearGapAlignmentScoring scoring;
+    private LinearGapAlignmentScoring<NucleotideSequence> scoring;
 
     public KAlignerParameters() {
     }
@@ -177,7 +177,7 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
                               float mapperMatchScore, float mapperMismatchPenalty, float mapperOffsetShiftPenalty,
                               int mapperMinSeedsDistance, int mapperMaxSeedsDistance, int minAlignmentLength,
                               int maxAdjacentIndels, int alignmentStopPenalty, float absoluteMinScore,
-                              float relativeMinScore, int maxHits, LinearGapAlignmentScoring scoring) {
+                              float relativeMinScore, int maxHits, LinearGapAlignmentScoring<NucleotideSequence> scoring) {
         this.mapperKValue = mapperKValue;
         this.floatingLeftBound = floatingLeftBound;
         this.floatingRightBound = floatingRightBound;
@@ -423,7 +423,7 @@ public final class KAlignerParameters implements Cloneable, java.io.Serializable
      * @return scoring system
      */
     @Override
-    public LinearGapAlignmentScoring getScoring() {
+    public LinearGapAlignmentScoring<NucleotideSequence> getScoring() {
         return scoring;
     }
 

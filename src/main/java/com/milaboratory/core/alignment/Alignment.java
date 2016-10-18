@@ -18,7 +18,6 @@ package com.milaboratory.core.alignment;
 import com.milaboratory.core.Range;
 import com.milaboratory.core.io.binary.AlignmentSerializer;
 import com.milaboratory.core.mutations.Mutations;
-import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.primitivio.annotations.Serializable;
 import com.milaboratory.util.BitArray;
@@ -65,14 +64,14 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
     public Alignment(S sequence1, Mutations<S> mutations, AlignmentScoring<S> scoring) {
         this(sequence1, mutations, new Range(0, sequence1.size()),
                 new Range(0, sequence1.size() + mutations.getLengthDelta()),
-                AlignmentUtils.calculateScore(scoring, sequence1.size(), mutations));
+                scoring);
     }
 
     public Alignment(S sequence1, Mutations<S> mutations,
                      Range sequence1Range, Range sequence2Range,
                      AlignmentScoring<S> scoring) {
         this(sequence1, mutations, sequence1Range, sequence2Range,
-                AlignmentUtils.calculateScore(scoring, sequence1Range.length(), mutations));
+                AlignmentUtils.calculateScore(sequence1, sequence1Range, mutations, scoring));
     }
 
     public Alignment(S sequence1, Mutations<S> mutations,
@@ -82,7 +81,7 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
             if (!mutations.isCompatibleWith(sequence1)
                     || !sequence1Range.contains(mutations.getMutatedRange())
                     || sequence1Range.length() + mutations.getLengthDelta() != sequence2Range.length())
-                throw new IllegalArgumentException("Not compatible arguments: muts: " + mutations + " range1: " + sequence1Range + " range2: " + sequence2Range );
+                throw new IllegalArgumentException("Not compatible arguments: muts: " + mutations + " range1: " + sequence1Range + " range2: " + sequence2Range);
         } else if (sequence1Range.length() != sequence2Range.length())
             throw new IllegalArgumentException("Not compatible arguments.");
 
@@ -91,6 +90,25 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
         this.sequence1Range = sequence1Range;
         this.sequence2Range = sequence2Range;
         this.score = score;
+    }
+
+    /**
+     * Calculates score for this alignment using another scoring.
+     *
+     * @param scoring scoring
+     * @return alignment score
+     */
+    public int calculateScore(AlignmentScoring<S> scoring) {
+        return AlignmentUtils.calculateScore(sequence1, sequence1Range, mutations, scoring);
+    }
+
+    /**
+     * Returns alignment iterator.
+     *
+     * @return alignment iterator
+     */
+    public AlignmentIterator<S> iterator() {
+        return new AlignmentIterator<>(mutations, sequence1Range, sequence2Range.getFrom());
     }
 
     /**
@@ -158,12 +176,23 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
         return p + sequence2Range.getFrom() - sequence1Range.getFrom();
     }
 
+    /**
+     * Return alignment score
+     *
+     * @return alignment score
+     */
     public float getScore() {
         return score;
     }
 
+    /**
+     * Having sequence2 creates alignment from sequence2 to sequence1
+     *
+     * @param sequence2 sequence2
+     * @return inverted alignment
+     */
     public Alignment<S> invert(S sequence2) {
-        return new Alignment<S>(sequence2, getRelativeMutations().invert().move(sequence2Range.getFrom()),
+        return new Alignment<>(sequence2, getRelativeMutations().invert().move(sequence2Range.getFrom()),
                 sequence2Range, sequence1Range, score);
     }
 
@@ -174,34 +203,15 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
      */
     public float similarity() {
         int match = 0, mismatch = 0;
-        int pointer = sequence1Range.getFrom();
-        int mutPointer = 0;
-        int mut;
-        while (mutPointer < mutations.size())
-            if (mutPointer < mutations.size() && ((mut = mutations.getMutation(mutPointer)) >>> POSITION_OFFSET) <= pointer)
-                switch (mut & MUTATION_TYPE_MASK) {
-                    case RAW_MUTATION_TYPE_SUBSTITUTION:
-                        pointer++;
-                        ++mutPointer;
-                        ++mismatch;
-                        break;
-                    case RAW_MUTATION_TYPE_DELETION:
-                        pointer++;
-                        ++mutPointer;
-                        ++mismatch;
-                        break;
-                    case RAW_MUTATION_TYPE_INSERTION:
-                        ++mutPointer;
-                        ++mismatch;
-                        break;
-                }
-            else {
-                ++match;
-                ++pointer;
-            }
 
-        // ??
-        assert pointer <= sequence1Range.getUpper();
+        AlignmentIterator<S> iterator = iterator();
+        while (iterator.advance()) {
+            final int mut = iterator.currentMutation;
+            if (mut == NON_MUTATION)
+                ++match;
+            else
+                ++mismatch;
+        }
 
         return 1.0f * match / (match + mismatch);
     }
@@ -212,13 +222,6 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
      * @return alignment helper
      */
     public AlignmentHelper getAlignmentHelper() {
-        int pointer1 = getSequence1Range().getFrom();
-        int pointer1To = getSequence1Range().getTo();
-        int pointer2 = getSequence2Range().getFrom();
-        int mutPointer = 0;
-        int mut;
-        final Alphabet<S> alphabet = sequence1.getAlphabet();
-
         List<Boolean> matches = new ArrayList<>();
 
         IntArrayList pos1 = new IntArrayList(sequence1.size() + mutations.size()),
@@ -227,38 +230,41 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
         StringBuilder sb1 = new StringBuilder(),
                 sb2 = new StringBuilder();
 
-        while (pointer1 < pointer1To || mutPointer < mutations.size()) {
-            if (mutPointer < mutations.size() && mutations.getPositionByIndex(mutPointer) <= pointer1) {
-                // If current position contains mutation
-                switch (mutations.getRawTypeByIndex(mutPointer)) {
-                    case RAW_MUTATION_TYPE_SUBSTITUTION:
-                        pos1.add(pointer1);
-                        pos2.add(pointer2++);
-                        sb1.append(sequence1.symbolAt(pointer1++));
-                        sb2.append(mutations.getToAsSymbolByIndex(mutPointer));
-                        break;
-                    case RAW_MUTATION_TYPE_DELETION:
-                        pos1.add(pointer1);
-                        pos2.add(-1 - pointer2);
-                        sb1.append(sequence1.symbolAt(pointer1++));
-                        sb2.append("-");
-                        break;
-                    case RAW_MUTATION_TYPE_INSERTION:
-                        pos1.add(-1 - pointer1);
-                        pos2.add(pointer2++);
-                        sb1.append("-");
-                        sb2.append(mutations.getToAsSymbolByIndex(mutPointer));
-                        break;
-                }
-                matches.add(false);
-                ++mutPointer;
-            } else {
-                // If current position is not affected by mutations
-                pos1.add(pointer1);
-                pos2.add(pointer2++);
-                sb1.append(sequence1.symbolAt(pointer1));
-                sb2.append(sequence1.symbolAt(pointer1++));
-                matches.add(true);
+        AlignmentIterator<S> iterator = iterator();
+        while (iterator.advance()) {
+            final int mut = iterator.currentMutation;
+            switch (getRawTypeCode(mut)) {
+                case RAW_MUTATION_TYPE_SUBSTITUTION:
+                    pos1.add(iterator.seq1Position);
+                    pos2.add(iterator.seq2Position);
+                    sb1.append(sequence1.symbolAt(iterator.seq1Position));
+                    sb2.append(mutations.getToAsSymbolByIndex(iterator.mutationsPointer));
+                    matches.add(false);
+                    break;
+
+                case RAW_MUTATION_TYPE_DELETION:
+                    pos1.add(iterator.seq1Position);
+                    pos2.add(-1 - iterator.seq2Position);
+                    sb1.append(sequence1.symbolAt(iterator.seq1Position));
+                    sb2.append("-");
+                    matches.add(false);
+                    break;
+
+                case RAW_MUTATION_TYPE_INSERTION:
+                    pos1.add(-1 - iterator.seq1Position);
+                    pos2.add(iterator.seq2Position++);
+                    sb1.append("-");
+                    sb2.append(mutations.getToAsSymbolByIndex(iterator.mutationsPointer));
+                    matches.add(false);
+                    break;
+
+                default:
+                    pos1.add(iterator.seq1Position);
+                    pos2.add(iterator.seq2Position);
+                    sb1.append(sequence1.symbolAt(iterator.seq1Position));
+                    sb2.append(sequence1.symbolAt(iterator.seq1Position));
+                    matches.add(true);
+                    break;
             }
         }
 
