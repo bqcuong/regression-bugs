@@ -27,10 +27,10 @@ import org.apache.commons.math3.random.RandomGenerator;
 
 public class Main {
     public static void main(String[] args) {
-        if (args[0].equals("1"))
-            m1();
-        else
-            m2();
+        //if (args[0].equals("1"))
+        //    m1();
+        //else
+        m2();
     }
 
     public static final void m2() {

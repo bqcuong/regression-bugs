@@ -16,5 +16,4 @@
 package com.milaboratory.core.alignment;
 
 public class AlignmentTrimmer {
-
 }

@@ -80,12 +80,12 @@ public final class AlignmentUtils {
         if (!mutations.isEmpty() && mutations.getPositionByIndex(0) < seq1Range.getFrom() - 1)
             throw new IllegalArgumentException();
 
-        final AlignmentIterator<S> iterator = new AlignmentIterator<>(mutations, seq1Range);
+        final AlignmentIteratorForward<S> iterator = new AlignmentIteratorForward<>(mutations, seq1Range);
 
         int score = 0;
 
         while (iterator.advance()) {
-            final int mut = iterator.currentMutation;
+            final int mut = iterator.getCurrentMutation();
             switch (Mutation.getRawTypeCode(mut)) {
                 case RAW_MUTATION_TYPE_SUBSTITUTION:
                     score += scoring.getScore(Mutation.getFrom(mut), Mutation.getTo(mut));
@@ -97,7 +97,7 @@ public final class AlignmentUtils {
                     break;
 
                 default:
-                    byte c = seq1.codeAt(iterator.seq1Position);
+                    byte c = seq1.codeAt(iterator.getSeq1Position());
                     score += scoring.getScore(c, c);
                     break;
             }
@@ -121,35 +121,35 @@ public final class AlignmentUtils {
         if (!mutations.isEmpty() && mutations.getPositionByIndex(0) < seq1Range.getFrom() - 1)
             throw new IllegalArgumentException();
 
-        final AlignmentIterator<S> iterator = new AlignmentIterator<>(mutations, seq1Range);
+        final AlignmentIteratorForward<S> iterator = new AlignmentIteratorForward<>(mutations, seq1Range);
 
         int score = 0;
 
         int prevMut = NON_MUTATION;
 
         while (iterator.advance()) {
-            final int mut = iterator.currentMutation;
+            final int mut = iterator.getCurrentMutation();
             switch (Mutation.getRawTypeCode(mut)) {
                 case RAW_MUTATION_TYPE_SUBSTITUTION:
                     score += scoring.getScore(Mutation.getFrom(mut), Mutation.getTo(mut));
                     break;
 
                 case RAW_MUTATION_TYPE_DELETION:
-                    if (Mutation.isDeletion(prevMut) && Mutation.getPosition(prevMut) == iterator.seq1Position - 1)
+                    if (Mutation.isDeletion(prevMut) && Mutation.getPosition(prevMut) == iterator.getSeq1Position() - 1)
                         score += scoring.getGapExtensionPenalty();
                     else
                         score += scoring.getGapOpenPenalty();
                     break;
 
                 case RAW_MUTATION_TYPE_INSERTION:
-                    if (Mutation.isInsertion(prevMut) && Mutation.getPosition(prevMut) == iterator.seq1Position)
+                    if (Mutation.isInsertion(prevMut) && Mutation.getPosition(prevMut) == iterator.getSeq1Position())
                         score += scoring.getGapExtensionPenalty();
                     else
                         score += scoring.getGapOpenPenalty();
                     break;
 
                 default:
-                    byte c = seq1.codeAt(iterator.seq1Position);
+                    byte c = seq1.codeAt(iterator.getSeq1Position());
                     score += scoring.getScore(c, c);
                     break;
             }

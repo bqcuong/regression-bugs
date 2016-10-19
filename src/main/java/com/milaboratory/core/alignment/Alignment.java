@@ -17,7 +17,9 @@ package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
 import com.milaboratory.core.io.binary.AlignmentSerializer;
+import com.milaboratory.core.mutations.Mutation;
 import com.milaboratory.core.mutations.Mutations;
+import com.milaboratory.core.sequence.Alphabet;
 import com.milaboratory.core.sequence.Sequence;
 import com.milaboratory.primitivio.annotations.Serializable;
 import com.milaboratory.util.BitArray;
@@ -107,8 +109,17 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
      *
      * @return alignment iterator
      */
-    public AlignmentIterator<S> iterator() {
-        return new AlignmentIterator<>(mutations, sequence1Range, sequence2Range.getFrom());
+    public AlignmentIteratorForward<S> forwardIterator() {
+        return new AlignmentIteratorForward<>(mutations, sequence1Range, sequence2Range.getFrom());
+    }
+
+    /**
+     * Returns reverse alignment iterator.
+     *
+     * @return reverse alignment iterator
+     */
+    public AlignmentIteratorForward<S> reverseIterator() {
+        return new AlignmentIteratorForward<>(mutations, sequence1Range, sequence2Range.getTo());
     }
 
     /**
@@ -204,9 +215,9 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
     public float similarity() {
         int match = 0, mismatch = 0;
 
-        AlignmentIterator<S> iterator = iterator();
+        AlignmentIteratorForward<S> iterator = forwardIterator();
         while (iterator.advance()) {
-            final int mut = iterator.currentMutation;
+            final int mut = iterator.getCurrentMutation();
             if (mut == NON_MUTATION)
                 ++match;
             else
@@ -230,39 +241,42 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
         StringBuilder sb1 = new StringBuilder(),
                 sb2 = new StringBuilder();
 
-        AlignmentIterator<S> iterator = iterator();
+        Alphabet<S> alphabet = mutations.getAlphabet();
+
+        AlignmentIteratorForward<S> iterator = forwardIterator();
         while (iterator.advance()) {
-            final int mut = iterator.currentMutation;
+            final int mut = iterator.getCurrentMutation();
             switch (getRawTypeCode(mut)) {
                 case RAW_MUTATION_TYPE_SUBSTITUTION:
-                    pos1.add(iterator.seq1Position);
-                    pos2.add(iterator.seq2Position);
-                    sb1.append(sequence1.symbolAt(iterator.seq1Position));
-                    sb2.append(mutations.getToAsSymbolByIndex(iterator.mutationsPointer));
+                    pos1.add(iterator.getSeq1Position());
+                    pos2.add(iterator.getSeq2Position());
+                    sb1.append(sequence1.symbolAt(iterator.getSeq1Position()));
+                    sb2.append(Mutation.getToSymbol(mut, alphabet));
                     matches.add(false);
                     break;
 
                 case RAW_MUTATION_TYPE_DELETION:
-                    pos1.add(iterator.seq1Position);
-                    pos2.add(-1 - iterator.seq2Position);
-                    sb1.append(sequence1.symbolAt(iterator.seq1Position));
+                    pos1.add(iterator.getSeq1Position());
+                    pos2.add(-1 - iterator.getSeq2Position());
+                    sb1.append(sequence1.symbolAt(iterator.getSeq1Position()));
                     sb2.append("-");
                     matches.add(false);
                     break;
 
                 case RAW_MUTATION_TYPE_INSERTION:
-                    pos1.add(-1 - iterator.seq1Position);
-                    pos2.add(iterator.seq2Position++);
+                    pos1.add(-1 - iterator.getSeq1Position());
+                    pos2.add(iterator.getSeq2Position());
                     sb1.append("-");
-                    sb2.append(mutations.getToAsSymbolByIndex(iterator.mutationsPointer));
+                    sb2.append(Mutation.getToSymbol(mut, alphabet));
                     matches.add(false);
                     break;
 
                 default:
-                    pos1.add(iterator.seq1Position);
-                    pos2.add(iterator.seq2Position);
-                    sb1.append(sequence1.symbolAt(iterator.seq1Position));
-                    sb2.append(sequence1.symbolAt(iterator.seq1Position));
+                    pos1.add(iterator.getSeq1Position());
+                    pos2.add(iterator.getSeq2Position());
+                    char c = sequence1.symbolAt(iterator.getSeq1Position());
+                    sb1.append(c);
+                    sb2.append(c);
                     matches.add(true);
                     break;
             }

@@ -79,8 +79,16 @@ public final class Mutation {
         return (byte) ((code >> FROM_OFFSET) & LETTER_MASK);
     }
 
+    public static char getFromSymbol(int code, Alphabet alphabet) {
+        return alphabet.codeToSymbol((byte) ((code >> FROM_OFFSET) & LETTER_MASK));
+    }
+
     public static byte getTo(int code) {
         return (byte) (code & LETTER_MASK);
+    }
+
+    public static char getToSymbol(int code, Alphabet alphabet) {
+        return alphabet.codeToSymbol((byte) (code & LETTER_MASK));
     }
 
     /**
