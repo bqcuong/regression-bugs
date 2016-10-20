@@ -495,9 +495,11 @@ public class AlignerTest {
                 Assert.assertEquals(r.getRelativeMutations().mutate(sequence.getRange(r.getSequence1Range())),
                         subsequence.getRange(r.getSequence2Range()));
 
+                AlignerTest.assertAlignment(r, subsequence, sc);
                 Assert.assertTrue(mutScore <= r.calculateScore(sc));
 
                 r = Aligner.alignLocal(sc, subsequence, sequence);
+                AlignerTest.assertAlignment(r, sequence, sc);
 
                 Assert.assertEquals(r.getRelativeMutations().mutate(subsequence.getRange(r.getSequence1Range())),
                         sequence.getRange(r.getSequence2Range()));
