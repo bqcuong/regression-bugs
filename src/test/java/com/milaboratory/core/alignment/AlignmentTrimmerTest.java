@@ -28,50 +28,6 @@ import org.junit.Test;
 public class AlignmentTrimmerTest {
     @Test
     @SuppressWarnings("unchecked")
-    public void test0() throws Exception {
-        NucleotideSequence n1 = new NucleotideSequence("TAGACCGATAAGTCGCTGGACTGCAGCGCGGATGTACTCGGGCATGTATCGT");
-        TrimmingTarget[] ns = {
-                new TrimmingTarget(new NucleotideSequence("TAGTCAAGTCGCTGGACTGCAGCGCGGATGTACTCGGGCATGTATCGT"),
-                        new Range(9, 52),
-                        new Range(5, 48))
-        };
-        AlignmentScoring<NucleotideSequence>[] scorings = new AlignmentScoring[]{
-                LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
-                AffineGapAlignmentScoring.getNucleotideBLASTScoring()
-        };
-        for (TrimmingTarget n : ns) {
-            for (AlignmentScoring<NucleotideSequence> scoring : scorings) {
-                Alignment<NucleotideSequence> alignment = Aligner.alignGlobal(scoring, n1, n.seq);
-
-                System.out.println(alignment.getScore());
-                System.out.println(alignment);
-
-                Alignment<NucleotideSequence> alignment1 = new Alignment<>(n1,
-                        alignment.getAbsoluteMutations().extractMutationsForRange(n.expectedTrimmingRangeSeq1),
-                        n.expectedTrimmingRangeSeq1,
-                        n.expectedTrimmingRangeSeq2,
-                        scoring);
-
-                System.out.println(alignment1.getScore());
-                System.out.println(alignment1);
-
-                System.out.println();
-                System.out.println("========");
-                System.out.println();
-
-                Alignment<NucleotideSequence> alignmentTrimmed = AlignmentTrimmer.leftTrimAlignment(alignment, (LinearGapAlignmentScoring) scoring);
-                System.out.println(alignmentTrimmed.getScore());
-                System.out.println(alignmentTrimmed);
-
-                System.out.println();
-                System.out.println("========");
-                System.out.println();
-            }
-        }
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
     public void testRandom1() throws Exception {
         NucleotideMutationModel model = MutationModels.getEmpiricalNucleotideMutationModel().multiplyProbabilities(15);
 
@@ -106,33 +62,6 @@ public class AlignmentTrimmerTest {
             }
             System.out.println("lTrimmed = " + lTrimmed);
             System.out.println("rTrimmed = " + rTrimmed);
-        }
-    }
-
-    @Test
-    public void test1() throws Exception {
-        NucleotideSequence ns1, ns2;
-        LinearGapAlignmentScoring<NucleotideSequence> scoring = LinearGapAlignmentScoring.getNucleotideBLASTScoring();
-        long time, t;
-        int iterations = 100000;
-
-        for (int j = 0; j < 4; j++) {
-            time = 0;
-            for (int i = 0; i < iterations; i++) {
-                ns1 = TestUtil.randomSequence(NucleotideSequence.ALPHABET, 50, 100);
-                ns2 = TestUtil.randomSequence(NucleotideSequence.ALPHABET, 50, 100);
-                Alignment<NucleotideSequence> alignment = Aligner.alignGlobal(scoring, ns1, ns2);
-                t = System.nanoTime();
-                int calcScore = AlignmentUtils.calculateScore(ns1, new Range(0, ns1.size()), alignment.getAbsoluteMutations(), scoring);
-                time += System.nanoTime() - t;
-                if (alignment.getScore() != calcScore) {
-                    System.out.println(alignment.getScore());
-                    System.out.println(calcScore);
-                    System.out.println(alignment);
-                }
-                Assert.assertEquals(alignment.getScore(), calcScore, 0.1);
-            }
-            System.out.println(TestUtil.time(time / iterations));
         }
     }
 
