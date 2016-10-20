@@ -118,8 +118,8 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
      *
      * @return reverse alignment iterator
      */
-    public AlignmentIteratorForward<S> reverseIterator() {
-        return new AlignmentIteratorForward<>(mutations, sequence1Range, sequence2Range.getTo());
+    public AlignmentIteratorReverse<S> reverseIterator() {
+        return new AlignmentIteratorReverse<S>(mutations, sequence1Range, sequence2Range.getTo());
     }
 
     /**

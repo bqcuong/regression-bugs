@@ -16,6 +16,10 @@
 package com.milaboratory.core.alignment;
 
 import com.milaboratory.core.Range;
+import com.milaboratory.core.mutations.Mutations;
+import com.milaboratory.core.mutations.generator.MutationModels;
+import com.milaboratory.core.mutations.generator.MutationsGenerator;
+import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.test.TestUtil;
 import org.junit.Assert;
@@ -54,7 +58,54 @@ public class AlignmentTrimmerTest {
                 System.out.println();
                 System.out.println("========");
                 System.out.println();
+
+                Alignment<NucleotideSequence> alignmentTrimmed = AlignmentTrimmer.leftTrimAlignment(alignment, (LinearGapAlignmentScoring) scoring);
+                System.out.println(alignmentTrimmed.getScore());
+                System.out.println(alignmentTrimmed);
+
+                System.out.println();
+                System.out.println("========");
+                System.out.println();
             }
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testRandom1() throws Exception {
+        NucleotideMutationModel model = MutationModels.getEmpiricalNucleotideMutationModel().multiplyProbabilities(15);
+
+        AlignmentScoring<NucleotideSequence>[] scorings = new AlignmentScoring[]{
+                LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
+                AffineGapAlignmentScoring.getNucleotideBLASTScoring()
+        };
+
+        for (AlignmentScoring<NucleotideSequence> scoring : scorings) {
+            int lTrimmed = 0, rTrimmed = 0;
+            for (int i = 0; i < 10000; i++) {
+                NucleotideSequence seq1 = TestUtil.randomSequence(NucleotideSequence.ALPHABET, 30, 40);
+                Mutations<NucleotideSequence> mutations = MutationsGenerator.generateMutations(seq1, model);
+                NucleotideSequence seq2 = mutations.mutate(seq1);
+                Alignment<NucleotideSequence> al0 = new Alignment<>(seq1, mutations, scoring);
+
+                AlignerTest.assertAlignment(al0, seq2, scoring);
+
+                Alignment al0LTrimmed = AlignmentTrimmer.leftTrimAlignment(al0, scoring);
+                AlignerTest.assertAlignment(al0LTrimmed, seq2, scoring);
+                Assert.assertTrue(al0.getScore() <= al0LTrimmed.getScore());
+
+                if (al0.getScore() < al0LTrimmed.getScore())
+                    ++lTrimmed;
+
+                Alignment al0RTrimmed = AlignmentTrimmer.rightTrimAlignment(al0, scoring);
+                AlignerTest.assertAlignment(al0RTrimmed, seq2, scoring);
+                Assert.assertTrue(al0.getScore() <= al0RTrimmed.getScore());
+
+                if (al0.getScore() < al0RTrimmed.getScore())
+                    ++rTrimmed;
+            }
+            System.out.println("lTrimmed = " + lTrimmed);
+            System.out.println("rTrimmed = " + rTrimmed);
         }
     }
 
