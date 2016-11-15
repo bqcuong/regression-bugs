@@ -679,6 +679,20 @@ public final class Mutations<S extends Sequence<S>>
         return result;
     }
 
+    /**
+     * Converts positions returned by {@link #convertToSeq2Position(int)} and {@link #convertToSeq1Position(int)} to a
+     * positive number by applying (-1 - x) transformation for negative input values. So, for non-existing positions
+     * (if corresponding letter is absent in the target sequence, like in case of deletion and {@link
+     * #convertToSeq1Position(int)} method) position of the first existing letter in target sequence will be returned.
+     *
+     * @param position position returned by {@link #convertToSeq2Position(int)} or {@link #convertToSeq1Position(int)}
+     *                 methods
+     * @return positive position
+     */
+    public static int pabs(int position) {
+        return position >= 0 ? position : -1 - position;
+    }
+
     public int firstMutationWithPosition(int position) {
         return firstMutationWithPosition(0, mutations.length, position);
     }

@@ -50,8 +50,8 @@ public class AlignmentTest {
         NucleotideSequence sequence2 = new NucleotideSequence("CCTCAT");
         Alignment<NucleotideSequence> alignment = Aligner.alignLocal(LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
                 sequence1, sequence2);
-        Assert.assertEquals(3, alignment.convertPosition(6));
-        Assert.assertEquals(0, alignment.convertPosition(2));
+        Assert.assertEquals(3, alignment.convertToSeq2Position(6));
+        Assert.assertEquals(0, alignment.convertToSeq2Position(2));
     }
 
     @Test

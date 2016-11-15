@@ -82,7 +82,7 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
             if (!mutations.isCompatibleWith(sequence1)
                     || !sequence1Range.contains(mutations.getMutatedRange())
                     || sequence1Range.length() + mutations.getLengthDelta() != sequence2Range.length())
-                throw new IllegalArgumentException("Not compatible arguments: muts: " + mutations + " range1: " + sequence1Range + " range2: " + sequence2Range );
+                throw new IllegalArgumentException("Not compatible arguments: muts: " + mutations + " range1: " + sequence1Range + " range2: " + sequence2Range);
         } else if (sequence1Range.length() != sequence2Range.length())
             throw new IllegalArgumentException("Not compatible arguments.");
 
@@ -145,11 +145,10 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
      *
      * @param position position in sequence1
      * @return position in coordinates of sequence2, or -1 if specified position is out of aligned range of sequence1,
-     * or if
-     * letter at specified position in sequence1 is removed in sequence2  --- {@code -2 - p} where {@code p} is a
+     * or if letter at specified position in sequence1 is removed in sequence2 --- {@code -2 - p} where {@code p} is a
      * position of previous letter in sequence2
      */
-    public int convertPosition(int position) {
+    public int convertToSeq2Position(int position) {
         if (!sequence1Range.containsBoundary(position))
             return -1;
         int p = mutations.convertToSeq2Position(position);
