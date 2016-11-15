@@ -159,26 +159,28 @@ public final class Mutations<S extends Sequence<S>>
     }
 
     /**
-     * Converts position from coordinates in seq1 to coordinates in seq2 using this alignment (mutations). <p/> <p>If
-     * letter in provided position is marked as deleted (deletion) in this mutations, this method will return {@code (-
-     * 1 - imagePosition)}, where {@code imagePosition} is a position of letter right after that place where target
-     * nucleotide was removed according to this alignment.</p>
+     * Converts position from coordinates in seq1 (before mutation) to coordinates in seq2 (after mutation) using this
+     * alignment (mutations).
      *
-     * @param initialPosition position in seq1
-     * @return converted position
+     * If letter in provided position is marked as deleted (deletion) in this mutations, this method will return {@code
+     * (- 1 - imagePosition)}, where {@code imagePosition} is a position of letter right after that place where target
+     * nucleotide was removed according to this alignment.
+     *
+     * @param seq1Position position in seq1
+     * @return position in seq2
      */
-    public int convertPosition(int initialPosition) {
-        int p, result = initialPosition;
+    public int convertToSeq2Position(int seq1Position) {
+        int p, result = seq1Position;
 
         for (int mut : mutations) {
             p = getPosition(mut);
 
-            if (p > initialPosition)
+            if (p > seq1Position)
                 return result;
 
             switch (mut & MUTATION_TYPE_MASK) {
                 case RAW_MUTATION_TYPE_DELETION:
-                    if (p == initialPosition)
+                    if (p == seq1Position)
                         return -result - 1;
                     --result;
                     break;
@@ -189,6 +191,52 @@ public final class Mutations<S extends Sequence<S>>
         }
 
         return result;
+    }
+
+    /**
+     * Converts position from coordinates in seq2 (after mutation) to coordinates in seq1 (before mutation) using this
+     * alignment (mutations).
+     *
+     * If letter in provided position is marked as insertion in this mutations, this method will return {@code
+     * (- 1 - imagePosition)}, where {@code imagePosition} is a position of letter right after that place where target
+     * nucleotide was added according to this alignment.
+     *
+     * @param seq2Position position in seq2
+     * @return position in seq1
+     */
+    public int convertToSeq1Position(int seq2Position) {
+        int seq1p, seq2p = 0, prevSeq1p = 0, prevSeq2p = 0;
+        boolean onInsertion;
+
+        for (int mut : mutations) {
+            seq1p = getPosition(mut);
+            onInsertion = false;
+
+            switch (mut & MUTATION_TYPE_MASK) {
+                case RAW_MUTATION_TYPE_DELETION:
+                    --seq2p;
+                    break;
+                case RAW_MUTATION_TYPE_INSERTION:
+                    onInsertion = true;
+                    --seq1p;
+                    ++seq2p;
+                    break;
+            }
+
+            seq2p += seq1p - prevSeq1p;
+
+            if (seq2p == seq2Position && onInsertion)
+                return -1 - (seq2Position - prevSeq2p + prevSeq1p);
+
+            if (seq2p >= seq2Position) {
+                return seq2Position - prevSeq2p + prevSeq1p;
+            }
+
+            prevSeq1p = seq1p;
+            prevSeq2p = seq2p;
+        }
+
+        return seq2Position - prevSeq2p + prevSeq1p;
     }
 
     /**

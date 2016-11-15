@@ -152,7 +152,7 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
     public int convertPosition(int position) {
         if (!sequence1Range.containsBoundary(position))
             return -1;
-        int p = mutations.convertPosition(position);
+        int p = mutations.convertToSeq2Position(position);
         if (p < 0)
             return -2 - (~p + sequence2Range.getFrom() - sequence1Range.getFrom());
         return p + sequence2Range.getFrom() - sequence1Range.getFrom();
