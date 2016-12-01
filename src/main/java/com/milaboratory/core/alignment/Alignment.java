@@ -146,7 +146,7 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
      * @param position position in sequence1
      * @return position in coordinates of sequence2, or -1 if specified position is out of aligned range of sequence1,
      * or if letter at specified position in sequence1 is removed in sequence2 --- {@code -2 - p} where {@code p} is a
-     * position of previous letter in sequence2
+     * position of next letter in sequence2
      */
     public int convertToSeq2Position(int position) {
         if (!sequence1Range.containsBoundary(position))
