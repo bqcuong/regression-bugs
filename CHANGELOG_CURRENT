@@ -1,0 +1,2 @@
+ConvertPosition in Mutations and Alignments classes renamed to convertToSeq2Position **[migrate]**
+Introduced new method for reverse position conversion in alignments convertToSeq1Position (in Mutations and Alignments classes)
