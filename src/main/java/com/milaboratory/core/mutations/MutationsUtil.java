@@ -197,9 +197,33 @@ public final class MutationsUtil {
      * @return mutations in a human-readable string
      */
     public static String encode(int[] mutations, Alphabet alphabet) {
+        return encode(mutations, alphabet, "");
+    }
+
+    /**
+     * Encodes mutations in compact human-readable string, that can be decoded by method {@link #decode(String,
+     * com.milaboratory.core.sequence.Alphabet)}.
+     *
+     * <p>For format see {@link com.milaboratory.core.mutations.Mutation#encode(int,
+     * com.milaboratory.core.sequence.Alphabet)}.</p>
+     *
+     * <p>Mutations are just concatenated with given separator. The following RegExp can be used for simple parsing of
+     * resulting string for
+     * nucleotide sequences: {@code ([SDI])([ATGC]?)(\d+)([ATGC]?)} .</p>
+     *
+     * @param mutations mutations to encode
+     * @param separator separator
+     * @return mutations in a human-readable string
+     */
+    public static String encode(int[] mutations, Alphabet alphabet, String separator) {
         StringBuilder builder = new StringBuilder();
+
         for (int mut : mutations)
-            builder.append(Mutation.encode(mut, alphabet));
+            builder.append(Mutation.encode(mut, alphabet))
+                    .append(separator);
+
+        builder.delete(builder.length() - separator.length(), builder.length());
+
         return builder.toString();
     }
 

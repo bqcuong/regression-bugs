@@ -647,6 +647,10 @@ public final class Mutations<S extends Sequence<S>>
         return MutationsUtil.encode(mutations, alphabet);
     }
 
+    public String encode(String separator) {
+        return MutationsUtil.encode(mutations, alphabet, separator);
+    }
+
     public String encodeFixed() {
         return MutationsUtil.encodeFixed(mutations, alphabet);
     }
