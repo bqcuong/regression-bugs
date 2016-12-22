@@ -86,6 +86,7 @@ public final class AlignmentIteratorForward<S extends Sequence<S>> implements Al
      *
      * @return {@literal true} if iteration successful; {@literal false} if iteration ended
      */
+    @Override
     public boolean advance() {
         if (currentMutation != NON_MUTATION_1) { // Prevents invocation on the first execution of the method
 

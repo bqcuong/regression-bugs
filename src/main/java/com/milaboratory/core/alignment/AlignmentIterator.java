@@ -43,4 +43,11 @@ public interface AlignmentIterator<S extends Sequence<S>> {
      * Current mutation or {@link Mutation#NON_MUTATION} if on match
      */
     int getCurrentMutation();
+
+    /**
+     * Advance iterator to the next position
+     *
+     * @return true if success, false if iteration is finished
+     */
+    boolean advance();
 }

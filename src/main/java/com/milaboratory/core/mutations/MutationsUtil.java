@@ -15,10 +15,13 @@
  */
 package com.milaboratory.core.mutations;
 
+import com.milaboratory.core.Range;
+import com.milaboratory.core.alignment.AlignmentIteratorForward;
 import com.milaboratory.core.sequence.*;
 import com.milaboratory.core.sequence.AminoAcidSequence.AminoAcidSequencePosition;
 import com.milaboratory.util.IntArrayList;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -371,5 +374,66 @@ public final class MutationsUtil {
             }
         }
         return result.createAndDestroy();
+    }
+
+    public static MutationsWitMapping nt2aaWithMapping(NucleotideSequence seq1, Mutations<NucleotideSequence> mutations,
+                                                       TranslationParameters translationParameters,
+                                                       int maxShiftedTriplets) {
+        Mutations<AminoAcidSequence> aaMutations = nt2aa(seq1, mutations, translationParameters, maxShiftedTriplets);
+
+        if (aaMutations == null)
+            return null;
+
+        int[] mapping = new int[mutations.size()];
+        Arrays.fill(mapping, -1);
+
+        // Already calculates in nt2aa()
+        AminoAcidSequence aaSeq1 = AminoAcidSequence.translate(seq1, translationParameters);
+        NucleotideSequence seq2 = mutations.mutate(seq1);
+        AminoAcidSequence aaSeq2 = AminoAcidSequence.translate(seq2, translationParameters);
+
+        AlignmentIteratorForward<NucleotideSequence> ntIterator = new AlignmentIteratorForward<>(mutations,
+                new Range(0, seq1.size()));
+
+        AlignmentIteratorForward<AminoAcidSequence> aaIterator = new AlignmentIteratorForward<>(aaMutations,
+                new Range(0, aaSeq2.size()));
+        boolean activeAAIterator = aaIterator.advance();
+
+        while (ntIterator.advance()) {
+            if (ntIterator.getCurrentMutation() == NON_MUTATION)
+                continue;
+
+            AminoAcidSequencePosition aaSeq1Position = AminoAcidSequence.convertNtPositionToAA(
+                    ntIterator.getSeq1Position(), seq1.size(), translationParameters);
+            AminoAcidSequencePosition aaSeq2Position = AminoAcidSequence.convertNtPositionToAA(
+                    ntIterator.getSeq2Position(), seq2.size(), translationParameters);
+
+            if (aaSeq1Position == null || aaSeq2Position == null)
+                continue;
+
+            if (activeAAIterator)
+                do {
+
+                    if (((aaSeq1Position.aminoAcidPosition == aaIterator.getSeq1Position() && aaSeq2Position.aminoAcidPosition <= aaIterator.getSeq2Position()) ||
+                            (aaSeq1Position.aminoAcidPosition <= aaIterator.getSeq1Position() && aaSeq2Position.aminoAcidPosition == aaIterator.getSeq2Position())
+                    ) && aaIterator.getCurrentMutation() != NON_MUTATION)
+                        mapping[ntIterator.getMutationsPointer()] = aaIterator.getMutationsPointer();
+
+                } while (!(aaSeq1Position.aminoAcidPosition <= aaIterator.getSeq1Position() &&
+                        aaSeq2Position.aminoAcidPosition <= aaIterator.getSeq2Position()) &&
+                        (activeAAIterator = aaIterator.advance()));
+        }
+
+        return new MutationsWitMapping(aaMutations, mapping);
+    }
+
+    public static final class MutationsWitMapping {
+        public final Mutations<AminoAcidSequence> mutations;
+        public final int[] mapping;
+
+        public MutationsWitMapping(Mutations<AminoAcidSequence> mutations, int[] mapping) {
+            this.mutations = mutations;
+            this.mapping = mapping;
+        }
     }
 }

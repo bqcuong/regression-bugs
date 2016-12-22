@@ -18,16 +18,24 @@ package com.milaboratory.core.mutations;
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.alignment.Aligner;
 import com.milaboratory.core.alignment.Alignment;
+import com.milaboratory.core.mutations.generator.MutationModels;
+import com.milaboratory.core.mutations.generator.MutationsGenerator;
+import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
 import com.milaboratory.core.sequence.*;
+import com.milaboratory.test.TestUtil;
+import gnu.trove.set.hash.TIntHashSet;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well44497a;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static com.milaboratory.core.mutations.MutationsUtil.btopDecode;
 import static com.milaboratory.core.mutations.MutationsUtil.nt2aa;
 import static com.milaboratory.core.sequence.TranslationParameters.FromLeftWithIncompleteCodon;
 import static com.milaboratory.core.sequence.TranslationParameters.FromRightWithIncompleteCodon;
+import static com.milaboratory.core.sequence.TranslationParameters.FromRightWithoutIncompleteCodon;
 
 /**
  * @author Dmitry Bolotin
@@ -250,7 +258,7 @@ public class MutationsUtilTest {
     }
 
     @Test
-    public void nt2AAManual() throws Exception {
+    public void nt2AAWithMappingManual1() throws Exception {
         //                                                 M  L
         NucleotideSequence seq1 = new NucleotideSequence("ATGCTA");
         //                                                 I  A  L
@@ -259,14 +267,60 @@ public class MutationsUtilTest {
         Mutations<NucleotideSequence> muts = new Mutations<>(NucleotideSequence.ALPHABET, "I2C I2G I2C SG2C");
 
         Alignment<NucleotideSequence> al = new Alignment<>(seq1, muts, 0);
-        System.out.println(al);
 
         AminoAcidSequence aaSeq1 = AminoAcidSequence.translate(seq1, FromLeftWithIncompleteCodon);
 
         Mutations<AminoAcidSequence> aaMuts = MutationsUtil.nt2aa(seq1, muts, FromLeftWithIncompleteCodon);
-        System.out.println(aaMuts);
         Alignment<AminoAcidSequence> aaAl = new Alignment<>(aaSeq1, aaMuts, 0);
-        System.out.println(aaAl);
+
+        MutationsUtil.MutationsWitMapping mm = MutationsUtil.nt2aaWithMapping(seq1, muts, FromLeftWithIncompleteCodon, 10);
+
+        Assert.assertArrayEquals(new int[]{0, 1, 1, 1}, mm.mapping);
+    }
+
+    @Test
+    public void nt2AAWithMappingManual2() throws Exception {
+        //                                                 M  L
+        NucleotideSequence seq1 = new NucleotideSequence("AACGATGGGCGCAAATATAGGGAGCTCCGATCGACATCGGGTATCGCCCTGGTACGATCCCGGTGACAAAGCGTTCGGACCTGTCTGGACGCTAGAACGC");
+        //                                                 I  A  L
+        //NucleotideSequence seq2 = new NucleotideSequence("ATCGCCCTA");
+
+        Mutations<NucleotideSequence> muts = new Mutations<>(NucleotideSequence.ALPHABET, "DG3 DG39 ST63C I80T");
+
+        Alignment<NucleotideSequence> al = new Alignment<>(seq1, muts, 0);
+
+        AminoAcidSequence aaSeq1 = AminoAcidSequence.translate(seq1, FromLeftWithIncompleteCodon);
+
+        Mutations<AminoAcidSequence> aaMuts = MutationsUtil.nt2aa(seq1, muts, FromLeftWithIncompleteCodon);
+        Alignment<AminoAcidSequence> aaAl = new Alignment<>(aaSeq1, aaMuts, 0);
+
+        MutationsUtil.MutationsWitMapping mm = MutationsUtil.nt2aaWithMapping(seq1, muts, FromRightWithoutIncompleteCodon, 20);
+
+        System.out.println(mm.mutations);
+        System.out.println(Arrays.toString(mm.mapping));
+    }
+
+    @Test
+    public void nt2AAWithMapping1() throws Exception {
+        NucleotideMutationModel model = MutationModels.getEmpiricalNucleotideMutationModel().multiplyProbabilities(2);
+        model.reseed(123);
+        for (int i = 0; i < 1000; i++) {
+            NucleotideSequence seq0 = TestUtil.randomSequence(NucleotideSequence.ALPHABET, 100, 100);
+            System.out.println(seq0);
+            Mutations<NucleotideSequence> muts = MutationsGenerator.generateMutations(seq0, model);
+            System.out.println(muts.encode());
+
+            for (TranslationParameters tr : TranslationParameters.getPreDefinedParameters()) {
+                System.out.println(tr);
+                MutationsUtil.MutationsWitMapping mm = MutationsUtil.nt2aaWithMapping(seq0, muts, tr, 20);
+                if(mm == null)
+                    continue;
+                TIntHashSet tihs = new TIntHashSet(mm.mapping);
+                tihs.remove(-1);
+                Assert.assertEquals(mm.mutations.size(), tihs.size());
+                System.out.println(mm.mutations.size());
+            }
+        }
     }
 
     @Test
