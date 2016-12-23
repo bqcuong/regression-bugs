@@ -219,6 +219,9 @@ public final class MutationsUtil {
      * @return mutations in a human-readable string
      */
     public static String encode(int[] mutations, Alphabet alphabet, String separator) {
+        if (mutations.length == 0)
+            return "";
+
         StringBuilder builder = new StringBuilder();
 
         for (int mut : mutations)
