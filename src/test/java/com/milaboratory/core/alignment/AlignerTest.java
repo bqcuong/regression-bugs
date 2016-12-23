@@ -174,7 +174,7 @@ public class AlignerTest {
                 seq1, seq2);
         Mutations<NucleotideSequence> muts = a.getAbsoluteMutations();
 
-        assertEquals(1, muts.extractMutationsForRange(17, 18).size());
+        assertEquals(1, muts.extractRelativeMutationsForRange(17, 18).size());
     }
 
     @Test
@@ -189,12 +189,12 @@ public class AlignerTest {
         assertEquals(seq2.getRange(
                 sAbs(muts.convertToSeq2Position(2)),
                 sAbs(muts.convertToSeq2Position(10))),
-                muts.extractMutationsForRange(2, 10).mutate(seq1.getRange(2, 10)));
+                muts.extractRelativeMutationsForRange(2, 10).mutate(seq1.getRange(2, 10)));
 
         assertEquals(seq2.getRange(
                 sAbs(muts.convertToSeq2Position(2)),
                 sAbs(muts.convertToSeq2Position(11))),
-                muts.extractMutationsForRange(2, 11).mutate(seq1.getRange(2, 11)));
+                muts.extractRelativeMutationsForRange(2, 11).mutate(seq1.getRange(2, 11)));
     }
 
     public int sAbs(int value) {
@@ -269,7 +269,7 @@ public class AlignerTest {
             Arrays.sort(divPoints);
             int totalMutations = 0;
             for (z = 1; z < divPointsCount; ++z)
-                totalMutations += m1.extractMutationsForRange(divPoints[z - 1], divPoints[z]).size();
+                totalMutations += m1.extractRelativeMutationsForRange(divPoints[z - 1], divPoints[z]).size();
 
             assertEquals(m1.size(), totalMutations);
 
@@ -285,7 +285,7 @@ public class AlignerTest {
                         to2 = from2;
 
                     assertEquals(seq2.getRange(from2, to2),
-                            m1.extractMutationsForRange(from, to).mutate(seq1.getRange(from, to))
+                            m1.extractRelativeMutationsForRange(from, to).mutate(seq1.getRange(from, to))
                     );
                     break;
                 }

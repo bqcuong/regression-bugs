@@ -167,6 +167,17 @@ public final class Alignment<S extends Sequence<S>> implements java.io.Serializa
         return sequence2Range;
     }
 
+    ///**
+    // * Extracts sub-alignment: cut alignment corresponding to certain sequence range in seq1.
+    // *
+    // * @param range range in seq1
+    // * @return sub-alignment
+    // */
+    //public Alignment<S> subAlignment(Range range, AlignmentScoring<S> scoring) {
+    //    return new Alignment<S>(sequence1, mutations.extractAbsoluteMutationsForRange(range), range,
+    //            con)
+    //}
+
     /**
      * Converts specified position from sequence1 coordinates to sequence2 coordinates. If position is out of aligned
      * range of sequence1, returns -1. If letter at specified position in sequence1 is removed in sequence2, than

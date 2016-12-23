@@ -71,6 +71,10 @@ public final class AlignmentIteratorForward<S extends Sequence<S>> implements Al
      * @param seq2Position seq2 start position
      */
     public AlignmentIteratorForward(final Mutations<S> mutations, final Range seq1Range, int seq2Position) {
+        if (mutations.size() > 0 && (mutations.getPositionByIndex(0) < seq1Range.getFrom() ||
+                mutations.getPositionByIndex(mutations.size() - 1) > seq1Range.getTo()))
+            throw new IllegalArgumentException("Mutations outside target range.");
+
         this.mutations = mutations;
         this.seq1To = seq1Range.getTo();
         this.seq1Position = seq1Range.getFrom();
