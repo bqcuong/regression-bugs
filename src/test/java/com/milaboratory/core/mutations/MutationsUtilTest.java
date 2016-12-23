@@ -18,9 +18,7 @@ package com.milaboratory.core.mutations;
 import com.milaboratory.core.alignment.AffineGapAlignmentScoring;
 import com.milaboratory.core.alignment.Aligner;
 import com.milaboratory.core.alignment.Alignment;
-import com.milaboratory.core.mutations.generator.MutationModels;
-import com.milaboratory.core.mutations.generator.MutationsGenerator;
-import com.milaboratory.core.mutations.generator.NucleotideMutationModel;
+import com.milaboratory.core.mutations.generator.*;
 import com.milaboratory.core.sequence.*;
 import com.milaboratory.test.TestUtil;
 import gnu.trove.set.hash.TIntHashSet;
@@ -302,23 +300,21 @@ public class MutationsUtilTest {
 
     @Test
     public void nt2AAWithMapping1() throws Exception {
-        NucleotideMutationModel model = MutationModels.getEmpiricalNucleotideMutationModel().multiplyProbabilities(2);
+        NucleotideMutationModel model = new GenericNucleotideMutationModel(
+                SubstitutionModels.getEmpiricalNucleotideSubstitutionModel(),
+                0, 0)
+                .multiplyProbabilities(100);
         model.reseed(123);
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 5000; i++) {
             NucleotideSequence seq0 = TestUtil.randomSequence(NucleotideSequence.ALPHABET, 100, 100);
-            System.out.println(seq0);
             Mutations<NucleotideSequence> muts = MutationsGenerator.generateMutations(seq0, model);
-            System.out.println(muts.encode());
-
             for (TranslationParameters tr : TranslationParameters.getPreDefinedParameters()) {
-                System.out.println(tr);
                 MutationsUtil.MutationsWitMapping mm = MutationsUtil.nt2aaWithMapping(seq0, muts, tr, 20);
-                if(mm == null)
+                if (mm == null)
                     continue;
                 TIntHashSet tihs = new TIntHashSet(mm.mapping);
                 tihs.remove(-1);
                 Assert.assertEquals(mm.mutations.size(), tihs.size());
-                System.out.println(mm.mutations.size());
             }
         }
     }
