@@ -445,6 +445,20 @@ public final class MutationsUtil {
         return new MutationsWitMapping(aaMutations, mapping);
     }
 
+    /**
+     * Performs a comprehensive translation of mutations present in a nucleotide sequence to effective mutations in corresponding amino acid sequence.
+     * The resulting array contains:
+     * the original nucleotide mutation
+     * "individual" amino acid mutation, i.e. an expected amino acid mutation given no other mutations have occured 
+     * "cumulative" amino acid mutation, i.e. the observed amino acid mutation combining effect from all other nucleotide mutations
+     *
+     * @param seq1 the reference nucleotide sequence
+     * @param mutations nucleotide mutations in the reference nucleotide sequence
+     * @param translationParameters translation parameters
+     * @param maxShiftedTriplets max number of shifted triplets for computing the cumulative effect from indels
+     *
+     * @return an array of nucleotide mutations with their amino acid translations 
+    */
     public static MutationNt2AADescriptor[] nt2aaDetailed(NucleotideSequence seq1, Mutations<NucleotideSequence> mutations,
                                                           TranslationParameters translationParameters,
                                                           int maxShiftedTriplets) {
