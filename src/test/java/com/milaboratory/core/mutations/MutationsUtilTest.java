@@ -274,6 +274,25 @@ public class MutationsUtilTest {
         MutationsUtil.MutationsWitMapping mm = MutationsUtil.nt2aaWithMapping(seq1, muts, FromLeftWithIncompleteCodon, 10);
 
         Assert.assertArrayEquals(new int[]{0, 1, 1, 1}, mm.mapping);
+
+        //  M  L
+        // ATGCTA
+        //
+        // ->
+        //
+        //  I  A  L
+        // ATCGCCCTA
+        //
+        // AT---GCTA
+        // ||    |||
+        // ATCGCCCTA
+        //
+        // Nucleotide mutations: I2C I2G I2C SG2C
+        // Resulting AA mutations: SM0I I1A
+        //
+        // Detailed AA mutations: I2C::SM0I I2G::I1A I2C::I1A SG2C:SM0I:I1A
+
+        System.out.println(Arrays.toString(MutationsUtil.nt2aaDetailed(seq1, muts, FromLeftWithIncompleteCodon, 10)));
     }
 
     @Test

@@ -376,6 +376,21 @@ public final class MutationsUtil {
         return result.createAndDestroy();
     }
 
+    public static int[] nt2IndividualAA(NucleotideSequence seq1, Mutations<NucleotideSequence> mutations,
+                                        TranslationParameters translationParameters) {
+        int[] result = new int[mutations.size()];
+        for (int i = 0; i < mutations.size(); i++) {
+            if (mutations.getRawTypeByIndex(i) != RAW_MUTATION_TYPE_SUBSTITUTION)
+                result[i] = NON_MUTATION;
+            else {
+                Mutations<AminoAcidSequence> aaMuts
+                        = nt2aa(seq1, mutations.getRange(i, i + 1), translationParameters);
+                result[i] = aaMuts.size() == 0 ? NON_MUTATION : aaMuts.getMutation(0);
+            }
+        }
+        return result;
+    }
+
     public static MutationsWitMapping nt2aaWithMapping(NucleotideSequence seq1, Mutations<NucleotideSequence> mutations,
                                                        TranslationParameters translationParameters,
                                                        int maxShiftedTriplets) {
@@ -425,6 +440,39 @@ public final class MutationsUtil {
         }
 
         return new MutationsWitMapping(aaMutations, mapping);
+    }
+
+    public static MutationNt2AADescriptor[] nt2aaDetailed(NucleotideSequence seq1, Mutations<NucleotideSequence> mutations,
+                                                          TranslationParameters translationParameters,
+                                                          int maxShiftedTriplets) {
+        MutationsWitMapping mutationsWitMapping = nt2aaWithMapping(seq1, mutations, translationParameters, maxShiftedTriplets);
+        int[] individualMutations = nt2IndividualAA(seq1, mutations, translationParameters);
+        MutationNt2AADescriptor[] result = new MutationNt2AADescriptor[mutations.size()];
+        for (int i = 0; i < mutations.size(); i++) {
+            result[i] = new MutationNt2AADescriptor(mutations.getMutation(i), individualMutations[i],
+                    mutationsWitMapping.mapping[i] == -1 ? NON_MUTATION :
+                            mutationsWitMapping.mutations.getMutation(mutationsWitMapping.mapping[i]));
+        }
+        return result;
+    }
+
+    public static final class MutationNt2AADescriptor {
+        public final int originalNtMutation,
+                individualAAMutation,
+                cumulativeAAMutation;
+
+        public MutationNt2AADescriptor(int originalNtMutation, int individualAAMutation, int cumulativeAAMutation) {
+            this.originalNtMutation = originalNtMutation;
+            this.individualAAMutation = individualAAMutation;
+            this.cumulativeAAMutation = cumulativeAAMutation;
+        }
+
+        @Override
+        public String toString() {
+            return Mutation.encode(originalNtMutation, NucleotideSequence.ALPHABET) + ":" +
+                    (individualAAMutation == NON_MUTATION ? "" : Mutation.encode(individualAAMutation, AminoAcidSequence.ALPHABET)) + ":" +
+                    (cumulativeAAMutation == NON_MUTATION ? "" : Mutation.encode(cumulativeAAMutation, AminoAcidSequence.ALPHABET));
+        }
     }
 
     public static final class MutationsWitMapping {
