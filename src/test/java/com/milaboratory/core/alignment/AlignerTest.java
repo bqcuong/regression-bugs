@@ -31,7 +31,6 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.Well19937c;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -460,7 +459,6 @@ public class AlignerTest {
         }
     }
 
-    @Ignore
     @Test
     public void testLocalRandomCheckNucleotideScoring() {
         AlignmentScoring<NucleotideSequence>[] scorings = new AlignmentScoring[]{
