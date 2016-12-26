@@ -3,4 +3,5 @@ Encode method for mutations with separator
 Mutations#extractMutationsForRange renamed to extractRelativeMutationsForRange
 Addded Mutations#extractAbsoluteMutationsForRange
 Added AlignmentIterator
+minor: Added com.milaboratory.cli.ActionHelpProvider#printDefaultHelp
 minor: Fix for toString of empty mutations
