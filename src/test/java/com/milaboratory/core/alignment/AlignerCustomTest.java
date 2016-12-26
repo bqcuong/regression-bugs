@@ -20,6 +20,7 @@ import com.milaboratory.core.mutations.generator.MutationsGenerator;
 import com.milaboratory.core.sequence.NucleotideSequence;
 import org.apache.commons.math3.random.RandomDataGenerator;
 import org.apache.commons.math3.random.Well19937c;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -66,6 +67,7 @@ public class AlignerCustomTest {
     //    System.out.println(alignment);
     //}
 
+    @Ignore
     @Test
     public void testLinearSemiLocalLeft0Random() throws Exception {
         for (AlignmentScoring<NucleotideSequence> scoring : Arrays.asList(LinearGapAlignmentScoring.getNucleotideBLASTScoring(),
