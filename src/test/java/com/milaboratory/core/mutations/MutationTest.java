@@ -37,11 +37,9 @@ public class MutationTest {
                 getRawTypeCode(code));
     }
 
-
     @Test
     public void exportRegexps() throws Exception {
         System.out.println(MutationsUtil.getMutationPatternStringForAlphabet(NucleotideSequence.ALPHABET));
         System.out.println(MutationsUtil.getMutationPatternStringForAlphabet(AminoAcidSequence.ALPHABET));
-
     }
 }
