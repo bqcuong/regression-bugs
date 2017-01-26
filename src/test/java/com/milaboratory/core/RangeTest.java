@@ -19,6 +19,8 @@ import com.milaboratory.core.io.util.IOTestUtil;
 import com.milaboratory.test.TestUtil;
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.junit.Assert.*;
 
 public class RangeTest {
@@ -133,7 +135,7 @@ public class RangeTest {
     public void testIntersection4() throws Exception {
         Range se = new Range(30, 50);
         for (int i = 29; i <= 31; i++)
-            for (int j = 49; j <= 51; j++){
+            for (int j = 49; j <= 51; j++) {
                 assertIntersects(se, new Range(i, j));
                 assertIntersectsOrTouches(se, new Range(i, j));
             }
@@ -143,6 +145,17 @@ public class RangeTest {
 
         assertIntersectsOrTouches(se, new Range(50, 60));
         assertIntersectsOrTouches(se, new Range(20, 30));
+    }
+
+    @Test
+    public void subtractionTest1() throws Exception {
+        Range rr = r(100, 200);
+
+        assertEquals(Arrays.asList(r(150, 200)), rr.without(r(50, 150)));
+        assertEquals(Arrays.asList(), rr.without(r(50, 200)));
+        assertEquals(Arrays.asList(), rr.without(r(50, 250)));
+        assertEquals(Arrays.asList(r(100, 150)), rr.without(r(150, 250)));
+        assertEquals(Arrays.asList(r(100, 130), r(150, 200)), rr.without(r(130, 150)));
     }
 
     public static void assertIntersects(Range r1, Range r2) {

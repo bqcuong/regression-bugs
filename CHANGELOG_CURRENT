@@ -1,1 +1,2 @@
 Added two methods `com.milaboratory.core.alignment.Alignment#convertToSeq1Range` and `com.milaboratory.core.alignment.Alignment#convertToSeq2Range`
+Added `without` method in `Range` class
