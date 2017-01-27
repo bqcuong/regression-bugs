@@ -179,9 +179,9 @@ public final class Range implements java.io.Serializable, Comparable<Range> {
      * @return {@code true} if range intersects with {@code other} range
      */
     public boolean intersectsWith(Range other) {
-        return (this.contains(other.lower) && !other.isEmpty())
-                || (other.contains(this.lower) && !this.isEmpty())
-                || (other.upper > upper && other.lower < lower);
+        return !other.isEmpty() && !this.isEmpty() &&
+                (this.contains(other.lower) || other.contains(this.lower)
+                        || (other.upper > upper && other.lower < lower));
     }
 
     /**

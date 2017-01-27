@@ -148,6 +148,29 @@ public class RangeTest {
     }
 
     @Test
+    public void testIntersection5() throws Exception {
+        Range r0 = new Range(30, 30);
+        Range r1 = new Range(40, 40);
+        Range r2 = new Range(30, 50);
+        Range r4 = new Range(29, 29);
+
+        assertFalse(r1.intersectsWith(r2));
+        assertFalse(r2.intersectsWith(r1));
+
+        assertTrue(r1.intersectsWithOrTouches(r2));
+        assertTrue(r2.intersectsWithOrTouches(r1));
+
+        assertTrue(r0.intersectsWithOrTouches(r2));
+        assertTrue(r2.intersectsWithOrTouches(r0));
+        
+        assertFalse(r4.intersectsWithOrTouches(r2));
+        assertFalse(r2.intersectsWithOrTouches(r4));
+
+        assertNull(r1.intersection(r2));
+        assertNull(r2.intersection(r1));
+    }
+
+    @Test
     public void subtractionTest1() throws Exception {
         Range rr = r(100, 200);
 
