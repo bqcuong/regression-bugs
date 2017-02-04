@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ev
+
 scriptDir=""
 
 os=`uname`
