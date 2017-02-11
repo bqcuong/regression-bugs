@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.albfernandez</groupId>
 	<artifactId>pmd-gds</artifactId>
-	<version>2.15.0-SNAPSHOT</version>
+	<version>2.14.1</version>
 	<url>https://github.com/albfernandez/GDS-PMD-Security-Rules</url>
 	<packaging>jar</packaging>
 	<name>PMD-Security-Rules</name>
@@ -35,6 +35,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<pmd.version>5.3.8</pmd.version>
 	</properties>
 
 	<dependencies>
@@ -71,87 +72,87 @@
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-core</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-cpp</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-cs</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-fortran</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-go</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-java</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-javascript</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-jsp</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-matlab</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-objectivec</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-php</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-plsql</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-python</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-ruby</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-scala</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-vm</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.pmd</groupId>
 			<artifactId>pmd-xml</artifactId>
-			<version>5.3.8</version>
+			<version>${pmd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.mozilla</groupId>
@@ -341,7 +342,11 @@
 	</build>
 	<reporting>
 		<plugins>
-
+			<plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-jxr-plugin</artifactId>
+	            <version>2.3</version>
+        	</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-pmd-plugin</artifactId>
