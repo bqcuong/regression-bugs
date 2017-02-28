@@ -191,8 +191,7 @@ public class SmartProgressReporter implements Runnable {
         return new CanReportProgress() {
             @Override
             public double getProgress() {
-                long done = size - countingOutputPort.getCount();
-                return 1.0 * done / size;
+                return 1.0 * countingOutputPort.getCount() / size;
             }
 
             @Override
