@@ -7,9 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
+import java.util.*;
 
 /**
  * Created by poslavsky on 28/02/2017.
@@ -38,8 +36,7 @@ public class SorterTest {
         Sorter.ObjectSerializer<Integer> intSerializer = new Sorter.ObjectSerializer<Integer>() {
             @Override
             public void write(Collection<Integer> data, OutputStream stream) {
-                DataOutputStream out = new DataOutputStream(stream);
-                try {
+                try(DataOutputStream out = new DataOutputStream(stream)) {
                     for (Integer datum : data) {
                         out.writeInt(datum);
                     }
@@ -71,16 +68,13 @@ public class SorterTest {
             }
         }, chunkSize, intSerializer, tmpFile);
 
-        int count = 0;
-        Integer prev = null;
-        for (Integer integer : CUtils.it(sorted)) {
-            if (prev == null)
-                prev = integer;
-            else
-                Assert.assertTrue(integer.compareTo(prev) >= 0);
-            ++count;
-        }
 
-        Assert.assertEquals(nElements, count);
+        List<Integer> result = new ArrayList<>();
+        for (Integer integer : CUtils.it(sorted))
+            result.add(integer);
+
+
+        Collections.sort(source);
+        Assert.assertEquals(source, result);
     }
 }
