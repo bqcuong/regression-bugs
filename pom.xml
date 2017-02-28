@@ -47,7 +47,7 @@
         <dependency>
             <groupId>cc.redberry</groupId>
             <artifactId>pipe</artifactId>
-            <version>0.9.7-SNAPSHOT</version>
+            <version>0.9.7</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
