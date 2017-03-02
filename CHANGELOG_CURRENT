@@ -1,1 +1,4 @@
-Added `com.milaboratory.core.Range#hasSameDirection` method
+Sorter for long streams of object, uses merge sort and temp file to store predsorted stream chunks (`com.milaboratory.util.Sorter`).
+Added `Range#hasSameDirection` method
+Added `SmartProgressReporter#extractProgress` for `CountingOutputPort`
+Minor corrections for `com.milaboratory.util.TempFileManager`
