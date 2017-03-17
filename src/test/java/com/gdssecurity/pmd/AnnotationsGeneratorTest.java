@@ -51,4 +51,10 @@ public class AnnotationsGeneratorTest {
 	public void testGeneratorStringBuilder() throws Exception {
 		Assert.assertEquals(2, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorStringBuilder.java", RULESET_ANNOTATIONS));
 	}
+	
+	
+	@Test
+	public void testGeneratorChainedCall() throws Exception {
+		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorChainedCall.java", RULESET_ANNOTATIONS));
+	}
 }
