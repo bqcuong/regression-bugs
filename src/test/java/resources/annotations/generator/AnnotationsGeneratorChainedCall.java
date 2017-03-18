@@ -25,6 +25,9 @@ public class AnnotationsGeneratorChainedCall {
 		String goodCode = new AnnotationsGeneratorChainedCall().generateCode(bad);
 		out.write(goodCode);
 	}
-	
+	public void generate3(JspWriter out, String bad) throws IOException {
+		String goodCode = new AnnotationsGeneratorExample().generateCode(bad);
+		out.write(goodCode);
+	}	
 
 }
