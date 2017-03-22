@@ -223,7 +223,7 @@ public final class Range implements java.io.Serializable, Comparable<Range> {
      * Returns union range with {@code other} range.
      *
      * @param other other range
-     * @return intersection range with {@code other} range or null if ranges not intersects ot touches
+     * @return union range with {@code other} range or null if ranges not intersects ot touches
      */
     public Range tryMerge(Range other) {
         if (!intersectsWithOrTouches(other))
