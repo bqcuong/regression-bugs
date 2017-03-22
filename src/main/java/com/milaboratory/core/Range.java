@@ -195,10 +195,10 @@ public final class Range implements java.io.Serializable, Comparable<Range> {
     }
 
     /**
-     * Returns {@code true} if range intersects with {@code other} range.
+     * Returns {@code true} if range intersects with or touches {@code other} range.
      *
      * @param other other range
-     * @return {@code true} if range intersects with {@code other} range
+     * @return {@code true} if range intersects with or touches {@code other} range
      */
     public boolean intersectsWithOrTouches(Range other) {
         return contains(other.lower) || contains(other.upper - 1) || (other.upper > upper && other.lower < lower) ||
