@@ -35,13 +35,13 @@ public class Randomizer<T> {
     private final OutputPort<T> initialSource;
     private final RandomDataGenerator random;
     private final int chunkSize;
-    private final Sorter.ObjectSerializer<T> serializer;
+    private final ObjectSerializer<T> serializer;
     private final File tempFile;
     private final TLongArrayList chunkOffsets = new TLongArrayList();
     private int lastChunkSize = -1;
 
     Randomizer(OutputPort<T> initialSource, RandomDataGenerator random, int chunkSize,
-               Sorter.ObjectSerializer<T> serializer, File tempFile) {
+               ObjectSerializer<T> serializer, File tempFile) {
         this.initialSource = initialSource;
         this.random = random;
         this.chunkSize = chunkSize;
@@ -53,11 +53,11 @@ public class Randomizer<T> {
             OutputPort<T> initialSource,
             RandomDataGenerator random,
             int chunkSize,
-            Sorter.ObjectSerializer<T> serializer,
+            ObjectSerializer<T> serializer,
             File tempFile) throws IOException {
         Randomizer<T> sorter = new Randomizer<>(initialSource, random, chunkSize, serializer, tempFile);
         sorter.build();
-        return sorter.getSorted();
+        return sorter.getRandomized();
     }
 
     void build() throws IOException {
@@ -74,14 +74,14 @@ public class Randomizer<T> {
         }
     }
 
-    OutputPortCloseable<T> getSorted() throws IOException {
-        return new MergeSortingPort();
+    OutputPortCloseable<T> getRandomized() throws IOException {
+        return new RandomizingPort();
     }
 
-    private final class MergeSortingPort implements OutputPortCloseable<T> {
+    private final class RandomizingPort implements OutputPortCloseable<T> {
         final List<OutputPortCloseable<T>> blocks = new ArrayList<>();
 
-        public MergeSortingPort() throws IOException {
+        public RandomizingPort() throws IOException {
             for (int i = 0; i < chunkOffsets.size(); i++) {
                 final FileInputStream fo = new FileInputStream(tempFile);
                 // Setting file position to the beginning of the chunkId-th chunk

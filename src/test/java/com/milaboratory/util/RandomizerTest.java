@@ -24,8 +24,6 @@ import org.junit.Test;
 import java.io.*;
 import java.util.*;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by dbolotin on 04/04/2017.
  */
@@ -52,7 +50,7 @@ public class RandomizerTest {
 
         source = new ArrayList<>(new HashSet<>(source));
 
-        Sorter.ObjectSerializer<Integer> intSerializer = new Sorter.ObjectSerializer<Integer>() {
+        ObjectSerializer<Integer> intSerializer = new ObjectSerializer<Integer>() {
             @Override
             public void write(Collection<Integer> data, OutputStream stream) {
                 try (DataOutputStream out = new DataOutputStream(stream)) {

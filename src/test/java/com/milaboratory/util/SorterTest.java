@@ -33,7 +33,7 @@ public class SorterTest {
             source.add(e);
         }
 
-        Sorter.ObjectSerializer<Integer> intSerializer = new Sorter.ObjectSerializer<Integer>() {
+        ObjectSerializer<Integer> intSerializer = new ObjectSerializer<Integer>() {
             @Override
             public void write(Collection<Integer> data, OutputStream stream) {
                 try(DataOutputStream out = new DataOutputStream(stream)) {
