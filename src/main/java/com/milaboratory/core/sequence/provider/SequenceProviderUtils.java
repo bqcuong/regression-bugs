@@ -31,7 +31,7 @@ public final class SequenceProviderUtils {
 
             @Override
             public S getRegion(Range range) {
-                return provider.getRegion(targetRange.getRelativeRangeOf(range));
+                return provider.getRegion(targetRange.getAbsoluteRangeFor(range));
             }
         };
     }
