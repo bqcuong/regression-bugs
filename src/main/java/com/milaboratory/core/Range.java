@@ -297,9 +297,9 @@ public final class Range implements java.io.Serializable, Comparable<Range> {
         return Arrays.asList(new Range(lower, range.lower, reversed), new Range(range.upper, upper, reversed));
     }
 
-    public Range getRelativeRangeOf(Range range) {
-        int from = convertBoundaryToRelativePosition(range.getFrom()),
-                to = convertBoundaryToRelativePosition(range.getTo());
+    public Range getRelativeRangeOf(Range absoluteRange) {
+        int from = convertBoundaryToRelativePosition(absoluteRange.getFrom()),
+                to = convertBoundaryToRelativePosition(absoluteRange.getTo());
         if (from == -1 || to == -1)
             return null;
         return new Range(from, to);
@@ -353,6 +353,20 @@ public final class Range implements java.io.Serializable, Comparable<Range> {
             return upper - relativePosition;
         else
             return relativePosition + lower;
+    }
+
+    /**
+     * Reverse operation for {@link #getRelativeRangeOf(Range)}.
+     *
+     * A.getAbsoluteRangeFor(A.getRelativeRangeOf(B)) == B
+     *
+     * @param relativeRange range defined relative to this range
+     * @return absolute range
+     */
+    public Range getAbsoluteRangeFor(Range relativeRange) {
+        int from = convertBoundaryToAbsolutePosition(relativeRange.getFrom()),
+                to = convertBoundaryToAbsolutePosition(relativeRange.getTo());
+        return new Range(from, to);
     }
 
     @Override

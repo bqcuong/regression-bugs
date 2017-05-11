@@ -22,6 +22,20 @@ public final class SequenceProviderUtils {
     private SequenceProviderUtils() {
     }
 
+    public static <S extends Sequence<S>> SequenceProvider<S> subProvider(final SequenceProvider<S> provider, final Range targetRange) {
+        return new SequenceProvider<S>() {
+            @Override
+            public int size() {
+                return targetRange.length();
+            }
+
+            @Override
+            public S getRegion(Range range) {
+                return provider.getRegion(targetRange.getRelativeRangeOf(range));
+            }
+        };
+    }
+
     public static <S extends Sequence<S>> SequenceProvider<S> fromSequence(final S sequence) {
         return new SequenceProvider<S>() {
             @Override
