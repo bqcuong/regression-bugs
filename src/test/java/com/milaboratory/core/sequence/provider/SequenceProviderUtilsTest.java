@@ -17,7 +17,6 @@ package com.milaboratory.core.sequence.provider;
 
 import com.milaboratory.core.Range;
 import com.milaboratory.core.sequence.NucleotideSequence;
-import org.junit.Assert;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -32,8 +31,8 @@ public class SequenceProviderUtilsTest {
         NucleotideSequence sseq = sequence.getRange(range);
         SequenceProvider<NucleotideSequence> sseqp = SequenceProviderUtils.subProvider(seq, range);
 
-        Assert.assertEquals(sseq.getRange(new Range(1, 7)), sseqp.getRegion(new Range(1, 7)));
-        Assert.assertEquals(sseq.getRange(new Range(3, 9)), sseqp.getRegion(new Range(3, 9)));
-        Assert.assertEquals(range.length(), sseqp.size());
+        assertEquals(sseq.getRange(new Range(1, 7)), sseqp.getRegion(new Range(1, 7)));
+        assertEquals(sseq.getRange(new Range(3, 9)), sseqp.getRegion(new Range(3, 9)));
+        assertEquals(range.length(), sseqp.size());
     }
 }
