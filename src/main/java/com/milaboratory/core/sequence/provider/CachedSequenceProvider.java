@@ -31,19 +31,55 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
     final RangeMap<S> sequences = new RangeMap<>();
     final SequenceProvider<S> provider;
 
+    /**
+     * Cached sequence provider wrapping specified sequence provider.
+     *
+     * @param alphabet alphabet
+     * @param provider provider to cache sequences from
+     */
     public CachedSequenceProvider(Alphabet<S> alphabet, SequenceProvider<S> provider) {
         this.alphabet = alphabet;
         this.provider = provider;
     }
 
-    public CachedSequenceProvider(Alphabet<S> alphabet, int size, String missingErrorMessage) {
-        this.alphabet = alphabet;
-        this.provider = new NoProvider<S>(size, missingErrorMessage);
+    /**
+     * Cached sequence provider without underlying sequence provider, with automatically inferred provider size.
+     *
+     * @param alphabet            alphabet
+     * @param missingErrorMessage error message for missing sequence
+     */
+    public CachedSequenceProvider(Alphabet<S> alphabet, String missingErrorMessage) {
+        this(alphabet, new NoProvider<S>(-1, missingErrorMessage));
     }
 
+    /**
+     * Cached sequence provider without underlying sequence provider, with fixed provider size.
+     *
+     * @param alphabet            alphabet
+     * @param size                size
+     * @param missingErrorMessage error message for missing sequence
+     */
+    public CachedSequenceProvider(Alphabet<S> alphabet, int size, String missingErrorMessage) {
+        this(alphabet, new NoProvider<S>(size, missingErrorMessage));
+    }
+
+    /**
+     * Cached sequence provider without underlying sequence provider, with fixed provider size.
+     *
+     * @param alphabet alphabet
+     * @param size     size
+     */
     public CachedSequenceProvider(Alphabet<S> alphabet, int size) {
-        this.alphabet = alphabet;
-        this.provider = new NoProvider<S>(size);
+        this(alphabet, new NoProvider<S>(size));
+    }
+
+    /**
+     * Cached sequence provider without underlying sequence provider, with automatically inferred provider size.
+     *
+     * @param alphabet alphabet
+     */
+    public CachedSequenceProvider(Alphabet<S> alphabet) {
+        this(alphabet, new NoProvider<S>(-1));
     }
 
     public Map.Entry<Range, S> ensureEntry(Range range) {
@@ -102,7 +138,15 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
 
     @Override
     public int size() {
-        return provider.size();
+        int s = provider.size();
+        if (s >= 0)
+            return s;
+
+        else // s == -1 => automatically infer size from rangeMap
+            if (sequences.isEmpty())
+                return 0;
+            else
+                return sequences.enclosingRange().getUpper(); // last cached position
     }
 
     public S getRegion(Range range) {
@@ -113,7 +157,8 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
     }
 
     public void setRegion(Range range, S seq) {
-        if (range.getUpper() > size())
+        int providerSize = provider.size();
+        if (providerSize >= 0 && range.getUpper() > providerSize)
             throw new IllegalArgumentException("Trying to set sequence outside available range.");
 
         Map.Entry<Range, S> containing = sequences.findContaining(range);
@@ -175,6 +220,9 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
         sequences.put(range, seq);
     }
 
+    /**
+     * Internal
+     */
     private static final class NoProvider<S extends Sequence<S>> implements SequenceProvider<S> {
         final int size;
         final String errorMessage;

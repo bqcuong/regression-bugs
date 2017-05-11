@@ -1,1 +1,2 @@
 `size()` method added to `SequenceProvider` interface
+Optional automatic inference of `size` value for `CachedSequenceProvider`

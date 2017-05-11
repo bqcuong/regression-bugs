@@ -74,6 +74,8 @@ public class CachedSequenceProviderTest {
                 26, 40,
                 26, 45,
                 10, 45);
+
+        Assert.assertEquals(sequence.size(), cache.size());
     }
 
     @Test
@@ -96,6 +98,8 @@ public class CachedSequenceProviderTest {
                 Assert.assertEquals(sequence.getRange(r), cache.getRegion(r));
                 Assert.assertFalse(cache.sequences.isOverFragmented());
             }
+
+            Assert.assertTrue(cache.size() <= sequence.size());
         }
     }
 
@@ -110,7 +114,7 @@ public class CachedSequenceProviderTest {
         for (int i = 0; i < 100; i++) {
             final S sequence = TestUtil.randomSequence(alphabet, 1000, 2000);
 
-            CachedSequenceProvider<S> cache = new CachedSequenceProvider<>(alphabet, 1000000);
+            CachedSequenceProvider<S> cache = new CachedSequenceProvider<>(alphabet);
 
             List<Range> ranges = new ArrayList<>();
 
@@ -126,6 +130,8 @@ public class CachedSequenceProviderTest {
                 for (Range rr : ranges)
                     Assert.assertEquals(sequence.getRange(rr), cache.getRegion(rr));
             }
+
+            Assert.assertTrue(cache.size() <= sequence.size());
         }
     }
 
