@@ -36,18 +36,14 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
         this.provider = provider;
     }
 
-    public CachedSequenceProvider(Alphabet<S> alphabet, final String missingErrorMessage) {
+    public CachedSequenceProvider(Alphabet<S> alphabet, int size, String missingErrorMessage) {
         this.alphabet = alphabet;
-        this.provider = new SequenceProvider<S>() {
-            @Override
-            public S getRegion(Range range) {
-                throw new RuntimeException(missingErrorMessage + " (range " + range + ")");
-            }
-        };
+        this.provider = new NoProvider<S>(size, missingErrorMessage);
     }
 
-    public CachedSequenceProvider(Alphabet<S> alphabet) {
-        this(alphabet, NO_PROVIDER);
+    public CachedSequenceProvider(Alphabet<S> alphabet, int size) {
+        this.alphabet = alphabet;
+        this.provider = new NoProvider<S>(size);
     }
 
     public Map.Entry<Range, S> ensureEntry(Range range) {
@@ -104,6 +100,11 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
         return sequences.entrySet();
     }
 
+    @Override
+    public int size() {
+        return provider.size();
+    }
+
     public S getRegion(Range range) {
         if (range.isEmpty())
             return alphabet.getEmptySequence();
@@ -112,6 +113,9 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
     }
 
     public void setRegion(Range range, S seq) {
+        if (range.getUpper() > size())
+            throw new IllegalArgumentException("Trying to set sequence outside available range.");
+
         Map.Entry<Range, S> containing = sequences.findContaining(range);
         if (containing != null) {
             for (int i = 0, j = range.getFrom() - containing.getKey().getFrom(); i < seq.size(); ++i, ++j)
@@ -171,10 +175,27 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
         sequences.put(range, seq);
     }
 
-    private static final SequenceProvider NO_PROVIDER = new SequenceProvider() {
-        @Override
-        public Sequence getRegion(Range range) {
-            throw new IndexOutOfBoundsException("No sequence provider.");
+    private static final class NoProvider<S extends Sequence<S>> implements SequenceProvider<S> {
+        final int size;
+        final String errorMessage;
+
+        public NoProvider(int size) {
+            this(size, "No sequence provider");
         }
-    };
+
+        public NoProvider(int size, String errorMessage) {
+            this.size = size;
+            this.errorMessage = errorMessage;
+        }
+
+        @Override
+        public int size() {
+            return size;
+        }
+
+        @Override
+        public S getRegion(Range range) {
+            throw new IndexOutOfBoundsException(errorMessage + " (query range = " + range + ")");
+        }
+    }
 }

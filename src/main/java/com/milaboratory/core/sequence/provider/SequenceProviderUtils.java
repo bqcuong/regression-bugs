@@ -25,6 +25,11 @@ public final class SequenceProviderUtils {
     public static <S extends Sequence<S>> SequenceProvider<S> fromSequence(final S sequence) {
         return new SequenceProvider<S>() {
             @Override
+            public int size() {
+                return sequence.size();
+            }
+
+            @Override
             public S getRegion(Range range) {
                 if (range.getUpper() > sequence.size())
                     throw new SequenceProviderIndexOutOfBoundsException(range.intersection(new Range(0, sequence.size())));
@@ -37,13 +42,23 @@ public final class SequenceProviderUtils {
         return new SequenceProvider<S>() {
             volatile SequenceProvider<S> innerProvider = null;
 
-            @Override
-            public S getRegion(Range range) {
+            void ensureProvider() {
                 if (innerProvider == null)
                     synchronized (this) {
                         if (innerProvider == null)
                             innerProvider = factory.create();
                     }
+            }
+
+            @Override
+            public int size() {
+                ensureProvider();
+                return innerProvider.size();
+            }
+
+            @Override
+            public S getRegion(Range range) {
+                ensureProvider();
                 return innerProvider.getRegion(range);
             }
         };
