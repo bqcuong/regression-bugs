@@ -16,24 +16,19 @@
 package com.milaboratory.core.sequence.provider;
 
 import com.milaboratory.core.Range;
+import com.milaboratory.core.sequence.NucleotideSequence;
 import com.milaboratory.core.sequence.Sequence;
 
 public final class SequenceProviderUtils {
     private SequenceProviderUtils() {
     }
 
-    public static <S extends Sequence<S>> SequenceProvider<S> subProvider(final SequenceProvider<S> provider, final Range targetRange) {
-        return new SequenceProvider<S>() {
-            @Override
-            public int size() {
-                return targetRange.length();
-            }
+    public static SequenceProvider<NucleotideSequence> reversedProvider(final SequenceProvider<NucleotideSequence> provider) {
+        return new SubSequenceProvider<>(new Range(provider.size(), 0), provider);
+    }
 
-            @Override
-            public S getRegion(Range range) {
-                return provider.getRegion(targetRange.getAbsoluteRangeFor(range));
-            }
-        };
+    public static <S extends Sequence<S>> SequenceProvider<S> subProvider(final SequenceProvider<S> provider, final Range targetRange) {
+        return new SubSequenceProvider<>(targetRange, provider);
     }
 
     public static <S extends Sequence<S>> SequenceProvider<S> fromSequence(final S sequence) {
@@ -76,5 +71,30 @@ public final class SequenceProviderUtils {
                 return innerProvider.getRegion(range);
             }
         };
+    }
+
+    private static final class SubSequenceProvider<S extends Sequence<S>> implements SequenceProvider<S> {
+        final Range targetRange;
+        final SequenceProvider<S> provider;
+
+        public SubSequenceProvider(Range targetRange, SequenceProvider<S> provider) {
+            if (provider instanceof SubSequenceProvider) {
+                this.targetRange = ((SubSequenceProvider<S>) provider).targetRange.getAbsoluteRangeFor(targetRange);
+                this.provider = ((SubSequenceProvider<S>) provider).provider;
+            } else {
+                this.targetRange = targetRange;
+                this.provider = provider;
+            }
+        }
+
+        @Override
+        public int size() {
+            return targetRange.length();
+        }
+
+        @Override
+        public S getRegion(Range range) {
+            return provider.getRegion(targetRange.getAbsoluteRangeFor(range));
+        }
     }
 }

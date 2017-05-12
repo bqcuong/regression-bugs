@@ -100,6 +100,15 @@ public final class Range implements java.io.Serializable, Comparable<Range> {
     }
 
     /**
+     * Return reversed range.
+     *
+     * @return reversed range
+     */
+    public Range reverse() {
+        return new Range(lower, upper, !reversed);
+    }
+
+    /**
      * Returns true if two ranges has the same direction. Always return true if any of ranges are empty.
      *
      * @param other other range to compare with

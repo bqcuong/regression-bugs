@@ -27,12 +27,14 @@ public class SequenceProviderUtilsTest {
         final NucleotideSequence sequence = new NucleotideSequence("ATTAGACAGCTGCATAGTGCTCGCTCGGCGATGACTGCGCGGCGCGC" +
                 "ATGGATCGACTAGCTCTATCGAGCTTCTCTGAAGCGTATCGAT");
         SequenceProvider<NucleotideSequence> seq = SequenceProviderUtils.fromSequence(sequence);
-        Range range = new Range(23, 42);
-        NucleotideSequence sseq = sequence.getRange(range);
-        SequenceProvider<NucleotideSequence> sseqp = SequenceProviderUtils.subProvider(seq, range);
-
-        assertEquals(sseq.getRange(new Range(1, 7)), sseqp.getRegion(new Range(1, 7)));
-        assertEquals(sseq.getRange(new Range(3, 9)), sseqp.getRegion(new Range(3, 9)));
-        assertEquals(range.length(), sseqp.size());
+        for (Range baseRange : new Range[]{new Range(23, 42), new Range(23, 42).reverse()}) {
+            NucleotideSequence sseq = sequence.getRange(baseRange);
+            SequenceProvider<NucleotideSequence> sseqp = SequenceProviderUtils.subProvider(seq, baseRange);
+            assertEquals(sseq.getRange(new Range(1, 7)), sseqp.getRegion(new Range(1, 7)));
+            assertEquals(sseq.getRange(new Range(1, 7).reverse()), sseqp.getRegion(new Range(1, 7).reverse()));
+            assertEquals(sseq.getRange(new Range(3, 9)), sseqp.getRegion(new Range(3, 9)));
+            assertEquals(sseq.getRange(new Range(3, 9).reverse()), sseqp.getRegion(new Range(3, 9).reverse()));
+            assertEquals(baseRange.length(), sseqp.size());
+        }
     }
 }

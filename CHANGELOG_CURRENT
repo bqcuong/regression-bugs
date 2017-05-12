@@ -1,4 +1,5 @@
+`reverse()` method for Range
 `size()` method added to `SequenceProvider` interface
 Optional automatic inference of `size` value for `CachedSequenceProvider`
 Added `com.milaboratory.core.Range#getAbsoluteRangeFor`
-Added com.milaboratory.core.sequence.provider.SequenceProviderUtils#subProvider
+Added `com.milaboratory.core.sequence.provider.SequenceProviderUtils#subProvider`
