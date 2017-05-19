@@ -138,15 +138,22 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
 
     @Override
     public int size() {
-        int s = provider.size();
-        if (s >= 0)
-            return s;
-
-        else // s == -1 => automatically infer size from rangeMap
+        if (provider instanceof NoProvider) {
+            int s = provider.size();
+            if (s >= 0)
+                return s;
+            else // s == -1 => automatically infer size from rangeMap
+                if (sequences.isEmpty())
+                    throw new IllegalArgumentException(((NoProvider) provider).errorMessage);
+                else
+                    return sequences.enclosingRange().getUpper(); // last cached position
+        } else if (provider instanceof SequenceProviderUtils.LazySequenceProvider)
             if (sequences.isEmpty())
-                return 0;
+                return provider.size();
             else
                 return sequences.enclosingRange().getUpper(); // last cached position
+        else
+            return provider.size();
     }
 
     public S getRegion(Range range) {
@@ -157,9 +164,13 @@ public final class CachedSequenceProvider<S extends Sequence<S>> implements Sequ
     }
 
     public void setRegion(Range range, S seq) {
-        int providerSize = provider.size();
-        if (providerSize >= 0 && range.getUpper() > providerSize)
-            throw new IllegalArgumentException("Trying to set sequence outside available range.");
+        if ((provider instanceof NoProvider && provider.size() > 0) ||
+                (provider instanceof SequenceProviderUtils.LazySequenceProvider && ((SequenceProviderUtils.LazySequenceProvider) provider).isInitialized()) ||
+                (!(provider instanceof NoProvider) && !(provider instanceof SequenceProviderUtils.LazySequenceProvider))) {
+            int providerSize = provider.size();
+            if (providerSize >= 0 && range.getUpper() > providerSize)
+                throw new IllegalArgumentException("Trying to set sequence outside available range.");
+        }
 
         Map.Entry<Range, S> containing = sequences.findContaining(range);
         if (containing != null) {

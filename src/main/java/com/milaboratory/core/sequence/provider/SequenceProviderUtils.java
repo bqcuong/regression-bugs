@@ -48,29 +48,7 @@ public final class SequenceProviderUtils {
     }
 
     public static <S extends Sequence<S>> SequenceProvider<S> lazyProvider(final SequenceProviderFactory<S> factory) {
-        return new SequenceProvider<S>() {
-            volatile SequenceProvider<S> innerProvider = null;
-
-            void ensureProvider() {
-                if (innerProvider == null)
-                    synchronized (this) {
-                        if (innerProvider == null)
-                            innerProvider = factory.create();
-                    }
-            }
-
-            @Override
-            public int size() {
-                ensureProvider();
-                return innerProvider.size();
-            }
-
-            @Override
-            public S getRegion(Range range) {
-                ensureProvider();
-                return innerProvider.getRegion(range);
-            }
-        };
+        return new LazySequenceProvider<>(factory);
     }
 
     private static final class SubSequenceProvider<S extends Sequence<S>> implements SequenceProvider<S> {
@@ -95,6 +73,40 @@ public final class SequenceProviderUtils {
         @Override
         public S getRegion(Range range) {
             return provider.getRegion(targetRange.getAbsoluteRangeFor(range));
+        }
+    }
+
+    public static class LazySequenceProvider<S extends Sequence<S>> implements SequenceProvider<S> {
+        private final SequenceProviderFactory<S> factory;
+        volatile SequenceProvider<S> innerProvider;
+
+        public LazySequenceProvider(SequenceProviderFactory<S> factory) {
+            this.factory = factory;
+            innerProvider = null;
+        }
+
+        public boolean isInitialized() {
+            return innerProvider != null;
+        }
+
+        void ensureProvider() {
+            if (innerProvider == null)
+                synchronized (this) {
+                    if (innerProvider == null)
+                        innerProvider = factory.create();
+                }
+        }
+
+        @Override
+        public int size() {
+            ensureProvider();
+            return innerProvider.size();
+        }
+
+        @Override
+        public S getRegion(Range range) {
+            ensureProvider();
+            return innerProvider.getRegion(range);
         }
     }
 }
