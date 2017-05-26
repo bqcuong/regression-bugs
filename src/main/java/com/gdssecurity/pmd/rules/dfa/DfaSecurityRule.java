@@ -162,9 +162,11 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 	public void execute(CurrentPath currentPath) {
 
 		this.methodDataFlowCount++;
-		this.currentPathTaintedVariables = new HashSet<String>();
-		this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
-		this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
+		if (this.currentPathTaintedVariables == null) {
+			this.currentPathTaintedVariables = new HashSet<String>();
+			this.currentPathTaintedVariables.addAll(this.fieldTypesTainted);
+			this.currentPathTaintedVariables.addAll(this.functionParameterTainted);
+		}
 
 		if (this.methodDataFlowCount < MAX_DATAFLOWS) {
 			for (Iterator<DataFlowNode> iterator = currentPath.iterator(); iterator.hasNext();) {
