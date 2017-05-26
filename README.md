@@ -1,4 +1,4 @@
-#Introduction
+# Introduction
 
 GDS PMD Secure Coding Ruleset - Custom ruleset for the open source static analysis tool PMD (http://pmd.sourceforge.net/). 
 The ruleset contains rules intended to identify security violations that map to the 2013 OWASP Top 10 
@@ -10,7 +10,7 @@ Author: Alberto Fernández (infjaf@gmail.com)
 Below are instructions for running PMD 5.3.X with the GDS Secure Coding Ruleset.
 
 
-#Basic Usage Steps
+# Basic Usage Steps
 
 
 Before reading the steps below, please first read the official PMD documentation for running PMD from the command-line or as a ANT task. 
@@ -22,7 +22,7 @@ This provides additional type information to PMD, which makes for more accurate 
 3. Configure PMD to use the GDS Secure Coding Ruleset. Assuming pmd-gds-2.x.x.jar is on the CLASSPATH, this ruleset will be accessible via "rulesets/GDS/SecureCoding.xml".
 4. Run PMD against application source code and audit the results to determine if a security violation reported by PMD is actually a security vulnerability.
 
-#Next Steps
+# Next Steps
 
 
 - Refer to the section in this README "Preparing JSP Files for Scanning" if the application source code includes JSP files. 
@@ -34,7 +34,7 @@ This provides additional type information to PMD, which makes for more accurate 
 - Contribute to the project!
 
 
-#Preparing JSP Files for Scanning
+# Preparing JSP Files for Scanning
 
 Official PMD documentation states that PMD only supports JSP files that are XHTML-compliant (i.e. JSP Documents / XML syntax). 
 Refer to http://pmd.github.io/pmd-5.3.8/usage/jspsupport.html for additional information on this limitation.
@@ -72,7 +72,7 @@ The outputDir should be included as a source code directory to be scanned by PMD
 Additionally, outputDir should be added to the PMD CLASSPATH.
 
 
-#Running PMDTask with the GDS Secure Coding Ruleset
+# Running PMDTask with the GDS Secure Coding Ruleset
 
 This section assumes you have already read and followed the directions in the official PMD documentation for "Ant task usage" (http://pmd.sourceforge.net/ant-task.html) 
 as well as the section in this README called "Preparing JSP Files for Scanning". The following is provided to further assist with configuring PMDTask to scan application source code with the GDS Secure Coding Ruleset. 
@@ -116,7 +116,7 @@ as well as the section in this README called "Preparing JSP Files for Scanning".
 	</target>
 	
 
-#Building from sources
+# Building from sources
 
 
 Download source code from release page or clone directly with git.
@@ -128,7 +128,7 @@ To compile you need java 7 and maven.
 
 The resulting jar is target/pmd-gds-2.x.x.jar
 
-#Miscellaneous Notes
+# Miscellaneous Notes
 
 Unfortunately, the official PMD Eclipse plugin only supports XPath rules out of box. 
 Therefore, GDS Secure Coding Ruleset is not officially supported in Eclipse at this time.
