@@ -44,18 +44,18 @@ public class KAligner2Test {
 
         NucleotideSequence query = new NucleotideSequence("atgcgtcgatcgtagctagctgtcgatcgactgaatgtagagctagctagctac");
         KAlignmentResult2<Object> al = aligner.align(query);
-        System.out.println(GlobalObjectMappers.PRETTY.writeValueAsString(stat));
-        System.out.println(al.hasHits());
+        // System.out.println(GlobalObjectMappers.PRETTY.writeValueAsString(stat));
+        // System.out.println(al.hasHits());
 
         Alignment<NucleotideSequence> val = al.getHits().get(0).getAlignment();
         Assert.assertEquals(query.getRange(val.getSequence2Range()), AlignmentUtils.getAlignedSequence2Part(val));
-        System.out.println(val.getScore());
-        System.out.println(val);
+        // System.out.println(val.getScore());
+        // System.out.println(val);
 
         val = al.getHits().get(1).getAlignment();
         Assert.assertEquals(query.getRange(val.getSequence2Range()), AlignmentUtils.getAlignedSequence2Part(val));
-        System.out.println(val.getScore());
-        System.out.println(val);
+        // System.out.println(val.getScore());
+        // System.out.println(val);
 
 
         //val = al.getHits().get(2).getAlignment();
