@@ -364,7 +364,7 @@ public class KAligner2Test {
         params.setMapperMaxClusterIndels(4);
         params.setMapperMinSeedsDistance(3);
 
-        System.out.println(GlobalObjectMappers.PRETTY.writeValueAsString(params));
+        // System.out.println(GlobalObjectMappers.PRETTY.writeValueAsString(params));
 
         KAligner2<Integer> aligner = new KAligner2<>(params);
         aligner.addReference(nt("GAGGTGCAGCTGGTGGAGTCTGGGGGAGGCCTGGTCAAGCCTGGGGGGTCCCTGAGACTCTCCTGTGCAGCCTCTGGATTCACCTTCAGTAGCTATAGCATGAACTGGGTCCGCCAGGCTCCAGGGAAGGGGCTGGAGTGGGTCTCATCCATTAGTAGTAGTAGTAGTTACATATACTACGCAGACTCAGTGAAGGGCCGATTCACCATCTCCAGAGACAACGCCAAGAACTCACTGTATCTGCAAATGAACAGCCTGAGAGCCGAGGACACGGCTGTGTATTACTGTGCGAGAGA"));
