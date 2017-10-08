@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.albfernandez</groupId>
 	<artifactId>pmd-gds</artifactId>
-	<version>2.16.1-SNAPSHOT</version>
+	<version>2.17.0-SNAPSHOT</version>
 	<url>https://github.com/albfernandez/GDS-PMD-Security-Rules</url>
 	<packaging>jar</packaging>
 	<name>PMD-Security-Rules</name>
@@ -35,7 +35,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<pmd.version>5.7.0</pmd.version>
+		<pmd.version>5.8.1</pmd.version>
 		<pmd-plugin.version>3.8</pmd-plugin.version>
 		<findbugs-plugin.version>3.0.5</findbugs-plugin.version>
 	</properties>

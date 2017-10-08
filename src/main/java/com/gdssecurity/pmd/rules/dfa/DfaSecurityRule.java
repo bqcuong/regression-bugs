@@ -33,6 +33,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.jaxen.JaxenException;
+
+import com.gdssecurity.pmd.TypeUtils;
+import com.gdssecurity.pmd.Utils;
+import com.gdssecurity.pmd.rules.BaseSecurityRule;
+
 import net.sourceforge.pmd.PropertyDescriptor;
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.ast.Node;
@@ -71,14 +79,6 @@ import net.sourceforge.pmd.lang.java.ast.ASTVariableInitializer;
 import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
 import net.sourceforge.pmd.lang.rule.properties.StringProperty;
 import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.jaxen.JaxenException;
-
-import com.gdssecurity.pmd.TypeUtils;
-import com.gdssecurity.pmd.Utils;
-import com.gdssecurity.pmd.rules.BaseSecurityRule;
 
 public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
@@ -834,15 +834,22 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			if (astClass != null) {
 				type = astClass.getType();
 			} else {
-				ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);
+				ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);				
 				ASTName astName = prefix.getFirstChildOfType(ASTName.class);
 				if (astName != null) {
 					type = astName.getType();
 					if (type == null) {
+						NameDeclaration dec = astName.getNameDeclaration();						
+						if (dec != null && dec.getNode() instanceof ASTVariableDeclaratorId) {
+							ASTVariableDeclaratorId declarator = (ASTVariableDeclaratorId) dec.getNode();
+							type = declarator.getType();
+						}
+					}
+					if (type == null) {						
 						String parameterName = astName.getImage();
 						if (parameterName.indexOf('.') > 0) {
 							parameterName = parameterName.substring(0, parameterName.lastIndexOf('.'));
-							type = TypeUtils.INSTANCE.getClassForName(parameterName);						
+							type = TypeUtils.INSTANCE.getClassForName(parameterName, astName);						
 						}
 						if (type == null) {
 							parameterName = astName.getImage();
