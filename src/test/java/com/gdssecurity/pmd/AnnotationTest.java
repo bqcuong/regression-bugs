@@ -8,6 +8,10 @@ public class AnnotationTest {
 	private static final String RULESET_ANNOTATIONS = "rulesets/xss-annotations.xml";
 	
 	
+	public AnnotationTest() {
+		super();
+	}
+	
 	@Test
 	public void testSinkIsOkStringConcat() throws Exception {
 		Assert.assertEquals(0, PMDRunner.run("src/test/java/resources/annotations/AnnotationExampleSinkConcat.java", RULESET_ANNOTATIONS));	

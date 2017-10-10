@@ -5,6 +5,9 @@ import org.junit.Test;
 
 public class CallInReturnTest {
 
+	public CallInReturnTest() {
+		super();
+	}
 	@Test
 	public void testCallInReturn() throws Exception {
 		Assert.assertEquals(1,

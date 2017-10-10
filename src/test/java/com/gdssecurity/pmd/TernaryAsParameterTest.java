@@ -5,6 +5,9 @@ import org.junit.Test;
 
 public class TernaryAsParameterTest {
 
+	public TernaryAsParameterTest() {
+		super();
+	}
 	
 	@Test
 	public void testTernary () throws Exception {

@@ -5,7 +5,9 @@ import org.junit.Test;
 
 public class ViolationAfterCatchTest {
 
-	
+	public ViolationAfterCatchTest() {
+		super();
+	}
 	
 	@Test
 	public void testViolationAfterCatch() throws Exception{

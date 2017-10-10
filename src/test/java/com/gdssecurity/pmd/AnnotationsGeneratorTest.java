@@ -7,6 +7,10 @@ public class AnnotationsGeneratorTest {
 
 	private static final String RULESET_ANNOTATIONS = "rulesets/xss-annotations.xml";
 	
+	public AnnotationsGeneratorTest() {
+		super();
+	}
+	
 	@Test
 	public void testNoGenerator () throws Exception {
 		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/annotations/generator/AnnotationsGeneratorExample.java", RULESET_ANNOTATIONS));	

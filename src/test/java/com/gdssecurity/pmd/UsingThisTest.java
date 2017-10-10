@@ -4,6 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class UsingThisTest {
+	
+	public UsingThisTest() {
+		super();
+	}
 
 	@Test
 	public void testUsingThis () throws Exception {

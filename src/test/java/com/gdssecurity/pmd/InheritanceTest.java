@@ -4,6 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class InheritanceTest {
+	
+	public InheritanceTest () {
+		super();
+	}
 
 	@Test
 	public void test1 () throws Exception {

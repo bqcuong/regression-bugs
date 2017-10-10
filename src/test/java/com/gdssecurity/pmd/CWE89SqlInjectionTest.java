@@ -7,6 +7,7 @@ import org.junit.Test;
 public class CWE89SqlInjectionTest {
 
 	private static String DIR = "src/test/java/resources/cwe89sqlinjection/";
+	
 	public CWE89SqlInjectionTest() {
 		super();
 	}
