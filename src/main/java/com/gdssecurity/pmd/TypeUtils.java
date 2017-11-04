@@ -87,9 +87,8 @@ public class TypeUtils {
 	/**
 	 * Finds a class. Uses cache to store misses and hits
 	 * 
-	 * @param className
-	 *            class name to search for
-	 * @return
+	 * @param className class name to search for
+	 * @return the class
 	 */
 	public Class<?> getClassForName(String className) {
 		if (StringUtils.isBlank(className)) {
