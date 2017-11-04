@@ -67,7 +67,7 @@ public class TypeUtils {
 				}
 			}
 			
-			// pakcage
+			// package
 			List<ASTPackageDeclaration> pacage = parent.get(0).findChildrenOfType(ASTPackageDeclaration.class);
 			if (!pacage.isEmpty()) {
 				ASTPackageDeclaration dec = pacage.get(0);
