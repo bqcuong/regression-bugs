@@ -85,6 +85,8 @@ public final class Sorter<T> {
     }
 
     public OutputPortCloseable<T> getSorted() throws IOException {
+        if (lastChunkSize == -1)
+            throw new IllegalStateException();
         return new MergeSortingPort();
     }
 
