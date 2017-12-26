@@ -100,6 +100,15 @@ public final class Range implements java.io.Serializable, Comparable<Range> {
     }
 
     /**
+     * Return +1 if this range is normal and -1 if it is reversed
+     *
+     * @return +1 if this range is normal and -1 if it is reversed
+     */
+    public int sig() {
+        return reversed ? -1 : +1;
+    }
+
+    /**
      * Return reversed range.
      *
      * @return reversed range
