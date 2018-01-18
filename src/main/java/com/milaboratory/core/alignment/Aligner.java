@@ -65,6 +65,17 @@ public final class Aligner {
         return new Alignment<>(from, builder.createAndDestroy(), range, range, score);
     }
 
+    public static <S extends Sequence<S>> Alignment<S> alignGlobal(AlignmentScoring<S> alignmentScoring,
+                                                                   S seq1, S seq2,
+                                                                   int offset1, int length1,
+                                                                   int offset2, int length2) {
+        Alignment<S> al = Aligner.alignGlobal(
+                alignmentScoring,
+                seq1.getRange(offset1, offset1 + length1),
+                seq2.getRange(offset2, offset2 + length2));
+        return new Alignment<>(seq1, al.getAbsoluteMutations().move(offset1), al.getScore());
+    }
+
     /**
      * Performs global alignment
      *
@@ -248,6 +259,17 @@ public final class Aligner {
 
         return new Alignment<S>(seq1, builder.createAndDestroy(),
                 new Range(0, seq1.size()), new Range(0, seq2.size()), maxV);
+    }
+
+    public static <S extends Sequence<S>> Alignment<S> alignLocal(AlignmentScoring<S> alignmentScoring,
+                                                                  S seq1, S seq2,
+                                                                  int offset1, int length1,
+                                                                  int offset2, int length2) {
+        Alignment<S> al = Aligner.alignLocal(
+                alignmentScoring,
+                seq1.getRange(offset1, offset1 + length1),
+                seq2.getRange(offset2, offset2 + length2));
+        return new Alignment<>(seq1, al.getAbsoluteMutations().move(offset1), al.getScore());
     }
 
     /**

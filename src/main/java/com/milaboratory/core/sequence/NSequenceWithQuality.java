@@ -56,8 +56,12 @@ public final class NSequenceWithQuality extends SequenceWithQuality<NucleotideSe
         this(new NucleotideSequence(sequence));
     }
 
+    public NSequenceWithQuality(NucleotideSequence sequence, byte quality) {
+        super(sequence, SequenceQuality.getUniformQuality(quality, sequence.size()));
+    }
+
     public NSequenceWithQuality(NucleotideSequence sequence) {
-        super(sequence, SequenceQuality.getUniformQuality(SequenceQuality.GOOD_QUALITY_VALUE, sequence.size()));
+        this(sequence, SequenceQuality.GOOD_QUALITY_VALUE);
     }
 
     /**
