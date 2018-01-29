@@ -446,8 +446,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			}
 			type = getJavaType(astMethod);
 
-			if ((type == StringBuilder.class || type == StringBuffer.class)
-					&& ("insert".equals(method) || "append".equals(method))) {
+			if (isStringBuilderAppend(type, method)) {
 				analizeStringBuilderAppend(simpleNode);
 			}
 
@@ -456,6 +455,20 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			}
 		}
 		
+	}
+	
+	private boolean isStringBuilderAppend(Class<?> type, String methodName) {
+		return isStringBuilder(type) && ("insert".equals(methodName) || "append".equals(methodName));
+	}
+
+	private boolean isStringBuilder(Class<?> type) {
+		if (type == null) {
+			return false;
+		}
+		return
+				type == StringBuilder.class || 
+				type == StringBuffer.class || 
+				"java.lang.AbstractStringBuilder".equals(type.getCanonicalName());		
 	}
 
 	private void handleStringConcatenation(DataFlowNode iDataFlowNode, Node simpleNode) {
