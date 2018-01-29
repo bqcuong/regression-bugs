@@ -27,16 +27,16 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import net.sourceforge.pmd.PropertyDescriptor;
+import com.gdssecurity.pmd.Utils;
+
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.java.ast.ASTAdditiveExpression;
 import net.sourceforge.pmd.lang.java.ast.ASTName;
 import net.sourceforge.pmd.lang.java.rule.regex.RegexHelper;
 import net.sourceforge.pmd.lang.java.symboltable.JavaNameOccurrence;
-import net.sourceforge.pmd.lang.rule.properties.StringProperty;
 import net.sourceforge.pmd.lang.symboltable.NameOccurrence;
-
-import com.gdssecurity.pmd.Utils;
+import net.sourceforge.pmd.properties.PropertyDescriptor;
+import net.sourceforge.pmd.properties.StringProperty;
 
 
 public class SqlStringConcatentation extends BaseSecurityRule {

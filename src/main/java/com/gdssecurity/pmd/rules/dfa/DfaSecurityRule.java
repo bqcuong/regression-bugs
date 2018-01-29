@@ -41,7 +41,7 @@ import com.gdssecurity.pmd.TypeUtils;
 import com.gdssecurity.pmd.Utils;
 import com.gdssecurity.pmd.rules.BaseSecurityRule;
 
-import net.sourceforge.pmd.PropertyDescriptor;
+import net.sourceforge.pmd.properties.PropertyDescriptor;
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.dfa.DataFlowNode;
@@ -76,8 +76,8 @@ import net.sourceforge.pmd.lang.java.ast.ASTType;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclarator;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclaratorId;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableInitializer;
-import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
-import net.sourceforge.pmd.lang.rule.properties.StringProperty;
+import net.sourceforge.pmd.properties.StringMultiProperty;
+import net.sourceforge.pmd.properties.StringProperty;
 import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 
 public class DfaSecurityRule extends BaseSecurityRule implements Executable {
@@ -100,19 +100,19 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 	private String[] searchAnnotationsInPackagesArray;
 
-	private final PropertyDescriptor<String[]> sinkDescriptor = new StringMultiProperty("sinks", "TODO",
+	private final PropertyDescriptor<List<String>> sinkDescriptor = new StringMultiProperty("sinks", "TODO",
 			new String[] { "" }, 1.0f, '|');
 
-	private final PropertyDescriptor<String[]> sinkAnnotationsDescriptor = new StringMultiProperty("sink-annotations",
+	private final PropertyDescriptor<List<String>> sinkAnnotationsDescriptor = new StringMultiProperty("sink-annotations",
 			"TODO", new String[] {  }, 1.0f, '|');
 
-	private final PropertyDescriptor<String[]> sanitizerDescriptor = new StringMultiProperty("sanitizers", "TODO",
+	private final PropertyDescriptor<List<String>> sanitizerDescriptor = new StringMultiProperty("sanitizers", "TODO",
 			new String[] { "" }, 1.0f, '|');
 
-	private final PropertyDescriptor<String[]> annotationsPackagesDescriptor = new StringMultiProperty(
+	private final PropertyDescriptor<List<String>> annotationsPackagesDescriptor = new StringMultiProperty(
 			"search-annotations-in-packages", "TODO", new String[] {}, 1.0f, '|');
 
-	private final PropertyDescriptor<String[]> generatorAnnotationsDescriptor = new StringMultiProperty("generator-annotations",
+	private final PropertyDescriptor<List<String>> generatorAnnotationsDescriptor = new StringMultiProperty("generator-annotations",
 			"TODO", new String[] {  }, 1.0f, '|');
 	
 	private final PropertyDescriptor<String> maxDataFlowsDescriptor = new StringProperty("max-dataflows", "TODO", "30", 1.0f);
@@ -145,11 +145,11 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		}
 	}
 	private void init2() {
-		this.sinks = Utils.arrayAsSet(getProperty(this.sinkDescriptor));
-		this.sanitizers = Utils.arrayAsSet(getProperty(this.sanitizerDescriptor));
-		this.sinkAnnotations = Utils.arrayAsSet(getProperty(this.sinkAnnotationsDescriptor));
-		this.generatorAnnotations = Utils.arrayAsSet(getProperty(this.generatorAnnotationsDescriptor));
-		this.searchAnnotationsInPackages = Utils.arrayAsSet(getProperty(this.annotationsPackagesDescriptor));
+		this.sinks = new HashSet<String>(getProperty(this.sinkDescriptor));
+		this.sanitizers = new HashSet<String>(getProperty(this.sanitizerDescriptor));
+		this.sinkAnnotations = new HashSet<String>(getProperty(this.sinkAnnotationsDescriptor));
+		this.generatorAnnotations = new HashSet<String>(getProperty(this.generatorAnnotationsDescriptor));
+		this.searchAnnotationsInPackages = new HashSet<String>(getProperty(this.annotationsPackagesDescriptor));
 		this.searchAnnotationsInPackagesArray = this.searchAnnotationsInPackages.toArray(new String[0]);
 		try {
 			this.MAX_DATAFLOWS = Integer.parseInt(getProperty(this.maxDataFlowsDescriptor));

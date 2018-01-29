@@ -26,11 +26,13 @@ package com.gdssecurity.pmd.rules;
 
 
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import net.sourceforge.pmd.PropertyDescriptor;
+import com.gdssecurity.pmd.SecurityRuleViolation;
+
 import net.sourceforge.pmd.Report;
 import net.sourceforge.pmd.Rule;
 import net.sourceforge.pmd.RuleContext;
@@ -38,10 +40,8 @@ import net.sourceforge.pmd.RuleViolation;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.java.ast.ASTType;
 import net.sourceforge.pmd.lang.java.rule.AbstractJavaRule;
-import net.sourceforge.pmd.lang.rule.properties.StringMultiProperty;
-
-import com.gdssecurity.pmd.SecurityRuleViolation;
-import com.gdssecurity.pmd.Utils;
+import net.sourceforge.pmd.properties.PropertyDescriptor;
+import net.sourceforge.pmd.properties.StringMultiProperty;
 
 
 public class BaseSecurityRule extends AbstractJavaRule {
@@ -50,12 +50,13 @@ public class BaseSecurityRule extends AbstractJavaRule {
     protected Set<String> unsafeTypes = null;
     protected Set<String> safeTypes = null;
 	
-    private final PropertyDescriptor<String[]> sourceDescriptor = new StringMultiProperty(
+//    StringMultiPBuilder a;
+    private final PropertyDescriptor<List<String>> sourceDescriptor = new StringMultiProperty(
             "sources", "TODO",
             new String[] {
             "javax.servlet.http.HttpServletRequest.getParameter" }, 1.0f, '|');
     
-    private final PropertyDescriptor<String[]> unsafeTypesDescriptor = new StringMultiProperty(
+    private final PropertyDescriptor<List<String>> unsafeTypesDescriptor = new StringMultiProperty(
             "unsafeTypes",
             "types that could create a potential SQLi exposure when concatenated to a SQL statement",
             new String[] {
@@ -68,7 +69,7 @@ public class BaseSecurityRule extends AbstractJavaRule {
     
 
     // Ignoring Numeric types by default
-    private final PropertyDescriptor<String[]> safeTypesDescriptor = new StringMultiProperty(
+    private final PropertyDescriptor<List<String>> safeTypesDescriptor = new StringMultiProperty(
             "safeTypes",
             "types that may be considered safe to ignore.",
             new String[] { 
@@ -103,9 +104,9 @@ public class BaseSecurityRule extends AbstractJavaRule {
 
 	protected void init() {
 		if (!this.initialized) {
-			this.sources = Utils.arrayAsSet(getProperty(this.sourceDescriptor));
-			this.unsafeTypes = Utils.arrayAsSet(getProperty(this.unsafeTypesDescriptor));
-			this.safeTypes = Utils.arrayAsSet(getProperty(this.safeTypesDescriptor));
+			this.sources = new HashSet<String>(getProperty(this.sourceDescriptor));
+			this.unsafeTypes = new HashSet<String>(getProperty(this.unsafeTypesDescriptor));
+			this.safeTypes = new HashSet<String>(getProperty(this.safeTypesDescriptor));
 			this.initialized = true;
 		}
 	}
