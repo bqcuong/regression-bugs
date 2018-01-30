@@ -134,6 +134,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-text</artifactId>
+		    <version>1.2</version>
+		    <scope>test</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.tomcat</groupId>
