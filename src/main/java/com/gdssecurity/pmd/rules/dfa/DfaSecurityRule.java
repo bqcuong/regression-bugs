@@ -865,11 +865,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 						ASTVariableDeclaratorId declarator = (ASTVariableDeclaratorId) dec.getNode();
 						type = declarator.getType();
 					}
-					if (type == null) {
-						type = astName.getType();
-					}
-					
-					
+				
 					if (type == null) {						
 						String parameterName = astName.getImage();
 						if (parameterName.indexOf('.') > 0) {
