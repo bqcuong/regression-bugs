@@ -858,13 +858,17 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			} else {
 				ASTPrimaryPrefix prefix = node.getFirstChildOfType(ASTPrimaryPrefix.class);				
 				ASTName astName = prefix.getFirstChildOfType(ASTName.class);
-				if (astName != null) {					
-					type = astName.getType();					
+				if (astName != null) {
+					
 					NameDeclaration dec = astName.getNameDeclaration();
 					if (dec != null && dec.getNode() instanceof ASTVariableDeclaratorId) {
 						ASTVariableDeclaratorId declarator = (ASTVariableDeclaratorId) dec.getNode();
 						type = declarator.getType();
 					}
+					if (type == null) {
+						type = astName.getType();
+					}
+					
 					
 					if (type == null) {						
 						String parameterName = astName.getImage();
