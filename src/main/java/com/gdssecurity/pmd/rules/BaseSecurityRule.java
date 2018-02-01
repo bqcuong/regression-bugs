@@ -105,11 +105,21 @@ public class BaseSecurityRule extends AbstractJavaRule {
 
 	protected void init() {
 		if (!this.initialized) {
-			this.sources = new HashSet<String>(getProperty(this.sourceDescriptor));
-			this.unsafeTypes = new HashSet<String>(getProperty(this.unsafeTypesDescriptor));
-			this.safeTypes = new HashSet<String>(getProperty(this.safeTypesDescriptor));
+			this.sources = getConfig(this.sourceDescriptor);
+			this.unsafeTypes = getConfig(this.unsafeTypesDescriptor);
+			this.safeTypes = getConfig(this.safeTypesDescriptor);
 			this.initialized = true;
 		}
+	}
+	
+	protected final Set<String> getConfig(PropertyDescriptor<List<String>> descriptor) {
+		Set<String> ret = new HashSet<String>();
+		List<String> props = getProperty(descriptor);
+		for (String value: props) {
+			ret.add(value.trim());
+		}
+		
+		return ret;
 	}
     
     

@@ -158,15 +158,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 			this.MAX_DATAFLOWS = 30;
 		}
 	}
-	private Set<String> getConfig(PropertyDescriptor<List<String>> descriptor) {
-		Set<String> ret = new HashSet<String>();
-		List<String> props = getProperty(descriptor);
-		for (String value: props) {
-			ret.add(value.trim());
-		}
-		
-		return ret;
-	}
+
 	@Override
 	public void execute(CurrentPath currentPath) {
 
@@ -885,12 +877,19 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 						}
 					}
 				} else {
-					ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
-					if (suffix != null) {
-						if (this.fieldTypes.containsKey(suffix.getImage())) {
-							type = this.fieldTypes.get(suffix.getImage());
-						} else {
-							type = getTypeFromAttribute(node, suffix.getImage());
+					
+//					ASTPrimaryPrefix prefix1 = node.getFirstChildOfType(ASTPrimaryPrefix.class);
+//					if (prefix1 != null) {
+//						type = prefix1.getType();
+//					}
+					if (type == null) {
+						ASTPrimarySuffix suffix = node.getFirstChildOfType(ASTPrimarySuffix.class);
+						if (suffix != null) {
+							if (this.fieldTypes.containsKey(suffix.getImage())) {
+								type = this.fieldTypes.get(suffix.getImage());
+							} else {
+								type = getTypeFromAttribute(node, suffix.getImage());
+							}
 						}
 					}
 
