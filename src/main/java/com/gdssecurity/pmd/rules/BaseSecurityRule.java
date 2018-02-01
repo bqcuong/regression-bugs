@@ -62,7 +62,8 @@ public class BaseSecurityRule extends AbstractJavaRule {
             new String[] {
             		"java.lang.String", 
             		"java.lang.StringBuilder", 
-            		"java.lang.StringBuffer"
+            		"java.lang.StringBuffer",
+            		"java.lang.AbstractStringBuilder"
             }, 
             1.0f,
             '|');
