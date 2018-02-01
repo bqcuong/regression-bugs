@@ -7,6 +7,6 @@ import javax.servlet.jsp.JspWriter;
 public class SanitizerFullPackageNameExample {
 
 	public void function(JspWriter writer, String badValue) throws IOException{
-		writer.write(org.apache.commons.lang3.StringEscapeUtils.escapeHtml4(badValue));
+		writer.write(org.apache.commons.text.StringEscapeUtils.escapeHtml4(badValue));
 	}
 }
