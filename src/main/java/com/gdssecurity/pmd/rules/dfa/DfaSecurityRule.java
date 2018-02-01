@@ -41,7 +41,6 @@ import com.gdssecurity.pmd.TypeUtils;
 import com.gdssecurity.pmd.Utils;
 import com.gdssecurity.pmd.rules.BaseSecurityRule;
 
-import net.sourceforge.pmd.properties.PropertyDescriptor;
 import net.sourceforge.pmd.RuleContext;
 import net.sourceforge.pmd.lang.ast.Node;
 import net.sourceforge.pmd.lang.dfa.DataFlowNode;
@@ -76,9 +75,10 @@ import net.sourceforge.pmd.lang.java.ast.ASTType;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclarator;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableDeclaratorId;
 import net.sourceforge.pmd.lang.java.ast.ASTVariableInitializer;
+import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
+import net.sourceforge.pmd.properties.PropertyDescriptor;
 import net.sourceforge.pmd.properties.StringMultiProperty;
 import net.sourceforge.pmd.properties.StringProperty;
-import net.sourceforge.pmd.lang.symboltable.NameDeclaration;
 
 public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
@@ -145,11 +145,11 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		}
 	}
 	private void init2() {
-		this.sinks = new HashSet<String>(getProperty(this.sinkDescriptor));
-		this.sanitizers = new HashSet<String>(getProperty(this.sanitizerDescriptor));
-		this.sinkAnnotations = new HashSet<String>(getProperty(this.sinkAnnotationsDescriptor));
-		this.generatorAnnotations = new HashSet<String>(getProperty(this.generatorAnnotationsDescriptor));
-		this.searchAnnotationsInPackages = new HashSet<String>(getProperty(this.annotationsPackagesDescriptor));
+		this.sinks = getConfig(this.sinkDescriptor);
+		this.sanitizers = getConfig(this.sanitizerDescriptor);
+		this.sinkAnnotations = getConfig(this.sinkAnnotationsDescriptor);
+		this.generatorAnnotations = getConfig(this.generatorAnnotationsDescriptor);
+		this.searchAnnotationsInPackages = getConfig(this.annotationsPackagesDescriptor);
 		this.searchAnnotationsInPackagesArray = this.searchAnnotationsInPackages.toArray(new String[0]);
 		try {
 			this.MAX_DATAFLOWS = Integer.parseInt(getProperty(this.maxDataFlowsDescriptor));
@@ -157,6 +157,15 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 		catch (Exception e) {
 			this.MAX_DATAFLOWS = 30;
 		}
+	}
+	private Set<String> getConfig(PropertyDescriptor<List<String>> descriptor) {
+		Set<String> ret = new HashSet<String>();
+		List<String> props = getProperty(descriptor);
+		for (String value: props) {
+			ret.add(value.trim());
+		}
+		
+		return ret;
 	}
 	@Override
 	public void execute(CurrentPath currentPath) {
