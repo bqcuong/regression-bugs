@@ -8,12 +8,12 @@ import net.sourceforge.pmd.cli.PMDParameters;
 public final class PMDRunner {
 
 	public static final String RULESET_DEFAULT = "rulesets/GDS/SecureCoding.xml";
-	public static final String RULESET_SQL_INJECTION = "rulesets/GDS/OWASP/2013-A1-Injection.xml";
-	public static final String RULESET_XSS = "rulesets/GDS/OWASP/2013-A3-Cross-Site-Scripting.xml";
-	public static final String RULESET_ACCESS="rulesets/GDS/OWASP/2013-A7-Missing-Function-Level-Access-Control.xml";
-	public static final String RULESET_VULNERABLE = "rulesets/GDS/OWASP/2013-A9-Using-Known-Vulnerable-Component.xml";
-	public static final String RULESET_UNVALIDATED_REDIRECTS = "rulesets/GDS/OWASP/2013-A10-Unvalidated-Redirects-and-Forwards.xml";
-	public static final String RULESET_HTTP_RESPONSE_SPLITTING = "rulesets/GDS/CWE/cwe113-http-response-splitting.xml";
+	public static final String RULESET_SQL_INJECTION = "rulesets/GDS/CWE/cwe-0089-sql-injection.xml";
+	public static final String RULESET_XSS = "rulesets/GDS/CWE/cwe-0079-cross-site-scripting.xml";
+	public static final String RULESET_ACCESS="rulesets/GDS/CWE/cwe-0285-improper-authorization.xml";
+	public static final String RULESET_WEAK_CRYPTO = "rulesets/GDS/CWE/cwe-0327-weak-cryptographic-algorithms.xml";
+	public static final String RULESET_UNVALIDATED_REDIRECTS = "rulesets/GDS/CWE/cwe-0601-open-redirect.xml";
+	public static final String RULESET_HTTP_RESPONSE_SPLITTING = "rulesets/GDS/CWE/cwe-0113-http-response-splitting.xml";
 
 	private PMDRunner() {
 		throw new AssertionError("No instances allowed");

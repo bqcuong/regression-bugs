@@ -12,6 +12,6 @@ public class CWE327BrokenCryptoTest {
 	@Test
 	public void test1() throws Exception {
 		Assert.assertEquals(1,
-				PMDRunner.run("src/test/java/resources/cwe327brokencrypto/CWE327_Use_Broken_Crypto__basic_01.java", PMDRunner.RULESET_VULNERABLE));
+				PMDRunner.run("src/test/java/resources/cwe327brokencrypto/CWE327_Use_Broken_Crypto__basic_01.java", PMDRunner.RULESET_WEAK_CRYPTO));
 	}
 }

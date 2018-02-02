@@ -15,9 +15,11 @@
 	name="MissingOrIncorrectAuthorization"
 	language="java"
 	message="Missing Or Incorrect Authorization"
-	externalInfoUrl="https://www.owasp.org/index.php/Top_10_2013-A7-Missing_Function_Level_Access_Control">
+	externalInfoUrl="https://cwe.mitre.org/data/definitions/327.html">
   <description>
-  This rule is intended to be a proof-of-concept example of how to identify missing or inadequate authorization functions in a class of a specific type. Specifically, it looks for the the method isUserInRole within classes that extended HttpServlet. For this rule to be useful, it should be customized with authorization functions and types specific to the application being scanned. 
+  This rule is intended to be a proof-of-concept example of how to identify missing or inadequate authorization functions in a class of a specific type. 
+  Specifically, it looks for the the method isUserInRole within classes that extended HttpServlet. 
+  For this rule to be useful, it should be customized with authorization functions and types specific to the application being scanned. 
   </description>
   <properties>
     <property name="xpath">

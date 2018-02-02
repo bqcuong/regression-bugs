@@ -8,12 +8,28 @@ public class CWE328_Reversible_One_Way_Hash__basic_01 {
 		super();
 	}
 
-	public void bad() throws Throwable {
+	public void badMD5() throws Throwable {
 
 		String input = "Test Input";
 
 		/* FLAW: Insecure cryptographic hashing algorithm (MD5) */
 		MessageDigest hash = MessageDigest.getInstance("MD5");
+		byte[] hashv = hash.digest(input.getBytes()); /*
+													 * INCIDENTAL FLAW:
+													 * Hard-coded input to hash
+													 * algorithm
+													 */
+
+		System.out.println(new String(hashv));
+
+	}
+	
+	public void badSHA1() throws Throwable {
+
+		String input = "Test Input";
+
+		/* FLAW: Insecure cryptographic hashing algorithm (SHA1) */
+		MessageDigest hash = MessageDigest.getInstance("SHA1");
 		byte[] hashv = hash.digest(input.getBytes()); /*
 													 * INCIDENTAL FLAW:
 													 * Hard-coded input to hash
