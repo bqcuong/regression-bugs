@@ -231,6 +231,19 @@ public final class Range implements java.io.Serializable, Comparable<Range> {
      * @return intersection range with {@code other} range or null if ranges not intersects
      */
     public Range intersection(Range other) {
+        if (!intersectsWith(other))
+            return null;
+
+        return new Range(Math.max(lower, other.lower), Math.min(upper, other.upper), reversed && other.reversed);
+    }
+
+    /**
+     * Returns intersection range with {@code other} range.
+     *
+     * @param other other range
+     * @return intersection range with {@code other} range or null if ranges not intersects
+     */
+    public Range intersectionWithTouch(Range other) {
         if (!intersectsWithOrTouches(other))
             return null;
 
