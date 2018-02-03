@@ -4,9 +4,9 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
-public class CWE327_Use_Broken_Crypto__basic_01 {
+public class CWE327UseBrokenCryptoBasic {
 
-	public CWE327_Use_Broken_Crypto__basic_01() {
+	public CWE327UseBrokenCryptoBasic() {
 		super();
 	}
 

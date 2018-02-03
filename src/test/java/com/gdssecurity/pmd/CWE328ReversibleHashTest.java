@@ -12,6 +12,6 @@ public class CWE328ReversibleHashTest {
 	@Test
 	public void test1() throws Exception {
 		Assert.assertEquals(2,
-				PMDRunner.run("src/test/java/resources/cwe328reversiblehash/CWE328_Reversible_One_Way_Hash__basic_01.java", PMDRunner.RULESET_WEAK_CRYPTO));
+				PMDRunner.run("src/test/java/resources/cwe328reversiblehash/CWE328ReversibleOneWayHashBasic.java", PMDRunner.RULESET_WEAK_CRYPTO));
 	}
 }

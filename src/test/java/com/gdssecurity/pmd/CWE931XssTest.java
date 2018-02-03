@@ -18,8 +18,8 @@ public class CWE931XssTest {
 
 	@Test
 	public void test2() throws Exception {
-		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/cwe931xss/XSS1_jsp.java", PMDRunner.RULESET_XSS));
-		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/cwe931xss/XSS2_jsp.java", PMDRunner.RULESET_XSS));
+		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/cwe931xss/XSS1jsp.java", PMDRunner.RULESET_XSS));
+		Assert.assertEquals(1, PMDRunner.run("src/test/java/resources/cwe931xss/XSS2jsp.java", PMDRunner.RULESET_XSS));
 	}
 
 }

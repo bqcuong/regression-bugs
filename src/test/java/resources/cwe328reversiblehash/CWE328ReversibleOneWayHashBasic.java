@@ -2,9 +2,9 @@ package resources.cwe328reversiblehash;
 
 import java.security.MessageDigest;
 
-public class CWE328_Reversible_One_Way_Hash__basic_01 {
+public class CWE328ReversibleOneWayHashBasic {
 
-	public CWE328_Reversible_One_Way_Hash__basic_01() {
+	public CWE328ReversibleOneWayHashBasic() {
 		super();
 	}
 
