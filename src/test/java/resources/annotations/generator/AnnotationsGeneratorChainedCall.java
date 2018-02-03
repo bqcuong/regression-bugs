@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspWriter;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 import com.gdssecurity.pmd.annotations.HTMLGenerator;
 
