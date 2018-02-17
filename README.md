@@ -37,3 +37,21 @@ Alternatively (to not keep the container running after ctrl-c):
 ```
 docker run --rm -it -p 8080:8080 cscie599/pallmall
 ```
+
+## Docker Compose
+
+In the project root:
+
+```
+docker-compose up
+```
+
+## In Docker for Windows
+
+1. Start Kitematic
+1. Go into Docker CLI
+1. If not done already, set user permissions  
+``Set-ExecutionPolicy -Scope CurrentUser Unrestricted``
+1. Then
+``./buildrun.ps1``
+
