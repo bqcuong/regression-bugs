@@ -35,5 +35,5 @@ docker run -d -p 8080:8080 cscie599/pallmall
 
 Alternatively (to not keep the container running after ctrl-c):
 ```
-docker run --rm -p 8080:8080 cscie599/pallmall
+docker run --rm -it -p 8080:8080 cscie599/pallmall
 ```
