@@ -1,15 +1,37 @@
+---
 version: '3.1'
 services:
   pallmallweb:
     image: cscie599/pallmall
     ports:
       - "8080:8080"
-    #volumes:
+    environment:
+      # Point to Postgres in docker-compose, dev standalone
+      # jar will still use H2 in-memory database for now.
+      #
+      # ddl-auto should be validate in production
+      SPRING_APPLICATION_JSON: |
+        {
+           "spring": {
+              "datasource": {
+                 "url":"jdbc:postgresql://db:5432/postgres",
+                 "username":"postgres",
+                 "password":"postgres"
+              },
+              "jpa": {
+                 "hibernate": {
+                    "ddl-auto":"create-drop"
+                 }
+              }
+           }
+        }
   db:
     image: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
   adminer:
     image: adminer
     ports:
