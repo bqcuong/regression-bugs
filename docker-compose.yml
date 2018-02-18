@@ -4,6 +4,7 @@ services:
   pallmallweb:
     image: cscie599/pallmall
     ports:
+      # external:internal
       - "8080:8080"
     environment:
       # Point to Postgres in docker-compose, dev standalone
@@ -31,8 +32,15 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
+      # external:internal
       - "5432:5432"
   adminer:
+    # to access, point to
+    # Database type: PostgreSQL
+    # Database URL: db
+    # User: postgres
+    # Pass: postgres
     image: adminer
     ports:
+      # external:internal
       - "8081:8080"
