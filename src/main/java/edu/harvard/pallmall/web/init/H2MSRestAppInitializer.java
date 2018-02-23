@@ -1,10 +1,14 @@
-package edu.harvard.pallmall;
+package edu.harvard.pallmall.web.init;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * H2MS Rest Application
+ * @version 1.0
+ */
 @SpringBootApplication
 public class H2MSRestAppInitializer {
 
