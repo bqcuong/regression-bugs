@@ -1,4 +1,4 @@
-package edu.harvard.pallmall.domain;
+package edu.harvard.pallmall.domain.core;
 
 import javax.persistence.*;
 import java.sql.Time;

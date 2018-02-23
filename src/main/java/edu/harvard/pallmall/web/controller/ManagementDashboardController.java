@@ -1,16 +1,13 @@
 package edu.harvard.pallmall.web.controller;
 
-import edu.harvard.pallmall.domain.Event;
+import edu.harvard.pallmall.domain.core.Event;
 import edu.harvard.pallmall.service.ManagementDashboardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
 import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 /**
  * Event Rest Controller
@@ -54,4 +51,7 @@ public class ManagementDashboardController {
         event.setRelativeMoment("Before Entering Room");
         return event;
     }
+
+    //todo add rest call to send email
+
 }

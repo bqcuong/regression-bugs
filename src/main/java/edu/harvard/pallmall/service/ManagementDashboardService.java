@@ -1,10 +1,7 @@
 package edu.harvard.pallmall.service;
 
-import edu.harvard.pallmall.domain.Event;
-import edu.harvard.pallmall.domain.Reader;
-import edu.harvard.pallmall.domain.WristBand;
-
-import java.util.List;
+import edu.harvard.pallmall.domain.admin.Email;
+import edu.harvard.pallmall.domain.core.Event;
 
 /**
  * The ManagementDashboardService...
@@ -19,5 +16,7 @@ public interface ManagementDashboardService {
 
     // Persists a new Event
     Event saveEvent(Event event);
+
+    void sendEmail(Email email);
 
 }
