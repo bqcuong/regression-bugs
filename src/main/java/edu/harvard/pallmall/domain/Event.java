@@ -1,6 +1,7 @@
 package edu.harvard.pallmall.domain;
 
 import javax.persistence.*;
+import java.sql.Time;
 
 /**
  * An Event is...
@@ -11,7 +12,12 @@ public class Event {
 
     /* Properties */
     private Long id;
-    private String formName;
+    private Time timestamp;
+    private String handWashType;
+    private String relativeMoment;
+    private String observee;
+    private String observer;
+    private String observationType;
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
@@ -24,18 +30,65 @@ public class Event {
         this.id = id;
     }
 
-    @Column(name = "FORM_NAME")
-    public String getFormName() {
-        return formName;
+    @Column(name = "TIMESTAMP")
+    public Time getTimestamp() {
+        return timestamp;
     }
 
-    public void setFormName(String formName) {
-        this.formName = formName;
+    public void setTimestamp(Time timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    @Column(name = "HAND_WASH_TYPE")
+    public String getHandWashType() {
+        return handWashType;
+    }
+
+    public void setHandWashType(String handWashType) {
+        this.handWashType = handWashType;
+    }
+
+    @Column(name = "RELATIVE_MOMENT")
+    public String getRelativeMoment() {
+        return relativeMoment;
+    }
+
+    public void setRelativeMoment(String relativeMoment) {
+        this.relativeMoment = relativeMoment;
+    }
+
+    @Column(name = "OBSERVEE")
+    public String getObservee() {
+        return observee;
+    }
+
+    public void setObservee(String observee) {
+        this.observee = observee;
+    }
+
+    @Column(name = "OBSERVER")
+    public String getObserver() {
+        return observer;
+    }
+
+    public void setObserver(String observer) {
+        this.observer = observer;
+    }
+
+    @Column(name = "OBSERVATION_TYPE")
+    public String getObservationType() {
+        return observationType;
+    }
+
+    public void setObservationType(String observationType) {
+        this.observationType = observationType;
     }
 
     @Override
     public String toString() {
-        return "Event - Id: " + id + ", Form Name: " + formName;
+        return "Event - Id: " + id + ", Typestamp: " + timestamp
+                + ", Hand Wash Type: " + handWashType  + ", Relative Moment: " + relativeMoment
+                + ", Observee: " + observee  + ", Observer: " + observer  + ", Observation Type: " + observationType;
     }
 
 }

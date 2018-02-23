@@ -1,6 +1,8 @@
 package edu.harvard.pallmall.service;
 
 import edu.harvard.pallmall.domain.Event;
+import edu.harvard.pallmall.domain.Reader;
+import edu.harvard.pallmall.domain.WristBand;
 import edu.harvard.pallmall.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -46,6 +48,7 @@ public class ManagementDashboardServiceImpl implements ManagementDashboardServic
         this.wristBandRepository = wristBandRepository;
     }
 
+    //TODO add the ability to search for anything - this may be covered by tableau
     // Finds all Events
     @Transactional(readOnly=true)
     public Iterable<Event> findAllEvents() {

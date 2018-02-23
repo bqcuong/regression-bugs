@@ -1,6 +1,9 @@
 package edu.harvard.pallmall.service;
 
 import edu.harvard.pallmall.domain.Event;
+import edu.harvard.pallmall.domain.Reader;
+import edu.harvard.pallmall.domain.WristBand;
+
 import java.util.List;
 
 /**

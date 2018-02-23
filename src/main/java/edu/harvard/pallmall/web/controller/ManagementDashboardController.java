@@ -7,6 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 /**
  * Event Rest Controller
  * URL's start with /demo (after Application path)
@@ -35,11 +40,18 @@ public class ManagementDashboardController {
     */
 
     //todo this is a simple example of api endpoint to return event, this can be remove later
+    //todo add in all the request params
+    //todo update model w/ joins
     @RequestMapping("/eventexample")
     public Event example(@RequestParam(value="name", defaultValue="Test Form 1") String name) {
         Event event = new Event();
         event.setId(1L);
-        event.setFormName(name);
+        event.setHandWashType("Soap");
+        event.setObservationType("Sensor");
+        event.setObservee("John Doe");
+        event.setObserver("Jane Smith");
+        event.setTimestamp(new Time(234234L));
+        event.setRelativeMoment("Before Entering Room");
         return event;
     }
 }
