@@ -47,4 +47,5 @@ public class Location {
 	public String toString() {
 		return "Location - Id: " + id + ", Hospital Name: " + hospitalName + ", Ward Name: " + wardName;
 	}
+
 }
