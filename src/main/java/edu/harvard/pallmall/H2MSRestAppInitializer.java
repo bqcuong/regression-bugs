@@ -1,4 +1,4 @@
-package edu.harvard.pallmall.web.init;
+package edu.harvard.pallmall;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
