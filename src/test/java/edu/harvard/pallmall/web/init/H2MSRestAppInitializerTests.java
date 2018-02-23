@@ -1,4 +1,4 @@
-package edu.harvard.pallmall;
+package edu.harvard.pallmall.web.init;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
