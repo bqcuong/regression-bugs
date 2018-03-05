@@ -4,6 +4,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 //TODO Remove this controller
+/**
+ * Demo for vue.js SPA using Spring JPA ORM
+ */
 @Controller
 public class SPAController {
 
