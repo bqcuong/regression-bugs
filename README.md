@@ -1,4 +1,4 @@
-# Pallmall Spring Boot Playground
+# Hand Hygiene Monitoring System (H2MS)
 
 ## Build
 
