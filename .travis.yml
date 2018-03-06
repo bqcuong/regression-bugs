@@ -1,2 +1,4 @@
 sudo: false
 language: java
+notifications:
+   slack: 2018swecapstone:IPDjX0h4Za0ztVoCHZXAoq0q
