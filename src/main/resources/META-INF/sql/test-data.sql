@@ -1,1 +1,2 @@
-insert into EVENT (id, form_name) values (1, 'Test Form 1');
+insert into EVENT (id, TIMESTAMP, HAND_WASH_TYPE, RELATIVE_MOMENT, OBSERVEE, OBSERVER, OBSERVATION_TYPE)
+values (1,  '2018-03-07 18:19:03', 'Type1', 'Before Entering', 'John Doe', 'Mike D', 'Hand Wash');
