@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * The RFID Scanner Service Implementor is
  */
-public class RfidScannerServiceImpl {
+public class RfidScannerServiceImpl implements RfidScannerService {
 
     /**
      * Searches through all human interface devices attached to machine
@@ -16,7 +16,7 @@ public class RfidScannerServiceImpl {
      * @param productIdentifier - product ID of the RFID scanner
      * @return
      */
-    public static UsbDevice findAttachedUsbRfidScanner(UsbHub usbHub, short vendorIdentifier, short productIdentifier)
+    public UsbDevice findAttachedRfidScanner(UsbHub usbHub, short vendorIdentifier, short productIdentifier)
     {
         List<UsbDevice> usbDevices = usbHub.getAttachedUsbDevices();
         for (UsbDevice device : usbDevices) {
@@ -28,7 +28,7 @@ public class RfidScannerServiceImpl {
             }
 
             if (device.isUsbHub()) {
-                device = findAttachedUsbRfidScanner((UsbHub) device, vendorIdentifier, productIdentifier);
+                device = findAttachedRfidScanner((UsbHub) device, vendorIdentifier, productIdentifier);
                 if (device != null) {
                     return device;
                 }
@@ -43,7 +43,7 @@ public class RfidScannerServiceImpl {
      * @param usbRfidScanner - RFID scanner
      * @return
      */
-    public static UsbInterface lookupRfidScannerInterface(UsbDevice usbRfidScanner) {
+    public UsbInterface findRfidScannerInterface(UsbDevice usbRfidScanner) {
         UsbConfiguration configuration = usbRfidScanner.getActiveUsbConfiguration();
         UsbInterface rfidScannerInterface =  configuration.getUsbInterface((byte) 0x00);
         return rfidScannerInterface;

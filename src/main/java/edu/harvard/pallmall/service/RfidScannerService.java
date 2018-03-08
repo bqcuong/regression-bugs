@@ -17,13 +17,13 @@ public interface RfidScannerService {
      * @param productIdentifier - product ID of the RFID Reader device
      * @return
      */
-    UsbDevice findAttachedUsbReader(UsbHub usbHub, short vendorIdentifier, short productIdentifier);
+    UsbDevice findAttachedRfidScanner(UsbHub usbHub, short vendorIdentifier, short productIdentifier);
 
     /**
      * Retrieves the communication interface of RFID scanner
      * @param usbRfidScanner - RFID scanner
      * @return
      */
-    UsbInterface lookupRfidScannerInterface(UsbDevice usbRfidScanner);
+    UsbInterface findRfidScannerInterface(UsbDevice usbRfidScanner);
 
 }
