@@ -1,18 +1,19 @@
 package edu.harvard.pallmall.domain.core;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.sql.Time;
 
+//TODO Update Domain base on group Model Disc
 /**
  * An Event is...
  */
 @Entity
-@Table(name = "EVENT")
-public class Event {
+@Table(name = "event")
+public class Event implements Serializable {
 
     /* Properties */
     private Long id;
-    private Time timestamp;
     private String handWashType;
     private String relativeMoment;
     private String observee;
@@ -28,15 +29,6 @@ public class Event {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @Column(name = "TIMESTAMP")
-    public Time getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Time timestamp) {
-        this.timestamp = timestamp;
     }
 
     @Column(name = "HAND_WASH_TYPE")
@@ -86,8 +78,7 @@ public class Event {
 
     @Override
     public String toString() {
-        return "Event - Id: " + id + ", Typestamp: " + timestamp
-                + ", Hand Wash Type: " + handWashType  + ", Relative Moment: " + relativeMoment
+        return "Event - Id: " + id + ", Hand Wash Type: " + handWashType  + ", Relative Moment: " + relativeMoment
                 + ", Observee: " + observee  + ", Observer: " + observer  + ", Observation Type: " + observationType;
     }
 
