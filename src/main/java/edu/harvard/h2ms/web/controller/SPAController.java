@@ -1,4 +1,4 @@
-package edu.harvard.pallmall.web.controller;
+package edu.harvard.h2ms.web.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

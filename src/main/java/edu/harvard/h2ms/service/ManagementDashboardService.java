@@ -1,7 +1,7 @@
-package edu.harvard.pallmall.service;
+package edu.harvard.h2ms.service;
 
-import edu.harvard.pallmall.domain.admin.Email;
-import edu.harvard.pallmall.domain.core.Event;
+import edu.harvard.h2ms.domain.admin.Email;
+import edu.harvard.h2ms.domain.core.Event;
 
 /**
  * The ManagementDashboardService...
