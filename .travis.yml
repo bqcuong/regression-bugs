@@ -1,4 +1,8 @@
 sudo: false
 language: java
+services:
+  - postgresql
+before_script:
+  - psql -c 'create database H2MSDatabase;' -U postgres
 notifications:
-   slack: 2018swecapstone:IPDjX0h4Za0ztVoCHZXAoq0q
+    slack: 2018swecapstone:IPDjX0h4Za0ztVoCHZXAoq0q
