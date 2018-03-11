@@ -1,8 +1,8 @@
-package edu.harvard.pallmall.service;
+package edu.harvard.h2ms.service;
 
 import com.google.common.collect.Lists;
-import edu.harvard.pallmall.domain.core.Event;
-import edu.harvard.pallmall.repository.*;
+import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;

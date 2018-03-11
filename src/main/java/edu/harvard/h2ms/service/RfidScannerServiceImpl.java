@@ -1,9 +1,7 @@
-package edu.harvard.pallmall.service;
+package edu.harvard.h2ms.service;
 
-import edu.harvard.pallmall.H2MSRestAppInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.usb.*;
 import java.util.List;
 

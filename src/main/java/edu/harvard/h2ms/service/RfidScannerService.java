@@ -1,4 +1,4 @@
-package edu.harvard.pallmall.service;
+package edu.harvard.h2ms.service;
 
 import javax.usb.UsbDevice;
 import javax.usb.UsbHub;

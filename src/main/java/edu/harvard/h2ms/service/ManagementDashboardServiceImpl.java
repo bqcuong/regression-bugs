@@ -59,24 +59,6 @@ public class ManagementDashboardServiceImpl implements ManagementDashboardServic
         this.wristBandRepository = wristBandRepository;
     }
 
-    //TODO add the ability to search for anything - this may be covered by tableau
-    // Finds all Events
-    @Transactional(readOnly=true)
-    public Iterable<Event> findAllEvents() {
-        return eventRepository.findAll();
-    }
-
-    // Finds an Event by its ID
-    @Transactional(readOnly=true)
-    public Event findEventById(Long id) {
-        return eventRepository.findOne(id);
-    }
-
-    // Persists a new Event
-    public Event saveEvent(Event event) {
-        return eventRepository.save(event);
-    }
-
     /**
      *
      * @param email
