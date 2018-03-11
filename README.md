@@ -12,7 +12,7 @@
 And then launch the server:
 
 ```
-java -jar target/pallmall-0.0.1-SNAPSHOT.jar
+java -jar target/h2ms-0.0.1-SNAPSHOT.jar
 ```
 
 And visit http://localhost:8080/ in your browser.
@@ -32,12 +32,12 @@ See [Spring Boot Docker](https://spring.io/guides/gs/spring-boot-docker/).  Basi
 And then:
 
 ```
-docker run -d -p 8080:8080 cscie599/pallmall
+docker run -d -p 8080:8080 cscie599/h2ms
 ```
 
 Alternatively (to not keep the container running after ctrl-c):
 ```
-docker run --rm -it -p 8080:8080 cscie599/pallmall
+docker run --rm -it -p 8080:8080 cscie599/h2ms
 ```
 
 ## Docker Compose

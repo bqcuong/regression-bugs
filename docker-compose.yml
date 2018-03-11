@@ -1,8 +1,8 @@
 ---
 version: '3.1'
 services:
-  pallmallweb:
-    image: cscie599/pallmall
+  h2ms:
+    image: cscie599/h2ms
     ports:
       # external:internal
       - "8080:8080"
