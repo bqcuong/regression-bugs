@@ -27,10 +27,16 @@ public class ManagementDashboardServiceImpl implements ManagementDashboardServic
     private LocationRepository locationRepository;
     private ReaderRepository readerRepository;
     private WristBandRepository wristBandRepository;
+    private MethodRepository methodRepository;
 
     @Autowired
     public void setDoctorRepository(DoctorRepository doctorRepository) {
         this.doctorRepository = doctorRepository;
+    }
+
+    @Autowired
+    public void setMethodRepository(MethodRepository methodRepository) {
+        this.methodRepository = methodRepository;
     }
 
     @Autowired
