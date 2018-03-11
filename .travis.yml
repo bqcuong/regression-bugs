@@ -3,6 +3,8 @@ language: java
 services:
   - postgresql
 before_script:
-  - psql -c 'create database H2MSDatabase;' -U postgres
+  - createdb H2MSDatabase
 notifications:
     slack: 2018swecapstone:IPDjX0h4Za0ztVoCHZXAoq0q
+addons:
+    postgresql: "9.4"
