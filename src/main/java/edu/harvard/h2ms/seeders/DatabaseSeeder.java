@@ -1,4 +1,4 @@
-package edu.harvard.h2ms;
+package edu.harvard.h2ms.seeders;
 
 import edu.harvard.h2ms.domain.core.Method;
 import edu.harvard.h2ms.repository.MethodRepository;
