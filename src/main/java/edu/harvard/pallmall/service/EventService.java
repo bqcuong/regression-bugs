@@ -8,7 +8,14 @@ import java.util.List;
  */
 public interface EventService {
 
-    //Finds all events
+    // Save an event
     Event save(Event event);
+
+    // Finds all events
+    List<Event> findAll();
+
+    // Find an event by its ID
+    Event findById(Long id);
+
 
 }
