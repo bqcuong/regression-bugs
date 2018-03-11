@@ -1,7 +1,6 @@
 package edu.harvard.h2ms.service;
 
 import edu.harvard.h2ms.domain.core.Event;
-
 import java.util.List;
 
 /**

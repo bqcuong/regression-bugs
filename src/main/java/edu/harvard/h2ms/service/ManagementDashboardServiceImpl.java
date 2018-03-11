@@ -6,13 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.harvard.h2ms.domain.admin.Email;
-import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.repository.*;
 
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
-import javax.activation.*;
 
 /**
  * The Management Dashboard Service Implementor...
@@ -22,7 +20,7 @@ import javax.activation.*;
 @Transactional
 public class ManagementDashboardServiceImpl implements ManagementDashboardService {
 
-    private DoctorRepository doctorRepository;
+    private ObserveeRepository observeeRepository;
     private EventRepository eventRepository;
     private LocationRepository locationRepository;
     private ReaderRepository readerRepository;
@@ -30,8 +28,8 @@ public class ManagementDashboardServiceImpl implements ManagementDashboardServic
     private MethodRepository methodRepository;
 
     @Autowired
-    public void setDoctorRepository(DoctorRepository doctorRepository) {
-        this.doctorRepository = doctorRepository;
+    public void setObserveeRepository(ObserveeRepository observeeRepository) {
+        this.observeeRepository = observeeRepository;
     }
 
     @Autowired

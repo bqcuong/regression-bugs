@@ -27,7 +27,7 @@ public class EventServiceImpl implements EventService {
         return eventRepository.save(event);
     }
 
-    // Find all books
+    // Find all events
     @Transactional(readOnly=true)
     public List<Event> findAll() {
         return Lists.newArrayList(eventRepository.findAll());
