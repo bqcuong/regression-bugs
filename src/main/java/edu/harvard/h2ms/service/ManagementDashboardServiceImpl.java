@@ -1,12 +1,14 @@
-package edu.harvard.pallmall.service;
+package edu.harvard.h2ms.service;
 
-import edu.harvard.pallmall.domain.admin.Email;
-import edu.harvard.pallmall.domain.core.Event;
-import edu.harvard.pallmall.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import edu.harvard.h2ms.domain.admin.Email;
+import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.repository.*;
+
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;

@@ -1,4 +1,4 @@
-package edu.harvard.pallmall.domain.core;
+package edu.harvard.h2ms.domain.core;
 
 import javax.persistence.*;
 

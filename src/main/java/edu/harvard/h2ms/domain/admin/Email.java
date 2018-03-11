@@ -1,4 +1,4 @@
-package edu.harvard.pallmall.domain.admin;
+package edu.harvard.h2ms.domain.admin;
 
 /**
  * An Email is...

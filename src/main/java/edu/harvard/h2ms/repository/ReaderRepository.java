@@ -1,7 +1,8 @@
-package edu.harvard.pallmall.repository;
+package edu.harvard.h2ms.repository;
 
-import edu.harvard.pallmall.domain.core.Reader;
 import org.springframework.data.repository.PagingAndSortingRepository;
+
+import edu.harvard.h2ms.domain.core.Reader;
 
 public interface ReaderRepository extends PagingAndSortingRepository<Reader, Long> {
 
