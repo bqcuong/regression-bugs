@@ -18,8 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import edu.harvard.h2ms.domain.core.Event;
-import edu.harvard.h2ms.domain.core.User;
+import edu.harvard.h2ms.domain.core.Method;
 import edu.harvard.h2ms.repository.EventRepository;
+import edu.harvard.h2ms.repository.MethodRepository;
 import edu.harvard.h2ms.repository.UserRepository;
 
 /**
@@ -40,6 +41,9 @@ public class EventController {
 	
 	@Autowired
 	EventRepository eventRepository; 
+	
+	@Autowired
+	MethodRepository methodRepository;
 	
 	// Create a new Event
 	@PostMapping()
@@ -65,7 +69,11 @@ public class EventController {
 		event.setObserver(""+payload.get("observer_id"));
 		
 		event.setObservationType(""+payload.get("event_type_id"));
-		event.setHandWashType(""+payload.get("method_id"));
+		
+		Optional<Long> method_id =  Optional.of(Long.valueOf((Integer)payload.get("method_id")));
+		Method method = methodRepository.findOne(method_id.get());
+		
+		event.setHandWashType(""+method);
 		
 		
 		return eventRepository.save(event);
