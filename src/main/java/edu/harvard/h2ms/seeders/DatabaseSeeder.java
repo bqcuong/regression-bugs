@@ -23,9 +23,7 @@ public class DatabaseSeeder {
     
 
     @Autowired
-    public DatabaseSeeder(
-            MethodRepository methodRepository
-            ) 
+    public DatabaseSeeder( MethodRepository methodRepository) 
     {
         this.methodRepository = methodRepository;
     }
@@ -37,7 +35,6 @@ public class DatabaseSeeder {
 
     private void seedMethodsTable() {
     	
-    	System.out.println("*****************seedMethods");
         List<List<String>> records = asList(
                 asList("Soap and water", "Handwashing method that involves soap and water in a sink."),
                 asList("Alcohol", "Hand sanitizing station")
