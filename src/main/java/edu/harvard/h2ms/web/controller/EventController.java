@@ -57,8 +57,15 @@ public class EventController {
 		
 		
 		// attempt to get subject
-		Optional<Long> subject_id =  Optional.of(Long.valueOf((Integer)payload.get("subject_id")));
-		User subject = userRepository.findOne(subject_id.get());
+//		Optional<Long> subject_id =  Optional.of(Long.valueOf((Integer)payload.get("subject_id")));
+//		User subject = new User(); //userRepository.findOne(subject_id.get());
+		event.setObservee(""+payload.get("subject_id"));
+			
+//		User observer = new User();
+		event.setObserver(""+payload.get("observer_id"));
+		
+		event.setObservationType(""+payload.get("event_type_id"));
+		event.setHandWashType(""+payload.get("method_id"));
 		
 		
 		return eventRepository.save(event);
