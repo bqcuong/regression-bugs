@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Method;
+import edu.harvard.h2ms.domain.core.User;
 import edu.harvard.h2ms.repository.EventRepository;
 import edu.harvard.h2ms.repository.MethodRepository;
 import edu.harvard.h2ms.repository.UserRepository;
@@ -32,7 +33,6 @@ import edu.harvard.h2ms.repository.UserRepository;
 @RequestMapping(path="/event")
 public class EventController {
 	
-	private UserRepository userRepository;
 	
 	// Reference: https://stackoverflow.com/questions/29313687/trying-to-use-spring-boot-rest-to-read-json-string-from-post
 	// Optional solution: http://www.baeldung.com/jackson-deserialization
@@ -45,6 +45,8 @@ public class EventController {
 	@Autowired
 	MethodRepository methodRepository;
 	
+	@Autowired
+	UserRepository userRepository;
 	// Create a new Event
 	@PostMapping()
 	public Event createEvent(@Valid @RequestBody Map<String, Object> payload) {
@@ -61,11 +63,11 @@ public class EventController {
 		
 		
 		// attempt to get subject
-//		Optional<Long> subject_id =  Optional.of(Long.valueOf((Integer)payload.get("subject_id")));
-//		User subject = new User(); //userRepository.findOne(subject_id.get());
+		Optional<Long> subject_id =  Optional.of(Long.valueOf((Integer)payload.get("subject_id")));
+		User subject = userRepository.findOne(3L);
 		event.setObservee(""+payload.get("subject_id"));
 			
-//		User observer = new User();
+		
 		event.setObserver(""+payload.get("observer_id"));
 		
 		event.setObservationType(""+payload.get("event_type_id"));
@@ -73,7 +75,7 @@ public class EventController {
 		Optional<Long> method_id =  Optional.of(Long.valueOf((Integer)payload.get("method_id")));
 		Method method = methodRepository.findOne(method_id.get());
 		
-		event.setHandWashType(""+method);
+		event.setMethod(method.getId());
 		
 		
 		return eventRepository.save(event);

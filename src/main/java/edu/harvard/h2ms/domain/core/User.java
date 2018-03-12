@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "H2MSUSER")
 public class User {
 	
 	/* Properties */
@@ -70,7 +70,9 @@ public class User {
 	}
 	
 	//TODO: this is a stub for user implementation (created for event entry)
-	
+	public String toString() {
+		return "";
+	}
 	
 	
 

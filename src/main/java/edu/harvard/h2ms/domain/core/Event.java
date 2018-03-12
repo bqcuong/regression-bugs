@@ -1,7 +1,13 @@
 package edu.harvard.h2ms.domain.core;
 
-import javax.persistence.*;
 import java.sql.Time;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * An Event is...
@@ -13,7 +19,7 @@ public class Event {
     /* Properties */
     private Long id;
     private Time timestamp;
-    private String handWashType;
+    private Long method_id;
     private String relativeMoment;
     private String observee;
     private String observer;
@@ -39,13 +45,13 @@ public class Event {
         this.timestamp = timestamp;
     }
 
-    @Column(name = "HAND_WASH_TYPE")
-    public String getHandWashType() {
-        return handWashType;
+    @Column(name = "METHOD_ID")
+    public Long getMethod() {
+        return method_id;
     }
 
-    public void setHandWashType(String handWashType) {
-        this.handWashType = handWashType;
+    public void setMethod(Long method_id) {
+        this.method_id = method_id;
     }
 
     @Column(name = "RELATIVE_MOMENT")
@@ -87,7 +93,7 @@ public class Event {
     @Override
     public String toString() {
         return "Event - Id: " + id + ", Typestamp: " + timestamp
-                + ", Hand Wash Type: " + handWashType  + ", Relative Moment: " + relativeMoment
+                + ", Hand Wash Type: " + method_id  + ", Relative Moment: " + relativeMoment
                 + ", Observee: " + observee  + ", Observer: " + observer  + ", Observation Type: " + observationType;
     }
 

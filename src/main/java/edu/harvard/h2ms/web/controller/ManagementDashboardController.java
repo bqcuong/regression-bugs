@@ -44,7 +44,8 @@ public class ManagementDashboardController {
     public Event example(@RequestParam(value="name", defaultValue="Test Form 1") String name) {
         Event event = new Event();
         event.setId(1L);
-        event.setHandWashType("Soap");
+//        event.setHandWashType("Soap");
+        event.setMethod(null);
         event.setObservationType("Sensor");
         event.setObservee("John Doe");
         event.setObserver("Jane Smith");
