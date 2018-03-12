@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Method;
 import edu.harvard.h2ms.domain.core.User;
+import edu.harvard.h2ms.exception.ResourceNotFoundException;
 import edu.harvard.h2ms.repository.EventRepository;
 import edu.harvard.h2ms.repository.MethodRepository;
 import edu.harvard.h2ms.repository.UserRepository;
@@ -64,7 +65,12 @@ public class EventController {
 		
 		// attempt to get subject
 		Optional<Long> subject_id =  Optional.of(Long.valueOf((Integer)payload.get("subject_id")));
-		User subject = userRepository.findOne(3L);
+		
+		User subject = userRepository.findOne(subject_id.get());
+		if(subject == null) 
+			throw new ResourceNotFoundException(subject_id.get(), "user not found");
+			
+		
 		event.setObservee(""+payload.get("subject_id"));
 			
 		
