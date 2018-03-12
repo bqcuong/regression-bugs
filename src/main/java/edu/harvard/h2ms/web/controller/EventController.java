@@ -65,21 +65,27 @@ public class EventController {
 		
 		// attempt to get subject
 		Optional<Long> subject_id =  Optional.of(Long.valueOf((Integer)payload.get("subject_id")));
-		
 		User subject = userRepository.findOne(subject_id.get());
 		if(subject == null) 
 			throw new ResourceNotFoundException(subject_id.get(), "user not found");
 			
-		
 		event.setObservee(""+payload.get("subject_id"));
 			
 		
+		// get observer
+		Optional<Long> observer_id = Optional.of(Long.valueOf((Integer)payload.get("observer_id")));
+		User observer = userRepository.findOne(observer_id.get());
+		if(observer == null)
+			throw new ResourceNotFoundException(observer_id.get(), "user not found");
 		event.setObserver(""+payload.get("observer_id"));
+		
 		
 		event.setObservationType(""+payload.get("event_type_id"));
 		
 		Optional<Long> method_id =  Optional.of(Long.valueOf((Integer)payload.get("method_id")));
 		Method method = methodRepository.findOne(method_id.get());
+		if(method == null)
+			throw new ResourceNotFoundException(method_id.get(), "method not found");
 		
 		event.setMethod(method.getId());
 		
