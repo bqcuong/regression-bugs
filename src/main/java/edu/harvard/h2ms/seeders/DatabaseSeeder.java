@@ -1,13 +1,18 @@
 package edu.harvard.h2ms.seeders;
 
-import edu.harvard.h2ms.domain.core.Method;
-import edu.harvard.h2ms.repository.MethodRepository;
+import static java.util.Arrays.asList;
+
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import static java.util.Arrays.asList;
+
+import edu.harvard.h2ms.domain.core.Method;
+import edu.harvard.h2ms.domain.core.User;
+import edu.harvard.h2ms.repository.MethodRepository;
+import edu.harvard.h2ms.repository.UserRepository;
 
 
 /**
@@ -17,17 +22,22 @@ import static java.util.Arrays.asList;
 @Component
 public class DatabaseSeeder {
     private MethodRepository methodRepository;
+    private UserRepository userRepository;
 
     @Autowired
     public DatabaseSeeder(
-            MethodRepository methodRepository
-            ) {
+            MethodRepository methodRepository,
+            UserRepository userRepository
+            ) 
+    {
         this.methodRepository = methodRepository;
-            }
+        this.userRepository   = userRepository;
+    }
 
     @EventListener
     public void seed(ContextRefreshedEvent event) {
         seedMethodsTable();
+//        seedUserTable();
     }
 
     private void seedMethodsTable() {
@@ -47,5 +57,27 @@ public class DatabaseSeeder {
                 methodRepository.save(method);
             }
         }
+    }
+    
+    private void seedUserTable() {
+    	List<List<String>> records = asList(
+    			asList("jane", "doe", "jane.doe@email.com"),
+    			asList("john", "doe", "john.doe@email.com")
+    			);
+    	
+    	for(List<String> record : records) {
+    		String firstName = record.get(0);
+    		String lastName  = record.get(1);
+    		String email     = record.get(2);
+    		
+    		if(userRepository.findByEmail(email).isEmpty()) {
+    			User user = new User();
+    			user.setFirstName(firstName);
+    			user.setLastName(lastName);
+    			user.setEmail(email);
+    			
+    		}
+    	}
+    			
     }
 }
