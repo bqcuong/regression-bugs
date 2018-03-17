@@ -10,8 +10,8 @@ import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.repository.EventRepository;
 
 /**
+ * Contains the business logic and call methods in the repository layer
  * https://www.codebyamir.com/blog/create-rest-api-with-spring-boot
- *
  */
 @Service
 public class EventService {
@@ -30,8 +30,9 @@ public class EventService {
 		return eventRepository.findOne(id);
 	}
 	
-	public void addEvent(Event event) {
+	public Event addEvent(Event event) {
 		eventRepository.save(event);
+		return event;
 	}
 	
 	public void deleteEvent(Long id) {

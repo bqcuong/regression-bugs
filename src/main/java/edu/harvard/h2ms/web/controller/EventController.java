@@ -4,6 +4,7 @@ import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -12,6 +13,8 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,7 @@ import edu.harvard.h2ms.exception.ResourceNotFoundException;
 import edu.harvard.h2ms.repository.EventRepository;
 import edu.harvard.h2ms.repository.MethodRepository;
 import edu.harvard.h2ms.repository.UserRepository;
+import edu.harvard.h2ms.service.EventService;
 
 /**
  * 
@@ -31,7 +35,7 @@ import edu.harvard.h2ms.repository.UserRepository;
  *
  */
 @RestController
-@RequestMapping(path="/event")
+@RequestMapping(path="/events")
 public class EventController {
 	
 	
@@ -48,6 +52,22 @@ public class EventController {
 	
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	private EventService eventService;
+	
+	// Retrieve all events
+	@GetMapping()
+	public List<Event> getAllEvents(){
+		return eventService.getAllEvents();
+	}
+	
+	// Retrieve an event
+	@GetMapping(value = "/{id}")
+	public Event getEvent(@PathVariable Long id) {
+		return eventService.getEvent(id);
+	}
+	
 	// Create a new Event
 	@PostMapping()
 	public Event createEvent(@Valid @RequestBody Map<String, Object> payload) {
@@ -90,7 +110,7 @@ public class EventController {
 		event.setMethod(method.getId());
 		
 		
-		return eventRepository.save(event);
+		return eventService.addEvent(event);
 	}
 
 }
