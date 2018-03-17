@@ -30,8 +30,8 @@ public class Event {
 	@Column(name = "METHOD_ID")
     private Long method_id;
 	
-	@Column(name = "RELATIVE_MOMENT")
-    private String relativeMoment;
+	@Column(name = "RELATIVE_MOMENT_ID")
+    private Long relativeMoment;
 	
 	@Column(name = "OBSERVEE")
     private String observee;
@@ -56,8 +56,8 @@ public class Event {
         return timestamp;
     }
 
-    public void setTimestamp(Time timestamp) {
-        this.timestamp = timestamp;
+    public void setTimestamp(Date date) {
+        this.timestamp = date;
     }
 
     
@@ -70,12 +70,12 @@ public class Event {
     }
 
     
-    public String getRelativeMoment() {
+    public Long getRelativeMoment() {
         return relativeMoment;
     }
 
-    public void setRelativeMoment(String relativeMoment) {
-        this.relativeMoment = relativeMoment;
+    public void setRelativeMoment(RelativeMoment relativeMoment) {
+        this.relativeMoment = relativeMoment.getId();
     }
 
     

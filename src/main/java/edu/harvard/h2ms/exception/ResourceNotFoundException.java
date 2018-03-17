@@ -1,10 +1,10 @@
 package edu.harvard.h2ms.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
-	private Long resourceId;
+	private String resourceId;
 	
-	public ResourceNotFoundException(Long resourceId, String message) {
+	public ResourceNotFoundException(String entityIdentifier, String message) {
 		super(message);
-		this.resourceId = resourceId;
+		this.resourceId = entityIdentifier;
 	}
 }

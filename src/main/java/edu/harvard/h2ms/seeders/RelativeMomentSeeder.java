@@ -10,7 +10,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import edu.harvard.h2ms.domain.core.RelativeMoment;
-import edu.harvard.h2ms.domain.core.User;
 import edu.harvard.h2ms.repository.RelativeMomentRepository;
 
 @Component
@@ -31,6 +30,7 @@ public class RelativeMomentSeeder {
 	private void seedRelativeMomentTable() {
 		if (relativeMomentRepository.count() == 0) {
 			List<List<String>> records = asList(
+					asList("BeforeRoomEntry", "Before Entering Room."),
 					asList("RoomEntry", "Room entry."),
 					asList("RoomExit", "Room exit.")
 					);

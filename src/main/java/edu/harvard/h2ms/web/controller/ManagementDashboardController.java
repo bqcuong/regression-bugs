@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.repository.RelativeMomentRepository;
 import edu.harvard.h2ms.service.ManagementDashboardService;
 
 import java.sql.Time;
@@ -21,6 +22,9 @@ public class ManagementDashboardController {
     final Logger logger = LoggerFactory.getLogger(ManagementDashboardController.class);
 
     private ManagementDashboardService managementDashboardService;
+    
+    @Autowired
+	RelativeMomentRepository relativeMomentRepository;
 
     @Autowired
     public void setManagementDashboardService(ManagementDashboardService managementDashboardService) {
@@ -50,7 +54,7 @@ public class ManagementDashboardController {
         event.setObservee("John Doe");
         event.setObserver("Jane Smith");
         event.setTimestamp(new Time(234234L));
-        event.setRelativeMoment("Before Entering Room");
+        event.setRelativeMoment(relativeMomentRepository.findByName("RoomEntry"));
         return event;
     }
 

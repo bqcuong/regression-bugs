@@ -1,9 +1,9 @@
 package edu.harvard.h2ms.web.controller;
 
-import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,10 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Method;
+import edu.harvard.h2ms.domain.core.RelativeMoment;
 import edu.harvard.h2ms.domain.core.User;
 import edu.harvard.h2ms.exception.ResourceNotFoundException;
 import edu.harvard.h2ms.repository.EventRepository;
 import edu.harvard.h2ms.repository.MethodRepository;
+import edu.harvard.h2ms.repository.RelativeMomentRepository;
 import edu.harvard.h2ms.repository.UserRepository;
 import edu.harvard.h2ms.service.EventService;
 
@@ -54,6 +56,9 @@ public class EventController {
 	UserRepository userRepository;
 	
 	@Autowired
+	RelativeMomentRepository relativeMomentRepository;
+	
+	@Autowired
 	private EventService eventService;
 	
 	// Retrieve all events
@@ -80,17 +85,21 @@ public class EventController {
 		DateTimeFormatter f = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
 		LocalDateTime dateTime2 = LocalDateTime.from(f.parse(dateTime));
 		// All this work for just this.
-		event.setTimestamp(new Time(dateTime2.toEpochSecond(ZoneOffset.ofHours(0))));
+		event.setTimestamp(new Date(dateTime2.toEpochSecond(ZoneOffset.ofHours(0))));
 		
 		// relativeMoment
-		event.setRelativeMoment(""+payload.get("relativeMoment"));
+		String relativeMomentName = ""+payload.get("relativeMoment");
+		RelativeMoment relativeMoment = relativeMomentRepository.findByName(relativeMomentName);
+		if(relativeMoment == null) 
+			throw new ResourceNotFoundException(relativeMomentName, "relativeMoment name not found");
+		event.setRelativeMoment(relativeMoment);
 		
 		
 		// attempt to get subject
 		Optional<Long> subject_id =  Optional.of(Long.valueOf((Integer)payload.get("subject_id")));
 		User subject = userRepository.findOne(subject_id.get());
 		if(subject == null) 
-			throw new ResourceNotFoundException(subject_id.get(), "user not found");
+			throw new ResourceNotFoundException(""+subject_id.get(), "user not found");
 			
 		event.setObservee(""+payload.get("subject_id"));
 			
@@ -99,7 +108,7 @@ public class EventController {
 		Optional<Long> observer_id = Optional.of(Long.valueOf((Integer)payload.get("observer_id")));
 		User observer = userRepository.findOne(observer_id.get());
 		if(observer == null)
-			throw new ResourceNotFoundException(observer_id.get(), "user not found");
+			throw new ResourceNotFoundException(""+observer_id.get(), "user not found");
 		event.setObserver(""+payload.get("observer_id"));
 		
 		
@@ -108,7 +117,7 @@ public class EventController {
 		Optional<Long> method_id =  Optional.of(Long.valueOf((Integer)payload.get("method_id")));
 		Method method = methodRepository.findOne(method_id.get());
 		if(method == null)
-			throw new ResourceNotFoundException(method_id.get(), "method not found");
+			throw new ResourceNotFoundException(""+method_id.get(), "method not found");
 		
 		event.setMethod(method.getId());
 		
