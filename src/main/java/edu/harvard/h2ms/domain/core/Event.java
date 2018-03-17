@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * An Event is...
+ * An Event is what observer or sensor records about observee's actions.
  */
 @Entity
 @Table(name = "EVENT")

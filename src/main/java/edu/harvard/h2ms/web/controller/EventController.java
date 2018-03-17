@@ -82,6 +82,9 @@ public class EventController {
 		// All this work for just this.
 		event.setTimestamp(new Time(dateTime2.toEpochSecond(ZoneOffset.ofHours(0))));
 		
+		// relativeMoment
+		event.setRelativeMoment(""+payload.get("relativeMoment"));
+		
 		
 		// attempt to get subject
 		Optional<Long> subject_id =  Optional.of(Long.valueOf((Integer)payload.get("subject_id")));
