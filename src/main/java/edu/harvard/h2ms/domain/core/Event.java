@@ -1,6 +1,7 @@
 package edu.harvard.h2ms.domain.core;
 
 import java.sql.Time;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.TemporalType;
+
+import org.springframework.data.jpa.repository.Temporal;
 
 /**
  * An Event is...
@@ -17,17 +21,31 @@ import javax.persistence.Table;
 public class Event {
 
     /* Properties */
+	
+	@Id
+	@GeneratedValue(strategy= GenerationType.AUTO)
+    @Column(name = "ID")
     private Long id;
-    private Time timestamp;
+	
+	@Column(name = "TIMESTAMP")
+    private Date timestamp;
+	
+	@Column(name = "METHOD_ID")
     private Long method_id;
+	
+	@Column(name = "RELATIVE_MOMENT")
     private String relativeMoment;
+	
+	@Column(name = "OBSERVEE")
     private String observee;
+	
+	@Column(name = "OBSERVER")
     private String observer;
+	
+	@Column(name = "OBSERVATION_TYPE")
     private String observationType;
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = "ID")
+    
     public Long getId() {
         return id;
     }
@@ -36,8 +54,8 @@ public class Event {
         this.id = id;
     }
 
-    @Column(name = "TIMESTAMP")
-    public Time getTimestamp() {
+    
+    public Date getTimestamp() {
         return timestamp;
     }
 
@@ -45,7 +63,7 @@ public class Event {
         this.timestamp = timestamp;
     }
 
-    @Column(name = "METHOD_ID")
+    
     public Long getMethod() {
         return method_id;
     }
@@ -54,7 +72,7 @@ public class Event {
         this.method_id = method_id;
     }
 
-    @Column(name = "RELATIVE_MOMENT")
+    
     public String getRelativeMoment() {
         return relativeMoment;
     }
@@ -63,7 +81,7 @@ public class Event {
         this.relativeMoment = relativeMoment;
     }
 
-    @Column(name = "OBSERVEE")
+    
     public String getObservee() {
         return observee;
     }
@@ -72,7 +90,7 @@ public class Event {
         this.observee = observee;
     }
 
-    @Column(name = "OBSERVER")
+    
     public String getObserver() {
         return observer;
     }
@@ -81,7 +99,7 @@ public class Event {
         this.observer = observer;
     }
 
-    @Column(name = "OBSERVATION_TYPE")
+    
     public String getObservationType() {
         return observationType;
     }
