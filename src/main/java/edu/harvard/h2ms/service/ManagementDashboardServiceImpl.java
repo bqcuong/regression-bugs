@@ -22,18 +22,13 @@ import javax.activation.*;
 @Transactional
 public class ManagementDashboardServiceImpl implements ManagementDashboardService {
 
-    private DoctorRepository doctorRepository;
+
     private EventRepository eventRepository;
     private LocationRepository locationRepository;
     private ReaderRepository readerRepository;
     private WristBandRepository wristBandRepository;
     private MethodRepository methodRepository;
     private UserRepository userRepository;
-
-    @Autowired
-    public void setDoctorRepository(DoctorRepository doctorRepository) {
-        this.doctorRepository = doctorRepository;
-    }
 
     @Autowired
     public void setMethodRepository(MethodRepository methodRepository) {

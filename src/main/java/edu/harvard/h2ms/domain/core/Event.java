@@ -18,31 +18,31 @@ import javax.persistence.Table;
 public class Event {
 
     /* Properties */
-	
+
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
     @Column(name = "ID")
     private Long id;
-	
+
 	@Column(name = "TIMESTAMP")
     private Date timestamp;
-	
+
 	@Column(name = "METHOD_ID")
     private Long method_id;
-	
+
 	@Column(name = "RELATIVE_MOMENT_ID")
     private Long relativeMoment;
-	
+
 	@Column(name = "OBSERVEE")
     private String observee;
-	
+
 	@Column(name = "OBSERVER")
     private String observer;
-	
+
 	@Column(name = "OBSERVATION_TYPE")
     private String observationType;
 
-    
+
     public Long getId() {
         return id;
     }
@@ -51,7 +51,7 @@ public class Event {
         this.id = id;
     }
 
-    
+
     public Date getTimestamp() {
         return timestamp;
     }
@@ -60,7 +60,7 @@ public class Event {
         this.timestamp = date;
     }
 
-    
+
     public Long getMethod() {
         return method_id;
     }
@@ -69,7 +69,7 @@ public class Event {
         this.method_id = method_id;
     }
 
-    
+
     public Long getRelativeMoment() {
         return relativeMoment;
     }
@@ -78,7 +78,7 @@ public class Event {
         this.relativeMoment = relativeMoment.getId();
     }
 
-    
+
     public String getObservee() {
         return observee;
     }
@@ -87,7 +87,7 @@ public class Event {
         this.observee = observee;
     }
 
-    
+
     public String getObserver() {
         return observer;
     }
@@ -96,7 +96,7 @@ public class Event {
         this.observer = observer;
     }
 
-    
+
     public String getObservationType() {
         return observationType;
     }

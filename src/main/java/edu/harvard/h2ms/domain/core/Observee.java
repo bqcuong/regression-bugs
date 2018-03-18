@@ -1,13 +1,14 @@
 package edu.harvard.h2ms.domain.core;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
- * A Doctor is...
+ * A Observee is...
  */
 @Entity
-@Table(name = "DOCTOR")
-public class Doctor {
+@Table(name = "observee")
+public class Observee implements Serializable {
 
 	/* Properties */
 	private Long id;
@@ -45,6 +46,6 @@ public class Doctor {
 
 	@Override
 	public String toString() {
-		return "Doctor - Id: " + id + ", First Name: " + firstName + ", Last Name: " + lastName;
+		return "Observee - Id: " + id + ", First Name: " + firstName + ", Last Name: " + lastName;
 	}
 }

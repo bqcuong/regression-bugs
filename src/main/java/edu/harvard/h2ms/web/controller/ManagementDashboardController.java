@@ -22,7 +22,7 @@ public class ManagementDashboardController {
     final Logger logger = LoggerFactory.getLogger(ManagementDashboardController.class);
 
     private ManagementDashboardService managementDashboardService;
-    
+
     @Autowired
 	RelativeMomentRepository relativeMomentRepository;
 
