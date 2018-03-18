@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.harvard.h2ms.domain.admin.Email;
+import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.repository.*;
 
 import java.util.*;
 import javax.mail.*;
 import javax.mail.internet.*;
+import javax.activation.*;
 
 /**
  * The Management Dashboard Service Implementor...
@@ -20,16 +22,17 @@ import javax.mail.internet.*;
 @Transactional
 public class ManagementDashboardServiceImpl implements ManagementDashboardService {
 
-    private ObserveeRepository observeeRepository;
+    private DoctorRepository doctorRepository;
     private EventRepository eventRepository;
     private LocationRepository locationRepository;
     private ReaderRepository readerRepository;
     private WristBandRepository wristBandRepository;
     private MethodRepository methodRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    public void setObserveeRepository(ObserveeRepository observeeRepository) {
-        this.observeeRepository = observeeRepository;
+    public void setDoctorRepository(DoctorRepository doctorRepository) {
+        this.doctorRepository = doctorRepository;
     }
 
     @Autowired
@@ -57,12 +60,30 @@ public class ManagementDashboardServiceImpl implements ManagementDashboardServic
         this.wristBandRepository = wristBandRepository;
     }
 
+    //TODO add the ability to search for anything - this may be covered by tableau
+    // Finds all Events
+    @Transactional(readOnly=true)
+    public Iterable<Event> findAllEvents() {
+        return eventRepository.findAll();
+    }
+
+    // Finds an Event by its ID
+    @Transactional(readOnly=true)
+    public Event findEventById(Long id) {
+        return eventRepository.findOne(id);
+    }
+
+    // Persists a new Event
+    public Event saveEvent(Event event) {
+        return eventRepository.save(event);
+    }
+
     /**
      *
      * @param email
      */
     public void sendEmail(Email email) {
-        //fixme requires additional configuration
+        //fixme tomcat not have smtp?
         String host = "localhost";
         Properties properties = System.getProperties();
         properties.setProperty("mail.smtp.host", host);
