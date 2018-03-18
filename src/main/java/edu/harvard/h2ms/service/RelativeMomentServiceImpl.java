@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import edu.harvard.h2ms.domain.core.RelativeMoment;
 import edu.harvard.h2ms.repository.RelativeMomentRepository;
 
-public class RelativeMomentService {
+public class RelativeMomentServiceImpl implements RelativeMomentService {
 	
 	@Autowired
 	private RelativeMomentRepository relativeMomentRepository;

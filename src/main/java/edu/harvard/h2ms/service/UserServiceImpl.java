@@ -14,7 +14,7 @@ import edu.harvard.h2ms.repository.UserRepository;
  * https://www.codebyamir.com/blog/create-rest-api-with-spring-boot
  */
 @Service
-public class UserService {
+public class UserServiceImpl implements UserService{
 	
 	@Autowired
 	private UserRepository userRepository;
