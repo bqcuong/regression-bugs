@@ -1,6 +1,6 @@
 package edu.harvard.h2ms.service;
 
-import com.google.common.collect.Lists;
+/*import com.google.common.collect.Lists;
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.repository.EventRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,3 +41,4 @@ public class EventServiceImpl implements EventService {
 
 
 }
+*/

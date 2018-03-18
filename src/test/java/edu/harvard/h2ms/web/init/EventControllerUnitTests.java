@@ -1,3 +1,4 @@
+/*
 package edu.harvard.h2ms.web.init;
 
 import edu.harvard.h2ms.domain.core.Event;
@@ -33,10 +34,12 @@ public class EventControllerUnitTests {
                 .build();
     }
 
-    /**
+    */
+/**
      * Test Find Event By Id Rest Endpoint
      * @throws Exception
-     */
+     *//*
+
     @Test
     public void test_endPoint_findEventById() throws Exception {
         Event event = new Event();
@@ -54,10 +57,12 @@ public class EventControllerUnitTests {
         verify(eventService).findById(1L);
     }
 
-    /**
+    */
+/**
      * Test Find All Events Rest Endpoint
      * @throws Exception
-     */
+     *//*
+
     @Test
     public void test_endPoint_findAllEvents() throws Exception {
         List events = new LinkedList();
@@ -86,3 +91,4 @@ public class EventControllerUnitTests {
     }
 
 }
+*/
