@@ -1,13 +1,16 @@
 package edu.harvard.h2ms.seeders;
 
-import edu.harvard.h2ms.domain.core.Method;
-import edu.harvard.h2ms.repository.MethodRepository;
+import static java.util.Arrays.asList;
+
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import static java.util.Arrays.asList;
+
+import edu.harvard.h2ms.domain.core.Method;
+import edu.harvard.h2ms.repository.MethodRepository;
 
 
 /**
@@ -17,13 +20,13 @@ import static java.util.Arrays.asList;
 @Component
 public class DatabaseSeeder {
     private MethodRepository methodRepository;
+    
 
     @Autowired
-    public DatabaseSeeder(
-            MethodRepository methodRepository
-            ) {
+    public DatabaseSeeder( MethodRepository methodRepository) 
+    {
         this.methodRepository = methodRepository;
-            }
+    }
 
     @EventListener
     public void seed(ContextRefreshedEvent event) {
@@ -31,6 +34,7 @@ public class DatabaseSeeder {
     }
 
     private void seedMethodsTable() {
+    	
         List<List<String>> records = asList(
                 asList("Soap and water", "Handwashing method that involves soap and water in a sink."),
                 asList("Alcohol", "Hand sanitizing station")
@@ -48,4 +52,5 @@ public class DatabaseSeeder {
             }
         }
     }
+    
 }
