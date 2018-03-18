@@ -57,3 +57,9 @@ docker-compose up
 1. Then
 ``./buildrun.ps1``
 
+
+## Credits
+
+Security Implementation based on Giau Ngo's tutorial: https://hellokoding.com/registration-and-login-example-with-spring-security-spring-boot-spring-data-jpa-hsql-jsp/
+
+
