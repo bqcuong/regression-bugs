@@ -1,5 +1,6 @@
 package edu.harvard.h2ms.domain.core;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import edu.harvard.h2ms.domain.core.*;
 
 /**
  * A Answer
@@ -22,23 +22,20 @@ public class Answer {
     @Column
     private Long id;
 
-	@Column
-    private Integer priority;
-
-    @ManyToOne
-    @JoinColumn(name="question_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "question_id")
     private Question question;
 
     @Column
     private String stringAnswer;
 
     @Column
-    private Boolean boollAnswer;
+    private Boolean boolAnswer;
 
     @Column
     private Integer valueAnswer;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "event_id")
 	private Event event;
 
@@ -58,14 +55,6 @@ public class Answer {
 		this.id = id;
 	}
 
-	public Integer getPriority() {
-		return priority;
-	}
-
-	public void setPriority(Integer priority) {
-		this.priority = priority;
-	}
-
 	public Question getQuestion() {
 		return question;
 	}
@@ -82,12 +71,12 @@ public class Answer {
 		this.stringAnswer = stringAnswer;
 	}
 
-	public Boolean getBoollAnswer() {
-		return boollAnswer;
+	public Boolean getBoolAnswer() {
+		return boolAnswer;
 	}
 
-	public void setBoollAnswer(Boolean boollAnswer) {
-		this.boollAnswer = boollAnswer;
+	public void setBoolAnswer(Boolean boolAnswer) {
+		this.boolAnswer = boolAnswer;
 	}
 
 	public Integer getValueAnswer() {

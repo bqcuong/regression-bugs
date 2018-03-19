@@ -17,6 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+
 
 /**
  * An Event is what observer or sensor records about observee's actions.
@@ -24,23 +26,26 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "EVENT")
 public class Event {
-
-    /* Properties */
-
+	/* Properties */
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
     @Column
     private Long id;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column
     private Date timestamp;
-
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "subject_id")
     private User subject;
 
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "event_template_id")
+    private EventTemplate eventTemplate;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "observer_id")
     private User observer;
@@ -49,20 +54,17 @@ public class Event {
 			cascade = CascadeType.ALL,
 			mappedBy = "event")
 	private Set<Answer> answers = new HashSet<>();
-	
-	
+
 	public Set<Answer> getAnswers() {
 		return answers;
 	}
 
-	public void setAnswers(Set<Answer> answers) {
+	public void setAnswers(Set<Answer> answers) {	
+		answers.forEach((a)->{a.setEvent(this);});
+		
 		this.answers = answers;
 	}
 
-	@Column
-    private String observationType;
-
-	
 	public Long getId() {
 		return id;
 	}
@@ -95,12 +97,17 @@ public class Event {
 		this.observer = observer;
 	}
 
-	public String getObservationType() {
-		return observationType;
+	public EventTemplate getEventTemplate() {
+		return eventTemplate;
 	}
 
-	public void setObservationType(String observationType) {
-		this.observationType = observationType;
+	public void setEventTemplate(EventTemplate eventTemplate) {
+		this.eventTemplate = eventTemplate;
 	}
-
+	
+    @Override
+	public String toString() {
+		return "Event [id=" + id + ", timestamp=" + timestamp + ", subject=" + subject + ", eventTemplate="
+				+ eventTemplate + ", observer=" + observer + ", answers=" + answers + "]";
+	}
 }

@@ -1,5 +1,6 @@
 package edu.harvard.h2ms.domain.core;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -9,8 +10,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A Question
@@ -24,30 +29,48 @@ public class Question {
     @Column
     private Long id;
 
+	@NotNull
 	@Column
     private Integer priority;
 
     @ElementCollection
     private List<String> options;
 
+    @NotNull
     @Column
     private String question;
 
+    @NotNull
 	@Column
     private Boolean required;
 
+    @NotNull
     @Column
     private String answerType;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_template_id")
 	private EventTemplate eventTemplate;
+	
+	@OneToMany(fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL,
+			mappedBy = "question")
+	private Set<Answer> answers = new HashSet<>();
+	
 
-    public Question() {
+	public Question() {
         super();
     }
+	
+    public Set<Answer> getAnswers() {
+		return answers;
+	}
 
-    public Question(String question, String answerType, List<String> options, Boolean required, Integer priority, EventTemplate eventTemplate) {
+	public void setAnswers(Set<Answer> answers) {
+		this.answers = answers;
+	}
+
+	public Question(String question, String answerType, List<String> options, Boolean required, Integer priority, EventTemplate eventTemplate) {
 		super();
 		this.question = question;
 		this.answerType = answerType;
