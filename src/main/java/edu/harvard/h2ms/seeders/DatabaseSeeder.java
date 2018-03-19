@@ -9,9 +9,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import edu.harvard.h2ms.domain.core.Method;
-import edu.harvard.h2ms.repository.MethodRepository;
-
 
 /**
  * Seeds initial data into the database, example taken from
@@ -19,6 +16,7 @@ import edu.harvard.h2ms.repository.MethodRepository;
  */
 @Component
 public class DatabaseSeeder {
+	/*
     private MethodRepository methodRepository;
     
 
@@ -51,6 +49,6 @@ public class DatabaseSeeder {
                 methodRepository.save(method);
             }
         }
-    }
+    }*/
     
 }
