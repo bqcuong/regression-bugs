@@ -19,6 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
 	private static String REALM="MY_TEST_REALM";
 			
+
     private static final String[] AUTH_WHITELIST = {
             // Front page
             "/",
@@ -28,6 +29,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
             "/swagger-ui.html",
             "/registration",
             "/v2/api-docs",
+            "/events",
+            "/users",
             "/webjars/**"
     };
  
@@ -35,9 +38,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     @Override
     protected void configure(HttpSecurity http) throws Exception {
     	
+    	// disable csrf to enable non-browser API call
+    	http.csrf().disable();
     	
-        http.csrf().disable()
-        	.authorizeRequests()
+        http.authorizeRequests()
             .antMatchers(AUTH_WHITELIST).permitAll()
             .anyRequest().authenticated()
             .and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())

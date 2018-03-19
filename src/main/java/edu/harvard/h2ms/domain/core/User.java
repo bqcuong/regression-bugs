@@ -25,10 +25,11 @@ public class User {
 	private String lastName;
 	private String email;
 	private String notificationFrequency;
+
 	private String password;
 	private String passwordConfirm;
 	private Set<Role> roles;
-	
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name = "ID")
@@ -77,7 +78,7 @@ public class User {
 	public void setNotificationFrequency(String notificationFrequency) {
 		this.notificationFrequency = notificationFrequency;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -110,8 +111,7 @@ public class User {
 	}
 
 	
-	
-	
+
 	
 
 }

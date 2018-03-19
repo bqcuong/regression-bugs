@@ -6,7 +6,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import edu.harvard.h2ms.domain.core.User;
 
 @RepositoryRestResource(collectionResourceRel = "users", path = "users")
-public interface UserRepository extends PagingAndSortingRepository<User, Long>{
+
+public interface UserRepository extends PagingAndSortingRepository<User, Long> {
 	
 	User findByFirstName( String firstName);
 	User findByMiddleName( String middleName);
