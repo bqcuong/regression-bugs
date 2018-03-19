@@ -52,24 +52,10 @@ public class Question {
 	@JoinColumn(name = "event_template_id")
 	private EventTemplate eventTemplate;
 	
-	@OneToMany(fetch = FetchType.LAZY,
-			cascade = CascadeType.ALL,
-			mappedBy = "question")
-	private Set<Answer> answers = new HashSet<>();
-	
-
 	public Question() {
         super();
     }
 	
-    public Set<Answer> getAnswers() {
-		return answers;
-	}
-
-	public void setAnswers(Set<Answer> answers) {
-		this.answers = answers;
-	}
-
 	public Question(String question, String answerType, List<String> options, Boolean required, Integer priority, EventTemplate eventTemplate) {
 		super();
 		this.question = question;

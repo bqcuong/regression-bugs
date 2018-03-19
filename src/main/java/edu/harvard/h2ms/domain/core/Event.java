@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 
@@ -37,6 +38,7 @@ public class Event {
 	@Column
     private Date timestamp;
 
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "subject_id")
     private User subject;
@@ -45,12 +47,19 @@ public class Event {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_template_id")
     private EventTemplate eventTemplate;
-	
+
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "observer_id")
     private User observer;
 
-	@OneToMany(fetch = FetchType.LAZY,
+	// TODO: Place holder until Location model is ready + updated according to data model
+	@NotNull
+	@Column
+    private String location;
+	
+	@Valid
+	@OneToMany(fetch = FetchType.EAGER,
 			cascade = CascadeType.ALL,
 			mappedBy = "event")
 	private Set<Answer> answers = new HashSet<>();
@@ -105,9 +114,20 @@ public class Event {
 		this.eventTemplate = eventTemplate;
 	}
 	
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	
     @Override
 	public String toString() {
-		return "Event [id=" + id + ", timestamp=" + timestamp + ", subject=" + subject + ", eventTemplate="
-				+ eventTemplate + ", observer=" + observer + ", answers=" + answers + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("Event [id=").append(id).append(", timestamp=").append(timestamp).append(", subject=")
+				.append(subject).append(", eventTemplate=").append(eventTemplate).append(", observer=").append(observer)
+				.append(", location=").append(location).append(", answers=").append(answers).append("]");
+		return builder.toString();
 	}
 }

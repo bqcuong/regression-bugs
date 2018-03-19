@@ -36,7 +36,20 @@ public class EventTemplate {
 			mappedBy = "eventTemplate")
 	private Set<Question> questions = new HashSet<>();
 
-    public EventTemplate() {
+	@OneToMany(fetch = FetchType.LAZY,
+			cascade = CascadeType.ALL,
+			mappedBy = "eventTemplate")
+	private Set<Event> events = new HashSet<>();
+	
+    public Set<Event> getEvents() {
+		return events;
+	}
+
+	public void setEvents(Set<Event> events) {
+		this.events = events;
+	}
+
+	public EventTemplate() {
         super();
     }
 
@@ -69,9 +82,4 @@ public class EventTemplate {
 		this.questions = questions;
 	}
 	
-	public Set<Question> getRequiredQuestions() {
-		return getQuestions().stream().filter(question -> question.getRequired()).collect(Collectors.toSet());				
-	}
-
-
 }

@@ -1,11 +1,15 @@
 package edu.harvard.h2ms.validator;
 
+import static java.util.Arrays.asList;
+
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import edu.harvard.h2ms.domain.core.Answer;
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Question;
 
@@ -39,30 +43,42 @@ public class EventValidator implements Validator {
 			errors.rejectValue("eventTemplate", "Event.RequiredTemplate");
 		} else {
 			Set<Question> questions = event.getEventTemplate().getQuestions();
-			Set<Question> required = event.getEventTemplate().getRequiredQuestions();
-		
-		
-			/* Find any answers that aren't part of the event template */
-			Boolean unknown = event
-				.getAnswers()
-				.stream()
-				.filter(
-						answer -> !questions.contains(answer.getQuestion())
-						).
-				findAny().
-				isPresent();
+			Set<Question> required = questions.stream().filter(q->q.getRequired()).collect(Collectors.toSet());
+
 			
-			if(unknown) {
-				errors.reject("Event.UnknownAnswer");
+			int idx = 0;
+			for(Answer answer : event.getAnswers()) {
+				// User gave an answer to a question not in this template:
+				if(!questions.contains(answer.getQuestion())) {
+					errors.rejectValue(String.format("answers[%d].value", idx), "Answer.NotInTemplate");
+				}
+					
+				/* Validate answer types are correct */
+				switch(answer.getAnswerType()) {
+				case "options":
+					if(!answer.getQuestion().getOptions().contains(answer.getValue())) {
+						errors.rejectValue(String.format("answers[%d].value", idx), "Answer.NotInOptions");
+					}
+					break;
+				case "boolean":
+					if(!asList("true", "false").contains(answer.getValue())) {
+						errors.rejectValue(String.format("answers[%d].value", idx), "Answer.NotBoolean");
+					}
+					break;
+				}
+				
+				// We saw the answer, remove it from the required list
+				required.remove(answer.getQuestion());
+				
+				idx++;
 			}
-			
-			/* Find any missing required answers */
-			event.getAnswers().stream().forEach(answer -> required.remove(answer.getQuestion()));
-			
+
 			if(!required.isEmpty()) {
 				errors.reject("Event.RequiredAnswer");
 			}
 		}
-		
+	
+
 	}
+
 }

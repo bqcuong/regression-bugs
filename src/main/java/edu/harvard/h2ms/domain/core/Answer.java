@@ -9,9 +9,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
 
 /**
- * A Answer
+ * An answer contains the response 
  */
 @Entity
 public class Answer {
@@ -22,22 +23,28 @@ public class Answer {
     @Column
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "question_id")
     private Question question;
-
+    
+    @NotNull
     @Column
-    private String stringAnswer;
+    private String answerType;
+    
+	@Column
+    private String value;
 
-    @Column
-    private Boolean boolAnswer;
-
-    @Column
-    private Integer valueAnswer;
-
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "event_id")
 	private Event event;
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Answer [id=").append(id).append(", question=").append(question).append(", answerType=")
+				.append(answerType).append(", value=").append(value).append("]");
+		return builder.toString();
+	}
 
 	public Event getEvent() {
 		return event;
@@ -61,32 +68,22 @@ public class Answer {
 
 	public void setQuestion(Question question) {
 		this.question = question;
+		this.answerType = question.getAnswerType();
 	}
 
-	public String getStringAnswer() {
-		return stringAnswer;
+	public String getValue() {
+		return value;
 	}
 
-	public void setStringAnswer(String stringAnswer) {
-		this.stringAnswer = stringAnswer;
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+    public String getAnswerType() {
+		return answerType;
 	}
 
-	public Boolean getBoolAnswer() {
-		return boolAnswer;
+	public void setAnswerType(String answerType) {
+		this.answerType = answerType;
 	}
-
-	public void setBoolAnswer(Boolean boolAnswer) {
-		this.boolAnswer = boolAnswer;
-	}
-
-	public Integer getValueAnswer() {
-		return valueAnswer;
-	}
-
-	public void setValueAnswer(Integer valueAnswer) {
-		this.valueAnswer = valueAnswer;
-	}
-
-
-
 }
