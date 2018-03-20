@@ -12,10 +12,8 @@ branches:
 
 before_script:
   - cd frontend
-  - npm install -g @angular/cli
   - npm install
 
 script:
-  - cd frontend
   - ng build --prod --aot
   - ng test
