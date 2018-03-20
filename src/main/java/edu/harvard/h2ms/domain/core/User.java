@@ -104,14 +104,10 @@ public class User {
 		this.roles = roles;
 	}
 	
-	
-	
+	@Override
 	public String toString() {
-		return ""+this.email;
+		return "User [id=" + id + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName
+				+ ", email=" + email + ", notificationFrequency=" + notificationFrequency + "]";
 	}
-
-	
-
-	
 
 }
