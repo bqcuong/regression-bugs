@@ -27,13 +27,7 @@ public class ManagementDashboardServiceImpl implements ManagementDashboardServic
     private LocationRepository locationRepository;
     private ReaderRepository readerRepository;
     private WristBandRepository wristBandRepository;
-    private MethodRepository methodRepository;
     private UserRepository userRepository;
-
-    @Autowired
-    public void setMethodRepository(MethodRepository methodRepository) {
-        this.methodRepository = methodRepository;
-    }
 
     @Autowired
     public void setEventRepository(EventRepository EventRepository) {
@@ -60,17 +54,6 @@ public class ManagementDashboardServiceImpl implements ManagementDashboardServic
     @Transactional(readOnly=true)
     public Iterable<Event> findAllEvents() {
         return eventRepository.findAll();
-    }
-
-    // Finds an Event by its ID
-    @Transactional(readOnly=true)
-    public Event findEventById(Long id) {
-        return eventRepository.findOne(id);
-    }
-
-    // Persists a new Event
-    public Event saveEvent(Event event) {
-        return eventRepository.save(event);
     }
 
     /**

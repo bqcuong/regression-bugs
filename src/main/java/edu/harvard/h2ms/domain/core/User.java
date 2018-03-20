@@ -69,11 +69,12 @@ public class User {
 		this.notificationFrequency = notificationFrequency;
 	}
 	
-	//TODO: this is a stub for user implementation (created for event entry)
+	@Override
 	public String toString() {
-		return "";
+		return "User [id=" + id + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName=" + lastName
+				+ ", email=" + email + ", notificationFrequency=" + notificationFrequency + "]";
 	}
 	
-	
+
 
 }
