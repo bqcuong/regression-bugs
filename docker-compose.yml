@@ -25,7 +25,7 @@ services:
       - "8080:8080"
     environment:
       - POSTGRES_HOSTNAME=db
-      - SPRING_PROFILES_ACTIVE=postgresql
+      - SPRING_PROFILES_ACTIVE=postgresql,production
     depends_on:
       - wait-for-db
 

@@ -10,16 +10,12 @@ import org.springframework.data.rest.core.event.ValidatingRepositoryEventListene
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 
 import edu.harvard.h2ms.validator.EventValidator;
-import springfox.documentation.spring.data.rest.configuration.SpringDataRestConfiguration;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
  * H2MS Rest Application
  * @version 1.0
  */
 @SpringBootApplication
-@EnableSwagger2
-@Import(SpringDataRestConfiguration.class)
 public class H2MSRestAppInitializer {
 
 	private static final Logger log = LoggerFactory.getLogger(H2MSRestAppInitializer.class);
