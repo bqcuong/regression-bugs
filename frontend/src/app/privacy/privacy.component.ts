@@ -5,6 +5,10 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './privacy.component.html',
   styleUrls: ['./privacy.component.css']
 })
+
+/**
+ * A component for the H2MS Privacy Policy.
+ */
 export class PrivacyComponent implements OnInit {
   constructor() { }
   ngOnInit() { }
