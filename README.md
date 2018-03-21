@@ -17,7 +17,7 @@ java -jar target/h2ms-0.0.1-SNAPSHOT.jar
 
 And visit http://localhost:8080/ in your browser.
 
-To see an example End Point visit http://localhost:8080/events/create in your browser.
+To see an example End Point visit http://localhost:8080/managementDashboard/eventexample in your browser.
 
 You can also build and run a docker container, see below.
 
@@ -56,4 +56,9 @@ docker-compose up
 ``Set-ExecutionPolicy -Scope CurrentUser Unrestricted``
 1. Then
 ``./buildrun.ps1``
+
+
+## Credits
+
+Security Implementation based on Giau Ngo's tutorial: https://hellokoding.com/registration-and-login-example-with-spring-security-spring-boot-spring-data-jpa-hsql-jsp/
 
