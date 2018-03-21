@@ -1,4 +1,5 @@
-sudo: false
+env:
+  - SPRING_ACTIVE_PROFILES=postgresql
 language: java
 services:
   - postgresql
