@@ -10,7 +10,6 @@ matrix:
       addons:
         postgresql: "9.4"
       before_script:
-        - pwd
         - createdb H2MSDatabase
 
     - language: node_js
@@ -21,7 +20,6 @@ matrix:
       node_js:
       - "node"
       before_script:
-        - pwd
         - cd frontend
         - npm install
       script:
