@@ -38,10 +38,10 @@ public class EventServiceImpl implements EventService {
     public Map<String, Long> findEventCountByTimeframe(String timeframe) {
 
         List<Event> events = Lists.newArrayList(eventRepository.findAll());
-        log.info("No. of events found: ", events.size());
+        log.info("No. of events found: {}", events.size());
 
         List<String> parsedTimestamps = H2msRestUtils.extractParsedTimestamps(events, timeframe);
-        log.info("Parsed ", parsedTimestamps.size(), " timestamps by ", timeframe);
+        log.info("Parsed {} timestamps by {}", parsedTimestamps.size(), timeframe);
 
         return H2msRestUtils.frequencyCounter(parsedTimestamps);
     }
