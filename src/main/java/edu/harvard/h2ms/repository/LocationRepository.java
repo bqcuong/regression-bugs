@@ -1,17 +1,14 @@
 package edu.harvard.h2ms.repository;
 
-import java.util.List;
-
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-
 import edu.harvard.h2ms.domain.core.Location;
 
-
+/**
+ * Spring JPA is equipped with a built in query creation mechanism.
+ * For a full listing of H2MS available end points please visit:
+ * http://localhost:XXXX/swagger-ui.html
+ */
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
 public interface LocationRepository extends PagingAndSortingRepository<Location, Long> {
-	List<Location> findByHospitalName(@Param("hospitalName") String hospitalName);
-	List<Location> findByWardName(@Param("hardName") String wardName);
 }
-
