@@ -22,7 +22,7 @@ public class H2msRestUtils {
      * @return
      */
     public static List<String> extractParsedTimestamps(List<Event> events, String timeframe){
-        if(events.size() ==  0) {
+        if(events.isEmpty()) {
             log.warn("There are 0 events in the H2MS system.");
             return new ArrayList<>();
         }
@@ -80,13 +80,19 @@ public class H2msRestUtils {
     }
 
     public static String formatWeek(Integer week, Integer year){
-        // Checks the digits in the ones places
-        char digit = week.toString().charAt(1);
-        if(digit == 1){
+
+        char digit;
+        if(week.toString().length() == 2){
+            digit = week.toString().charAt(1);
+        } else {
+            digit = week.toString().charAt(0);
+        }
+
+        if(digit == '1'){
             return String.valueOf(week) + "st (" + year + ")";
-        } else if (digit == 2) {
+        } else if (digit == '2') {
             return String.valueOf(week) + "nd (" + year + ")";
-        } else if (digit == 3) {
+        } else if (digit == '3') {
             return String.valueOf(week) + "rd (" + year + ")";
         } else {
             return String.valueOf(week) + "th (" + year + ")";
