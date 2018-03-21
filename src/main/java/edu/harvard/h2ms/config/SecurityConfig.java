@@ -1,6 +1,7 @@
 package edu.harvard.h2ms.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	
+	private static String REALM="MY_TEST_REALM";
+			
+
     private static final String[] AUTH_WHITELIST = {
             // Front page
             "/",
@@ -23,11 +27,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
             // swagger ui
             "/swagger-resources/**",
             "/swagger-ui.html",
+            "/registration",
             "/v2/api-docs",
-            "/events",
-            "/users",
             "/webjars/**"
     };
+ 
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -38,6 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         http.authorizeRequests()
             .antMatchers(AUTH_WHITELIST).permitAll()
             .anyRequest().authenticated()
+            .and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())
             .and()
         .formLogin()
             .loginPage("/login")
@@ -45,6 +50,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
             .and()
         .logout()
             .permitAll();
+    }
+    
+    @Bean CustomBasicAuthenticationEntryPoint getBasicAuthEntryPoint() {
+    	return new CustomBasicAuthenticationEntryPoint();
     }
 
 
