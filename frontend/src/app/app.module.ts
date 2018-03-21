@@ -7,7 +7,7 @@ import { LoginComponent } from './login/login.component';
 import { AppRoutingModule } from './app-routing.module';
 import {
     MatButtonModule,
-    MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatFormFieldModule,
+    MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatFormFieldModule, MatIconModule,
     MatInputModule
 } from "@angular/material";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -29,7 +29,8 @@ import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
       MatCheckboxModule,
       MatDividerModule,
       MatButtonModule,
-      MatDialogModule
+      MatDialogModule,
+      MatIconModule
   ],
   providers: [],
   bootstrap: [AppComponent]
