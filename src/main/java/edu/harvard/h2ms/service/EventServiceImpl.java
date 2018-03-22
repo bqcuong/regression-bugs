@@ -1,19 +1,23 @@
 package edu.harvard.h2ms.service;
 
-/*import com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.repository.EventRepository;
+import edu.harvard.h2ms.service.utils.H2msRestUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import java.util.*;
 
 @Service("eventService")
 @Repository
 @Transactional
 public class EventServiceImpl implements EventService {
+
+    final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
 
     private EventRepository eventRepository;
 
@@ -22,23 +26,24 @@ public class EventServiceImpl implements EventService {
         this.eventRepository = eventRepository;
     }
 
-    // Saves a new event
-    public Event save(Event event) {
-        return eventRepository.save(event);
-    }
-
-    // Find all events
+    /**
+     * Retrieves all events from the H2MS system, extracts the timestamps and parses them,
+     * returns count per distinctly parsed timestamp
+     * Ex. If system has 1 event with timestamp "2018-03-21T17:58:05.742+0000",
+     *     results returned is {"March (2018)":1}
+     * @param timeframe - week, month, year, quarter
+     * @return
+     */
     @Transactional(readOnly=true)
-    public List<Event> findAll() {
-        return Lists.newArrayList(eventRepository.findAll());
-    }
+    public Map<String, Long> findEventCountByTimeframe(String timeframe) {
 
-    // Find an event by its ID
-    @Transactional(readOnly=true)
-    public Event findById(Long id) {
-        return eventRepository.findOne(id);
-    }
+        List<Event> events = Lists.newArrayList(eventRepository.findAll());
+        log.info("No. of events found: {}", events.size());
 
+        List<String> parsedTimestamps = H2msRestUtils.extractParsedTimestamps(events, timeframe);
+        log.info("Parsed {} timestamps by {}", parsedTimestamps.size(), timeframe);
+
+        return H2msRestUtils.frequencyCounter(parsedTimestamps);
+    }
 
 }
-*/
