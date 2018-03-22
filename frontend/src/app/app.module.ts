@@ -11,13 +11,15 @@ import {
     MatInputModule
 } from "@angular/material";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import { PrivacyComponent } from './privacy/privacy.component';
 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    PrivacyComponent
   ],
   imports: [
     BrowserModule,

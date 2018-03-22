@@ -11,4 +11,6 @@ import edu.harvard.h2ms.domain.core.Location;
  */
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
 public interface LocationRepository extends PagingAndSortingRepository<Location, Long> {
+
+    Location findByName(String name);
 }
