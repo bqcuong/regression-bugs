@@ -48,7 +48,7 @@ public class H2msRestUtils {
         return parsedTimestamps.stream().collect(Collectors.groupingBy(x -> x, Collectors.counting()));
     }
 
-    private static String formatMonth(Integer month, Integer year){
+    public static String formatMonth(Integer month, Integer year){
         if(month.equals(0)){
             return "January " + "(" + year + ")";
         } else if(month.equals(1)){
@@ -81,13 +81,16 @@ public class H2msRestUtils {
 
     public static String formatWeek(Integer week, Integer year){
 
+        // Special cases (ie. 11, 12, 13 are postfixed with 'th')
+        if(week == 11 || week == 12 || week == 13)
+            return String.valueOf(week) + "th (" + year + ")";
+
         char digit;
         if(week.toString().length() == 2){
             digit = week.toString().charAt(1);
         } else {
             digit = week.toString().charAt(0);
         }
-
         if(digit == '1'){
             return String.valueOf(week) + "st (" + year + ")";
         } else if (digit == '2') {
