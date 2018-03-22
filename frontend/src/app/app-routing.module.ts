@@ -8,7 +8,7 @@ const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: '', redirectTo: 'login', pathMatch: 'full'},
     // TODO: Route about to the AboutComponent when it is created.
-    { path: 'about', redirectTo: 'login', pathMatch: 'full'},
+    { path: 'dashboard', redirectTo: 'login', pathMatch: 'full'},
     { path: 'privacy', component: PrivacyComponent },
 ];
 
