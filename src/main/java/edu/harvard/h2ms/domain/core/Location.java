@@ -112,8 +112,7 @@ public class Location {
 	@Override
 	public String toString() {
 		return "Location - Id: " + id + ", Name: " + name + ", Type: " + type  + ", Address: " + address
-				+ ", Country: " + country  + ", Zip: " + zip  + ", ParentLocation: " + parent.toString()
-				+ ", Child Locations: " + children.toString();
+				+ ", Country: " + country  + ", Zip: " + zip;
 	}
 
 }
