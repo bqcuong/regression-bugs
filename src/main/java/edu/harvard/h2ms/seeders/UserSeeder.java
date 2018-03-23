@@ -15,9 +15,9 @@ import edu.harvard.h2ms.repository.UserRepository;
 @Component
 public class UserSeeder {
 	private UserRepository userRepository;
-	
+
 	@Autowired
-    public UserSeeder( UserRepository userRepository ) 
+    public UserSeeder( UserRepository userRepository )
     {
         this.userRepository   = userRepository;
     }
@@ -26,13 +26,12 @@ public class UserSeeder {
     public void seed(ContextRefreshedEvent event) {
         seedUserTable();
     }
-    
+
 	private void seedUserTable() {
 
 		if (userRepository.count() == 0) {
 			List<List<String>> records = asList(
-					asList("jane", "doe", "jane.doe@email.com"),
-					asList("john", "doe", "john.doe@email.com")
+					asList("Default", "User", "admin@h2ms.org")
 					);
 
 			for (List<String> record : records) {
@@ -44,6 +43,7 @@ public class UserSeeder {
 				user.setFirstName(firstName);
 				user.setLastName(lastName);
 				user.setEmail(email);
+				user.setPassword("password");
 				userRepository.save(user);
 
 			}
