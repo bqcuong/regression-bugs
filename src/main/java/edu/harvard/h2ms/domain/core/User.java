@@ -26,7 +26,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Table(name = "users")
 public class User implements UserDetails {
 
-    @Transient @Autowired public PasswordEncoder passwordEncoder;
+	@JsonIgnore
+    @Transient
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /* Properties */
     @Id
@@ -34,19 +37,28 @@ public class User implements UserDetails {
     @Column(name = "ID")
     private Long id;
 
-    @NotNull @Column private String firstName;
+    @NotNull
+    @Column
+    private String firstName;
 
-    @Column private String middleName;
+    @Column
+    private String middleName;
 
-    @NotNull @Column private String lastName;
+    @NotNull
+    @Column
+    private String lastName;
 
     @NotNull
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column private String notificationFrequency;
+    @Column
+    private String notificationFrequency;
 
-    @NotNull @Column @JsonIgnore private String password;
+    @NotNull
+    @Column
+    @JsonIgnore
+    private String password;
 
     @ManyToMany
     @JoinTable(
@@ -56,8 +68,7 @@ public class User implements UserDetails {
     )
     private Set<Role> roles;
 
-    public User(
-            String firstName, String middleName, String lastName, String email, String password) {
+    public User(String firstName, String middleName, String lastName, String email, String password) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -131,7 +142,8 @@ public class User implements UserDetails {
     public void setPassword(String password) {
         // This would be better as a Bean but I couldn't figure out why @Autowired
         // wasn't doing the right thing in an entity.
-        if (password != null) this.password = new BCryptPasswordEncoder().encode(password);
+        if (password != null)
+        	this.password = new BCryptPasswordEncoder().encode(password);
     }
 
     public Set<Role> getRoles() {
@@ -142,6 +154,7 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
+    @JsonIgnore
     @Override
     public String getUsername() {
         return email;

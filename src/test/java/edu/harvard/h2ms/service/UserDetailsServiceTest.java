@@ -27,7 +27,7 @@ public class UserDetailsServiceTest {
 	static class UserDetailsServiceContextConfiguration {
 		@Bean
 		public UserDetailsService userDetailsService() {
-			return new UserService();
+			return new UserDetailsServiceImpl();
 		}
 	}
 	
