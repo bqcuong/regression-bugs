@@ -1,4 +1,4 @@
-package edu.harvard.h2ms.web.init;
+package edu.harvard.h2ms.web.init.services;
 
 import edu.harvard.h2ms.domain.core.Location;
 import edu.harvard.h2ms.repository.LocationRepository;
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Java6Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class LocationRestTest {
+public class LocationServiceTests {
 
     @Autowired
     private TestEntityManager entityManager;

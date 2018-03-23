@@ -1,22 +1,19 @@
-package edu.harvard.h2ms.web.init;
+package edu.harvard.h2ms.web.init.common;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
 import edu.harvard.h2ms.service.utils.H2msRestUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.util.Assert;
-
-import javax.swing.text.html.Option;
 import java.util.*;
 
 /**
  * Unit Tests for H2MS Rest Utility Class
  */
 @RunWith(DataProviderRunner.class)
-public class H2msRestUtilsTest {
+public class H2msRestUtilsTests {
 
     /**
      * Tests Week Formatting from Utils with valid values
@@ -156,7 +153,7 @@ public class H2msRestUtilsTest {
     public void test_frequency_counter(){
         // Three occurrences of March
         List<String> parsedTimestamps = Arrays.asList("January (2020)", "March (2018)", "February (2019)",
-                                                          "April (2020)","March (2018)", "April (2020)", "March (2018)");
+                "April (2020)","March (2018)", "April (2020)", "March (2018)");
         Map<String, Long> counts = H2msRestUtils.frequencyCounter(parsedTimestamps);
         Assert.isTrue(counts.size() == 4);
         Assert.isTrue(counts.get("March (2018)") == 3);
