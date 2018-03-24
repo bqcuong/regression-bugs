@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent} from './login/login.component';
 import {PrivacyComponent} from './privacy/privacy.component';
+import {EventComponent} from './event/event.component';
 import { NavItem } from './nav-item';
 
 /**
@@ -13,6 +14,7 @@ const routes: Routes = [
     // TODO: Route about to the AboutComponent when it is created.
     { path: 'dashboard', redirectTo: 'login', pathMatch: 'full'},
     { path: 'privacy', component: PrivacyComponent },
+    { path: 'event', component: EventComponent }
 ];
 
 /**
