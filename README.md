@@ -57,6 +57,7 @@ docker-compose up
 1. Then
 ``./buildrun.ps1``
 
+(if you are having issues with Docker not starting up, try uninstalling and installing the older version: https://download.docker.com/win/stable/14687/Docker%20for%20Windows%20Installer.exe  ref: https://github.com/docker/for-win/issues/1514)
 
 ## Credits
 
