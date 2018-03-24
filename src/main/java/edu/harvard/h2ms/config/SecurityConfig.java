@@ -1,70 +1,57 @@
 package edu.harvard.h2ms.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
-/**
- *
- * Reference: https://spring.io/guides/gs/securing-web/
- *
- */
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter{
-	
-	private static String REALM="MY_TEST_REALM";
-			
+@EnableResourceServer
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String[] AUTH_WHITELIST = {
-            // Front page
-            "/",
+  public SecurityConfig() {
+    super(true);
+  }
 
-            // swagger ui
-            "/swagger-resources/**",
-            "/swagger-ui.html",
-            "/registration",
-            "/v2/api-docs",
-            "/webjars/**"
-    };
- 
+  private static final String[] AUTH_WHITELIST = {
+    "/",
+    "/login",
+    "/webjars/**",
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-    	
-    	// disable csrf to enable non-browser API call
-    	http.csrf().disable();
-    	
-        http.authorizeRequests()
-            .antMatchers(AUTH_WHITELIST).permitAll()
-            .anyRequest().authenticated()
-            .and().httpBasic().realmName(REALM).authenticationEntryPoint(getBasicAuthEntryPoint())
-            .and()
-        .formLogin()
-            .loginPage("/login")
-            .permitAll()
-            .and()
-        .logout()
-            .permitAll();
-    }
-    
-    @Bean CustomBasicAuthenticationEntryPoint getBasicAuthEntryPoint() {
-    	return new CustomBasicAuthenticationEntryPoint();
-    }
+    // swagger ui
+    "/swagger-resources",
+    "/swagger-resources/**",
+    "/swagger-ui.html",
+    "/v2/api-docs"
+  };
 
+  @Override
+  public void configure(WebSecurity web) throws Exception {
+    web.ignoring().antMatchers(AUTH_WHITELIST);
+  }
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .inMemoryAuthentication()
-                .withUser("user").password("password").roles("USER");
-        auth
-            .inMemoryAuthentication()
-                .withUser("admin").password("password").roles("ADMIN");
-    }
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests().anyRequest().authenticated();
+  }
 
+  @Bean
+  @Override
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
+  }
+
+  @Bean
+  public PasswordEncoder getEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

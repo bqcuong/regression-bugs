@@ -6,15 +6,11 @@ import edu.harvard.h2ms.repository.EventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import edu.harvard.h2ms.domain.core.User;
@@ -22,19 +18,12 @@ import edu.harvard.h2ms.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import static java.lang.Boolean.TRUE;
 
-/**
- * Contains the business logic and call methods in the repository layer
- * https://www.codebyamir.com/blog/create-rest-api-with-spring-boot
- */
 @Service("userService")
 @Repository
 @Transactional
 public class UserServiceImpl implements UserService {
 
 	final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
-
-	@Autowired
-	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 	private UserRepository userRepository;
 
@@ -48,33 +37,6 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	public void setEventRepository(EventRepository eventRepository) {
 		this.eventRepository = eventRepository;
-	}
-
-	public List<User> getAllUsers() {
-		List<User> users = new ArrayList<User>();
-		userRepository.findAll().forEach(users::add);
-		return users;
-	}
-	
-	public User getUser(Long id) {
-		return userRepository.findOne(id);
-	}
-	
-	public User addUser(User user) {
-		userRepository.save(user);
-		return user;
-	}
-	
-	public void deleteUser(Long id) {
-		userRepository.delete(id);
-	}
-	
-
-	@Override
-	public void save(User user) {
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-//		user.setRoles(new HashSet<>(roleRepository.findAll()));
-		userRepository.save(user);
 	}
 
 	@Override
