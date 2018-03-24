@@ -44,7 +44,10 @@ public class UserServiceImpl implements UserService {
 	public Map<String, Double> findAvgHandWashCompliance() {
 
 		// Fetches all users from H2MS database
-		List<User> users = Lists.newArrayList(userRepository.findAll());
+		Iterable<User> results = userRepository.findAll();
+		if(results == null)
+			return null;
+		List<User> users = Lists.newArrayList(results);
 		log.info("No. of users found: {}", users.size());
 
 		// Determines all the distinct types of users
