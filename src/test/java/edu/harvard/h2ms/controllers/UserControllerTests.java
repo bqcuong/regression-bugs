@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -78,6 +79,7 @@ public class UserControllerTests {
      * is used to retrieve the average of hand washing compliance per user type.
      */
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     public void test_Success_UserController_findAvgWashCompliance() throws Exception {
 
         final String accessToken = obtainAccessToken("jqadams@h2ms.org", "password");
