@@ -8,7 +8,7 @@ import * as gloves from './gloves-config';
  */
 @Injectable()
 export class ConfigService {
-  useH2MSConfig = false;
+  useH2MSConfig = true;
 
   constructor() { }
   getConfig(): Config {
