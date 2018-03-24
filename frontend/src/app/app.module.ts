@@ -7,11 +7,15 @@ import { LoginComponent } from './login/login.component';
 import { AppRoutingModule } from './app-routing.module';
 import {
     MatButtonModule,
-    MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatFormFieldModule, MatIconModule,
-    MatInputModule
-} from "@angular/material";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+    MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatFormFieldModule,
+    MatIconModule,
+    MatInputModule, MatListModule, MatSidenavModule, MatToolbarModule
+} from '@angular/material';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { PrivacyComponent } from './privacy/privacy.component';
+import {MediaMatcher} from '@angular/cdk/layout';
+import {ConfigService} from './config.service';
+import { SidenavComponent } from './sidenav/sidenav.component';
 
 
 
@@ -19,7 +23,8 @@ import { PrivacyComponent } from './privacy/privacy.component';
   declarations: [
     AppComponent,
     LoginComponent,
-    PrivacyComponent
+    PrivacyComponent,
+    SidenavComponent
   ],
   imports: [
     BrowserModule,
@@ -32,9 +37,12 @@ import { PrivacyComponent } from './privacy/privacy.component';
       MatDividerModule,
       MatButtonModule,
       MatDialogModule,
-      MatIconModule
+      MatIconModule,
+      MatToolbarModule,
+      MatSidenavModule,
+      MatListModule
   ],
-  providers: [],
+  providers: [ MediaMatcher, ConfigService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
