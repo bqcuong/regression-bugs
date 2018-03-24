@@ -37,11 +37,11 @@ export class AppComponent {
 
     }
 
-    private isSidebarOpen() {
+    isSidebarOpen() {
       return this.location.path() !== '/login' && !this.isMobile();
     }
 
-    private isCurrentPage(navItem) {
+    isCurrentPage(navItem) {
       if (navItem.link === this.location.path()) {
         return true;
       }
