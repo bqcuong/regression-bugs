@@ -1,2 +1,44 @@
+<div class="app-container" [class.app-is-mobile]="mobileQuery.matches">
+    <mat-toolbar color="primary" class="app-toolbar">
+        <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+        <a class="navbar-title" href="/"><h1 class="app-name">{{ title }}</h1></a>
+    </mat-toolbar>
 
-<router-outlet></router-outlet>
+    <mat-sidenav-container class="app-sidenav-container"
+                           [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
+        <mat-sidenav #snav [mode]="mobileQuery.matches ? 'over' : 'side'"
+                     [opened]="isSidebarOpen()"
+                     [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
+
+            <!--Nested nav based on: https://stackoverflow.com/questions/44374200/angular-2-material-nested-md-list-item-->
+            <mat-nav-list>
+                <div  *ngFor="let navItem of navItems">
+
+                    <a *ngIf="!navItem.subItems" href="{{ navItem.link }}"><mat-list-item  class="nav-item">{{navItem.display}}</mat-list-item></a>
+                    <mat-list-item *ngIf="navItem.subItems"
+                                   class="nav-item"
+                                   (click)="navItem.showSubItems = !navItem.showSubItems"
+                                   [class.selected-nav-item]="isCurrentPage(navItem)">
+                        {{navItem.display}}
+                        <i *ngIf="!navItem.showSubItems" class="material-icons text-right">keyboard_arrow_down</i>
+                        <i *ngIf="navItem.showSubItems" class="material-icons text-right">keyboard_arrow_up</i>
+                    </mat-list-item>
+
+                    <!-- Nested navigation elements -->
+                    <mat-nav-list *ngIf="navItem.subItems && navItem.showSubItems" style="margin-left:30px;">
+                        <div *ngFor="let subItem of navItem.subItems">
+                            <a href="{{ subItem.link }}">
+                                <mat-list-item [class.selected-nav-item]="isCurrentPage(subItem)">
+                                    {{ subItem.display }}
+                                </mat-list-item>
+                            </a>
+                        </div>
+                    </mat-nav-list>
+                </div>
+            </mat-nav-list>
+        </mat-sidenav>
+
+        <router-outlet></router-outlet>
+    </mat-sidenav-container>
+</div>
+
