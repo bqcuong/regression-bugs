@@ -24,7 +24,7 @@ const routes: Routes = [
 export const NAV_ITEMS: NavItem[] = [
     new NavItem('Dashboard', '/dashboard'),
     // new NavItem('Reports', '/reports'),
-    // new NavItem('Observe', '/observe'),
+    new NavItem('Observe', '/event'),
     NavItem.createNavItemWithSubItems('Settings', [
         // new NavItem('Account', '/account'),
         // new NavItem('Notifications', '/notifications'),
