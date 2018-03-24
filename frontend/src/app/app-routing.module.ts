@@ -1,7 +1,8 @@
-import { NgModule }             from '@angular/core';
+import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoginComponent} from "./login/login.component";
-import {PrivacyComponent} from "./privacy/privacy.component";
+import { LoginComponent} from './login/login.component';
+import {PrivacyComponent} from './privacy/privacy.component';
+import { NavItem } from './nav-item';
 
 /**
  * The actual available routes. Which links are routed to which components.
@@ -18,22 +19,22 @@ const routes: Routes = [
  * Displayed in the side nav bar. Leaving future navItems commented out.
  * TODO: Uncomment relevant navItem when a new page is created.
  */
-export const NAV_ITEMS = [
-    {display: 'Dashboard', link: '/dashboard'},
-    // {display: 'Reports', link: '/reports'},
-    // {display: 'Observe', link: '/observe'},
-    {display: 'Settings', showSubItems: false, subItems: [
-        // {display: 'Account', link: '/account'},
-        // {display: 'Notifications', link: '/notifications'},
-        // {display: 'Sensors', link: '/sensors'},
-        // {display: 'RFIDs', link: '/rfids'},
-        // {display: 'People', link: '/people'},
-        // {display: 'Locations', link: '/locations'},
-        {display: 'Privacy', link: '/privacy'},
-        // {display: 'Export All Observations', link: '/export'},
-    ]},
-    // {display: 'Help', link: '/help'},
-    // {display: 'About', link: '/about'}
+export const NAV_ITEMS: NavItem[] = [
+    new NavItem('Dashboard', '/dashboard'),
+    // new NavItem('Reports', '/reports'),
+    // new NavItem('Observe', '/observe'),
+    NavItem.createNavItemWithSubItems('Settings', [
+        // new NavItem('Account', '/account'),
+        // new NavItem('Notifications', '/notifications'),
+        // new NavItem('Sensors', '/sensors'),
+        // new NavItem('RFIDs', '/rfids'),
+        // new NavItem('People', '/people'),
+        // new NavItem('Locations', '/locations'),
+        new NavItem('Privacy', '/privacy'),
+        // new NavItem('Export All Observations', '/export'),
+    ]),
+    // new NavItem('Help', '/help'),
+    // new NavItem('About', '/about'}
 ];
 
 @NgModule({

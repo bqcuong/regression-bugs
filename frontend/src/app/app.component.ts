@@ -1,9 +1,9 @@
 import {MediaMatcher} from '@angular/cdk/layout';
 import { ChangeDetectorRef, Component } from '@angular/core';
-import {ConfigService} from "./config.service";
-import {Router} from "@angular/router";
+import {ConfigService} from './config.service';
 import { Location } from '@angular/common';
-import { NAV_ITEMS } from "./app-routing.module"
+import { NAV_ITEMS } from './app-routing.module';
+import {NavItem} from "./nav-item";
 
 @Component({
   selector: 'app-root',
@@ -18,7 +18,7 @@ import { NAV_ITEMS } from "./app-routing.module"
 export class AppComponent {
     mobileQuery: MediaQueryList;
     title: String;
-    navItems;
+    navItems: NavItem[];
 
     private _mobileQueryListener: () => void;
 
@@ -32,32 +32,16 @@ export class AppComponent {
         this.title = configService.getConfig().navbarTitle;
         this.navItems = NAV_ITEMS;
         for (const navItem of this.navItems) {
-          navItem.showSubItems = this.isCurrentPage(navItem);
+          navItem.showSubItems = navItem.isCurrentlySelected(location.path());
         }
 
     }
 
-    isSidebarOpen() {
-      return this.location.path() !== '/login' && !this.isMobile();
+    isSidebarOpenOnPageLoad() {
+      return this.location.path() !== '/login' && !this.isMobileResolution();
     }
 
-    isCurrentPage(navItem) {
-      if (navItem.link === this.location.path()) {
-        return true;
-      }
-
-      if (navItem.subItems) {
-        for (const subItem of navItem.subItems) {
-            if (this.isCurrentPage(subItem)) {
-              return true;
-            }
-        }
-      }
-
-      return false;
-    }
-
-    private isMobile() {
+    private isMobileResolution() {
         return this.mobileQuery.matches;
     }
 
