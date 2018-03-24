@@ -49,8 +49,8 @@ public class LocationControllerTests {
     @Autowired
     private FilterChainProxy springSecurityFilterChain;
 
-    @MockBean
-    private UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     private WebApplicationContext context;
@@ -68,7 +68,7 @@ public class LocationControllerTests {
                 .addFilter(springSecurityFilterChain)
                 .build();
         User user = new User("John", "Quincy", "Adams", EMAIL, PASSWORD);
-        Mockito.when(userRepository.findOneByEmail(EMAIL)).thenReturn(user);
+        userRepository.save(user);
     }
 
 
