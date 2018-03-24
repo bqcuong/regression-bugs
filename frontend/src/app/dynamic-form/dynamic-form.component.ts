@@ -15,10 +15,10 @@ export class DynamicFormComponent implements OnInit {
     form: FormGroup;
     payLoad = '';
 
-    constructor(private qcs: QuestionControlService) {  }
+    constructor(private questionControlService: QuestionControlService) {  }
 
     ngOnInit() {
-        this.form = this.qcs.toFormGroup(this.questions);
+        this.form = this.questionControlService.toFormGroup(this.questions);
     }
 
     onSubmit() {
