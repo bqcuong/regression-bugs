@@ -77,8 +77,5 @@ public class EventValidator implements Validator {
 				errors.reject("Event.RequiredAnswer");
 			}
 		}
-	
-
 	}
-
 }
