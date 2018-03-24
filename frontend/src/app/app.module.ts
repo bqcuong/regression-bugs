@@ -10,11 +10,12 @@ import {
     MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatFormFieldModule,
     MatIconModule,
     MatInputModule, MatListModule, MatSidenavModule, MatToolbarModule
-} from "@angular/material";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+} from '@angular/material';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { PrivacyComponent } from './privacy/privacy.component';
-import {MediaMatcher} from "@angular/cdk/layout";
-import {ConfigService} from "./config.service";
+import {MediaMatcher} from '@angular/cdk/layout';
+import {ConfigService} from './config.service';
+import { SidenavComponent } from './sidenav/sidenav.component';
 
 
 
@@ -22,7 +23,8 @@ import {ConfigService} from "./config.service";
   declarations: [
     AppComponent,
     LoginComponent,
-    PrivacyComponent
+    PrivacyComponent,
+    SidenavComponent
   ],
   imports: [
     BrowserModule,
