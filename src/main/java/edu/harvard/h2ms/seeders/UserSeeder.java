@@ -31,8 +31,11 @@ public class UserSeeder {
 
 		if (userRepository.count() == 0) {
 			List<List<String>> records = asList(
-					asList("jane", "doe", "jane.doe@email.com"),
-					asList("john", "doe", "john.doe@email.com")
+					asList("jane", "smith", "jane.smith@email.com", "Dietician"),
+					asList("john", "doe", "john.doe@email.com", "Surgical Tech"),
+					asList("luke", "skywalker", "luke.walker@email.com", "Other"),
+					asList("jon", "snow", "jon.snow@email.com", "Other"),
+					asList("arya", "stark", "arya.stark@email.com", "Surgical Tech")
 					);
 
 			for (List<String> record : records) {

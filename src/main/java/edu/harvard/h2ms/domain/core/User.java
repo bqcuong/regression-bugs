@@ -20,12 +20,13 @@ public class User {
 	
 	/* Properties */
 	private Long id;
+	private String type;
+	private boolean washed;
 	private String firstName;
 	private String middleName;
 	private String lastName;
 	private String email;
 	private String notificationFrequency;
-
 	private String password;
 	private String passwordConfirm;
 	private Set<Role> roles;
@@ -77,6 +78,24 @@ public class User {
 	}
 	public void setNotificationFrequency(String notificationFrequency) {
 		this.notificationFrequency = notificationFrequency;
+	}
+
+	@Column(name = "TYPE")
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Column(name = "WASHED")
+	public boolean isWashed() {
+		return washed;
+	}
+
+	public void setWashed(boolean washed) {
+		this.washed = washed;
 	}
 
 	public String getPassword() {
