@@ -82,7 +82,7 @@ public class UserServiceImpl implements UserService {
 
 			// Retrieves the count of events where user type took opportunity to wash hands
 			eventStream = events.stream().filter(event -> event.getSubject().getType().equals(type) &&
-										         event.getSubject().isWashed()==TRUE);
+										         event.getWashed()==TRUE);
 			if(eventStream == null) {
 				log.warn("No users of any user type {} took the opportunity to wash their hands.", type);
 				continue;

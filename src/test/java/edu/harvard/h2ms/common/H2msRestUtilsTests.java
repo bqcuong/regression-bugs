@@ -1,4 +1,4 @@
-package edu.harvard.h2ms.web.init.common;
+package edu.harvard.h2ms.common;
 
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;

@@ -57,6 +57,10 @@ public class Event {
 	@NotNull
 	@Column
     private String location;
+
+	@NotNull
+	@Column
+	private Boolean washed;
 	
 	@Valid
 	@OneToMany(fetch = FetchType.EAGER,
@@ -121,13 +125,21 @@ public class Event {
 	public void setLocation(String location) {
 		this.location = location;
 	}
-	
-    @Override
+
+	public Boolean getWashed() {
+		return washed;
+	}
+
+	public void setWashed(Boolean washed) {
+		this.washed = washed;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Event [id=").append(id).append(", timestamp=").append(timestamp).append(", subject=")
 				.append(subject).append(", eventTemplate=").append(eventTemplate).append(", observer=").append(observer)
-				.append(", location=").append(location).append(", answers=").append(answers).append("]");
+				.append(", location=").append(location).append(", wash status").append(washed).append(", answers=").append(answers).append("]");
 		return builder.toString();
 	}
 }

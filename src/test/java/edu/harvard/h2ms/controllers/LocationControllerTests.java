@@ -1,4 +1,4 @@
-package edu.harvard.h2ms.web.init.controllers;
+package edu.harvard.h2ms.controllers;
 
 import edu.harvard.h2ms.H2MSRestAppInitializer;
 import org.apache.commons.logging.Log;
