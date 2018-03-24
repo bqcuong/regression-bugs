@@ -8,7 +8,7 @@ import edu.harvard.h2ms.domain.core.User;
 @RepositoryRestResource(collectionResourceRel = "users", path = "users")
 
 public interface UserRepository extends PagingAndSortingRepository<User, Long> {
-	
+	User findOneByEmail(String email);
 	User findByFirstName( String firstName);
 	User findByMiddleName( String middleName);
 	User findByLastName( String lastName);
