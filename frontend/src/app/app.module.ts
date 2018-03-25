@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
@@ -18,6 +19,7 @@ import { EventComponent } from './event/event.component';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {ConfigService} from './config.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
+import { ExportComponent } from './export/export.component';
 
 @NgModule({
   declarations: [
@@ -27,10 +29,12 @@ import { SidenavComponent } from './sidenav/sidenav.component';
     LoginComponent,
     PrivacyComponent,
     EventComponent,
-    SidenavComponent
+    SidenavComponent,
+    ExportComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     MatFormFieldModule,
     MatInputModule,
@@ -47,6 +51,6 @@ import { SidenavComponent } from './sidenav/sidenav.component';
     MatListModule
   ],
   providers: [ MediaMatcher, ConfigService ],
-  bootstrap: [AppComponent]
+  bootstrap: [ AppComponent ]
 })
 export class AppModule { }
