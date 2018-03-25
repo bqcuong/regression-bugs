@@ -6,7 +6,13 @@
     <mat-nav-list>
         <div  *ngFor="let navItem of navItems">
 
-            <a *ngIf="!navItem.subItems" href="{{ navItem.link }}"><mat-list-item  class="nav-item">{{navItem.display}}</mat-list-item></a>
+            <a *ngIf="!navItem.subItems" href="{{ navItem.link }}">
+                <mat-list-item  class="nav-item"
+                                [class.selected-nav-item]="navItem.isCurrentlySelected(location.path())">
+                    {{navItem.display}}
+                </mat-list-item>
+            </a>
+
             <mat-list-item *ngIf="navItem.subItems"
                            class="nav-item"
                            (click)="navItem.showSubItems = !navItem.showSubItems"
