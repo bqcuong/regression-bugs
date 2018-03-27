@@ -1,10 +1,11 @@
 package edu.harvard.h2ms.domain.core;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,11 +17,14 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -67,6 +71,20 @@ public class User implements UserDetails {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+    
+    @Column(name = "enabled")
+    private boolean enabled;
+    
+    @Column(name = "created_on")
+    private Date createdOn;
+    
+    @Column(name = "last_login")
+    private Date lastLogin;
+    
+    @Column(name = "reset_token")
+    private String resetToken;
+    
+    
 
     public User(String firstName, String middleName, String lastName, String email, String password) {
         this.firstName = firstName;
@@ -177,8 +195,38 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return true; //enabled;
     }
+    
+    public void setEnabled(boolean value) {
+    	this.enabled = value;
+    }
+    
+    public Date getLastLogin() {
+    	return lastLogin;
+    }
+    
+    public void setLastLogin(Date lastLogin) {
+    	this.lastLogin = lastLogin;
+    }
+    
+    public Date getCreatedOn() {
+    	return createdOn;
+    }
+    
+    public void setCreatedOn(Date createdOn) {
+    	this.createdOn = createdOn;
+    }
+    
+    public String getResetToken() {
+    	return resetToken;
+    }
+    
+    public void setResetToken(String resetToken) {
+    	this.resetToken = resetToken;
+    }
+    
+   
 
     @Override
     public String toString() {
