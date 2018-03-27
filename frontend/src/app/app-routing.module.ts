@@ -4,6 +4,7 @@ import { LoginComponent} from './login/login.component';
 import {PrivacyComponent} from './privacy/privacy.component';
 import {EventComponent} from './event/event.component';
 import { NavItem } from './nav-item';
+import {ExportComponent} from './export/export.component';
 
 /**
  * The actual available routes. Which links are routed to which components.
@@ -14,7 +15,8 @@ const routes: Routes = [
     // TODO: Route about to the AboutComponent when it is created.
     { path: 'dashboard', redirectTo: 'login', pathMatch: 'full'},
     { path: 'privacy', component: PrivacyComponent },
-    { path: 'event', component: EventComponent }
+    { path: 'event', component: EventComponent },
+    { path: 'export', component: ExportComponent}
 ];
 
 /**
@@ -33,7 +35,7 @@ export const NAV_ITEMS: NavItem[] = [
         // new NavItem('People', '/people'),
         // new NavItem('Locations', '/locations'),
         new NavItem('Privacy', '/privacy'),
-        // new NavItem('Export All Observations', '/export'),
+        new NavItem('Export All Observations', '/export'),
     ]),
     // new NavItem('Help', '/help'),
     // new NavItem('About', '/about'}
