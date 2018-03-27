@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Component
 @Service("emailService")
-@PropertySource("classpath:mailserver.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "classpath:mailserver.properties", ignoreResourceNotFound = true)
 public class EmailServiceImpl implements EmailService {
 	
 	final Logger log = LoggerFactory.getLogger(EmailServiceImpl.class);
