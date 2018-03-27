@@ -76,7 +76,7 @@ public class PasswordController {
 			message.setTo(user.getEmail());
 			
 			/** uncomment for quick test: **/
-			//message.setTo("my.email.address@gmail.com")
+			//message.setTo("my.email.address@gmail.com");
 			
 			message.setSubject("h2msreset token");
 			message.setText("password reset token: "+token);
