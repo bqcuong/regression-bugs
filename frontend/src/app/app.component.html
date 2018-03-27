@@ -1,2 +1,12 @@
+<div class="app-container" [class.app-is-mobile]="mobileQuery.matches">
+    <mat-toolbar color="primary" class="app-toolbar">
+        <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+        <a class="navbar-title" href="/"><h1 class="app-name">{{ title }}</h1></a>
+    </mat-toolbar>
 
-<router-outlet></router-outlet>
+    <mat-sidenav-container class="app-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
+        <app-sidenav #snav></app-sidenav>
+        <router-outlet></router-outlet>
+    </mat-sidenav-container>
+</div>
+
