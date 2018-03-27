@@ -14,8 +14,8 @@ import org.springframework.stereotype.Service;
 @Component
 @Service("emailService")
 @PropertySources({
-	PropertySource("classpath:mailserver.properties.template"),
-	PropertySource("classpath:mailserver.properties")
+	@PropertySource("classpath:mailserver.properties.template"),
+	@PropertySource("classpath:mailserver.properties")
 })
 public class EmailServiceImpl implements EmailService {
 	
