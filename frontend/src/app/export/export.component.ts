@@ -8,12 +8,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
   styleUrls: ['./export.component.css'],
   providers: [HttpClient]
 })
-export class ExportComponent implements OnInit {
+export class ExportComponent {
 
   constructor(private httpClient: HttpClient) { }
-
-  ngOnInit() {
-  }
 
   saveFile() {
     const headers = new HttpHeaders();
