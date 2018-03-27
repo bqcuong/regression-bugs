@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { saveAs } from 'file-saver/FileSaver';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
