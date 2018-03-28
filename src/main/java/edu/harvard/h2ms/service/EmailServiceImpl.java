@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 	@PropertySource(value = "classpath:mailserver.properties", ignoreResourceNotFound = true)
 	
 })
-
 public class EmailServiceImpl implements EmailService {
 	
 	final Logger log = LoggerFactory.getLogger(EmailServiceImpl.class);
