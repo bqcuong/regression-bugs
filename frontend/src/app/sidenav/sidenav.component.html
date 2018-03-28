@@ -33,5 +33,12 @@
                 </div>
             </mat-nav-list>
         </div>
+
+        <div>
+            <mat-list-item *ngIf="!isInProduction()" class="nav-item developer-nav-item"
+                           (click)="switchConfigFile()">
+                Toggle Frontend Config
+            </mat-list-item>
+        </div>
     </mat-nav-list>
 </mat-sidenav>
