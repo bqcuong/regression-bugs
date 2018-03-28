@@ -4,12 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.rest.core.event.ValidatingRepositoryEventListener;
-import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 
-import edu.harvard.h2ms.validator.EventValidator;
+import com.icegreen.greenmail.util.GreenMail;
+import com.icegreen.greenmail.util.ServerSetupTest;
 
 /**
  * H2MS Rest Application
@@ -19,8 +16,11 @@ import edu.harvard.h2ms.validator.EventValidator;
 public class H2MSRestAppInitializer {
 
 	private static final Logger log = LoggerFactory.getLogger(H2MSRestAppInitializer.class);
-
+	@SuppressWarnings("unused")
+	
 	public static void main(String[] args) {
+		GreenMail greenMail = new GreenMail(ServerSetupTest.SMTP);
+        greenMail.start();
 		SpringApplication.run(H2MSRestAppInitializer.class, args);
 	}
 }

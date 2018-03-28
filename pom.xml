@@ -100,6 +100,11 @@
  		   <artifactId>spring-boot-starter-mail</artifactId>
  		   <version>1.4.3.RELEASE</version>
 		</dependency>
+		<dependency>
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail</artifactId>
+            <version>1.5.5</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.security</groupId>
