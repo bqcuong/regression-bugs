@@ -1,6 +1,7 @@
 import {MediaMatcher} from '@angular/cdk/layout';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {ConfigService} from './config.service';
+import {Config} from './config';
 
 @Component({
   selector: 'app-root',
@@ -12,9 +13,9 @@ import {ConfigService} from './config.service';
  * Main component for the App. The Navbar is based on this example:
  * https://stackblitz.com/angular/ngjvmobekyl?file=app%2Fsidenav-responsive-example.css
  */
-export class AppComponent {
+export class AppComponent implements OnDestroy {
     mobileQuery: MediaQueryList;
-    title: String;
+    config: Config;
 
     private _mobileQueryListener: () => void;
 
@@ -24,7 +25,7 @@ export class AppComponent {
         this.mobileQuery = media.matchMedia('(max-width: 600px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addListener(this._mobileQueryListener);
-        this.title = configService.getConfig().navbarTitle;
+        this.config = configService.getConfig();
 
     }
 
