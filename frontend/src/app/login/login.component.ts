@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import {AuthService} from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -7,15 +8,24 @@ import {Component, OnInit} from '@angular/core';
 })
 export class LoginComponent implements OnInit {
 
-    hide: boolean = true;
+    hide = true;
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
-    submit(email: string, password: string): void {
-        alert("email: " + email + ", password: " + password);
+    constructor(private auth: AuthService) {
     }
 
+    ngOnInit() {
+    }
+
+    submit(email: string, password: string): void {
+        let retries = 3;
+        this.auth.login(email, password).subscribe({
+            next(login) {
+                if (login) {
+                    this.router.navigate(['dashboard']);
+                } else if (retries-- === 0) {
+                    this.router.navigate(['password-recovery']);
+                }
+            }
+        });
+    }
 }
