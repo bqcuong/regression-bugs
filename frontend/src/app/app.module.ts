@@ -21,6 +21,8 @@ import {ConfigService} from './config.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { ExportComponent } from './export/export.component';
 import {TokenInterceptor} from './token-interceptor.service';
+import { AuthService} from './auth.service';
+import {AuthGuardService} from './auth-guard.service';
 
 @NgModule({
   declarations: [
@@ -51,7 +53,10 @@ import {TokenInterceptor} from './token-interceptor.service';
     MatSidenavModule,
     MatListModule
   ],
-  providers: [ MediaMatcher, ConfigService,
+  providers: [ MediaMatcher,
+      ConfigService,
+      AuthService,
+      AuthGuardService,
       {
           provide: HTTP_INTERCEPTORS,
           useClass: TokenInterceptor,
