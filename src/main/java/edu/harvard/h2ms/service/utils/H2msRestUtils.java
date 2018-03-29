@@ -152,7 +152,12 @@ public class H2msRestUtils {
      * @return
      */
     public static Double calculateAverage(Double numerator, Double denominator){
-        Double result = numerator/denominator;
+        Double result = null;
+        if(numerator > 0 && denominator > 0 ) {
+            result = numerator/denominator;
+        } else {
+            return 0.0;
+        }
         NumberFormat nf= NumberFormat.getInstance();
         nf.setMaximumFractionDigits(2);
         nf.setMinimumFractionDigits(2);

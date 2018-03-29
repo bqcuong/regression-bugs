@@ -1,13 +1,17 @@
 package edu.harvard.h2ms.controllers;
 
 import edu.harvard.h2ms.H2MSRestAppInitializer;
-import edu.harvard.h2ms.domain.core.User;
+import edu.harvard.h2ms.domain.core.*;
+import edu.harvard.h2ms.repository.EventRepository;
+import edu.harvard.h2ms.repository.EventTemplateRepository;
+import edu.harvard.h2ms.repository.QuestionRepository;
 import edu.harvard.h2ms.repository.UserRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +33,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
-
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -59,6 +68,15 @@ public class UserControllerTests {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    QuestionRepository questionRepository;
+
+    @Autowired
+    EventTemplateRepository eventTemplateRepository;
+
+    @Autowired
+    EventRepository eventRepository;
+
     /**
      * Setup prior to running unit tests
      * @throws Exception
@@ -69,8 +87,35 @@ public class UserControllerTests {
         this.mvc = MockMvcBuilders.webAppContextSetup(context)
                 .addFilter(springSecurityFilterChain)
                 .build();
-        User user = new User("John", "Quincy", "Adams", EMAIL, PASSWORD);
-        userRepository.save(user);
+
+        // Sample User Data
+        User observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD);
+        observer.setType("Other");
+        userRepository.save(observer);
+        User subject = new User("Jane", "Doe", "Sam", "sample@email.com", "password");
+        subject.setType("Doctor");
+        userRepository.save(subject);
+
+        // Creates and persists event
+        Event event = new Event();
+        Set<Answer> answers = new HashSet<>();
+        Answer answer = new Answer();
+        Question question = new Question();
+        question.setPriority(1);
+        question.setRequired(TRUE);
+        question.setAnswerType("Boolean");
+        question.setQuestion("Washed?");
+        answer.setQuestion(question);
+        answer.setValue("true");
+        answers.add(answer);
+        event.setAnswers(answers);
+        event.setLocation("Location_01");
+        event.setSubject(subject);
+        event.setObserver(observer);
+        event.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
+        event.setObserver(observer);
+        event.setTimestamp(new Date(System.currentTimeMillis()));
+        eventRepository.save(event);
     }
 
     /**
@@ -85,14 +130,15 @@ public class UserControllerTests {
         final String accessToken = obtainAccessToken("jqadams@h2ms.org", "password");
 
         // Makes API calls and checks for success status
-        MockHttpServletResponse result = mvc.perform(get("/users/avgWashed/")
+         MockHttpServletResponse result = mvc.perform(get("/users/avgWashed/")
                 .header("Authorization", "Bearer " + accessToken)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
 
-        Assert.isTrue(result.getContentAsString().equals("{\"Surgical Tech\":0.5,\"Dietician\":1.0,\"Other\":0.67}"));
+
+        Assert.isTrue(result.getContentAsString().equals("{\"Doctor\":1.0,\"Other\":0.0}"));
 
     }
 

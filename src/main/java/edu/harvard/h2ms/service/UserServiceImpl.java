@@ -1,8 +1,9 @@
 package edu.harvard.h2ms.service;
 
 import com.google.common.collect.Lists;
-import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.domain.core.*;
 import edu.harvard.h2ms.repository.EventRepository;
+import edu.harvard.h2ms.repository.QuestionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
-import edu.harvard.h2ms.domain.core.User;
 import edu.harvard.h2ms.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import static edu.harvard.h2ms.service.utils.H2msRestUtils.calculateAverage;
@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private EventRepository eventRepository;
+
+	@Autowired
+	private QuestionRepository questionRepository;
 
 	@Override
 	@Transactional(readOnly=true)
@@ -55,41 +58,51 @@ public class UserServiceImpl implements UserService {
 	public Map<String, Double> calcAvgHandWashCompByDistinctUserType(List<String> distinctUserTypes, List<Event> events){
 
 		Map<String, Double> dataMap = new HashMap<String, Double>();
-		Double totalPopulation;
-		Double washedPopulation;
+		String answerValue = "true";
+		Double totalPopulation = null;
+		Double washedPopulation = null;
+
+		// Retrieves 'washed?' question object
+		List<Question> questions = Lists.newArrayList(questionRepository.findAll());
+		Optional<Question> keyQuestion = questions.stream()
+				.filter(question -> question.getQuestion().equals("Washed?"))
+				.findAny();
 
 		for (String type : distinctUserTypes) {
 			if(type == null) { continue; }
 
-			// Retrieves the total count of events per user type
-			Stream<Event> eventStream = events.stream().filter(event -> event.getSubject().getType().equals(type));
-			if (eventStream != null) {
-				totalPopulation = Double.valueOf(eventStream.count());
-			} else{
-				log.warn("There are no events from user type {}", type);
-				continue;
-			}
+			// Retrieves total population (ie. how many times the questions was asked for each user type)
+			totalPopulation = Double.valueOf(events.stream()
+					.filter(event -> event.getSubject().getType().equals(type)).count());
 
 			// Retrieves the total count of events per user type where user took opportunity to wash hands
-			eventStream = events.stream().filter(event -> event.getSubject().getType().equals(type) && event.getWashed()==TRUE);
-			if(eventStream != null) {
-				washedPopulation = Double.valueOf(eventStream.count());
-			} else {
-				log.warn("No users of any user type {} took the opportunity to wash their hands.", type);
-				continue;
-			}
+			washedPopulation = Double.valueOf(events.stream()
+					.filter(event -> event.getSubject().getType().equals(type) &&
+							getAnswer(event.getAnswers(), keyQuestion).equals(answerValue))
+					.count());
 
 			// Calculates the average hand wash compliance for a given type
-			if(totalPopulation != null && totalPopulation != null) {
+			if(totalPopulation != null && washedPopulation != null)
 				dataMap.put(type, calculateAverage(washedPopulation, totalPopulation));
-			} else {
-				log.warn("No users of any user type {} took the opportunity to wash their hands.", type);
-				continue;
-			}
 
 		}
 
 		return dataMap;
+	}
+
+	/**
+	 * Retrieves the provided answer for a particular question
+	 * @param answers
+	 * @param question
+	 * @return
+	 */
+	public String getAnswer(Set<Answer> answers, Optional<Question> question) {
+		for(Answer answer : answers) {
+			if(answer.getQuestion().getQuestion().equals(question.get().getQuestion())) {
+				return answer.getValue();
+			}
+		}
+		return null;
 	}
 
 }
