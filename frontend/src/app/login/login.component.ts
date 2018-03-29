@@ -23,11 +23,11 @@ export class LoginComponent implements OnInit {
         this.auth.login(email, password).subscribe(
             data => {
                 this.router.navigate(['dashboard']);
-            },
+                },
             error => {
                 if (this.loginAttempts-- === 0) {
                     this.router.navigate(['password-recovery']);
                 }
-        });
+            });
     }
 }
