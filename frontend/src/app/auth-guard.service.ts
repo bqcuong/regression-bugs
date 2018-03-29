@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {AuthService} from './auth.service';
-import {CanActivate, Router} from '@angular/router';
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 
 /**
  * this class protects routes to frontend pages that are meant for logged in users only
@@ -10,12 +10,11 @@ export class AuthGuardService implements CanActivate {
 
   constructor(private authService: AuthService, private router: Router) { }
 
-    canActivate(): boolean {
-      // todo: find a more elegant way to determine if the user has ever logged in
-    if (!this.authService.getToken().match('')) {
+    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+        if (this.authService.isLoggedIn()) {
             return true;
         }
-        this.router.navigate(['login']);
+        this.router.navigate(['/login']);
         return false;
     }
 
