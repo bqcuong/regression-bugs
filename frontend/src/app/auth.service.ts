@@ -5,7 +5,6 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/delay';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Oauth} from './oauth';
-import {Router} from '@angular/router';
 
 /**
  * this class provides a login service and holds an auth token
@@ -13,7 +12,7 @@ import {Router} from '@angular/router';
 @Injectable()
 export class AuthService {
 
-    constructor(private http: HttpClient, private router: Router) { }
+    constructor(private http: HttpClient) { }
 
     o: Oauth;
     client_id = 'h2ms';
