@@ -5,6 +5,7 @@ import {PrivacyComponent} from './privacy/privacy.component';
 import {EventComponent} from './event/event.component';
 import { NavItem } from './nav-item';
 import {ExportComponent} from './export/export.component';
+import {AuthGuardService} from "./auth-guard.service";
 
 /**
  * The actual available routes. Which links are routed to which components.
@@ -13,10 +14,10 @@ const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: '', redirectTo: 'login', pathMatch: 'full'},
     // TODO: Route about to the AboutComponent when it is created.
-    { path: 'dashboard', redirectTo: 'login', pathMatch: 'full'},
+    { path: 'dashboard', redirectTo: 'login', pathMatch: 'full', canActivate: [AuthGuardService]},
     { path: 'privacy', component: PrivacyComponent },
-    { path: 'event', component: EventComponent },
-    { path: 'export', component: ExportComponent}
+    { path: 'event', component: EventComponent, canActivate: [AuthGuardService]},
+    { path: 'export', component: ExportComponent, canActivate: [AuthGuardService]}
 ];
 
 /**
