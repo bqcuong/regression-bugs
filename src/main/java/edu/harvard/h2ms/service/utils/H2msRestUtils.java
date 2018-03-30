@@ -4,7 +4,8 @@ import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.service.EventServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -141,6 +142,27 @@ public class H2msRestUtils {
         } else {
             return "Q4 (" + year + ")";
         }
+    }
+
+
+    /**
+     * H2MS Average Definition: X Out of Y Times Percentage
+     * @param numerator
+     * @param denominator
+     * @return
+     */
+    public static Double calculateAverage(Double numerator, Double denominator){
+        Double result = null;
+        if(numerator > 0 && denominator > 0 ) {
+            result = numerator/denominator;
+        } else {
+            return 0.0;
+        }
+        NumberFormat nf= NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(2);
+        nf.setMinimumFractionDigits(2);
+        nf.setRoundingMode(RoundingMode.HALF_UP);
+        return Double.valueOf(nf.format(result));
     }
 
 }

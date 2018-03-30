@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import edu.harvard.h2ms.domain.core.User;
@@ -44,6 +45,7 @@ public class UserDetailsServiceTest {
 	}
 	
 	@Test
+	@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 	public void testUsernameIsEmail() {
 		assertThat(
 				userDetailsService.loadUserByUsername("jqadams@h2ms.org"),
