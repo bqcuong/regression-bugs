@@ -57,7 +57,7 @@ public class Event {
 	@NotNull
 	@Column
     private String location;
-	
+
 	@Valid
 	@OneToMany(fetch = FetchType.EAGER,
 			cascade = CascadeType.ALL,
@@ -121,8 +121,8 @@ public class Event {
 	public void setLocation(String location) {
 		this.location = location;
 	}
-	
-    @Override
+
+	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Event [id=").append(id).append(", timestamp=").append(timestamp).append(", subject=")
