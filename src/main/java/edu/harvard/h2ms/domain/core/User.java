@@ -55,6 +55,9 @@ public class User implements UserDetails {
     @Column
     private String notificationFrequency;
 
+    @Column
+    private String type;
+
     @NotNull
     @Column
     @JsonIgnore
@@ -135,6 +138,14 @@ public class User implements UserDetails {
         this.notificationFrequency = notificationFrequency;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -193,6 +204,8 @@ public class User implements UserDetails {
                 .append(lastName)
                 .append(", email=")
                 .append(email)
+                .append(", type")
+                .append(type)
                 .append(", notificationFrequency=")
                 .append(notificationFrequency);
         return builder.toString();
