@@ -1,94 +1,133 @@
 package edu.harvard.h2ms.domain.core;
 
-import javax.persistence.*;
-import java.sql.Time;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 
 /**
- * An Event is...
+ * An Event is what observer or sensor records about observee's actions.
  */
 @Entity
 @Table(name = "EVENT")
 public class Event {
-
-    /* Properties */
+	/* Properties */
+	@Id
+	@GeneratedValue(strategy= GenerationType.AUTO)
+    @Column
     private Long id;
-    private Time timestamp;
-    private String handWashType;
-    private String relativeMoment;
-    private String observee;
-    private String observer;
-    private String observationType;
 
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    @Column(name = "ID")
-    public Long getId() {
-        return id;
-    }
+	@NotNull
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column
+    private Date timestamp;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "subject_id")
+    private User subject;
 
-    @Column(name = "TIMESTAMP")
-    public Time getTimestamp() {
-        return timestamp;
-    }
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "event_template_id")
+    private EventTemplate eventTemplate;
 
-    public void setTimestamp(Time timestamp) {
-        this.timestamp = timestamp;
-    }
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "observer_id")
+    private User observer;
 
-    @Column(name = "HAND_WASH_TYPE")
-    public String getHandWashType() {
-        return handWashType;
-    }
+	// TODO: Place holder until Location model is ready + updated according to data model
+	@NotNull
+	@Column
+    private String location;
 
-    public void setHandWashType(String handWashType) {
-        this.handWashType = handWashType;
-    }
+	@Valid
+	@OneToMany(fetch = FetchType.EAGER,
+			cascade = CascadeType.ALL,
+			mappedBy = "event")
+	private Set<Answer> answers = new HashSet<>();
 
-    @Column(name = "RELATIVE_MOMENT")
-    public String getRelativeMoment() {
-        return relativeMoment;
-    }
+	public Set<Answer> getAnswers() {
+		return answers;
+	}
 
-    public void setRelativeMoment(String relativeMoment) {
-        this.relativeMoment = relativeMoment;
-    }
+	public void setAnswers(Set<Answer> answers) {	
+		answers.forEach((a)->{a.setEvent(this);});
+		
+		this.answers = answers;
+	}
 
-    @Column(name = "OBSERVEE")
-    public String getObservee() {
-        return observee;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public void setObservee(String observee) {
-        this.observee = observee;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    @Column(name = "OBSERVER")
-    public String getObserver() {
-        return observer;
-    }
+	public Date getTimestamp() {
+		return timestamp;
+	}
 
-    public void setObserver(String observer) {
-        this.observer = observer;
-    }
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
 
-    @Column(name = "OBSERVATION_TYPE")
-    public String getObservationType() {
-        return observationType;
-    }
+	public User getSubject() {
+		return subject;
+	}
 
-    public void setObservationType(String observationType) {
-        this.observationType = observationType;
-    }
+	public void setSubject(User subject) {
+		this.subject = subject;
+	}
 
-    @Override
-    public String toString() {
-        return "Event - Id: " + id + ", Typestamp: " + timestamp
-                + ", Hand Wash Type: " + handWashType  + ", Relative Moment: " + relativeMoment
-                + ", Observee: " + observee  + ", Observer: " + observer  + ", Observation Type: " + observationType;
-    }
+	public User getObserver() {
+		return observer;
+	}
 
+	public void setObserver(User observer) {
+		this.observer = observer;
+	}
+
+	public EventTemplate getEventTemplate() {
+		return eventTemplate;
+	}
+
+	public void setEventTemplate(EventTemplate eventTemplate) {
+		this.eventTemplate = eventTemplate;
+	}
+	
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Event [id=").append(id).append(", timestamp=").append(timestamp).append(", subject=")
+				.append(subject).append(", eventTemplate=").append(eventTemplate).append(", observer=").append(observer)
+				.append(", location=").append(location).append(", answers=").append(answers).append("]");
+		return builder.toString();
+	}
 }
