@@ -20,7 +20,8 @@ export class AuthService {
         // expect request to return:
         const httpOptions = {
             headers: new HttpHeaders({
-                'Authorization': 'Basic ' + btoa(this.client_id + ':' + this.secret)
+                'Authorization': 'Basic ' + btoa(this.client_id + ':' + this.secret),
+                'Content-Type': 'application/x-www-form-urlencoded'
             })
         };
         const dataString = 'grant_type=' + this.grant_type + '&username=' + email + '&password=' + password;
