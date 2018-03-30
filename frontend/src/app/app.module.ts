@@ -23,6 +23,7 @@ import { ExportComponent } from './export/export.component';
 import {TokenInterceptor} from './token-interceptor.service';
 import { AuthService} from './auth.service';
 import {AuthGuardService} from './auth-guard.service';
+import { ReportsComponent } from './reports/reports.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {AuthGuardService} from './auth-guard.service';
     PrivacyComponent,
     EventComponent,
     SidenavComponent,
-    ExportComponent
+    ExportComponent,
+    ReportsComponent
   ],
   imports: [
     BrowserModule,
