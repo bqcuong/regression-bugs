@@ -4,18 +4,45 @@ import { DropdownQuestion } from '../question-dropdown';
 import { QuestionBase } from '../question-base';
 import { TextboxQuestion } from '../question-textbox';
 import {CheckboxQuestion} from '../question-checkbox';
+import { EventTemplateEntityService} from '../../api/eventTemplateEntity.service';
+import {ResourcesQuestion} from '../../model/resourcesQuestion';
+import { Question} from '../../model/question';
 
 @Injectable()
 export class QuestionService {
 
-    // Todo: get from a remote source of question metadata
+    constructor(private templateService: EventTemplateEntityService) { }
+
+    resourcesQuestion: ResourcesQuestion;
+
     // Todo: make asynchronous
     getQuestions() {
 
-        let questions: QuestionBase<any>[] = [
+        /*const questions: QuestionBase<any>[] = [];
+
+        this.templateService.eventTemplateQuestionsUsingGET1(0)
+            .subscribe(resourcesQuestion => this.resourcesQuestion = resourcesQuestion);
+
+        this.resourcesQuestion.content.forEach((q: Question) => {
+            const params = {
+                id: this.resourcesQuestion.links.find((link) =>  link.rel === 'self').href,
+                question: q.question,
+                options: q.options,
+                required: q.required,
+                priority: q.priority
+            };
+
+            if (q.answerType === 'options') {
+                questions.push(new DropdownQuestion(params));
+            } else if (q.answerType === 'boolean') {
+                questions.push(new CheckboxQuestion(params));
+            }
+        });*/
+
+        const questions: QuestionBase<any>[] = [
 
             new DropdownQuestion({
-                id: '1',
+                id: 'http://test.h2ms.org:81/questions/1',
                 question: 'Location',
                 options: [
                     'Hospital 1',
@@ -28,7 +55,7 @@ export class QuestionService {
             }),
 
             new DropdownQuestion({
-                id: '2',
+                id: 'http://test.h2ms.org:81/questions/2',
                 question: 'Employee Type',
                 options: [
                     'Physician',
@@ -41,7 +68,7 @@ export class QuestionService {
             }),
 
             new DropdownQuestion({
-                id: '3',
+                id: 'http://test.h2ms.org:81/questions/3',
                 question: 'Person',
                 options: [
                     'Handwasher, Joe',
@@ -54,7 +81,7 @@ export class QuestionService {
             }),
 
             new DropdownQuestion({
-                id: '4',
+                id: 'http://test.h2ms.org:81/questions/4',
                 question: 'Event',
                 options: [
                     'Entering',
@@ -66,7 +93,7 @@ export class QuestionService {
             }),
 
             new DropdownQuestion({
-                id: '5',
+                id: 'http://test.h2ms.org:81/questions/5',
                 question: 'Hygiene Type',
                 options: [
                     'Type 1',
@@ -78,9 +105,9 @@ export class QuestionService {
             }),
 
             new CheckboxQuestion({
-                id: '6',
+                id: 'http://test.h2ms.org:81/questions/6',
                 question: 'Washed?',
-                required: true,
+                required: false,
                 priority: 6
             }),
         ];

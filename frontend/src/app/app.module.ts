@@ -18,6 +18,7 @@ import { EventComponent } from './event/event.component';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {ConfigService} from './config.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
+import { ApiModule} from './api.module';
 
 @NgModule({
   declarations: [
@@ -44,7 +45,8 @@ import { SidenavComponent } from './sidenav/sidenav.component';
     ReactiveFormsModule,
     MatToolbarModule,
     MatSidenavModule,
-    MatListModule
+    MatListModule,
+    ApiModule
   ],
   providers: [ MediaMatcher, ConfigService ],
   bootstrap: [AppComponent]
