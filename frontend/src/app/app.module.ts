@@ -17,12 +17,13 @@ import { LoginComponent } from './login/login.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { EventComponent } from './event/event.component';
 import {MediaMatcher} from '@angular/cdk/layout';
-import {ConfigService} from './config/config.service';
+import {ConfigService} from './config.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { ExportComponent } from './export/export.component';
-import {TokenInterceptor} from './auth/token-interceptor.service';
-import { AuthService} from './auth/auth.service';
-import {AuthGuardService} from './auth/auth-guard.service';
+import {TokenInterceptor} from './token-interceptor.service';
+import { AuthService} from './auth.service';
+import {AuthGuardService} from './auth-guard.service';
+import { ReportsComponent } from './reports/reports.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {AuthGuardService} from './auth/auth-guard.service';
     PrivacyComponent,
     EventComponent,
     SidenavComponent,
-    ExportComponent
+    ExportComponent,
+    ReportsComponent
   ],
   imports: [
     BrowserModule,
