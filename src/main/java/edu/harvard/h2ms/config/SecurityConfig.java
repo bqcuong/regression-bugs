@@ -2,6 +2,7 @@ package edu.harvard.h2ms.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,7 +38,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers(AUTH_WHITELIST);
+    web.ignoring().antMatchers(AUTH_WHITELIST).antMatchers(HttpMethod.OPTIONS, "/**");
   }
 
   @Override
