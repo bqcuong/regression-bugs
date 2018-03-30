@@ -46,4 +46,11 @@ public class EventServiceImpl implements EventService {
         return H2msRestUtils.frequencyCounter(parsedTimestamps);
     }
 
+	@Override
+	public Map<String, Long> findComplianceByTimeframe(String timeframe, Long question) {
+		List<Event> events = Lists.newArrayList(eventRepository.findByQuestionId(question));
+		
+		return null;
+	}
+
 }

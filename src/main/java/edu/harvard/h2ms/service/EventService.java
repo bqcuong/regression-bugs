@@ -19,4 +19,13 @@ public interface EventService {
 	 */
 	Map<String, Long> findEventCountByTimeframe(String timeframe);
 
+    /**
+     * Retrieves compliance and returns results grouped by a specified
+     * timeframe (ie. week, month, year, quarter)
+     *
+	 * @param timeframe - week, month, year, quarter
+	 * @return
+	 */
+	Map<String, Long> findComplianceByTimeframe(String timeframe, Long question);
+
 }
