@@ -21,12 +21,15 @@ export class LoginComponent implements OnInit {
 
     submit(email: string, password: string): void {
         this.auth.login(email, password).subscribe(
-            data => {
-                this.router.navigate(['dashboard']);
-                },
+            response => {
+                    this.router.navigate(['dashboard']);
+            },
             error => {
-                if (this.loginAttempts-- === 0) {
-                    this.router.navigate(['password-recovery']);
+                if (error.status === 401) {
+                    alert('login failed');
+                    if (this.loginAttempts-- === 0) {
+                        this.router.navigate(['password-recovery']);
+                    }
                 }
             });
     }

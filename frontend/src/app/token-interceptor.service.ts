@@ -3,7 +3,7 @@ import {
     HttpRequest,
     HttpHandler,
     HttpEvent,
-    HttpInterceptor
+    HttpInterceptor,
 } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { Observable } from 'rxjs/Observable';
@@ -13,9 +13,7 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
-
     constructor(public auth: AuthService) {}
-
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         if (this.auth.isLoggedIn()) {
@@ -25,6 +23,6 @@ export class TokenInterceptor implements HttpInterceptor {
                 }
             });
         }
-        return next.handle(request); // don't add token until we are logged in
+        return next.handle(request); // todo handle refresh response
     }
 }

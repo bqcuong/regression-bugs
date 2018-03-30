@@ -6,16 +6,18 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Oauth} from './oauth';
 
 
+
 @Injectable()
 export class AuthService {
 
     constructor(private http: HttpClient) { }
 
+    // todo Move the following impl speicific details into config
+    localStorageKey = 'h2msCookie';
     client_id = 'h2ms';
     secret = 'secret';
     grant_type = 'password';
-    // tokenURL = 'http://test.h2ms.org:81/oauth/token';
-    tokenURL = 'http://localhost:8080/oauth/token';
+    tokenURL = 'http://test.h2ms.org:81/oauth/token';
 
     login(email: string, password: string) {
         // expect request to return:
@@ -27,30 +29,31 @@ export class AuthService {
         };
         const dataString = 'grant_type=' + this.grant_type + '&username=' + email + '&password=' + password;
         return this.http.post<Oauth>(this.tokenURL, dataString, httpOptions)
-            .do(user => {
-                if (user && user.access_token) {
-                    localStorage.setItem('currentUser', JSON.stringify(user));
+            .do(response => {
+                if (response && response.access_token) {
+                    if (this.isLoggedIn()) {
+                        this.logout();
+                    }
+                    localStorage.setItem(this.localStorageKey, JSON.stringify(response));
+                    return response;
                 }
-                return user;
-                // todo: handle http request error (e.g. bad login credentials)
             });
     }
 
     logout(): void {
-        if (localStorage.removeItem('currentUser')) {
-            // todo: place logout request
+        if (localStorage.removeItem(this.localStorageKey)) {
+            // todo: place logout request to backend
         }
     }
 
     getToken(): string {
-        // todo check and refresh token as needed here
-        return JSON.parse(localStorage.getItem('currentUser')).access_token;
+        return JSON.parse(localStorage.getItem(this.localStorageKey)).access_token;
     }
 
     isLoggedIn(): boolean {
-        if (localStorage.getItem('currentUser')) {
-            return true;
-        }
-        return false;
+        return !!localStorage.getItem(this.localStorageKey);
+
     }
+
+    // todo refreshToken()
 }
