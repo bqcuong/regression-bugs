@@ -6,12 +6,16 @@ import {EventComponent} from './event/event.component';
 import { NavItem } from './nav-item';
 import {ExportComponent} from './export/export.component';
 import {AuthGuardService} from './auth-guard.service';
+import {ReportsComponent} from './reports/reports.component';
 
 /**
  * The actual available routes. Which links are routed to which components.
  */
 const routes: Routes = [
     { path: 'login', component: LoginComponent },
+    { path: 'reports', component: ReportsComponent },
+    { path: '', redirectTo: 'login', pathMatch: 'full'},
+    // TODO: Route about to the AboutComponent when it is created.
     { path: 'privacy', component: PrivacyComponent },
     { path: 'event', component: EventComponent, canActivate: [AuthGuardService]},
     { path: 'export', component: ExportComponent, canActivate: [AuthGuardService]},
@@ -28,7 +32,7 @@ const routes: Routes = [
  */
 export const NAV_ITEMS: NavItem[] = [
     new NavItem('Dashboard', '/dashboard'),
-    // new NavItem('Reports', '/reports'),
+    new NavItem('Reports', '/reports'),
     new NavItem('Observe', '/event'),
     NavItem.createNavItemWithSubItems('Settings', [
         // new NavItem('Account', '/account'),
