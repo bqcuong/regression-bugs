@@ -2,9 +2,7 @@ import { Injectable } from '@angular/core';
 import {AuthService} from './auth.service';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 
-/**
- * this class protects routes to frontend pages that are meant for logged in users only
- */
+
 @Injectable()
 export class AuthGuardService implements CanActivate {
 

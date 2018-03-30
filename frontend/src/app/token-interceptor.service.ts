@@ -9,9 +9,7 @@ import { AuthService } from './auth.service';
 import { Observable } from 'rxjs/Observable';
 
 
-/**
- * this class provides an http request interceptor to add tokens to requests from logged in users
- */
+
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
 
