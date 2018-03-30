@@ -14,7 +14,8 @@ export class AuthService {
     client_id = 'h2ms';
     secret = 'secret';
     grant_type = 'password';
-    tokenURL = 'http://test.h2ms.org:81/oauth/token';
+    // tokenURL = 'http://test.h2ms.org:81/oauth/token';
+    tokenURL = 'http://localhost:8080/oauth/token';
 
     login(email: string, password: string) {
         // expect request to return:
