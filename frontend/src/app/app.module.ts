@@ -1,4 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
@@ -18,6 +19,11 @@ import { EventComponent } from './event/event.component';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {ConfigService} from './config.service';
 import { SidenavComponent } from './sidenav/sidenav.component';
+import { ExportComponent } from './export/export.component';
+import {TokenInterceptor} from './token-interceptor.service';
+import { AuthService} from './auth.service';
+import {AuthGuardService} from './auth-guard.service';
+import { EventTemplateEntityService } from './api/eventTemplateEntity.service';
 import { ApiModule} from './api.module';
 
 @NgModule({
@@ -28,10 +34,12 @@ import { ApiModule} from './api.module';
     LoginComponent,
     PrivacyComponent,
     EventComponent,
-    SidenavComponent
+    SidenavComponent,
+    ExportComponent
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     MatFormFieldModule,
     MatInputModule,
@@ -45,10 +53,18 @@ import { ApiModule} from './api.module';
     ReactiveFormsModule,
     MatToolbarModule,
     MatSidenavModule,
-    MatListModule,
-    ApiModule
+    MatListModule
   ],
-  providers: [ MediaMatcher, ConfigService ],
-  bootstrap: [AppComponent]
+  providers: [ MediaMatcher,
+      ConfigService,
+      AuthService,
+      AuthGuardService,
+      {
+          provide: HTTP_INTERCEPTORS,
+          useClass: TokenInterceptor,
+          multi: true
+      },
+      EventTemplateEntityService],
+  bootstrap: [ AppComponent ]
 })
 export class AppModule { }

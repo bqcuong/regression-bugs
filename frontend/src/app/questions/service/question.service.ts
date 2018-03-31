@@ -4,8 +4,8 @@ import { DropdownQuestion } from '../question-dropdown';
 import { QuestionBase } from '../question-base';
 import { TextboxQuestion } from '../question-textbox';
 import {CheckboxQuestion} from '../question-checkbox';
-import { EventTemplateEntityService} from '../../api/eventTemplateEntity.service';
 import {ResourcesQuestion} from '../../model/resourcesQuestion';
+import { EventTemplateEntityService } from '../../';
 import { Question} from '../../model/question';
 
 @Injectable()
@@ -42,7 +42,7 @@ export class QuestionService {
         const questions: QuestionBase<any>[] = [
 
             new DropdownQuestion({
-                id: 'http://test.h2ms.org:81/questions/1',
+                id: 'location',
                 question: 'Location',
                 options: [
                     'Hospital 1',
@@ -68,7 +68,7 @@ export class QuestionService {
             }),
 
             new DropdownQuestion({
-                id: 'http://test.h2ms.org:81/questions/3',
+                id: 'subject',
                 question: 'Person',
                 options: [
                     'Handwasher, Joe',

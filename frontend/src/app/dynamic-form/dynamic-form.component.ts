@@ -3,11 +3,14 @@ import { FormGroup } from '@angular/forms';
 
 import { QuestionBase } from '../questions/question-base';
 import { QuestionControlService } from '../questions/service/question-control.service';
+import {Answer, Event, Question} from '../';
+import { EventEntityService} from '../';
 
 @Component({
     selector: 'app-dynamic-form',
     templateUrl: './dynamic-form.component.html',
-    providers: [ QuestionControlService ]
+    providers: [ QuestionControlService,
+        EventEntityService]
 })
 export class DynamicFormComponent implements OnInit {
 
@@ -15,7 +18,8 @@ export class DynamicFormComponent implements OnInit {
     form: FormGroup;
     payLoad = '';
 
-    constructor(private questionControlService: QuestionControlService) {  }
+    constructor(private questionControlService: QuestionControlService,
+                private eventEntityService: EventEntityService) {  }
 
     ngOnInit() {
         this.form = this.questionControlService.toFormGroup(this.questions);
@@ -23,6 +27,34 @@ export class DynamicFormComponent implements OnInit {
 
     onSubmit() {
         this.payLoad = JSON.stringify(this.form.value);
-        console.log(this.form);
+
+        const answers: Array<Answer> = [];
+
+        const values = this.form.value;
+
+        // transform the value object into an array of Answers
+        for (const property of Object.entries(values)) {
+            if (property[0] !== 'location' && property[0] !== 'subject') {
+                const question: Question = {
+                    question: property[0]
+                }
+                const answer: Answer = {
+                    question: question,
+                    value: property[1]
+                };
+                answers.push(answer);
+            }
+        }
+
+        const event: Event = {
+            eventTemplate: 'http://test.h2ms.org:81/eventTemplates/0',
+            answers: answers,
+            location: this.form.value['location'],
+            observer: 'http://test.h2ms.org:81/users/0',
+            subject: 'http://test.h2ms.org:81/users/0',
+            timestamp: new Date()
+        };
+
+        this.eventEntityService.saveEventUsingPOST(event).subscribe();
     }
 }
