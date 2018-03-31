@@ -38,8 +38,8 @@ public class EventController {
     }
 
     /**
-     * Rest Endpoint for getting compliance of a specific question grouped by a
-     * specified timeframe (ie. week, month, year, quarter) Ex.
+     * Rest End point for getting compliance of a specific question grouped by a
+     * specified time frame (i.e. week, month, year, quarter) Ex.
      * /events/compliance/19/week.  Compliance is defined as percent of events
      * with a boolean question value to true.
      *
@@ -50,6 +50,7 @@ public class EventController {
     @RequestMapping(value = "/compliance/{questionId}/{timeframe}", method = RequestMethod.GET)
     public ResponseEntity<?> findComplianceByTimeframe(@PathVariable String timeframe, @PathVariable Long questionId) {
     	Question question = questionRepository.findOne(questionId);
+    	log.info("Found question {}", question.toString());
     	
     	if(question.getAnswerType().equals("boolean")) {
     		return new ResponseEntity<Map<String, Double>>(eventService.findComplianceByTimeframe(timeframe, question), HttpStatus.OK);

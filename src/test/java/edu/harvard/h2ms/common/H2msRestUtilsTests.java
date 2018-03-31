@@ -3,6 +3,11 @@ package edu.harvard.h2ms.common;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
+import static java.util.Arrays.asList;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+
 import edu.harvard.h2ms.service.utils.H2msRestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -152,11 +157,19 @@ public class H2msRestUtilsTests {
     @Test
     public void test_frequency_counter(){
         // Three occurrences of March
-        List<String> parsedTimestamps = Arrays.asList("January (2020)", "March (2018)", "February (2019)",
-                "April (2020)","March (2018)", "April (2020)", "March (2018)");
-        Map<String, Long> counts = H2msRestUtils.frequencyCounter(parsedTimestamps);
-        Assert.isTrue(counts.size() == 4);
-        Assert.isTrue(counts.get("March (2018)") == 3);
+        Map<String, Set<Integer>> map = new HashMap<>();
+        map.put("January (2020)",  new HashSet<Integer>(asList()));
+        map.put("February (2020)", new HashSet<Integer>(asList(1)));
+        map.put("March (2020)",    new HashSet<Integer>(asList(1, 2)));
+        map.put("April (2020)",    new HashSet<Integer>(asList(1, 2, 3)));
+        
+        Map<String, Long> counts = H2msRestUtils.frequencyCounter(map);
+        
+        assertThat(counts.size(), is(4));
+        //assertThat(counts.get("January (2020)"),  is(0L);
+        assertThat(counts.get("February (2020)"), is(1L));
+        assertThat(counts.get("March (2020)"),    is(2L));
+        assertThat(counts.get("April (2020)"),    is(3L));
     }
 
     /**
@@ -164,8 +177,8 @@ public class H2msRestUtilsTests {
      */
     @Test
     public void test_frequency_counter_when_timestamp_list_is_empty(){
-        List<String> parsedTimestamps = Arrays.asList();
-        Map<String, Long> counts = H2msRestUtils.frequencyCounter(parsedTimestamps);
+        Map<String, Set<Long>> map = new HashMap<>();
+        Map<String, Long> counts = H2msRestUtils.frequencyCounter(map);
         Assert.isTrue(counts.isEmpty());
     }
 

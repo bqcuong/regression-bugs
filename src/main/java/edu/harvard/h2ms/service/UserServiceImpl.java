@@ -10,12 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.stereotype.Repository;
 import edu.harvard.h2ms.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import static edu.harvard.h2ms.service.utils.H2msRestUtils.calculateAverage;
-import static java.lang.Boolean.TRUE;
 
 @Service("userService")
 @Repository

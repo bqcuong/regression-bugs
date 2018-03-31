@@ -67,8 +67,8 @@ public class H2msRestUtils {
         return values;
     }
 
-    public static <E> Map<String, Long> frequencyCounter (Map<String, Set<E>> parsedTimestamps){
-    	return parsedTimestamps.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.counting()));
+    public static <E> Map<String, Long> frequencyCounter (Map<String, Set<E>> mapSet){
+    	return mapSet.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> Long.valueOf(e.getValue().size())));
     }
     
     public static double calculateCompliance(Question question, Set<Event> events) {

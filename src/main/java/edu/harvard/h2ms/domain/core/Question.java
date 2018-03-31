@@ -23,7 +23,7 @@ import java.util.Set;
 @Entity
 public class Question {
 
-    /* Properties */
+	/* Properties */
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
     @Column
@@ -124,5 +124,12 @@ public class Question {
 		this.answerType = answerType;
 	}
 
-
+    @Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Question [id=").append(id).append(", priority=").append(priority).append(", options=")
+				.append(options).append(", question=").append(question).append(", required=").append(required)
+				.append(", answerType=").append(answerType).append("]");
+		return builder.toString();
+	}
 }

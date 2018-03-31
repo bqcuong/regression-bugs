@@ -1,11 +1,8 @@
 package edu.harvard.h2ms.service;
 
 import com.google.common.collect.Lists;
-import static java.util.Arrays.asList;
 
-import edu.harvard.h2ms.domain.core.Answer;
 import edu.harvard.h2ms.domain.core.Event;
-import edu.harvard.h2ms.domain.core.EventTemplate;
 import edu.harvard.h2ms.domain.core.Question;
 import edu.harvard.h2ms.repository.AnswerRepository;
 import edu.harvard.h2ms.repository.EventRepository;
@@ -14,7 +11,6 @@ import edu.harvard.h2ms.service.utils.H2msRestUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -71,11 +67,18 @@ public class EventServiceImpl implements EventService {
      */
     @Transactional(readOnly=true)
 	public Map<String, Double> findComplianceByTimeframe(String timeframe, Question question) {
+    	log.info("Found event template {}", question.getEventTemplate().toString());
+    	
     	// Get all events of that template
     	List<Event> events = eventRepository.findByEventTemplate(question.getEventTemplate());
+    	log.info("Found {} events", events.size());
     	
     	// Group events by time frame
     	Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByTimestamp(events, timeframe);
+    	
+    	for(Map.Entry<String, Set<Event>> entry : groupedEvents.entrySet()) {
+    		log.info("Timeframe {} had {} events", entry.getKey(), entry.getValue().size());
+    	}
     	
     	// Calculate compliance for each grouping by time frame
     	Map<String, Double> compliance = groupedEvents.entrySet()
@@ -86,6 +89,10 @@ public class EventServiceImpl implements EventService {
     							e -> H2msRestUtils.calculateCompliance(question, e.getValue())
     							)
     					);
+    
+    	for(Map.Entry<String, Double> entry : compliance.entrySet()) {
+    		log.info("Compliance for {} is {}", entry.getKey(), entry.getValue());
+    	}
     	
 		return compliance;
 	}
