@@ -24,79 +24,78 @@ import java.util.stream.Collectors;
 @Transactional
 public class EventServiceImpl implements EventService {
 
-    final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
+	final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
 
-    @Autowired
-    private EventRepository eventRepository;
+	@Autowired
+	private EventRepository eventRepository;
 
-    @Autowired
-    private AnswerRepository answerRepository;
-    
-    @Autowired
-    private QuestionRepository questionRepository;
-    
-    /**
-     * Retrieves all events from the H2MS system, extracts the timestamps and parses them,
-     * returns count per distinctly parsed timestamp
-     * Ex. If system has 1 event with timestamp "2018-03-21T17:58:05.742+0000",
-     *     results returned is {"March (2018)":1}
-     * @param timeframe - week, month, year, quarter
-     * @return
-     * @throws InvalidTimeframeException 
-     */
-    @Transactional(readOnly=true)
-    public Map<String, Long> findEventCountByTimeframe(String timeframe) throws InvalidTimeframeException {
+	@Autowired
+	private AnswerRepository answerRepository;
 
-        List<Event> events = Lists.newArrayList(eventRepository.findAll());
-        log.info("No. of events found: {}", events.size());
+	@Autowired
+	private QuestionRepository questionRepository;
 
-        Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByTimestamp(events, timeframe);
-        
-        log.info("Parsed {} timestamps by {}", groupedEvents.size(), timeframe);
+	/**
+	 * Retrieves all events from the H2MS system, extracts the timestamps and parses
+	 * them, returns count per distinctly parsed timestamp Ex. If system has 1 event
+	 * with timestamp "2018-03-21T17:58:05.742+0000", results returned is {"March
+	 * (2018)":1}
+	 * 
+	 * @param timeframe
+	 *            - week, month, year, quarter
+	 * @return
+	 * @throws InvalidTimeframeException
+	 */
+	@Transactional(readOnly = true)
+	public Map<String, Long> findEventCountByTimeframe(String timeframe) throws InvalidTimeframeException {
 
-        return H2msRestUtils.frequencyCounter(groupedEvents);
-    }
-    
+		List<Event> events = Lists.newArrayList(eventRepository.findAll());
+		log.info("No. of events found: {}", events.size());
 
-    /**
-     * Returns a compliance rate for a question over a time frame.  Collects events by weekly, monthly,
-     * etc, and then calculates the compliance during that time frame.
-     * 
-     * @param String time frame - week, month, year, quarter
-     * @param Question question - question to calculate compliance for
-     * 
-     * @return Map of time frame name to compliance rate
-     * @throws InvalidTimeframeException 
-     */
-    @Transactional(readOnly=true)
-	public Map<String, Double> findComplianceByTimeframe(String timeframe, Question question) throws InvalidTimeframeException {
-    	log.debug("Found event template {}", question.getEventTemplate().toString());
-    	
-    	// Get all events of that template
-    	List<Event> events = eventRepository.findByEventTemplate(question.getEventTemplate());
-    	log.debug("Found {} events", events.size());
-    	
-    	// Group events by time frame
-    	Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByTimestamp(events, timeframe);
-    	
-    	for(Map.Entry<String, Set<Event>> entry : groupedEvents.entrySet()) {
-    		log.debug("Timeframe {} had {} events", entry.getKey(), entry.getValue().size());
-    	}
-    	
-    	// Calculate compliance for each grouping by time frame
-    	Map<String, Double> compliance = groupedEvents.entrySet()
-    			.stream()
-    			.collect(
-    					Collectors.toMap(
-    							e -> e.getKey(),
-    							e -> H2msRestUtils.calculateCompliance(question, e.getValue())
-    							)
-    					);
-    
-    	for(Map.Entry<String, Double> entry : compliance.entrySet()) {
-    		log.debug("Compliance for {} is {}", entry.getKey(), entry.getValue());
-    	}
-    	
+		Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByTimestamp(events, timeframe);
+
+		log.info("Parsed {} timestamps by {}", groupedEvents.size(), timeframe);
+
+		return H2msRestUtils.frequencyCounter(groupedEvents);
+	}
+
+	/**
+	 * Returns a compliance rate for a question over a time frame. Collects events
+	 * by weekly, monthly, etc, and then calculates the compliance during that time
+	 * frame.
+	 * 
+	 * @param String
+	 *            time frame - week, month, year, quarter
+	 * @param Question
+	 *            question - question to calculate compliance for
+	 * 
+	 * @return Map of time frame name to compliance rate
+	 * @throws InvalidTimeframeException
+	 */
+	@Transactional(readOnly = true)
+	public Map<String, Double> findComplianceByTimeframe(String timeframe, Question question)
+			throws InvalidTimeframeException {
+		log.debug("Found event template {}", question.getEventTemplate().toString());
+
+		// Get all events of that template
+		List<Event> events = eventRepository.findByEventTemplate(question.getEventTemplate());
+		log.debug("Found {} events", events.size());
+
+		// Group events by time frame
+		Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByTimestamp(events, timeframe);
+
+		for (Map.Entry<String, Set<Event>> entry : groupedEvents.entrySet()) {
+			log.debug("Timeframe {} had {} events", entry.getKey(), entry.getValue().size());
+		}
+
+		// Calculate compliance for each grouping by time frame
+		Map<String, Double> compliance = groupedEvents.entrySet().stream().collect(
+				Collectors.toMap(e -> e.getKey(), e -> H2msRestUtils.calculateCompliance(question, e.getValue())));
+
+		for (Map.Entry<String, Double> entry : compliance.entrySet()) {
+			log.debug("Compliance for {} is {}", entry.getKey(), entry.getValue());
+		}
+
 		return compliance;
 	}
 

@@ -25,9 +25,9 @@ public class Question {
 
 	/* Properties */
 	@Id
-	@GeneratedValue(strategy= GenerationType.AUTO)
-    @Column
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column
+	private Long id;
 
 	@NotNull
 	@Column

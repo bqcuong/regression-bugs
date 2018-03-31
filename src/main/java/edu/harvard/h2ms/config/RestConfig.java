@@ -9,37 +9,36 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import edu.harvard.h2ms.domain.core.Question;
- 
+
 /**
  * REST-related configuration items.
  */
 @Configuration
 public class RestConfig extends RepositoryRestConfigurerAdapter {
-	
-	
-    @Override
+
+	@Override
 	public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
-        config.exposeIdsFor(Question.class);
-    }
-    
+		config.exposeIdsFor(Question.class);
+	}
+
 	/**
-	 * Configuration to allow cross-origin requests to the API. Required for
-	 * the frontend app to work in a browser.  Based on the tutorial at
+	 * Configuration to allow cross-origin requests to the API. Required for the
+	 * frontend app to work in a browser. Based on the tutorial at
 	 * http://chariotsolutions.com/blog/post/angular-2-spring-boot-jwt-cors_part1/.
 	 */
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("OPTIONS");
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("DELETE");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
-    }
+	@Bean
+	public CorsFilter corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration config = new CorsConfiguration();
+		config.setAllowCredentials(true);
+		config.addAllowedOrigin("*");
+		config.addAllowedHeader("*");
+		config.addAllowedMethod("OPTIONS");
+		config.addAllowedMethod("GET");
+		config.addAllowedMethod("POST");
+		config.addAllowedMethod("PUT");
+		config.addAllowedMethod("DELETE");
+		source.registerCorsConfiguration("/**", config);
+		return new CorsFilter(source);
+	}
 }
