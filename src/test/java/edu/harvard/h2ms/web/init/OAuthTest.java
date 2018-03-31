@@ -15,6 +15,7 @@ import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -42,7 +43,7 @@ public class OAuthTest {
 
     @Autowired private FilterChainProxy springSecurityFilterChain;
 
-    @MockBean private UserRepository userRepository;
+    @Autowired private UserRepository userRepository;
 
     private MockMvc mockMvc;
 
@@ -54,7 +55,7 @@ public class OAuthTest {
                         .build();
 
         User user = new User("John", "Quincy", "Adams", EMAIL, PASSWORD);
-        Mockito.when(userRepository.findOneByEmail(EMAIL)).thenReturn(user);
+        userRepository.save(user);
     }
 
     private String obtainAccessToken(String username, String password) throws Exception {
@@ -79,11 +80,13 @@ public class OAuthTest {
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     public void testNoTokenIsUnauthorized() throws Exception {
         mockMvc.perform(get("/events")).andExpect(status().isUnauthorized());
     }
 
     @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     public void testWithTokenIsOK() throws Exception {
         final String accessToken = obtainAccessToken("jqadams@h2ms.org", "password");
 
