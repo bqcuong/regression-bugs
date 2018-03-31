@@ -1,9 +1,15 @@
 package edu.harvard.h2ms.service;
 
+import edu.harvard.h2ms.domain.core.User;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.Map;
 
 public interface UserService {
+	
+	public User findUserByEmail(String email);
+	public User findUserByResetToken(String resetToken);
+	public void save(User user);
+
 
 	/**
 	 * Prepares a key-value mappings of the average hand washing compliance
