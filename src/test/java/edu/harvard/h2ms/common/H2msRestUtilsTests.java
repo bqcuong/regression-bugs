@@ -8,6 +8,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
+import edu.harvard.h2ms.exception.InvalidTimeframeException;
 import edu.harvard.h2ms.service.utils.H2msRestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -183,8 +184,7 @@ public class H2msRestUtilsTests {
     }
 
     @Test
-    public void test_parse_timestamp_when_invalid_values(){
+    public void test_parse_timestamp_when_invalid_values() throws InvalidTimeframeException{
         Assert.isTrue(H2msRestUtils.groupEventsByTimestamp(new ArrayList<>(), "week").isEmpty());
     }
-
 }

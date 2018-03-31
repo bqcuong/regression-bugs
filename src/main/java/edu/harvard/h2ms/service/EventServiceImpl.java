@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.exception.InvalidTimeframeException;
 import edu.harvard.h2ms.repository.AnswerRepository;
 import edu.harvard.h2ms.repository.EventRepository;
 import edu.harvard.h2ms.repository.QuestionRepository;
@@ -41,9 +42,10 @@ public class EventServiceImpl implements EventService {
      *     results returned is {"March (2018)":1}
      * @param timeframe - week, month, year, quarter
      * @return
+     * @throws InvalidTimeframeException 
      */
     @Transactional(readOnly=true)
-    public Map<String, Long> findEventCountByTimeframe(String timeframe) {
+    public Map<String, Long> findEventCountByTimeframe(String timeframe) throws InvalidTimeframeException {
 
         List<Event> events = Lists.newArrayList(eventRepository.findAll());
         log.info("No. of events found: {}", events.size());
@@ -64,20 +66,21 @@ public class EventServiceImpl implements EventService {
      * @param Question question - question to calculate compliance for
      * 
      * @return Map of time frame name to compliance rate
+     * @throws InvalidTimeframeException 
      */
     @Transactional(readOnly=true)
-	public Map<String, Double> findComplianceByTimeframe(String timeframe, Question question) {
-    	log.info("Found event template {}", question.getEventTemplate().toString());
+	public Map<String, Double> findComplianceByTimeframe(String timeframe, Question question) throws InvalidTimeframeException {
+    	log.debug("Found event template {}", question.getEventTemplate().toString());
     	
     	// Get all events of that template
     	List<Event> events = eventRepository.findByEventTemplate(question.getEventTemplate());
-    	log.info("Found {} events", events.size());
+    	log.debug("Found {} events", events.size());
     	
     	// Group events by time frame
     	Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByTimestamp(events, timeframe);
     	
     	for(Map.Entry<String, Set<Event>> entry : groupedEvents.entrySet()) {
-    		log.info("Timeframe {} had {} events", entry.getKey(), entry.getValue().size());
+    		log.debug("Timeframe {} had {} events", entry.getKey(), entry.getValue().size());
     	}
     	
     	// Calculate compliance for each grouping by time frame
@@ -91,7 +94,7 @@ public class EventServiceImpl implements EventService {
     					);
     
     	for(Map.Entry<String, Double> entry : compliance.entrySet()) {
-    		log.info("Compliance for {} is {}", entry.getKey(), entry.getValue());
+    		log.debug("Compliance for {} is {}", entry.getKey(), entry.getValue());
     	}
     	
 		return compliance;

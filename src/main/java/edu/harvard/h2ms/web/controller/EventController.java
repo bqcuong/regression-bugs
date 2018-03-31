@@ -1,6 +1,7 @@
 package edu.harvard.h2ms.web.controller;
 
 import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.exception.InvalidTimeframeException;
 import edu.harvard.h2ms.repository.QuestionRepository;
 import edu.harvard.h2ms.service.EventService;
 import org.slf4j.Logger;
@@ -32,9 +33,15 @@ public class EventController {
      * @return
      */
     @RequestMapping(value = "/count/{timeframe}", method = RequestMethod.GET)
-    public Map<String, Long> findEventCountByTimeframe(@PathVariable String timeframe) {
+    public ResponseEntity<?> findEventCountByTimeframe(@PathVariable String timeframe) {
         log.info("Searching for all events grouping by " + timeframe);
-        return eventService.findEventCountByTimeframe(timeframe);
+        try {
+        	return new ResponseEntity<Map<String, Long>>(eventService.findEventCountByTimeframe(timeframe), HttpStatus.OK);
+        } catch(InvalidTimeframeException e) {
+        	log.error(e.getMessage());
+        	return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        
     }
 
     /**
@@ -53,7 +60,12 @@ public class EventController {
     	log.info("Found question {}", question.toString());
     	
     	if(question.getAnswerType().equals("boolean")) {
-    		return new ResponseEntity<Map<String, Double>>(eventService.findComplianceByTimeframe(timeframe, question), HttpStatus.OK);
+    		try {
+				return new ResponseEntity<Map<String, Double>>(eventService.findComplianceByTimeframe(timeframe, question), HttpStatus.OK);
+			} catch (InvalidTimeframeException e) {
+				log.error(e.getMessage());
+				return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+			}
     	} else {
     		return new ResponseEntity<String>(String.format("The question %l was not found.", questionId), HttpStatus.NOT_FOUND);
     	}

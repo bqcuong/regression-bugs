@@ -5,6 +5,7 @@ import java.util.Map;
 
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.exception.InvalidTimeframeException;
 
 import org.json.JSONObject;
 
@@ -18,8 +19,9 @@ public interface EventService {
 	 * grouped by a specified timeframe (ie. week, month, year, quarter)
 	 * @param timeframe - week, month, year, quarter
 	 * @return
+	 * @throws InvalidTimeframeException 
 	 */
-	Map<String, Long> findEventCountByTimeframe(String timeframe);
+	Map<String, Long> findEventCountByTimeframe(String timeframe) throws InvalidTimeframeException;
 
     /**
      * Retrieves compliance and returns results grouped by a specified
@@ -27,7 +29,8 @@ public interface EventService {
      *
 	 * @param timeframe - week, month, year, quarter
 	 * @return
+     * @throws InvalidTimeframeException 
 	 */
-	Map<String, Double> findComplianceByTimeframe(String timeframe, Question question);
+	Map<String, Double> findComplianceByTimeframe(String timeframe, Question question) throws InvalidTimeframeException;
 
 }

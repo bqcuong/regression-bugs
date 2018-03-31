@@ -3,6 +3,7 @@ package edu.harvard.h2ms.service.utils;
 import edu.harvard.h2ms.domain.core.Answer;
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.exception.InvalidTimeframeException;
 
 import static java.util.Arrays.asList;
 import edu.harvard.h2ms.service.EventServiceImpl;
@@ -29,12 +30,19 @@ public class H2msRestUtils {
      * 
      * @return - when events are emptys an empty map is returned
      *         - when timeframe is not a valid value an empty map is returned
+     * @throws InvalidTimeframeException 
      */
-    public static Map<String, Set<Event>> groupEventsByTimestamp(List<Event> events, String timeframe){
+    public static Map<String, Set<Event>> groupEventsByTimestamp(List<Event> events, String timeframe) throws InvalidTimeframeException{
+    	if(!asList("week", "month", "year", "quarter").contains(timeframe)) {
+    		throw new InvalidTimeframeException(timeframe);
+    	}
+
+    	
         if(events.isEmpty()) {
-            log.warn("There are 0 events in the H2MS system.");
+            log.warn("There are 0 events to be grouped by timestamp.");
             return new HashMap<>();
         }
+        
         
         // Parses event timestamps based on timeframe type
         Map<String, Set<Event>> values = new HashMap<>();
