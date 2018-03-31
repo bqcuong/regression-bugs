@@ -13,10 +13,8 @@ import {ReportsComponent} from './reports/reports.component';
  */
 const routes: Routes = [
     { path: 'login', component: LoginComponent },
-    { path: 'reports', component: ReportsComponent },
-    { path: '', redirectTo: 'login', pathMatch: 'full'},
-    // TODO: Route about to the AboutComponent when it is created.
     { path: 'privacy', component: PrivacyComponent },
+    { path: 'reports', component: ReportsComponent, canActivate: [AuthGuardService]},
     { path: 'event', component: EventComponent, canActivate: [AuthGuardService]},
     { path: 'export', component: ExportComponent, canActivate: [AuthGuardService]},
     // TODO: route dashboard to the DashboardComponent when it is created.
