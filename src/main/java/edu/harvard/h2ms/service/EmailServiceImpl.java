@@ -30,36 +30,29 @@ public class EmailServiceImpl implements EmailService, ApplicationListener<Appli
 	@Autowired
 	private JavaMailSender mailSender;
 	
-	
 	// Async will not wait for email delivery
 	@Async
-	public void sendEmail(SimpleMailMessage email) {
-		
-		
+	public void sendEmail(SimpleMailMessage email) {		
 		log.info("sending email to: "+email);
 		mailSender.send(email);
 	}
-	
-	
 	
 	@Value("${emailServerType}")
 	private String emailServerType;
 	
 	static private GreenMail greenMail = null;
 	/**
-	 * http://blog.netgloo.com/2014/11/13/run-code-at-spring-boot-startup/
-     * This event is executed as late as conceivably possible to indicate that 
-     * the application is ready to service requests.
-     */
+	* http://blog.netgloo.com/2014/11/13/run-code-at-spring-boot-startup/
+	* This event is executed as late as conceivably possible to indicate that 
+	* the application is ready to service requests.
+	*/
 	@Override
 	public void onApplicationEvent(final ApplicationReadyEvent event) {
 		
-		if(greenMail == null && emailServerType.equalsIgnoreCase("greenmail")) {
-		
+		if(greenMail == null && emailServerType.equalsIgnoreCase("greenmail")) {		
 			log.info("************************STARTING GREENMAIL****************");
 			greenMail = new GreenMail(ServerSetupTest.SMTP);
-			greenMail.start();
-			
+			greenMail.start();			
 		}
 		return;
 	}
