@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.domain.core.Question;
+
 import org.json.JSONObject;
 
 /**
@@ -26,6 +28,6 @@ public interface EventService {
 	 * @param timeframe - week, month, year, quarter
 	 * @return
 	 */
-	Map<String, Long> findComplianceByTimeframe(String timeframe, Long question);
+	Map<String, Double> findComplianceByTimeframe(String timeframe, Question question);
 
 }

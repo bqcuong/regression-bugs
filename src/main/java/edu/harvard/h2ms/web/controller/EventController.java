@@ -1,9 +1,13 @@
 package edu.harvard.h2ms.web.controller;
 
+import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.repository.QuestionRepository;
 import edu.harvard.h2ms.service.EventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
@@ -13,12 +17,12 @@ public class EventController {
 
     final Logger log = LoggerFactory.getLogger(EventController.class);
 
+    @Autowired
     private EventService eventService;
 
     @Autowired
-    public void setEventService(EventService eventService) {
-        this.eventService = eventService;
-    }
+    private QuestionRepository questionRepository;
+    
 
     /**
      * Rest Endpoint for retrieving all events in H2MS systems and returns results
@@ -43,9 +47,14 @@ public class EventController {
      * @param timeframe - week, month, year, quarter
      * @return
      */
-    @RequestMapping(value = "/compliance/{question}/{timeframe}", method = RequestMethod.GET)
-    public Map<String, Long> findComplianceByTimeframe(@PathVariable String timeframe, @PathVariable Long question) {
-        return eventService.findComplianceByTimeframe(timeframe, question);
+    @RequestMapping(value = "/compliance/{questionId}/{timeframe}", method = RequestMethod.GET)
+    public ResponseEntity<?> findComplianceByTimeframe(@PathVariable String timeframe, @PathVariable Long questionId) {
+    	Question question = questionRepository.findOne(questionId);
+    	
+    	if(question.getAnswerType().equals("boolean")) {
+    		return new ResponseEntity<Map<String, Double>>(eventService.findComplianceByTimeframe(timeframe, question), HttpStatus.OK);
+    	} else {
+    		return new ResponseEntity<String>(String.format("The question %l was not found.", questionId), HttpStatus.NOT_FOUND);
+    	}
     }
-
 }

@@ -171,7 +171,7 @@ public class H2msRestUtilsTests {
 
     @Test
     public void test_parse_timestamp_when_invalid_values(){
-        Assert.isTrue(H2msRestUtils.extractParsedTimestamps(new ArrayList<>(), "week").isEmpty());
+        Assert.isTrue(H2msRestUtils.groupEventsByTimestamp(new ArrayList<>(), "week").isEmpty());
     }
 
 }

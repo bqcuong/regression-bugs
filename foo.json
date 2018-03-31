@@ -1,0 +1,13 @@
+{
+  "eventTemplate": "http://localhost:8090/eventTemplates/1",
+  "answers": [
+    {"question": "http://localhost:8090/questions/1", "value": "Room Entry" },
+    {"question": "http://localhost:8090/questions/2", "value": "true" },
+    {"question": "http://localhost:8090/questions/3", "value": "true" },
+    {"question": "http://localhost:8090/questions/4", "value": "Soap and Water" }
+  ],
+  "location": "The Moon",
+  "observer": "http://localhost:8090/users/1",
+  "subject": "http://localhost:8090/users/1",
+  "timestamp": "2018-03-19T13:26:44.108Z"
+}

@@ -2,6 +2,7 @@ package edu.harvard.h2ms.domain.core;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -122,6 +123,10 @@ public class Event {
 		this.location = location;
 	}
 
+	public Answer getAnswer(Question question) {
+		return this.getAnswers().stream().filter(q -> q.getQuestion().equals(question)).findFirst().orElse(null);
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

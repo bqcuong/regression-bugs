@@ -1,16 +1,26 @@
 package edu.harvard.h2ms.service;
 
 import com.google.common.collect.Lists;
+import static java.util.Arrays.asList;
+
+import edu.harvard.h2ms.domain.core.Answer;
 import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.domain.core.EventTemplate;
+import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.repository.AnswerRepository;
 import edu.harvard.h2ms.repository.EventRepository;
+import edu.harvard.h2ms.repository.QuestionRepository;
 import edu.harvard.h2ms.service.utils.H2msRestUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service("eventService")
 @Repository
@@ -19,13 +29,15 @@ public class EventServiceImpl implements EventService {
 
     final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
 
+    @Autowired
     private EventRepository eventRepository;
 
     @Autowired
-    public void setEventRepository(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
-
+    private AnswerRepository answerRepository;
+    
+    @Autowired
+    private QuestionRepository questionRepository;
+    
     /**
      * Retrieves all events from the H2MS system, extracts the timestamps and parses them,
      * returns count per distinctly parsed timestamp
@@ -40,17 +52,42 @@ public class EventServiceImpl implements EventService {
         List<Event> events = Lists.newArrayList(eventRepository.findAll());
         log.info("No. of events found: {}", events.size());
 
-        List<String> parsedTimestamps = H2msRestUtils.extractParsedTimestamps(events, timeframe);
-        log.info("Parsed {} timestamps by {}", parsedTimestamps.size(), timeframe);
+        Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByTimestamp(events, timeframe);
+        
+        log.info("Parsed {} timestamps by {}", groupedEvents.size(), timeframe);
 
-        return H2msRestUtils.frequencyCounter(parsedTimestamps);
+        return H2msRestUtils.frequencyCounter(groupedEvents);
     }
+    
 
-	@Override
-	public Map<String, Long> findComplianceByTimeframe(String timeframe, Long question) {
-		List<Event> events = Lists.newArrayList(eventRepository.findByQuestionId(question));
-		
-		return null;
+    /**
+     * Returns a compliance rate for a question over a time frame.  Collects events by weekly, monthly,
+     * etc, and then calculates the compliance during that time frame.
+     * 
+     * @param String time frame - week, month, year, quarter
+     * @param Question question - question to calculate compliance for
+     * 
+     * @return Map of time frame name to compliance rate
+     */
+    @Transactional(readOnly=true)
+	public Map<String, Double> findComplianceByTimeframe(String timeframe, Question question) {
+    	// Get all events of that template
+    	List<Event> events = eventRepository.findByEventTemplate(question.getEventTemplate());
+    	
+    	// Group events by time frame
+    	Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByTimestamp(events, timeframe);
+    	
+    	// Calculate compliance for each grouping by time frame
+    	Map<String, Double> compliance = groupedEvents.entrySet()
+    			.stream()
+    			.collect(
+    					Collectors.toMap(
+    							e -> e.getKey(),
+    							e -> H2msRestUtils.calculateCompliance(question, e.getValue())
+    							)
+    					);
+    	
+		return compliance;
 	}
 
 }

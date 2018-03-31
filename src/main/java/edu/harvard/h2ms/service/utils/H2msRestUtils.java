@@ -1,12 +1,17 @@
 package edu.harvard.h2ms.service.utils;
 
+import edu.harvard.h2ms.domain.core.Answer;
 import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.domain.core.Question;
+
+import static java.util.Arrays.asList;
 import edu.harvard.h2ms.service.EventServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class H2msRestUtils {
@@ -15,39 +20,63 @@ public class H2msRestUtils {
 
     /**
      * Iterates through a list of events and parses the timestamps specified
-     * by a timeframe.
+     * by a timeframe, and generates a map with the timeframe as a key.
+     *
      * Ex. If the specified timeframe is 'month', the timestamp is parsed as follows:
      *      "2018-03-21T17:58:05.742+0000"  --> "March (2018)"
      * @param events
      * @param timeframe
-     * @return - when events are emptys a null string list is returned
-     *         - when timeframe is not a valid value a null string list is returned
+     * 
+     * @return - when events are emptys an empty map is returned
+     *         - when timeframe is not a valid value an empty map is returned
      */
-    public static List<String> extractParsedTimestamps(List<Event> events, String timeframe){
+    public static Map<String, Set<Event>> groupEventsByTimestamp(List<Event> events, String timeframe){
         if(events.isEmpty()) {
             log.warn("There are 0 events in the H2MS system.");
-            return new ArrayList<>();
+            return new HashMap<>();
         }
+        
         // Parses event timestamps based on timeframe type
-        List<String> values = new ArrayList<>();
+        Map<String, Set<Event>> values = new HashMap<>();
+        
         for (Event event : events) {
             Calendar cal = Calendar.getInstance();
             cal.setTime(event.getTimestamp());
-            if(timeframe.equals("week")) {
-                values.add(formatWeek(cal.get(Calendar.WEEK_OF_YEAR), cal.get(Calendar.YEAR)));
+            
+            String hashKey;
+            
+            if(timeframe.equals("week")) {            	
+            	hashKey = formatWeek(cal.get(Calendar.WEEK_OF_YEAR), cal.get(Calendar.YEAR)); 
             } else if (timeframe.equals("month")) {
-                values.add(formatMonth(cal.get(Calendar.MONTH), cal.get(Calendar.YEAR)));
+            	hashKey = formatMonth(cal.get(Calendar.MONTH), cal.get(Calendar.YEAR));
             } else if (timeframe.equals("year")) {
-                values.add(String.valueOf(cal.get(Calendar.YEAR)));
+            	hashKey = String.valueOf(cal.get(Calendar.YEAR));
             } else if (timeframe.equals("quarter")) {
-                values.add(formatQuarter(cal.get(Calendar.MONTH), cal.get(Calendar.YEAR)));
+            	hashKey = formatQuarter(cal.get(Calendar.MONTH), cal.get(Calendar.YEAR));
+            } else {
+            	return values;
+            }
+            
+            if(values.containsKey(hashKey)) {
+            	values.get(hashKey).add(event);
+            } else {
+            	values.put(hashKey, new HashSet<Event>(asList(event)));
             }
         }
+        
         return values;
     }
 
-    public static Map<String, Long> frequencyCounter (List<String> parsedTimestamps){
-        return parsedTimestamps.stream().collect(Collectors.groupingBy(x -> x, Collectors.counting()));
+    public static <E> Map<String, Long> frequencyCounter (Map<String, Set<E>> parsedTimestamps){
+    	return parsedTimestamps.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.counting()));
+    }
+    
+    public static double calculateCompliance(Question question, Set<Event> events) {
+    	return events.stream()
+    			.filter(e -> e.getAnswer(question) != null)
+    			.mapToDouble(e -> e.getAnswer(question).getValue().equals("true") ? 1 : 0)
+    			.average()
+    			.orElse(Double.NaN);    	
     }
 
     public static String formatMonth(Integer month, Integer year){
