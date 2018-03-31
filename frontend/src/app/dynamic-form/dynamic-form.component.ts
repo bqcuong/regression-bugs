@@ -35,11 +35,11 @@ export class DynamicFormComponent implements OnInit {
         // transform the value object into an array of Answers
         for (const property of Object.entries(values)) {
             if (property[0] !== 'location' && property[0] !== 'subject') {
-                const question: Question = {
-                    question: property[0]
-                }
+                /*const question: Question = {
+                    question:
+                }*/
                 const answer: Answer = {
-                    question: question,
+                    question: property[0],
                     value: property[1]
                 };
                 answers.push(answer);

@@ -18,6 +18,6 @@ export interface Answer {
     answerType?: string;
     event?: Event;
     id?: number;
-    question?: Question;
+    question?: string;
     value?: string;
 }
