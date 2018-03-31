@@ -8,7 +8,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import edu.harvard.h2ms.domain.core.Answer;
+import edu.harvard.h2ms.domain.core.EventTemplate;
 import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.domain.core.User;
 
 /**
  * REST-related configuration items.
@@ -16,9 +19,18 @@ import edu.harvard.h2ms.domain.core.Question;
 @Configuration
 public class RestConfig extends RepositoryRestConfigurerAdapter {
 
+	/**
+	 * Exposes the ID's for certain entities.  This goes against the HATEOAS concept
+	 * built-in to Spring Data REST, but maybe it makes some things easier for the
+	 * front-end folks.
+	 * 
+	 */
 	@Override
 	public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
 		config.exposeIdsFor(Question.class);
+		config.exposeIdsFor(Answer.class);
+		config.exposeIdsFor(EventTemplate.class);
+		config.exposeIdsFor(User.class);
 	}
 
 	/**
