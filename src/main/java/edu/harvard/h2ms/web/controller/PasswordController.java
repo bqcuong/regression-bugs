@@ -33,16 +33,14 @@ public class PasswordController {
 	
 	final Logger log = LoggerFactory.getLogger(PasswordController.class);
 	
-	
 	@Autowired
 	private UserService userService;
 	
 	@Autowired
 	private EmailService emailService;
 	
-    @Autowired
-    public JavaMailSender emailSender;
-	
+	@Autowired
+	public JavaMailSender emailSender;
 	
 	/**
 	 * Sets the reset parameter
@@ -56,15 +54,12 @@ public class PasswordController {
 		Map<String,String> entity = new HashMap<>();
 		entity.put("action", "user reset token set");
 		
-		
 		User user = null;
 		try {
 			user = userService.findUserByEmail(UriUtils.decode(email, "UTF-8"));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		
-
 		
 		if(user != null) {
 			String token = UUID.randomUUID().toString();
@@ -90,14 +85,8 @@ public class PasswordController {
 			
 		} else 
 			log.info("error finding user with email: " + email);
-		
-		
-		// fail silently to prevent probing
 		return new ResponseEntity<Object>(entity, HttpStatus.OK);
 	}
-	
-	
-	
 	
 	/**
 	 * Resets password for user with reset token
@@ -111,8 +100,6 @@ public class PasswordController {
 		Map<String,String> entity = new HashMap<>();
 		entity.put("action", "user password reset");
 		
-		
-		
 		String token = requestParams.get("token");
 		String password = requestParams.get("password");
 		User user = userService.findUserByResetToken(token);
@@ -123,10 +110,6 @@ public class PasswordController {
 		} else 
 			log.info("error finding user with token: " + token);
 		
-		
-		// fail silently to prevent probing
 		return new ResponseEntity<Object>(entity, HttpStatus.OK);
 	}
-	
-	
 }
