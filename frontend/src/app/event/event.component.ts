@@ -18,6 +18,19 @@ export class EventComponent implements OnInit {
     constructor(private actr: ActivatedRoute) { }
 
     ngOnInit() {
+        const locationResolver = this.actr.snapshot.data.locationResolver;
+
+        // Add a question for Location, and populate it's options with results from locationResolver
+        const locOptions = locationResolver._embedded.locations.map(location => location.name);
+        const locParams = {
+            id: 'location',
+            question: 'Location',
+            options: locOptions,
+            required: true
+        }
+        this.questions.push(new DropdownQuestion(locParams));
+
+        // Populate the dynamic questions
         const questionResolver = this.actr.snapshot.data.questionResolver;
         questionResolver._embedded.questions
             .sort((a, b) => a.priority - b.priority)

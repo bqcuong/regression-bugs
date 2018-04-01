@@ -24,6 +24,7 @@ import {TokenInterceptor} from './token-interceptor.service';
 import { AuthService} from './auth.service';
 import {AuthGuardService} from './auth-guard.service';
 import { EventTemplateEntityService } from './api/eventTemplateEntity.service';
+import { LocationEntityService} from './api/locationEntity.service';
 import { ApiModule } from './api.module';
 
 @NgModule({
@@ -64,7 +65,8 @@ import { ApiModule } from './api.module';
           useClass: TokenInterceptor,
           multi: true
       },
-      EventTemplateEntityService
+      EventTemplateEntityService,
+      LocationEntityService
   ],
   bootstrap: [ AppComponent ]
 })

@@ -7,6 +7,7 @@ import { NavItem } from './nav-item';
 import {ExportComponent} from './export/export.component';
 import {AuthGuardService} from './auth-guard.service';
 import {QuestionResolverService} from './questions/service/question-resolver.service';
+import {LocationResolverService} from './location/service/location-resolver.service';
 
 /**
  * The actual available routes. Which links are routed to which components.
@@ -19,6 +20,7 @@ const routes: Routes = [
         canActivate: [AuthGuardService],
         resolve: {
             questionResolver: QuestionResolverService,
+            locationResolver: LocationResolverService
         }},
     { path: 'export', component: ExportComponent, canActivate: [AuthGuardService]},
     // TODO: route dashboard to the DashboardComponent when it is created.
@@ -53,7 +55,10 @@ export const NAV_ITEMS: NavItem[] = [
 @NgModule({
     exports: [ RouterModule ],
     imports: [ RouterModule.forRoot(routes) ],
-    providers: [ QuestionResolverService ]
+    providers: [
+        QuestionResolverService,
+        LocationResolverService
+    ]
 })
 export class AppRoutingModule {}
 

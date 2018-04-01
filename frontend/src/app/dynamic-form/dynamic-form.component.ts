@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 
 import { QuestionBase } from '../questions/question-base';
 import { QuestionControlService } from '../questions/service/question-control.service';
-import {Answer, Event, Question} from '../';
+import {Answer, Event} from '../';
 import { EventEntityService} from '../';
 
 @Component({
@@ -16,7 +16,6 @@ export class DynamicFormComponent implements OnInit {
 
     @Input() questions: QuestionBase<any>[] = [];
     form: FormGroup;
-    payLoad = '';
 
     constructor(private questionControlService: QuestionControlService,
                 private eventEntityService: EventEntityService) {  }
@@ -26,8 +25,6 @@ export class DynamicFormComponent implements OnInit {
     }
 
     onSubmit() {
-        this.payLoad = JSON.stringify(this.form.value);
-
         const answers: Array<Answer> = [];
 
         const values = this.form.value;
@@ -35,9 +32,6 @@ export class DynamicFormComponent implements OnInit {
         // transform the value object into an array of Answers
         for (const property of Object.entries(values)) {
             if (property[0] !== 'location' && property[0] !== 'subject') {
-                /*const question: Question = {
-                    question:
-                }*/
                 const answer: Answer = {
                     question: property[0],
                     value: property[1]
