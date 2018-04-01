@@ -25,6 +25,7 @@ import { AuthService} from './auth.service';
 import {AuthGuardService} from './auth-guard.service';
 import { EventTemplateEntityService } from './api/eventTemplateEntity.service';
 import { LocationEntityService} from './api/locationEntity.service';
+import { UserEntityService} from './api/userEntity.service';
 import { ApiModule } from './api.module';
 
 @NgModule({
@@ -66,7 +67,8 @@ import { ApiModule } from './api.module';
           multi: true
       },
       EventTemplateEntityService,
-      LocationEntityService
+      LocationEntityService,
+      UserEntityService
   ],
   bootstrap: [ AppComponent ]
 })
