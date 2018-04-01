@@ -83,6 +83,8 @@ public class UserControllerTests {
     @Autowired
     EventRepository eventRepository;
 
+    private Question question;
+    
     /**
      * Setup prior to running unit tests
      * @throws Exception
@@ -106,10 +108,11 @@ public class UserControllerTests {
         Event event = new Event();
         Set<Answer> answers = new HashSet<>();
         Answer answer = new Answer();
-        Question question = new Question();
+        
+        question = new Question();
         question.setPriority(1);
         question.setRequired(TRUE);
-        question.setAnswerType("Boolean");
+        question.setAnswerType("boolean");
         question.setQuestion("Washed?");
         question.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
         
@@ -127,9 +130,8 @@ public class UserControllerTests {
     }
 
     /**
-     * Unit Test #1
-     * Tests the success of the /avgWashed/ endpoint. The endpoint
-     * is used to retrieve the average of hand washing compliance per user type.
+     * Tests the success of the /users/compliance/{question_id} endpoint. The endpoint
+     * is used to retrieve the compliance value for a particular question
      */
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -138,7 +140,7 @@ public class UserControllerTests {
         final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
 
         // Makes API calls and checks for success status
-         MockHttpServletResponse result = mvc.perform(get("/users/avgWashed/")
+         MockHttpServletResponse result = mvc.perform(get(String.format("/users/compliance/%d", question.getId()))
                 .header("Authorization", "Bearer " + accessToken)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -84,7 +84,7 @@ public class H2msRestUtils {
     			.filter(e -> e.getAnswer(question) != null)
     			.mapToDouble(e -> e.getAnswer(question).getValue().equals("true") ? 1 : 0)
     			.average()
-    			.orElse(Double.NaN);    	
+    			.orElse(0.0);    	
     }
 
     public static String formatMonth(Integer month, Integer year){
