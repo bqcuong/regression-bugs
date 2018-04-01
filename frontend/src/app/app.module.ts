@@ -24,7 +24,7 @@ import {TokenInterceptor} from './token-interceptor.service';
 import { AuthService} from './auth.service';
 import {AuthGuardService} from './auth-guard.service';
 import { EventTemplateEntityService } from './api/eventTemplateEntity.service';
-import { ApiModule} from './api.module';
+import { ApiModule } from './api.module';
 
 @NgModule({
   declarations: [
@@ -53,7 +53,7 @@ import { ApiModule} from './api.module';
     ReactiveFormsModule,
     MatToolbarModule,
     MatSidenavModule,
-    MatListModule
+    MatListModule,
   ],
   providers: [ MediaMatcher,
       ConfigService,
@@ -64,7 +64,8 @@ import { ApiModule} from './api.module';
           useClass: TokenInterceptor,
           multi: true
       },
-      EventTemplateEntityService],
+      EventTemplateEntityService
+  ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

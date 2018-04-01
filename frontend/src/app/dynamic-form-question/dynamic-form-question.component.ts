@@ -10,5 +10,10 @@ import { QuestionBase } from '../questions/question-base';
 export class DynamicFormQuestionComponent {
     @Input() question: QuestionBase<any>;
     @Input() form: FormGroup;
-    get isValid() { return this.form.controls[this.question.id].valid; }
+    get isValid() {
+        if (this !== undefined && Object.keys(this.form.controls).length !== 0) {
+            return this.form.controls[this.question.id].valid;
+        }
+        return false;
+    }
 }

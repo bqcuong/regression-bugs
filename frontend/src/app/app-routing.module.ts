@@ -6,6 +6,7 @@ import {EventComponent} from './event/event.component';
 import { NavItem } from './nav-item';
 import {ExportComponent} from './export/export.component';
 import {AuthGuardService} from './auth-guard.service';
+import {QuestionResolverService} from './questions/service/question-resolver.service';
 
 /**
  * The actual available routes. Which links are routed to which components.
@@ -13,7 +14,12 @@ import {AuthGuardService} from './auth-guard.service';
 const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'privacy', component: PrivacyComponent },
-    { path: 'event', component: EventComponent, canActivate: [AuthGuardService]},
+    { path: 'event',
+        component: EventComponent,
+        canActivate: [AuthGuardService],
+        resolve: {
+            questionResolver: QuestionResolverService,
+        }},
     { path: 'export', component: ExportComponent, canActivate: [AuthGuardService]},
     // TODO: route dashboard to the DashboardComponent when it is created.
     { path: 'dashboard', redirectTo: 'event', pathMatch: 'full', canActivate: [AuthGuardService]}, // a protected page
@@ -46,7 +52,8 @@ export const NAV_ITEMS: NavItem[] = [
 
 @NgModule({
     exports: [ RouterModule ],
-    imports: [ RouterModule.forRoot(routes) ]
+    imports: [ RouterModule.forRoot(routes) ],
+    providers: [ QuestionResolverService ]
 })
 export class AppRoutingModule {}
 

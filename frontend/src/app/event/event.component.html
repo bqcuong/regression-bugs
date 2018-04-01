@@ -3,7 +3,7 @@
     <mat-card class="col-md-6">
         <mat-card-title>Observe</mat-card-title>
         <mat-card-content class="text-center">
-            <app-dynamic-form [questions]="questions"></app-dynamic-form>
+            <app-dynamic-form *ngIf="questions" [questions]="questions"></app-dynamic-form>
         </mat-card-content>
     </mat-card>
 </div>
