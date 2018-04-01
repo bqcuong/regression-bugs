@@ -14,7 +14,7 @@ export class ReportsComponent implements OnInit {
 
   fetchReport() {
       // todo: make seaparate requests to fetch report options, and fetch a specific report
-        
+
   }
 
 }
