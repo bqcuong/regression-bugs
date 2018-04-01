@@ -1,9 +1,33 @@
 <div class="card row">
     <div class="col-md-3"></div>
     <mat-card class="col-md-6">
-        <p>
-            reports works!
-        </p>
+        <mat-card-content class="text-center">
+            <mat-tab-group>
+                <mat-tab label="Select Plot">
+                    <mat-form-field>
+                        <mat-select placeholder="plot">
+                            <mat-option *ngFor="let plot of plots" [value]="plot.value">
+                                {{ plot.viewValue }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <mat-form-field>
+                        <mat-select placeholder="grouped by">
+                            <mat-option *ngFor="let grouping of groupings" [value]="grouping.value">
+                                {{ grouping.viewValue }}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </mat-tab>
+                <mat-tab label="Narrow Results">
+
+                </mat-tab>
+            </mat-tab-group>
+            <mat-card-actions>
+                <button mat-raised-button color="basic">Reset</button>
+                <button mat-raised-button color="primary">Submit</button>
+            </mat-card-actions>
+        </mat-card-content>
     </mat-card>
     <div class="col-md-3"></div>
 </div>
