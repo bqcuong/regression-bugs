@@ -1,7 +1,10 @@
 package edu.harvard.h2ms.web.controller;
 
+import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.exception.InvalidAnswerTypeException;
 import edu.harvard.h2ms.exception.InvalidTimeframeException;
+import edu.harvard.h2ms.exception.ResourceNotFoundException;
 import edu.harvard.h2ms.repository.QuestionRepository;
 import edu.harvard.h2ms.service.EventService;
 import org.slf4j.Logger;
@@ -10,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -66,29 +71,25 @@ public class EventController {
 	 *         results - 400 Bad Request on incorrect time frame - 404 Not Found if
 	 *         question not found
 	 * 
-	 */
+	 */	
 	@RequestMapping(value = "/compliance/{questionId}/{timeframe}", method = RequestMethod.GET)
 	public ResponseEntity<?> findComplianceByTimeframe(@PathVariable String timeframe, @PathVariable Long questionId) {		
+		List<Event> events;
 		Question question = questionRepository.findOne(questionId);
-		if(question == null) {
-			return new ResponseEntity<String>(String.format("The question %l was not found.", questionId), HttpStatus.NOT_FOUND);
-		}
-			
-		log.debug("Found question {}", question.toString());
 		
-		if (question.getAnswerType().equals("boolean")) {
-			try {
-				return new ResponseEntity<Map<String, Double>>(
-						eventService.findComplianceByTimeframe(timeframe, question), HttpStatus.OK);
-			} catch (InvalidTimeframeException e) {
-				log.error(e.getMessage());
-				return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-			}
-		} else {
-			// Invalid question type:
-			String message = String.format("Compliance data can only be generated for a boolean question. Question is '%s.'", question.getAnswerType());
-			log.error(message);				
-			return new ResponseEntity<String>(message, HttpStatus.BAD_REQUEST);
+		if(question == null) {
+			return new ResponseEntity<String>("Question not found.", HttpStatus.NOT_FOUND);
 		}
+		
+		try {	
+			events = eventService.findEventsForCompliance(question);
+			return new ResponseEntity<Map<String, Double>>(
+					eventService.findComplianceByTimeframe(timeframe, question, events), HttpStatus.OK);
+		} catch (InvalidAnswerTypeException answerType) {
+			return new ResponseEntity<String>(answerType.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (InvalidTimeframeException timeFrame) {
+			return new ResponseEntity<String>(timeFrame.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+		
 	}
 }

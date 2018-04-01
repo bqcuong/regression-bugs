@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.exception.InvalidAnswerTypeException;
 import edu.harvard.h2ms.exception.InvalidTimeframeException;
+import edu.harvard.h2ms.exception.ResourceNotFoundException;
 import edu.harvard.h2ms.repository.AnswerRepository;
 import edu.harvard.h2ms.repository.EventRepository;
 import edu.harvard.h2ms.repository.QuestionRepository;
@@ -13,6 +15,8 @@ import edu.harvard.h2ms.service.utils.H2msRestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +33,9 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	private EventRepository eventRepository;
 
+	@Autowired
+	private QuestionRepository questionRepository;
+	
 	/**
 	 * Retrieves all events from the H2MS system, extracts the timestamps and parses
 	 * them, returns count per distinctly parsed timestamp Ex. If system has 1 event
@@ -61,20 +68,17 @@ public class EventServiceImpl implements EventService {
 	 * @param String
 	 *            time frame - week, month, year, quarter
 	 * @param Question
-	 *            question - question to calculate compliance for
+	 * 			  question for compliance
+	 * @param Events
+	 *           events to process
 	 * 
 	 * @return Map of time frame name to compliance rate
 	 * @throws InvalidTimeframeException
 	 */
 	@Transactional(readOnly = true)
-	public Map<String, Double> findComplianceByTimeframe(String timeframe, Question question)
+	public Map<String, Double> findComplianceByTimeframe(String timeframe, Question question, List<Event> events)
 			throws InvalidTimeframeException {
-		log.debug("Found event template {}", question.getEventTemplate().toString());
-
-		// Get all events of that template
-		List<Event> events = eventRepository.findByEventTemplate(question.getEventTemplate());
-		log.debug("Found {} events", events.size());
-
+		
 		// Group events by time frame
 		Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByTimestamp(events, timeframe);
 
@@ -83,8 +87,14 @@ public class EventServiceImpl implements EventService {
 		}
 
 		// Calculate compliance for each grouping by time frame
-		Map<String, Double> compliance = groupedEvents.entrySet().stream().collect(
-				Collectors.toMap(e -> e.getKey(), e -> H2msRestUtils.calculateCompliance(question, e.getValue())));
+		Map<String, Double> compliance = groupedEvents.entrySet().stream()
+				.collect(
+						Collectors.toMap(
+								e -> e.getKey(),
+								e -> H2msRestUtils.calculateCompliance(question, e.getValue()
+										)
+								)
+						);
 
 		for (Map.Entry<String, Double> entry : compliance.entrySet()) {
 			log.debug("Compliance for {} is {}", entry.getKey(), entry.getValue());
@@ -92,11 +102,27 @@ public class EventServiceImpl implements EventService {
 
 		return compliance;
 	}
-
-	@Override
-	public Map<String, Double> findComplianceByUserType(Question question) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	/**
+	 * Retrieves a list of events for a particular boolean question.  Used to retrieve
+	 * all events for a compliance end point to do further processing on.
+	 * 
+	 * @param question  	Question to lookup events for
+	 * @return				List<Event> of all events with an answer to this question
+	 * @throws InvalidAnswerTypeException	When question is not boolean
+	 */
+	@Transactional(readOnly = true)
+	public List<Event> findEventsForCompliance(Question question) throws InvalidAnswerTypeException {			
+		log.debug("Found question for compliance: {}", question.toString());
+		
+		if (question.getAnswerType().equals("boolean")) {
+			return eventRepository.findByEventTemplate(question.getEventTemplate());
+		} else {
+			// Invalid question type:
+			String message = String.format("Compliance data can only be generated for a boolean question. Question is '%s.'", question.getAnswerType());
+			log.error(message);	
+			throw new InvalidAnswerTypeException("boolean", question.getAnswerType());
+		}
 	}
-
+	
 }
