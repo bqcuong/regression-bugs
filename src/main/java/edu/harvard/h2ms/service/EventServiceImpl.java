@@ -29,12 +29,6 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	private EventRepository eventRepository;
 
-	@Autowired
-	private AnswerRepository answerRepository;
-
-	@Autowired
-	private QuestionRepository questionRepository;
-
 	/**
 	 * Retrieves all events from the H2MS system, extracts the timestamps and parses
 	 * them, returns count per distinctly parsed timestamp Ex. If system has 1 event
@@ -97,6 +91,12 @@ public class EventServiceImpl implements EventService {
 		}
 
 		return compliance;
+	}
+
+	@Override
+	public Map<String, Double> findComplianceByUserType(Question question) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

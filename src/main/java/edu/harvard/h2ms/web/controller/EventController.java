@@ -68,8 +68,7 @@ public class EventController {
 	 * 
 	 */
 	@RequestMapping(value = "/compliance/{questionId}/{timeframe}", method = RequestMethod.GET)
-	public ResponseEntity<?> findComplianceByTimeframe(@PathVariable String timeframe, @PathVariable Long questionId) {
-		
+	public ResponseEntity<?> findComplianceByTimeframe(@PathVariable String timeframe, @PathVariable Long questionId) {		
 		Question question = questionRepository.findOne(questionId);
 		if(question == null) {
 			return new ResponseEntity<String>(String.format("The question %l was not found.", questionId), HttpStatus.NOT_FOUND);
