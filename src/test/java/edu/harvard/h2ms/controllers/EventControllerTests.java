@@ -205,7 +205,6 @@ public class EventControllerTests {
 
         final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
 
-        // Makes API calls and checks for success status
         mvc.perform(get(String.format("/events/compliance/%d/bad_timeframe", optionsQuestion.getId()))
                 .header("Authorization", "Bearer " + accessToken)
                 .accept(MediaType.APPLICATION_JSON))
@@ -222,7 +221,6 @@ public class EventControllerTests {
 
         final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
 
-        // Makes API calls and checks for success status
         mvc.perform(get(String.format("/events/compliance/%d/bad_timeframe", booleanQuestion.getId()))
                 .header("Authorization", "Bearer " + accessToken)
                 .accept(MediaType.APPLICATION_JSON))

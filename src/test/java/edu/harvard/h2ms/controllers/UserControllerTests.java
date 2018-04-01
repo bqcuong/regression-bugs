@@ -41,6 +41,7 @@ import java.util.Map;
 import java.util.Set;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.util.Arrays.asList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -83,7 +84,8 @@ public class UserControllerTests {
     @Autowired
     EventRepository eventRepository;
 
-    private Question question;
+    private Question booleanQuestion;
+    private Question optionsQuestion;
     
     /**
      * Setup prior to running unit tests
@@ -109,14 +111,22 @@ public class UserControllerTests {
         Set<Answer> answers = new HashSet<>();
         Answer answer = new Answer();
         
-        question = new Question();
-        question.setPriority(1);
-        question.setRequired(TRUE);
-        question.setAnswerType("boolean");
-        question.setQuestion("Washed?");
-        question.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
+        booleanQuestion = new Question();
+        booleanQuestion.setPriority(1);
+        booleanQuestion.setRequired(TRUE);
+        booleanQuestion.setAnswerType("boolean");
+        booleanQuestion.setQuestion("Washed?");
+        booleanQuestion.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
+
+        optionsQuestion = new Question();
+        optionsQuestion.setPriority(2);
+        optionsQuestion.setRequired(false);
+        optionsQuestion.setAnswerType("options");
+        optionsQuestion.setQuestion("Relative moment");
+        optionsQuestion.setOptions(asList("entering", "exiting"));
+        optionsQuestion.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
         
-        answer.setQuestion(question);
+        answer.setQuestion(booleanQuestion);
         answer.setValue("true");
         answers.add(answer);
         event.setAnswers(answers);
@@ -135,12 +145,12 @@ public class UserControllerTests {
      */
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-    public void test_Success_UserController_findAvgWashCompliance() throws Exception {
+    public void test_Success_UserController_findUserCompliance() throws Exception {
 
         final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
 
         // Makes API calls and checks for success status
-         MockHttpServletResponse result = mvc.perform(get(String.format("/users/compliance/%d", question.getId()))
+         MockHttpServletResponse result = mvc.perform(get(String.format("/users/compliance/%d", booleanQuestion.getId()))
                 .header("Authorization", "Bearer " + accessToken)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -152,5 +162,38 @@ public class UserControllerTests {
 
         assertThat(mapResult.get("Doctor"), is(1.0));
         assertThat(mapResult.get("Other"), is(0.0));
+    }
+    
+    /**
+     * Tests the failure of the /users/compliance/{question_id} endpoint when a question
+     * isn't found.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_NotFound_UserController_findUserCompliance() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        mvc.perform(get("/users/compliance/0")
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+
+    }
+    
+    /**
+     * Tests the failure of the /users/compliance/{question_id} endpoint when
+     * compliance is generated for a non-boolean end point.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_BadRequest_UserController_findUserCompliance() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+         mvc.perform(get(String.format("/users/compliance/%d", optionsQuestion.getId()))
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }

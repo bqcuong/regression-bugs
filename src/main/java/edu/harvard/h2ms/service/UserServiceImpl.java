@@ -71,11 +71,9 @@ public class UserServiceImpl implements UserService {
 					type,
 					H2msRestUtils.calculateCompliance(question,
 					events.stream()
-					.filter(
-							event -> event.getSubject().getType().equals(type)
-							)
-					.collect(Collectors.toSet())
-					));
+						.filter(event -> event.getSubject().getType().equals(type))
+						.collect(Collectors.toSet()))
+					);
 			
 		}
 		
