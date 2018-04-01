@@ -50,7 +50,7 @@ export class EventComponent implements OnInit {
             .sort((a, b) => a.priority - b.priority)
             .forEach((q: Question) => {
                 const params = {
-                    id: questionResolver._links.self.href,
+                    id: q._links.question.href,
                     question: q.question,
                     options: q.options,
                     required: q.required,
@@ -60,6 +60,7 @@ export class EventComponent implements OnInit {
                 if (q.answerType === 'options') {
                     this.questions.push(new DropdownQuestion(params));
                 } else if (q.answerType === 'boolean') {
+                    params.required = false;
                     this.questions.push(new CheckboxQuestion(params));
                 }
             });
