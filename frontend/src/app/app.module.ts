@@ -8,7 +8,7 @@ import {
     MatButtonModule,
     MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatFormFieldModule,
     MatIconModule,
-    MatInputModule, MatListModule, MatSidenavModule, MatToolbarModule
+    MatInputModule, MatListModule, MatSidenavModule, MatToolbarModule, MatTabsModule, MatSelectModule
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
@@ -53,7 +53,9 @@ import { ReportsComponent } from './reports/reports.component';
     ReactiveFormsModule,
     MatToolbarModule,
     MatSidenavModule,
-    MatListModule
+    MatListModule,
+      MatTabsModule,
+      MatSelectModule
   ],
   providers: [ MediaMatcher,
       ConfigService,

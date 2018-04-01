@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-reports',
@@ -7,8 +8,24 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReportsComponent implements OnInit {
 
+/*
+/events/count/{timeframe}
 
-  constructor() { }
+Example API points:
+localhost:8080/events/count/week
+localhost:8080/events/count/month
+localhost:8080/events/count/year
+localhost:8080/events/count/quarter
+ */
+
+    baseURL = 'http://test.h2ms.org:81/'
+    plots = [{value: 'events/count/', viewValue: 'number of observations'}];
+    groupings = [{value: 'week', viewValue: 'week'},
+        {value: 'month', viewValue: 'month'},
+        {value: 'year', viewValue: 'year'},
+        {value: 'quarter', viewValue: 'quarter'}];
+
+  constructor(private http: HttpClient) { }
 
   ngOnInit() { }
 
