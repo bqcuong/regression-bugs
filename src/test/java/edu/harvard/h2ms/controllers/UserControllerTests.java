@@ -99,11 +99,9 @@ public class UserControllerTests {
                 .build();
 
         // Sample User Data
-        User observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD);
-        observer.setType("Other");
+        User observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD, "Other");
         userRepository.save(observer);
-        User subject = new User("Jane", "Doe", "Sam", "sample@email.com", "password");
-        subject.setType("Doctor");
+        User subject = new User("Jane", "Doe", "Sam", "sample@email.com", "password", "Doctor");
         userRepository.save(subject);
 
         // Creates and persists event
