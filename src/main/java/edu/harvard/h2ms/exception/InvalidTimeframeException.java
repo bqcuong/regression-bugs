@@ -2,9 +2,6 @@ package edu.harvard.h2ms.exception;
 
 /**
  * An exception thrown when a timeframe-related API end point receives an invalid value.
- * 
- * @author stbenjam
- *
  */
 public class InvalidTimeframeException extends Exception {
 	public InvalidTimeframeException(String timeframe) {

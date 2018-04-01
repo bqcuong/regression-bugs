@@ -48,7 +48,7 @@ public class Question {
     @Column
     private String answerType;
 
-    @NotNull
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_template_id")
 	private EventTemplate eventTemplate;

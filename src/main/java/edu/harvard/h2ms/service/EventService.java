@@ -34,13 +34,15 @@ public interface EventService {
 	Map<String, Long> findEventCountByTimeframe(String timeframe) throws InvalidTimeframeException;
 
     /**
-     * Retrieves compliance and returns results grouped by a specified
-     * time frame (i.e. week, month, year, quarter)
-     *
-	 * @param timeframe - week, month, year, quarter
-	 * @param events - List of events to process
+	 * Retrieves compliance and returns results grouped by a specified time frame
+	 * (i.e. week, month, year, quarter)
+	 *
+	 * @param timeframe
+	 *            - week, month, year, quarter
+	 * @param events
+	 *            - List of events to process
 	 * @return Compliance by time frame
-     * @throws InvalidTimeframeException 
+	 * @throws InvalidTimeframeException
 	 */
 	Map<String, Double> findComplianceByTimeframe(String timeframe, Question question, List<Event> events) throws InvalidTimeframeException;
 }

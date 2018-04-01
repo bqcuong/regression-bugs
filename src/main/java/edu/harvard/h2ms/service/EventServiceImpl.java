@@ -88,13 +88,10 @@ public class EventServiceImpl implements EventService {
 
 		// Calculate compliance for each grouping by time frame
 		Map<String, Double> compliance = groupedEvents.entrySet().stream()
-				.collect(
-						Collectors.toMap(
-								e -> e.getKey(),
-								e -> H2msRestUtils.calculateCompliance(question, e.getValue()
-										)
-								)
-						);
+				.collect(Collectors.toMap(
+						e -> e.getKey(),
+						e -> H2msRestUtils.calculateCompliance(question, e.getValue()
+				)));
 
 		for (Map.Entry<String, Double> entry : compliance.entrySet()) {
 			log.debug("Compliance for {} is {}", entry.getKey(), entry.getValue());
