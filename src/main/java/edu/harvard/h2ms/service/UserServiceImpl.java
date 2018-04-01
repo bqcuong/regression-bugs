@@ -1,5 +1,6 @@
 package edu.harvard.h2ms.service;
 
+import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import edu.harvard.h2ms.domain.core.*;
 import edu.harvard.h2ms.repository.EventRepository;
@@ -11,7 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import edu.harvard.h2ms.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import static edu.harvard.h2ms.service.utils.H2msRestUtils.calculateAverage;
@@ -20,12 +20,28 @@ import static java.lang.Boolean.TRUE;
 @Service("userService")
 @Repository
 @Transactional
-public class UserServiceImpl implements UserService {
-
-	final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
-
-	@Autowired
+public class UserServiceImpl implements UserService { 
+  final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+	
+  @Autowired
 	private UserRepository userRepository;
+	
+	@Override
+	public User findUserByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
+	
+	@Override
+	public User findUserByResetToken(String resetToken) {
+		return userRepository.findByResetToken(resetToken);
+	}
+	
+	@Override
+	public void save(User user) {
+		userRepository.save(user);
+	}
+	
+	
 
 	@Autowired
 	private EventRepository eventRepository;
