@@ -20,9 +20,14 @@
       "prefix": "app",
       "styles": [
         "styles.css",
-        "theme.scss"
+        "theme.scss",
+          "node_modules/patternfly/dist/css/patternfly.min.css",
+          "node_modules/patternfly/dist/css/patternfly-additions.min.css"
       ],
-      "scripts": [],
+      "scripts": [
+          "node_modules/patternfly/node_modules/c3/c3.min.js",
+          "node_modules/patternfly/node_modules/d3/d3.min.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",
