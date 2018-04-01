@@ -15,7 +15,7 @@
         </select>
 
         <mat-checkbox *ngSwitchCase="'checkbox'" [formControlName]="question.id"
-                      [id]="question.id"></mat-checkbox>
+                      [id]="question.id" [(ngModel)]="checked"></mat-checkbox>
 
     </div>
 

@@ -30,11 +30,13 @@ export class DynamicFormComponent implements OnInit {
         const values = this.form.value;
 
         // transform the value object into an array of Answers
+        // TODO: unanswered, not required questions shouldn't be sent
         for (const property of Object.entries(values)) {
             if (property[0] !== 'location' && property[0] !== 'subject') {
                 const answer: Answer = {
                     question: property[0],
-                    value: property[1]
+                    // TODO: this is a workaround for untouched booleans, needs to be cleaned up at some point
+                    value: property[1] === undefined ? false : property[1]
                 };
                 answers.push(answer);
             }
