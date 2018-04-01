@@ -3,15 +3,18 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-reports',
   templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.css',
-    '../../../node_modules/patternfly/dist/css/patternfly.min.css',
-    '../../../node_modules/patternfly/dist/css/patternfly-additions.min.css']
+  styleUrls: ['./reports.component.css']
 })
 export class ReportsComponent implements OnInit {
 
+
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit() { }
+
+  fetchReport() {
+      // todo: make seaparate requests to fetch report options, and fetch a specific report
+        
   }
 
 }
