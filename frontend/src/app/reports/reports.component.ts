@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {ReportsService} from './reports.service';
-import {delay} from "rxjs/operator/delay";
 
 @Component({
   selector: 'app-reports',
@@ -31,8 +30,11 @@ export class ReportsComponent implements OnInit {
         this.reportsService.fetchReport(this.selectedPlot, this.selectedGrouping)
             .subscribe(
                 response => {
-                    this.progressBarIsHidden = true;
-                    alert(JSON.stringify(response));
+                    if (JSON.stringify(response).match('{}')) {
+                        alert('no data');
+                    } else {
+                        alert(JSON.stringify(response));
+                    }
                     },
                 error => {
                     this.progressBarIsHidden = true;
