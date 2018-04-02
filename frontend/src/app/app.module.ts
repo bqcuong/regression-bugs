@@ -24,6 +24,7 @@ import {TokenInterceptor} from './token-interceptor.service';
 import { AuthService} from './auth.service';
 import {AuthGuardService} from './auth-guard.service';
 import { ReportsComponent } from './reports/reports.component';
+import {ReportsService} from './reports/reports.service';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { ReportsComponent } from './reports/reports.component';
       ConfigService,
       AuthService,
       AuthGuardService,
+      ReportsService,
       {
           provide: HTTP_INTERCEPTORS,
           useClass: TokenInterceptor,
