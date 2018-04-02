@@ -37,48 +37,47 @@ import { ReportsComponent } from './reports/reports.component';
 import {ReportsService} from './reports/reports.service';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DynamicFormComponent,
-    DynamicFormQuestionComponent,
-    LoginComponent,
-    PrivacyComponent,
-    EventComponent,
-    SidenavComponent,
-    ExportComponent,
-    ReportsComponent
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    AppRoutingModule,
-    MatFormFieldModule,
-    MatInputModule,
-    BrowserAnimationsModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    ReactiveFormsModule,
-    MatToolbarModule,
-    MatSidenavModule,
-    MatListModule,
-      MatTabsModule,
-      MatSelectModule,
-      MatProgressBarModule
-  ],
-  providers: [ MediaMatcher,
-      ConfigService,
-      AuthService,
-      AuthGuardService,
-      ReportsService,
-      {
-          provide: HTTP_INTERCEPTORS,
-          useClass: TokenInterceptor,
-          multi: true
-      }],
-  bootstrap: [ AppComponent ]
+    declarations: [
+        AppComponent,
+        DynamicFormComponent,
+        DynamicFormQuestionComponent,
+        LoginComponent,
+        PrivacyComponent,
+        EventComponent,
+        SidenavComponent,
+        ExportComponent,
+        ReportsComponent
+    ],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        AppRoutingModule,
+        MatFormFieldModule,
+        MatInputModule,
+        BrowserAnimationsModule,
+        MatCardModule,
+        MatCheckboxModule,
+        MatDividerModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatIconModule,
+        ReactiveFormsModule,
+        MatToolbarModule,
+        MatSidenavModule,
+        MatListModule,
+        MatTabsModule,
+        MatSelectModule,
+        MatProgressBarModule
+    ],
+    providers: [MediaMatcher,
+        ConfigService,
+        AuthService,
+        AuthGuardService,
+        ReportsService,
+        {provide: HTTP_INTERCEPTORS,
+        useClass: TokenInterceptor,
+        multi: true
+        }],
+    bootstrap: [ AppComponent ]
 })
 export class AppModule { }
