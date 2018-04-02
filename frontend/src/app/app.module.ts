@@ -6,9 +6,19 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import {
     MatButtonModule,
-    MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatFormFieldModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
     MatIconModule,
-    MatInputModule, MatListModule, MatSidenavModule, MatToolbarModule, MatTabsModule, MatSelectModule
+    MatInputModule,
+    MatListModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatTabsModule,
+    MatSelectModule,
+    MatProgressBarModule
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
@@ -56,7 +66,8 @@ import {ReportsService} from './reports/reports.service';
     MatSidenavModule,
     MatListModule,
       MatTabsModule,
-      MatSelectModule
+      MatSelectModule,
+      MatProgressBarModule
   ],
   providers: [ MediaMatcher,
       ConfigService,
