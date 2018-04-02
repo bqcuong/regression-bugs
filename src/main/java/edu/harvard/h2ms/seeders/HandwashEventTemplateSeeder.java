@@ -42,18 +42,9 @@ public class HandwashEventTemplateSeeder {
     			new Question(
     					"Relative moment",
     					"options",
-    					asList("Room Entry", "Room Exit"),
+    					asList("entering", "inside", "leaving"),
     					true,
     					1,
-    					template
-    					),
-    			
-    			new Question(
-    					"Opportunity to wash?",
-    					"boolean",
-    					null,
-    					true,
-    					2,
     					template
     					),
 
@@ -65,7 +56,7 @@ public class HandwashEventTemplateSeeder {
     					3,
     					template
     					),
-    			
+
     			new Question(
     					"Handwashing Method",
     					"options",
