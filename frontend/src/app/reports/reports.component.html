@@ -2,24 +2,27 @@
     <div class="col-md-3"></div>
     <mat-card class="col-md-6">
         <img mat-card-image src="assets/images/chart-placeholder.png">
+        <mat-progress-bar mode="indeterminate" hidden="progressBarIsHidden"></mat-progress-bar>
         <mat-divider></mat-divider>
         <mat-card-content class="text-center">
             <mat-tab-group>
                 <mat-tab label="Select Plot">
-                    <mat-form-field>
-                        <mat-select placeholder="plot" [(value)]="selectedPlot">
-                            <mat-option *ngFor="let plot of plots" [value]="plot.value">
-                                {{ plot.viewValue }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
-                    <mat-form-field>
-                        <mat-select placeholder="grouped by" [(value)]="selectedGrouping">
-                            <mat-option *ngFor="let grouping of groupings" [value]="grouping.value">
-                                {{ grouping.viewValue }}
-                            </mat-option>
-                        </mat-select>
-                    </mat-form-field>
+                    <section class="plotSelectionSection">
+                        <mat-form-field>
+                            <mat-select placeholder="plot" [(value)]="selectedPlot">
+                                <mat-option *ngFor="let plot of plots" [value]="plot.value">
+                                    {{ plot.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-select placeholder="grouped by" [(value)]="selectedGrouping">
+                                <mat-option *ngFor="let grouping of groupings" [value]="grouping.value">
+                                    {{ grouping.viewValue }}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </section>
                 </mat-tab>
                 <mat-tab label="Narrow Results">
 
