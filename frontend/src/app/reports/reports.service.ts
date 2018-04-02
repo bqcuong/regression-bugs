@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class ReportsService {
@@ -29,11 +30,7 @@ export class ReportsService {
                 'Content-Type':  'application/json',
             })
         };
-        this.http.get(this.baseURL + plot + grouping, httpOptions)
-            .do(response => {
-                alert(JSON.stringify(response));
-                return response;
-            });
+        return this.http.get(this.baseURL + plot + grouping, httpOptions);
     }
 
     getPlots() {

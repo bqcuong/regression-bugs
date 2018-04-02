@@ -26,7 +26,17 @@ export class ReportsComponent implements OnInit {
     submit() {
         // todo: make sure valid input selection
 
-        this.reportsService.fetchReport(this.selectedPlot, this.selectedGrouping);
+        this.reportsService.fetchReport(this.selectedPlot, this.selectedGrouping)
+            .subscribe(
+                response => {
+                    alert(JSON.stringify(response));
+                    },
+                error => {
+                    if (error.status === 401) {
+                        alert('authentication error: please login');
+                    }
+                    }
+                    );
     }
 
 }
