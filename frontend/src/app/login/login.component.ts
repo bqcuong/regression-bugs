@@ -20,7 +20,8 @@ export class LoginComponent implements OnInit {
     }
 
     submit(email: string, password: string): void {
-        this.auth.login(email, password).subscribe(
+        this.auth.login(email, password)
+            .subscribe(
             response => {
                     this.router.navigate(['dashboard']);
             },
