@@ -27,7 +27,10 @@ public class UserSeeder {
     private void seedUserTable() {
 
         if (userRepository.count() == 0) {
-            List<List<String>> records = asList(asList("Default", "User", "admin@h2ms.org"));
+            List<List<String>> records = asList(
+            		asList("Default", "User", "admin@h2ms.org"),
+            		asList("another", "user", "another.user@h2ms.org"));
+            
 
             for (List<String> record : records) {
                 String firstName = record.get(0);
@@ -39,6 +42,7 @@ public class UserSeeder {
                 user.setLastName(lastName);
                 user.setEmail(email);
                 user.setPassword("password");
+                user.setType("doctor");
                 userRepository.save(user);
             }
         }

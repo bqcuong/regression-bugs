@@ -56,17 +56,17 @@ public class UserServiceImpl implements UserService {
 		// Fetches all users from H2MS database
 		List<User> users = Lists.newArrayList(userRepository.findAll());
 		log.info("No. of users found: {}", users.size());
-		if(users.isEmpty()) { return null; }
+		if(users.isEmpty()) { return new HashMap<String, Double>(); }
 
 		// Determines all the distinct types of users
 		List<String> distinctUserTypes = users.stream().map(User::getType).collect(Collectors.toList());
 		log.info("There are {} distinct user types ", distinctUserTypes.size());
-		if(distinctUserTypes.isEmpty()) { return null; }
+		if(distinctUserTypes.isEmpty()) { return new HashMap<String, Double>(); }
 
 		// Fetches all events from the H2MS database
 		List<Event> events = Lists.newArrayList(eventRepository.findAll());
 		log.info("No. of events found: {}", events.size());
-		if(events.isEmpty()) { return null; }
+		if(events.isEmpty()) { return new HashMap<String, Double>(); }
 
 		return calcAvgHandWashCompByDistinctUserType(distinctUserTypes, events);
 	}
