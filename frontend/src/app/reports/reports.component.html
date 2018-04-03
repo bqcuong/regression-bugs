@@ -1,28 +1,38 @@
 <div class="card row">
     <div class="col-md-3"></div>
     <mat-card class="col-md-6">
-        <img mat-card-image src="assets/images/chart-placeholder.png" hidden="chartIsPresent">
-        <div id="chart"></div>
-        <mat-progress-bar mode="indeterminate" hidden="progressBarIsHidden"></mat-progress-bar>
-        <mat-divider></mat-divider>
+        <!--<mat-card-header>-->
+            <!--<mat-card-title>Reports</mat-card-title>-->
+        <!--</mat-card-header>-->
+        <div id="chart">
+            <img mat-card-image src="assets/images/chart-placeholder.png">
+            <mat-progress-bar mode="indeterminate" hidden="progressBarIsHidden"></mat-progress-bar>
+            <p class="text-center" hidden="noDataMessageIsHidden">There is no data for the selected plot!</p>
+        </div>
         <mat-card-content class="text-center">
-            <p class="text-center" hidden="noDataMessageIsHidden">There is no data for the selected plot</p>
+
             <mat-tab-group>
                 <mat-tab label="Select Plot">
                     <section class="plotSelectionSection">
                         <mat-form-field>
-                            <mat-select placeholder="plot" #selectedPlot>
+                            <mat-select placeholder="plot" #selectedPlot [formControl]="plotFormControl" required>
                                 <mat-option *ngFor="let plot of plots" [value]="plot.value">
                                     {{ plot.viewValue }}
                                 </mat-option>
                             </mat-select>
+                            <mat-error *ngIf="plotFormControl.hasError('required')">
+                                plot is <strong>required</strong>
+                            </mat-error>
                         </mat-form-field>
                         <mat-form-field>
-                            <mat-select placeholder="grouped by" #selectedGrouping>
+                            <mat-select placeholder="grouped by" #selectedGrouping [formControl]="groupingFormControl" required>
                                 <mat-option *ngFor="let grouping of timeGroupings" [value]="grouping.value">
                                     {{ grouping.viewValue }}
                                 </mat-option>
                             </mat-select>
+                            <mat-error *ngIf="groupingFormControl.hasError('required')">
+                                grouped by is <strong>required</strong>
+                            </mat-error>
                         </mat-form-field>
                     </section>
                 </mat-tab>

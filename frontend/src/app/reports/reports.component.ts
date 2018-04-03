@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {ReportsService} from './reports.service';
 import * as c3 from 'c3';
 import {ChartAPI} from 'c3';
+import {FormControl, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-reports',
@@ -13,9 +14,6 @@ export class ReportsComponent implements OnInit {
     // todo: styles below should be added to styleURLs above when patternfly style is ready
     // '../../../node_modules/patternfly/dist/css/patternfly.min.css',
     // '../../../node_modules/patternfly/dist/css/patternfly-additions.css'
-
-
-
 
         /*
     /events/count/{timeframe}
@@ -69,11 +67,16 @@ export class ReportsComponent implements OnInit {
     // make false when data has been retrieved and json is empty
     noDataMessageIsHidden = true;
 
-    // make false when a chart is present to hide placeholder
-    chartIsPresent = false;
-
     // chart related variables
      chart: ChartAPI;
+
+    plotFormControl = new FormControl('', [
+        Validators.required,
+    ]);
+
+    groupingFormControl = new FormControl('', [
+        Validators.required,
+    ]);
 
 
     constructor(private reportsService: ReportsService) {}
@@ -81,7 +84,6 @@ export class ReportsComponent implements OnInit {
     ngOnInit() {
         this.progressBarIsHidden = true;
         this.noDataMessageIsHidden = true;
-        this.chartIsPresent = false;
     }
 
     /*
@@ -92,28 +94,28 @@ export class ReportsComponent implements OnInit {
      */
     submit(selectedPlot: string, selectedGrouping: string) {
       // todo: make sure valid input selection
-        this.progressBarIsHidden = false;
-        this.reportsService.fetchReport(this.baseURL + selectedPlot + selectedGrouping)
-            .subscribe(
-                response => {
-                    if (JSON.stringify(response).match('{}')) {
-                        this.noDataMessageIsHidden = true;
-                        this.chartIsPresent = false;
-                        // todo: remove
-                        this.makeBarPlot(selectedPlot, selectedGrouping, response);
-                    } else {
-                        this.noDataMessageIsHidden = false;
-                        this.chartIsPresent = true;
-                        this.makeBarPlot(selectedPlot, selectedGrouping, response);
-                    }
+        if (selectedPlot && selectedGrouping) {
+            this.progressBarIsHidden = false;
+            this.reportsService.fetchReport(this.baseURL + selectedPlot + selectedGrouping)
+                .subscribe(
+                    response => {
+                        if (JSON.stringify(response).match('{}')) {
+                            this.noDataMessageIsHidden = true;
+                            // todo: remove
+                            this.makeBarPlot(selectedPlot, selectedGrouping, response);
+                        } else {
+                            this.noDataMessageIsHidden = false;
+                            this.makeBarPlot(selectedPlot, selectedGrouping, response);
+                        }
                     },
-                error => {
-                    this.progressBarIsHidden = true;
-                    if (error.status === 401) {
-                        alert('authentication error: please login');
+                    error => {
+                        this.progressBarIsHidden = true;
+                        if (error.status === 401) {
+                            alert('authentication error: please login');
+                        }
                     }
-                    }
-                    );
+                );
+        }
     }
 
     /**
