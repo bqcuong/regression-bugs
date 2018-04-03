@@ -4,7 +4,9 @@
         <div id="chart">
             <img mat-card-image src="assets/images/chart-placeholder.png">
             <mat-progress-bar mode="indeterminate" hidden="progressBarIsHidden"></mat-progress-bar>
-            <p class="text-center" hidden="noDataMessageIsHidden">There is no data for the selected plot!</p>
+            <mat-error class="text-center" *ngIf="emptyJSONReturned">
+                There is no data for the selected plot!
+            </mat-error>
         </div>
         <mat-card-content class="text-center">
             <mat-tab-group>
