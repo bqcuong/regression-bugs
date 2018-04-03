@@ -3,12 +3,10 @@
     <mat-card class="col-md-6">
         <div id="chart">
             <img mat-card-image src="assets/images/chart-placeholder.png">
-            <mat-progress-bar mode="indeterminate" hidden="progressBarIsHidden"></mat-progress-bar>
-            <mat-error class="text-center" *ngIf="emptyJSONReturned">
-                There is no data for the selected plot!
-            </mat-error>
         </div>
         <mat-card-content class="text-center">
+            <mat-progress-bar mode="indeterminate" hidden="progressBarIsHidden"></mat-progress-bar>
+            <mat-error *ngIf="emptyJSONReturned">There is no data for the selected plot!</mat-error>
             <mat-tab-group>
                 <mat-tab label="Select Plot">
                     <section class="plotSelectionSection">
