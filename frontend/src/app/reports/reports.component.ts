@@ -65,7 +65,7 @@ export class ReportsComponent implements OnInit {
     progressBarIsHidden = true;
 
     // make false when data has been retrieved and json is empty
-    noDataMessageIsHidden = true;
+    emptyJSONReturned = false;
 
     // chart related variables
      chart: ChartAPI;
@@ -86,7 +86,7 @@ export class ReportsComponent implements OnInit {
 
     ngOnInit() {
         this.progressBarIsHidden = true;
-        this.noDataMessageIsHidden = true;
+        this.emptyJSONReturned = false;
     }
 
     /**
@@ -99,10 +99,10 @@ export class ReportsComponent implements OnInit {
             this.reportsService.fetchReport(this.baseURL + selectedPlot + selectedGrouping)
                 .subscribe(
                     response => {
-                        if (JSON.stringify(response).match('{}')) {
-                            this.noDataMessageIsHidden = true;
+                        if (JSON.stringify(response).indexOf('{}') !== -1) {
+                            this.emptyJSONReturned = true;
                         } else {
-                            this.noDataMessageIsHidden = false;
+                            this.emptyJSONReturned = false;
                             this.makeBarPlot(selectedPlot, selectedGrouping, response);
                         }
                     },
