@@ -138,12 +138,6 @@ localhost:8080/events/count/quarter
      * converts json for number of observations by year to plot data
      */
     makeBarPlotNumObsByYear(data: Object) {
-        // todo: remove demo data
-        // const responseByYear = {
-        //     '2017': 100,
-        //     '2018': 600
-        // };
-
         const columns: string[] = new Array();
         const values: [[string | number]] = [['obs']];
 
@@ -160,16 +154,6 @@ localhost:8080/events/count/quarter
      * converts json for number of observations by quarter to plot data
      */
     makeBarPlotNumObsByQuarter(data: Object) {
-        // todo: remove demo data
-        // const responseByQuarter = {
-        //     'Q1 (2017)': 100,
-        //     'Q2 (2017)': 200,
-        //     'Q3 (2017)': 300,
-        //     'Q4 (2017)': 400,
-        //     'Q1 (2018)': 500,
-        //     'Q2 (2018)': 600
-        // };
-
         const categories: string[] = new Array();
         const groupedColumnsData: [[string | number]] = [['Q1'], ['Q2'], ['Q3'], ['Q4']];
 
@@ -189,16 +173,6 @@ localhost:8080/events/count/quarter
      * converts json for number of observations by month to plot data
      */
     makeBarPlotNumObsByMonth(data: Object) {
-        // todo: remove demo data
-        // const responseByMonth = {
-        //     'January (2017)': 100,
-        //     'February (2017)': 200,
-        //     'March (2017)': 300,
-        //     'April (2017)': 400,
-        //     'May (2017)': 500,
-        //     'January (2018)': 600
-        // };
-
         const referenceMonths = ['January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -225,16 +199,6 @@ localhost:8080/events/count/quarter
      * converts json for number of observations by week to plot data
      */
     makeBarPlotNumObsByWeek(data: Object) {
-        // todo: remove demo data
-        // const responseByWeek = {
-        //     '1st (2017)': 100,
-        //     '2nd (2017)': 200,
-        //     '3rd (2017)': 300,
-        //     '4th (2017)': 400,
-        //     '1st (2018)': 500,
-        //     '4th (2018)': 600
-        // };
-
         const categories: string[] = new Array();
         const groupedColumnsData: [[string | number]] = [['1']];
         const referenceWeeks: string[] = ['1st'];

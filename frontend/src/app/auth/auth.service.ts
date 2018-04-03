@@ -12,7 +12,7 @@ export class AuthService {
 
     constructor(private http: HttpClient) { }
 
-    // todo Move the following impl speicific details into config
+    // todo Move the following impl specific details into config
     localStorageKey = 'h2msCookie';
     client_id = 'h2ms';
     secret = 'secret';
