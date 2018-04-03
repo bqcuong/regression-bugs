@@ -20,7 +20,6 @@ import javax.persistence.TemporalType;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-
 /**
  * An Event is what observer or sensor records about observee's actions.
  */
@@ -29,48 +28,49 @@ import javax.validation.constraints.NotNull;
 public class Event {
 	/* Properties */
 	@Id
-	@GeneratedValue(strategy= GenerationType.AUTO)
-    @Column
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column
+	private Long id;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column
-    private Date timestamp;
+	private Date timestamp;
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "subject_id")
-    private User subject;
+	private User subject;
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_template_id")
-    private EventTemplate eventTemplate;
+	private EventTemplate eventTemplate;
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "observer_id")
-    private User observer;
+	private User observer;
 
-	// TODO: Place holder until Location model is ready + updated according to data model
+	// TODO: Place holder until Location model is ready + updated according to data
+	// model
 	@NotNull
 	@Column
-    private String location;
+	private String location;
 
 	@Valid
-	@OneToMany(fetch = FetchType.EAGER,
-			cascade = CascadeType.ALL,
-			mappedBy = "event")
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "event")
 	private Set<Answer> answers = new HashSet<>();
 
 	public Set<Answer> getAnswers() {
 		return answers;
 	}
 
-	public void setAnswers(Set<Answer> answers) {	
-		answers.forEach((a)->{a.setEvent(this);});
-		
+	public void setAnswers(Set<Answer> answers) {
+		answers.forEach((a) -> {
+			a.setEvent(this);
+		});
+
 		this.answers = answers;
 	}
 
@@ -113,13 +113,23 @@ public class Event {
 	public void setEventTemplate(EventTemplate eventTemplate) {
 		this.eventTemplate = eventTemplate;
 	}
-	
+
 	public String getLocation() {
 		return location;
 	}
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+
+	/**
+	 * Returns the answer for a specific question in an Event.
+	 * 
+	 * @param question
+	 * @return answer to that question, or null if one is not present
+	 */
+	public Answer getAnswer(Question question) {
+		return this.getAnswers().stream().filter(q -> q.getQuestion().equals(question)).findFirst().orElse(null);
 	}
 
 	@Override

@@ -12,7 +12,7 @@ export class ConfigService {
     config: Config;
 
     constructor() {
-        this.config = new Config(h2ms.CONFIG.navbarTitle, h2ms.CONFIG.websiteUrl);
+        this.config = new Config(h2ms.CONFIG.appName, h2ms.CONFIG.websiteUrl, h2ms.CONFIG.logoURL);
     }
 
     getConfig(): Config {

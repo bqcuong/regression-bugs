@@ -40,7 +40,7 @@ public class UserDetailsServiceTest {
 	
 	@Before
 	public void setUp() {
-		user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", "password");
+		user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", "password", "Other");
 		Mockito.when(userRepository.findOneByEmail("jqadams@h2ms.org")).thenReturn(user);
 	}
 	
