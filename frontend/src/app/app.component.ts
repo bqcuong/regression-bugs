@@ -1,7 +1,7 @@
 import {MediaMatcher} from '@angular/cdk/layout';
 import {ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
-import {ConfigService} from './config.service';
-import {Config} from './config';
+import {ConfigService} from './config/config.service';
+import {Config} from './config/config';
 
 @Component({
   selector: 'app-root',
