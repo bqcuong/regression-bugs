@@ -1,44 +1,18 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class ReportsService {
-    /*
-  /events/count/{timeframe}
 
-  Example API points:
-  localhost:8080/events/count/week
-  localhost:8080/events/count/month
-  localhost:8080/events/count/year
-  localhost:8080/events/count/quarter
-   */
-
-    // todo: move h2ms specific stuff to config
-    baseURL = 'http://localhost:8080/';
-    plots = [{value: 'events/count/', viewValue: 'number of observations'}];
-    timeGroupings = [{value: 'week', viewValue: 'week'},
-        {value: 'month', viewValue: 'month'},
-        {value: 'year', viewValue: 'year'},
-        {value: 'quarter', viewValue: 'quarter'}];
 
     constructor(private http: HttpClient) { }
 
-    fetchReport(plot: string, grouping: string) {
+    fetchReport(url: string) {
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type':  'application/json',
             })
         };
-        return this.http.get(this.baseURL + plot + grouping, httpOptions);
+        return this.http.get(url, httpOptions);
     }
-
-    getPlots() {
-        return this.plots;
-    }
-
-    getGroupings() {
-        return this.timeGroupings;
-    }
-
 }

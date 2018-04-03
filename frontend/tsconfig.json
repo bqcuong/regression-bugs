@@ -8,7 +8,8 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
-    "typeRoots": [
+      "allowJs": true,
+      "typeRoots": [
       "node_modules/@types"
     ],
     "lib": [
