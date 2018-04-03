@@ -1,6 +1,6 @@
 package edu.harvard.h2ms.controllers;
 
-import edu.harvard.h2ms.H2MSRestAppInitializer;
+import edu.harvard.h2ms.common.TestHelpers;
 import edu.harvard.h2ms.domain.core.Answer;
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Question;
@@ -14,37 +14,33 @@ import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.Assert;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
+
+import static java.util.Arrays.asList;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
-import static java.lang.Boolean.TRUE;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.core.StringContains.containsString;
+
+import static edu.harvard.h2ms.common.TestHelpers.obtainAccessToken;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -65,7 +61,9 @@ public class EventControllerTests {
     private WebApplicationContext context;
 
     private MockMvc mvc;
-
+    private Question booleanQuestion;
+    private Question optionsQuestion;
+    
     @Autowired
     UserRepository userRepository;
 
@@ -90,23 +88,33 @@ public class EventControllerTests {
                 .build();
 
         // Sample User Data
-        User observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD);
-        observer.setType("Other");
+        User observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD, "Other");
         userRepository.save(observer);
-        User subject = new User("Jane", "Doe", "Sam", "sample@email.com", "password");
-        subject.setType("Doctor");
+        
+        User subject = new User("Jane", "Doe", "Sam", "sample@email.com", "password", "Doctor");
         userRepository.save(subject);
 
         // Creates and persists event
         Event event = new Event();
         Set<Answer> answers = new HashSet<>();
         Answer answer = new Answer();
-        Question question = new Question();
-        question.setPriority(1);
-        question.setRequired(TRUE);
-        question.setAnswerType("Boolean");
-        question.setQuestion("Washed?");
-        answer.setQuestion(question);
+        
+        booleanQuestion = new Question();
+        booleanQuestion.setPriority(1);
+        booleanQuestion.setRequired(true);
+        booleanQuestion.setAnswerType("boolean");
+        booleanQuestion.setQuestion("Washed?");
+        booleanQuestion.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
+
+        optionsQuestion = new Question();
+        optionsQuestion.setPriority(2);
+        optionsQuestion.setRequired(false);
+        optionsQuestion.setAnswerType("options");
+        optionsQuestion.setQuestion("Relative moment");
+        optionsQuestion.setOptions(asList("entering", "exiting"));
+        optionsQuestion.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
+        
+        answer.setQuestion(booleanQuestion);
         answer.setValue("true");
         answers.add(answer);
         event.setAnswers(answers);
@@ -116,20 +124,20 @@ public class EventControllerTests {
         event.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
         event.setObserver(observer);
         event.setTimestamp(new Date("28-MAR-2018"));
+        
         eventRepository.save(event);
     }
 
     /**
-     * Unit Test #1
      * Tests the success of the /count/week endpoint.
      * The endpoint is used for retrieving all events grouped by a
-     * specified timeframe (ie. week, month, year, quarter)
+     * specified timeframe (i.e. week, month, year, quarter)
      */
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
     public void test_Success_EventController_findEventCountByTimeframe() throws Exception {
 
-        final String accessToken = obtainAccessToken("jqadams@h2ms.org", "password");
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
 
         // Makes API calls and checks for success status
         MockHttpServletResponse result = mvc.perform(get("/events/count/week")
@@ -138,30 +146,83 @@ public class EventControllerTests {
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
-
-        Assert.isTrue(result.getContentAsString().contains("13th (2018)"));
-
+        
+        assertThat(result.getContentAsString(), containsString("13th (2018)"));
     }
 
-    private String obtainAccessToken(String username, String password) throws Exception {
-        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "password");
-        params.add("username", username);
-        params.add("password", password);
+    /**
+     * Tests the success of the /compliance/{question}/{timeframe} endpoint.
+     * The endpoint is used for retrieving compliance rate grouped by a
+     * specified timeframe (i.e. week, month, year, quarter)
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_Success_EventController_findComplianceByTimeframe() throws Exception {
 
-        ResultActions result =
-                mvc.perform(
-                        post("/oauth/token")
-                                .params(params)
-                                .with(httpBasic("h2ms", "secret"))
-                                .accept("application/json"))
-                        .andExpect(status().isOk())
-                        .andExpect(content().contentType(CONTENT_TYPE));
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
 
-        String resultString = result.andReturn().getResponse().getContentAsString();
+        // Makes API calls and checks for success status
+        MockHttpServletResponse result = mvc.perform(get(String.format("/events/compliance/%d/week", booleanQuestion.getId()))
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
 
-        JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(resultString).get("access_token").toString();
+        log.debug(result.getContentAsString());
+        
+        Map<String, Double> mapResult = TestHelpers.getDoubleMap(result.getContentAsString());
+        
+        assertThat(mapResult.get("13th (2018)"), is(1.0));
+    }
+    
+    /**
+     * Tests the failure of the /compliance/{question}/{timeframe} endpoint
+     * when a question is not found.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_NotFound_EventController_findComplianceByTimeframe() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        // Makes API calls and checks for success status
+        mvc.perform(get("/events/compliance/0/week")
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    /**
+     * Tests the failure of the /compliance/{question}/{timeframe} endpoint
+     * when a question is not of boolean type.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_InvalidQuestionType_EventController_findComplianceByTimeframe() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        mvc.perform(get(String.format("/events/compliance/%d/bad_timeframe", optionsQuestion.getId()))
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+    
+    /**
+     * Tests the failure of the /compliance/{question}/{timeframe} endpoint
+     * when a timeframe is invalid.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_InvalidTimeframe_EventController_findComplianceByTimeframe() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        mvc.perform(get(String.format("/events/compliance/%d/bad_timeframe", booleanQuestion.getId()))
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
 }

@@ -39,6 +39,7 @@ public class UserSeeder {
                 user.setLastName(lastName);
                 user.setEmail(email);
                 user.setPassword("password");
+                user.setType("Admin");
                 userRepository.save(user);
             }
         }

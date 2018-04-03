@@ -21,7 +21,6 @@ import javax.validation.constraints.NotNull;
 public class EventTemplate {
 
     /* Properties */
-
 	@Id
 	@GeneratedValue(strategy= GenerationType.AUTO)
     @Column
@@ -81,5 +80,11 @@ public class EventTemplate {
 	public void setQuestions(Set<Question> questions) {
 		this.questions = questions;
 	}
-	
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("EventTemplate [id=").append(id).append(", name=").append(name).append("]");
+		return builder.toString();
+	}
 }

@@ -3,10 +3,15 @@ package edu.harvard.h2ms.common;
 import com.tngtech.java.junit.dataprovider.DataProvider;
 import com.tngtech.java.junit.dataprovider.DataProviderRunner;
 import com.tngtech.java.junit.dataprovider.UseDataProvider;
+import static java.util.Arrays.asList;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
+import static org.junit.Assert.assertThat;
+
+import edu.harvard.h2ms.exception.InvalidTimeframeException;
 import edu.harvard.h2ms.service.utils.H2msRestUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.util.Assert;
 import java.util.*;
 
 /**
@@ -21,8 +26,8 @@ public class H2msRestUtilsTests {
     @Test
     @UseDataProvider(value = "getTestData_for_format_week_success_test")
     public void test_format_week_success(Integer week, Integer year, String result){
-        H2msRestUtils  utils = new H2msRestUtils();
-        Assert.isTrue(utils.formatWeek(week, year).equals(result));
+        new H2msRestUtils();
+        assertThat(H2msRestUtils.formatWeek(week, year), is(result));
     }
 
     @DataProvider(format = "%m[%i: %p[0], %p[1]")
@@ -56,14 +61,13 @@ public class H2msRestUtilsTests {
      */
     @Test
     public void test_format_week_invalid_values_result_in_null(){
-        H2msRestUtils  utils = new H2msRestUtils();
-        Assert.isTrue(utils.formatWeek(null,2018) == null);
-        Assert.isTrue(utils.formatWeek(1,null) == null);
-        Assert.isTrue(utils.formatWeek(null,null) == null);
-        Assert.isTrue(utils.formatWeek(-1,2018) == null);
-        Assert.isTrue(utils.formatWeek(0,2018) == null);
-        Assert.isTrue(utils.formatWeek(53,2018) == null);
-        Assert.isTrue(utils.formatWeek(2,-2007) == null);
+        assertThat(H2msRestUtils.formatWeek(null,2018), is(nullValue()));
+        assertThat(H2msRestUtils.formatWeek(1,null), is(nullValue()));
+        assertThat(H2msRestUtils.formatWeek(null,null), is(nullValue()));
+        assertThat(H2msRestUtils.formatWeek(-1,2018), is(nullValue()));
+        assertThat(H2msRestUtils.formatWeek(0,2018), is(nullValue()));
+        assertThat(H2msRestUtils.formatWeek(53,2018), is(nullValue()));
+        assertThat(H2msRestUtils.formatWeek(2,-2007), is(nullValue()));
     }
 
     /**
@@ -72,8 +76,7 @@ public class H2msRestUtilsTests {
     @Test
     @UseDataProvider(value = "getTestData_for_format_month_success_test")
     public void test_format_month_success(Integer month, Integer year, String result){
-        H2msRestUtils  utils = new H2msRestUtils();
-        Assert.isTrue(utils.formatMonth(month, year).equals(result));
+        assertThat(H2msRestUtils.formatMonth(month, year), is(result));
     }
 
     @DataProvider(format = "%m[%i: %p[0], %p[1]")
@@ -92,14 +95,13 @@ public class H2msRestUtilsTests {
      * Testing Week Formatting from Utils with invalid values
      */
     @Test
-    public void test_format_month_invalid_values_result_in_null(){
-        H2msRestUtils  utils = new H2msRestUtils();
-        Assert.isTrue(utils.formatMonth(null,2018) == null);
-        Assert.isTrue(utils.formatMonth(12,null) == null);
-        Assert.isTrue(utils.formatMonth(null,null) == null);
-        Assert.isTrue(utils.formatMonth(-1,2018) == null);
-        Assert.isTrue(utils.formatMonth(2,-2023) == null);
-        Assert.isTrue(utils.formatMonth(12,-2023) == null);
+    public void test_format_month_invalid_values_result_in_null(){        
+        assertThat(H2msRestUtils.formatMonth(null,2018), is(nullValue()));
+        assertThat(H2msRestUtils.formatMonth(12,null), is(nullValue()));
+        assertThat(H2msRestUtils.formatMonth(null,null), is(nullValue()));
+        assertThat(H2msRestUtils.formatMonth(-1,2018), is(nullValue()));
+        assertThat(H2msRestUtils.formatMonth(2,-2023), is(nullValue()));
+        assertThat(H2msRestUtils.formatMonth(12,-2023), is(nullValue()));
     }
 
     /**
@@ -108,8 +110,7 @@ public class H2msRestUtilsTests {
     @Test
     @UseDataProvider(value = "getTestData_for_format_quarter_success_test")
     public void test_format_quarter_success(Integer month, Integer year, String result){
-        H2msRestUtils  utils = new H2msRestUtils();
-        Assert.isTrue(utils.formatQuarter(month, year).equals(result));
+        assertThat(H2msRestUtils.formatQuarter(month, year), is(result));
     }
 
     @DataProvider(format = "%m[%i: %p[0], %p[1]")
@@ -137,26 +138,33 @@ public class H2msRestUtilsTests {
      */
     @Test
     public void test_format_quarter_invalid_values_result_in_nulls(){
-        H2msRestUtils  utils = new H2msRestUtils();
-        Assert.isTrue(utils.formatQuarter(null,2018) == null);
-        Assert.isTrue(utils.formatQuarter(12,null) == null);
-        Assert.isTrue(utils.formatQuarter(null,null) == null);
-        Assert.isTrue(utils.formatQuarter(-1,2018) == null);
-        Assert.isTrue(utils.formatQuarter(2,-2023) == null);
-        Assert.isTrue(utils.formatQuarter(12,-2023) == null);
+        assertThat(H2msRestUtils.formatQuarter(null,2018) , is(nullValue()));
+        assertThat(H2msRestUtils.formatQuarter(12,null) , is(nullValue()));
+        assertThat(H2msRestUtils.formatQuarter(null,null) , is(nullValue()));
+        assertThat(H2msRestUtils.formatQuarter(-1,2018) , is(nullValue()));
+        assertThat(H2msRestUtils.formatQuarter(2,-2023) , is(nullValue()));
+        assertThat(H2msRestUtils.formatQuarter(12,-2023) , is(nullValue()));
     }
 
     /**
-     * Test frequency counter successffuly returns counts in key-value map
+     * Test frequency counter successfully returns counts in key-value map
      */
     @Test
     public void test_frequency_counter(){
         // Three occurrences of March
-        List<String> parsedTimestamps = Arrays.asList("January (2020)", "March (2018)", "February (2019)",
-                "April (2020)","March (2018)", "April (2020)", "March (2018)");
-        Map<String, Long> counts = H2msRestUtils.frequencyCounter(parsedTimestamps);
-        Assert.isTrue(counts.size() == 4);
-        Assert.isTrue(counts.get("March (2018)") == 3);
+        Map<String, Set<Integer>> map = new HashMap<>();
+        map.put("January (2020)",  new HashSet<Integer>(asList()));
+        map.put("February (2020)", new HashSet<Integer>(asList(1)));
+        map.put("March (2020)",    new HashSet<Integer>(asList(1, 2)));
+        map.put("April (2020)",    new HashSet<Integer>(asList(1, 2, 3)));
+        
+        Map<String, Long> counts = H2msRestUtils.frequencyCounter(map);
+        
+        assertThat(counts.size(), is(4));
+        //assertThat(counts.get("January (2020)"),  is(0L);
+        assertThat(counts.get("February (2020)"), is(1L));
+        assertThat(counts.get("March (2020)"),    is(2L));
+        assertThat(counts.get("April (2020)"),    is(3L));
     }
 
     /**
@@ -164,14 +172,13 @@ public class H2msRestUtilsTests {
      */
     @Test
     public void test_frequency_counter_when_timestamp_list_is_empty(){
-        List<String> parsedTimestamps = Arrays.asList();
-        Map<String, Long> counts = H2msRestUtils.frequencyCounter(parsedTimestamps);
-        Assert.isTrue(counts.isEmpty());
+        Map<String, Set<Long>> map = new HashMap<>();
+        Map<String, Long> counts = H2msRestUtils.frequencyCounter(map);
+        assertThat(counts.isEmpty(), is(true));
     }
 
     @Test
-    public void test_parse_timestamp_when_invalid_values(){
-        Assert.isTrue(H2msRestUtils.extractParsedTimestamps(new ArrayList<>(), "week").isEmpty());
+    public void test_parse_timestamp_when_invalid_values() throws InvalidTimeframeException{
+        assertThat(H2msRestUtils.groupEventsByTimestamp(new ArrayList<>(), "week").isEmpty(), is(true));
     }
-
 }

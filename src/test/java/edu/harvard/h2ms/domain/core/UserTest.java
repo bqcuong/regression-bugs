@@ -32,31 +32,31 @@ public class UserTest {
 
     @Test(expected = ConstraintViolationException.class)
     public void testFirstNameRequired() {
-        User user = new User(null, "Quincy", "Adams", "jqadams@h2ms.org", "password");
+        User user = new User(null, "Quincy", "Adams", "jqadams@h2ms.org", "password", "Other");
         entityManager.persist(user);
     }
 
     @Test(expected = ConstraintViolationException.class)
     public void testLastNameRequired() {
-        User user = new User("John", "Quincy", null, "jqadams@h2ms.org", "password");
+        User user = new User("John", "Quincy", null, "jqadams@h2ms.org", "password", "Other");
         entityManager.persist(user);
     }
 
     @Test(expected = ConstraintViolationException.class)
     public void testEmailRequired() {
-        User user = new User("John", "Quincy", null, null, "password");
+        User user = new User("John", "Quincy", null, null, "password", "Other");
         entityManager.persist(user);
     }
 
     @Test(expected = ConstraintViolationException.class)
     public void testPasswordRequired() {
-        User user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", null);
+        User user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", null, "Other");
         entityManager.persist(user);
     }
 
     @Test
     public void testPasswordIsHashed() {
-        User user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", "password");
+        User user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", "password", "Other");
         entityManager.persist(user);
 
         User found = userRepository.findByEmail("jqadams@h2ms.org");
