@@ -51,7 +51,7 @@ export class ReportsComponent implements OnInit {
 
      */
 
-    // todo: move h2ms specific stuff to config
+    // todo: move h2ms-specific stuff to config
     baseURL = 'http://localhost:8080/';
     plots = [{value: 'events/count/', viewValue: 'number of observations'}];
     timeGroupings = [{value: 'year', viewValue: 'year'},
@@ -70,6 +70,9 @@ export class ReportsComponent implements OnInit {
     // chart related variables
      chart: ChartAPI;
 
+    /**
+     * form controls allow required fields
+     */
     plotFormControl = new FormControl('', [
         Validators.required,
     ]);
@@ -86,9 +89,6 @@ export class ReportsComponent implements OnInit {
         this.noDataMessageIsHidden = true;
     }
 
-    /*
-     */
-
     /**
      * This function submits a url to the reports service to retrieve a report json
      */
@@ -101,8 +101,6 @@ export class ReportsComponent implements OnInit {
                     response => {
                         if (JSON.stringify(response).match('{}')) {
                             this.noDataMessageIsHidden = true;
-                            // todo: remove
-                            this.makeBarPlot(selectedPlot, selectedGrouping, response);
                         } else {
                             this.noDataMessageIsHidden = false;
                             this.makeBarPlot(selectedPlot, selectedGrouping, response);
@@ -141,17 +139,17 @@ export class ReportsComponent implements OnInit {
      */
     makeBarPlotNumObsByYear(data: Object) {
         // todo: remove demo data
-        const responseByYear = {
-            '2017': 100,
-            '2018': 600
-        };
+        // const responseByYear = {
+        //     '2017': 100,
+        //     '2018': 600
+        // };
 
         const columns: string[] = new Array();
         const values: [[string | number]] = [['obs']];
 
-        for (const key of Object.keys(responseByYear)) {
+        for (const key of Object.keys(data)) {
             columns.push(key);
-            values[0].push(responseByYear[key]);
+            values[0].push(data[key]);
         }
 
         this.groupedBarPlot(values, columns, false);
@@ -163,21 +161,21 @@ export class ReportsComponent implements OnInit {
      */
     makeBarPlotNumObsByQuarter(data: Object) {
         // todo: remove demo data
-        const responseByQuarter = {
-            'Q1 (2017)': 100,
-            'Q2 (2017)': 200,
-            'Q3 (2017)': 300,
-            'Q4 (2017)': 400,
-            'Q1 (2018)': 500,
-            'Q2 (2018)': 600
-        };
+        // const responseByQuarter = {
+        //     'Q1 (2017)': 100,
+        //     'Q2 (2017)': 200,
+        //     'Q3 (2017)': 300,
+        //     'Q4 (2017)': 400,
+        //     'Q1 (2018)': 500,
+        //     'Q2 (2018)': 600
+        // };
 
         const categories: string[] = new Array();
         const groupedColumnsData: [[string | number]] = [['Q1'], ['Q2'], ['Q3'], ['Q4']];
 
-        for (const key of Object.keys(responseByQuarter)) {
+        for (const key of Object.keys(data)) {
             const quarter = parseInt(key.substr(1, 1), 10);
-            groupedColumnsData[quarter - 1].push(responseByQuarter[key]);
+            groupedColumnsData[quarter - 1].push(data[key]);
 
             const year = key.substr(4, 4);
             if (categories.indexOf(year) === -1) {
@@ -192,14 +190,14 @@ export class ReportsComponent implements OnInit {
      */
     makeBarPlotNumObsByMonth(data: Object) {
         // todo: remove demo data
-        const responseByMonth = {
-            'January (2017)': 100,
-            'February (2017)': 200,
-            'March (2017)': 300,
-            'April (2017)': 400,
-            'May (2017)': 500,
-            'January (2018)': 600
-        };
+        // const responseByMonth = {
+        //     'January (2017)': 100,
+        //     'February (2017)': 200,
+        //     'March (2017)': 300,
+        //     'April (2017)': 400,
+        //     'May (2017)': 500,
+        //     'January (2018)': 600
+        // };
 
         const referenceMonths = ['January', 'February', 'March', 'April', 'May', 'June',
             'July', 'August', 'September', 'October', 'November', 'December'];
@@ -210,10 +208,10 @@ export class ReportsComponent implements OnInit {
                 ['July'], ['August'], ['September'], ['October'], ['November'], ['December']
             ];
 
-        for (const key of Object.keys(responseByMonth)) {
+        for (const key of Object.keys(data)) {
             const endOfMonthName = key.indexOf(' (');
             const month = key.substr(0, endOfMonthName);
-            groupedColumnsData[referenceMonths.indexOf(month)].push(responseByMonth[key]);
+            groupedColumnsData[referenceMonths.indexOf(month)].push(data[key]);
 
             const year = key.substr( key.length - 5, 4);
             if (categories.indexOf(year) === -1) {
@@ -228,14 +226,14 @@ export class ReportsComponent implements OnInit {
      */
     makeBarPlotNumObsByWeek(data: Object) {
         // todo: remove demo data
-        const responseByWeek = {
-            '1st (2017)': 100,
-            '2nd (2017)': 200,
-            '3rd (2017)': 300,
-            '4th (2017)': 400,
-            '1st (2018)': 500,
-            '4th (2018)': 600
-        };
+        // const responseByWeek = {
+        //     '1st (2017)': 100,
+        //     '2nd (2017)': 200,
+        //     '3rd (2017)': 300,
+        //     '4th (2017)': 400,
+        //     '1st (2018)': 500,
+        //     '4th (2018)': 600
+        // };
 
         const categories: string[] = new Array();
         const groupedColumnsData: [[string | number]] = [['1']];
@@ -246,10 +244,10 @@ export class ReportsComponent implements OnInit {
             referenceWeeks.push(this.getGetOrdinal(i));
         }
 
-        for (const key of Object.keys(responseByWeek)) {
+        for (const key of Object.keys(data)) {
             const endOfWeekOrdName = key.indexOf(' (');
             const week = key.substr(0, endOfWeekOrdName);
-            groupedColumnsData[referenceWeeks.indexOf(week)].push(responseByWeek[key]);
+            groupedColumnsData[referenceWeeks.indexOf(week)].push(data[key]);
 
             const year = key.substr( key.length - 5, 4);
             if (categories.indexOf(year) === -1) {
