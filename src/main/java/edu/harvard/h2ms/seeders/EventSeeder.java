@@ -63,25 +63,25 @@ public class EventSeeder {
            userRepository.save(subject);
 
            // Creates and persists event
-//           Event event = new Event();
-//           Set<Answer> answers = new HashSet<>();
-//           Answer answer = new Answer();
-//           Question question = new Question();
-//           question.setPriority(1);
-//           question.setRequired(TRUE);
-//           question.setAnswerType("Boolean");
-//           question.setQuestion("Washed?");
-//           answer.setQuestion(question);
-//           answer.setValue("true");
-//           answers.add(answer);
-//           event.setAnswers(answers);
-//           event.setLocation("Location_01");
-//           event.setSubject(subject);
-//           event.setObserver(observer);
-//           event.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
-//           event.setObserver(observer);
-//           event.setTimestamp(new Date(System.currentTimeMillis()));
-//           eventRepository.save(event);
+           Event event = new Event();
+           Set<Answer> answers = new HashSet<>();
+           Answer answer = new Answer();
+           Question question = new Question();
+           question.setPriority(1);
+           question.setRequired(TRUE);
+           question.setAnswerType("Boolean");
+           question.setQuestion("Washed?");
+           answer.setQuestion(question);
+           answer.setValue("true");
+           answers.add(answer);
+           event.setAnswers(answers);
+           event.setLocation("Location_01");
+           event.setSubject(subject);
+           event.setObserver(observer);
+           event.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
+           event.setObserver(observer);
+           event.setTimestamp(new Date(System.currentTimeMillis()));
+           eventRepository.save(event);
            
            
 //    	   Event event = new Event();

@@ -84,14 +84,10 @@ public class ReportServiceImpl implements ReportService{
 
 	@Override
 	public String createReport() {
-				
-		Map<String, Double> complianceData = new HashMap<String, Double>();
-		complianceData.put("abc", 1.3);
-		complianceData.put("dec", 1.3);
-		complianceData.put("ghc", 1.3);
-		
-//		Writer writer = stringWriterReport(complianceData);
-		Writer writer = beanWriterReport(complianceData);
+	
+		Map<String, Double> complianceData = userService.findAvgHandWashCompliance();
+		Writer writer = stringWriterReport(complianceData);
+//		Writer writer = beanWriterReport(complianceData);
 		
 		
 		try {
