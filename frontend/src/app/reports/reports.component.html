@@ -8,6 +8,7 @@
             <mat-progress-bar mode="indeterminate" hidden="progressBarIsHidden"></mat-progress-bar>
             <mat-error *ngIf="emptyJSONReturned">There is no data for the selected plot!</mat-error>
             <mat-tab-group>
+                <!--tab group used to support Narrow Results tab later-->
                 <mat-tab label="Select Plot">
                     <section class="plotSelectionSection">
                         <mat-form-field>
@@ -32,9 +33,6 @@
                         </mat-form-field>
                     </section>
                 </mat-tab>
-                <!--<mat-tab label="Narrow Results">-->
-
-                <!--</mat-tab>-->
             </mat-tab-group>
             <mat-card-actions>
                 <button (click)="submit(selectedPlot.value, selectedGrouping.value)" mat-raised-button color="primary">

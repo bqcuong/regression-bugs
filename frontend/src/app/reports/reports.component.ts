@@ -2,12 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {ReportsService} from './reports.service';
 import * as c3 from 'c3';
 import {ChartAPI} from 'c3';
-import {FormControl, Validators} from "@angular/forms";
+import {FormControl, Validators} from '@angular/forms';
 
 @Component({
-  selector: 'app-reports',
-  templateUrl: './reports.component.html',
-  styleUrls: ['./reports.component.css']
+    selector: 'app-reports',
+    templateUrl: './reports.component.html',
+    styleUrls: ['./reports.component.css']
 })
 export class ReportsComponent implements OnInit {
 
@@ -15,41 +15,41 @@ export class ReportsComponent implements OnInit {
     // '../../../node_modules/patternfly/dist/css/patternfly.min.css',
     // '../../../node_modules/patternfly/dist/css/patternfly-additions.css'
 
-        /*
-    /events/count/{timeframe}
+    /*
+/events/count/{timeframe}
 
-    Example API points:
-    localhost:8080/events/count/week
-      {
-      "1st (2017)" : 10,
-      "2nd (2017)": 5,
-      ...
-      "52nd (2017)": 3
-      }
+Example API points:
+localhost:8080/events/count/week
+  {
+  "1st (2017)" : 10,
+  "2nd (2017)": 5,
+  ...
+  "52nd (2017)": 3
+  }
 
-    localhost:8080/events/count/month
-      {
-        "January (2017)": 30,
-        "February (2017)": 40
-      }
+localhost:8080/events/count/month
+  {
+    "January (2017)": 30,
+    "February (2017)": 40
+  }
 
-    localhost:8080/events/count/year
-      {
-        "2017": 300,
-        "2018": 1000
-      }
+localhost:8080/events/count/year
+  {
+    "2017": 300,
+    "2018": 1000
+  }
 
-    localhost:8080/events/count/quarter
-      {
-      "Q1 (2017)": 100,
-      "Q2 (2017)": 200,
-      "Q3 (2017)": 300,
-      "Q4 (2017)": 400,
-      "Q1 (2018)": 500,
-      "Q2 (2018)": 600
-      }
+localhost:8080/events/count/quarter
+  {
+  "Q1 (2017)": 100,
+  "Q2 (2017)": 200,
+  "Q3 (2017)": 300,
+  "Q4 (2017)": 400,
+  "Q1 (2018)": 500,
+  "Q2 (2018)": 600
+  }
 
-     */
+ */
 
     // todo: move h2ms-specific stuff to config
     baseURL = 'http://localhost:8080/';
@@ -62,13 +62,12 @@ export class ReportsComponent implements OnInit {
     // todo: chart title
 
     // make false when retrieving data from backend
-    progressBarIsHidden = true;
+    progressBarIsHidden: boolean;
 
-    // make false when data has been retrieved and json is empty
-    emptyJSONReturned = false;
+    emptyJSONReturned: boolean;
 
     // chart related variables
-     chart: ChartAPI;
+    chart: ChartAPI;
 
     /**
      * form controls allow required fields
@@ -82,7 +81,8 @@ export class ReportsComponent implements OnInit {
     ]);
 
 
-    constructor(private reportsService: ReportsService) {}
+    constructor(private reportsService: ReportsService) {
+    }
 
     ngOnInit() {
         this.progressBarIsHidden = true;
@@ -93,7 +93,7 @@ export class ReportsComponent implements OnInit {
      * This function submits a url to the reports service to retrieve a report json
      */
     submit(selectedPlot: string, selectedGrouping: string) {
-      // todo: make sure valid input selection
+        // todo: make sure valid input selection
         if (selectedPlot && selectedGrouping) {
             this.progressBarIsHidden = false;
             this.reportsService.fetchReport(this.baseURL + selectedPlot + selectedGrouping)
@@ -121,17 +121,17 @@ export class ReportsComponent implements OnInit {
      * json to plot data
      */
     makeBarPlot(selectedPlot: string, selectedGrouping: string, data: Object) {
-      if (selectedPlot.match('events/count/')) {
-          if (selectedGrouping.match('year')) {
-              this.makeBarPlotNumObsByYear(data);
-          } else if (selectedGrouping.match('quarter')) {
-              this.makeBarPlotNumObsByQuarter(data);
-          } else if (selectedGrouping.match('month')) {
-              this.makeBarPlotNumObsByMonth(data);
-          } else if (selectedGrouping.match('week')) {
-              this.makeBarPlotNumObsByWeek(data);
-          }
-      }
+        if (selectedPlot.match('events/count/')) {
+            if (selectedGrouping.match('year')) {
+                this.makeBarPlotNumObsByYear(data);
+            } else if (selectedGrouping.match('quarter')) {
+                this.makeBarPlotNumObsByQuarter(data);
+            } else if (selectedGrouping.match('month')) {
+                this.makeBarPlotNumObsByMonth(data);
+            } else if (selectedGrouping.match('week')) {
+                this.makeBarPlotNumObsByWeek(data);
+            }
+        }
     }
 
     /**
@@ -213,7 +213,7 @@ export class ReportsComponent implements OnInit {
             const month = key.substr(0, endOfMonthName);
             groupedColumnsData[referenceMonths.indexOf(month)].push(data[key]);
 
-            const year = key.substr( key.length - 5, 4);
+            const year = key.substr(key.length - 5, 4);
             if (categories.indexOf(year) === -1) {
                 categories.push(year);
             }
@@ -249,7 +249,7 @@ export class ReportsComponent implements OnInit {
             const week = key.substr(0, endOfWeekOrdName);
             groupedColumnsData[referenceWeeks.indexOf(week)].push(data[key]);
 
-            const year = key.substr( key.length - 5, 4);
+            const year = key.substr(key.length - 5, 4);
             if (categories.indexOf(year) === -1) {
                 categories.push(year);
             }
