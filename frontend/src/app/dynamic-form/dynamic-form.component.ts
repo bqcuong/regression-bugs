@@ -43,7 +43,7 @@ export class DynamicFormComponent implements OnInit {
         }
 
         const event: Event = {
-            eventTemplate: 'http://test.h2ms.org:81/eventTemplates/1',
+            eventTemplate: 'http://localhost:8080/eventTemplates/1',
             answers: answers,
             location: this.form.value['location'],
             observer: this.form.value['subject'],

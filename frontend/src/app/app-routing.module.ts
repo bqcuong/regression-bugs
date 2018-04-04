@@ -28,10 +28,10 @@ const routes: Routes = [
     { path: 'reports', component: ReportsComponent, canActivate: [AuthGuardService]},
     { path: 'export', component: ExportComponent, canActivate: [AuthGuardService]},
     // TODO: route dashboard to the DashboardComponent when it is created.
-    { path: 'dashboard', redirectTo: 'event', pathMatch: 'full', canActivate: [AuthGuardService]}, // a protected page
+    { path: 'dashboard', redirectTo: 'reports', pathMatch: 'full', canActivate: [AuthGuardService]}, // a protected page
     // TODO: route password-recovery to the PasswordRecoveryComponent when it is created.
     { path: 'password-recovery', pathMatch: 'full', redirectTo: 'privacy'}, // an unprotected page just for testing
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full'}
+    { path: '', redirectTo: 'login', pathMatch: 'full'}
 ];
 
 /**
