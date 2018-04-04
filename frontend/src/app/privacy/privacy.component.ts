@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {ConfigService} from '../config.service';
-import {Config} from '../config';
+import {ConfigService} from '../config/config.service';
+import {Config} from '../config/config';
 
 @Component({
     selector: 'app-privacy',

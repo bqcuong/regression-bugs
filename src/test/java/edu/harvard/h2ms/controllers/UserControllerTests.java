@@ -1,6 +1,7 @@
 package edu.harvard.h2ms.controllers;
 
 import edu.harvard.h2ms.H2MSRestAppInitializer;
+import edu.harvard.h2ms.common.TestHelpers;
 import edu.harvard.h2ms.domain.core.*;
 import edu.harvard.h2ms.repository.EventRepository;
 import edu.harvard.h2ms.repository.EventTemplateRepository;
@@ -36,9 +37,16 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
+import static java.util.Arrays.asList;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import static edu.harvard.h2ms.common.TestHelpers.obtainAccessToken;
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -51,7 +59,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class UserControllerTests {
 
     private static final Log log = LogFactory.getLog(UserControllerTests.class);
-
 
     static final String EMAIL = "jqadams@h2ms.org";
     static final String PASSWORD = "password";
@@ -77,6 +84,9 @@ public class UserControllerTests {
     @Autowired
     EventRepository eventRepository;
 
+    private Question booleanQuestion;
+    private Question optionsQuestion;
+    
     /**
      * Setup prior to running unit tests
      * @throws Exception
@@ -89,23 +99,32 @@ public class UserControllerTests {
                 .build();
 
         // Sample User Data
-        User observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD);
-        observer.setType("Other");
+        User observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD, "Other");
         userRepository.save(observer);
-        User subject = new User("Jane", "Doe", "Sam", "sample@email.com", "password");
-        subject.setType("Doctor");
+        User subject = new User("Jane", "Doe", "Sam", "sample@email.com", "password", "Doctor");
         userRepository.save(subject);
 
         // Creates and persists event
         Event event = new Event();
         Set<Answer> answers = new HashSet<>();
         Answer answer = new Answer();
-        Question question = new Question();
-        question.setPriority(1);
-        question.setRequired(TRUE);
-        question.setAnswerType("Boolean");
-        question.setQuestion("Washed?");
-        answer.setQuestion(question);
+        
+        booleanQuestion = new Question();
+        booleanQuestion.setPriority(1);
+        booleanQuestion.setRequired(TRUE);
+        booleanQuestion.setAnswerType("boolean");
+        booleanQuestion.setQuestion("Washed?");
+        booleanQuestion.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
+
+        optionsQuestion = new Question();
+        optionsQuestion.setPriority(2);
+        optionsQuestion.setRequired(false);
+        optionsQuestion.setAnswerType("options");
+        optionsQuestion.setQuestion("Relative moment");
+        optionsQuestion.setOptions(asList("entering", "exiting"));
+        optionsQuestion.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
+        
+        answer.setQuestion(booleanQuestion);
         answer.setValue("true");
         answers.add(answer);
         event.setAnswers(answers);
@@ -119,18 +138,17 @@ public class UserControllerTests {
     }
 
     /**
-     * Unit Test #1
-     * Tests the success of the /avgWashed/ endpoint. The endpoint
-     * is used to retrieve the average of hand washing compliance per user type.
+     * Tests the success of the /users/compliance/{question_id} endpoint. The endpoint
+     * is used to retrieve the compliance value for a particular question
      */
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-    public void test_Success_UserController_findAvgWashCompliance() throws Exception {
+    public void test_Success_UserController_findUserCompliance() throws Exception {
 
-        final String accessToken = obtainAccessToken("jqadams@h2ms.org", "password");
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
 
         // Makes API calls and checks for success status
-         MockHttpServletResponse result = mvc.perform(get("/users/avgWashed/")
+         MockHttpServletResponse result = mvc.perform(get(String.format("/users/compliance/%d", booleanQuestion.getId()))
                 .header("Authorization", "Bearer " + accessToken)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -138,30 +156,42 @@ public class UserControllerTests {
                 .getResponse();
 
 
-        Assert.isTrue(result.getContentAsString().equals("{\"Doctor\":1.0,\"Other\":0.0}"));
+        Map<String, Double> mapResult = TestHelpers.getDoubleMap(result.getContentAsString());
+
+        assertThat(mapResult.get("Doctor"), is(1.0));
+        assertThat(mapResult.get("Other"), is(0.0));
+    }
+    
+    /**
+     * Tests the failure of the /users/compliance/{question_id} endpoint when a question
+     * isn't found.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_NotFound_UserController_findUserCompliance() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        mvc.perform(get("/users/compliance/0")
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
 
     }
+    
+    /**
+     * Tests the failure of the /users/compliance/{question_id} endpoint when
+     * compliance is generated for a non-boolean end point.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_BadRequest_UserController_findUserCompliance() throws Exception {
 
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
 
-    private String obtainAccessToken(String username, String password) throws Exception {
-        final MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("grant_type", "password");
-        params.add("username", username);
-        params.add("password", password);
-
-        ResultActions result =
-                mvc.perform(
-                        post("/oauth/token")
-                                .params(params)
-                                .with(httpBasic("h2ms", "secret"))
-                                .accept("application/json"))
-                        .andExpect(status().isOk())
-                        .andExpect(content().contentType(CONTENT_TYPE));
-
-        String resultString = result.andReturn().getResponse().getContentAsString();
-
-        JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(resultString).get("access_token").toString();
+         mvc.perform(get(String.format("/users/compliance/%d", optionsQuestion.getId()))
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
-
 }
