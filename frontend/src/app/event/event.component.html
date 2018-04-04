@@ -1,4 +1,9 @@
-<div class="container">
-    <h2>Observe</h2>
-    <app-dynamic-form [questions]="questions"></app-dynamic-form>
+<div class="container event row">
+    <div class="col-md-3"></div>
+    <mat-card class="col-md-6">
+        <mat-card-title>Observe</mat-card-title>
+        <mat-card-content class="text-center">
+            <app-dynamic-form *ngIf="questions" [questions]="questions"></app-dynamic-form>
+        </mat-card-content>
+    </mat-card>
 </div>

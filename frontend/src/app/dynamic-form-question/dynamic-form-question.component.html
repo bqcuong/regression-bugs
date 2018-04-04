@@ -10,8 +10,12 @@
             <option *ngFor="let opt of question.options" [value]="opt">{{opt}}</option>
         </select>
 
-        <input *ngSwitchCase="'checkbox'" [formControlName]="question.id"
-               [id]="question.id" [type]="question.answerType">
+        <select [id]="question.id" *ngSwitchCase="'user_dropdown'" [formControlName]="question.id">
+            <option *ngFor="let opt of question.options" [value]="opt.value">{{opt.name}}</option>
+        </select>
+
+        <mat-checkbox *ngSwitchCase="'checkbox'" [formControlName]="question.id"
+                      [id]="question.id" [(ngModel)]="checked"></mat-checkbox>
 
     </div>
 
