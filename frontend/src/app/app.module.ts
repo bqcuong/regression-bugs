@@ -6,9 +6,19 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import {
     MatButtonModule,
-    MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatFormFieldModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
     MatIconModule,
-    MatInputModule, MatListModule, MatSidenavModule, MatToolbarModule
+    MatInputModule,
+    MatListModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatTabsModule,
+    MatSelectModule,
+    MatProgressBarModule
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
@@ -27,6 +37,8 @@ import { EventTemplateEntityService } from './api/eventTemplateEntity.service';
 import { LocationEntityService} from './api/locationEntity.service';
 import { UserEntityService} from './api/userEntity.service';
 import { ApiModule } from './api.module';
+import { ReportsComponent } from './reports/reports.component';
+import {ReportsService} from './reports/reports.service';
 
 @NgModule({
   declarations: [
@@ -37,7 +49,8 @@ import { ApiModule } from './api.module';
     PrivacyComponent,
     EventComponent,
     SidenavComponent,
-    ExportComponent
+    ExportComponent,
+    ReportsComponent
   ],
   imports: [
     BrowserModule,
@@ -56,6 +69,9 @@ import { ApiModule } from './api.module';
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
+    MatTabsModule,
+    MatSelectModule,
+    MatProgressBarModule
   ],
   providers: [ MediaMatcher,
       ConfigService,
@@ -66,6 +82,7 @@ import { ApiModule } from './api.module';
           useClass: TokenInterceptor,
           multi: true
       },
+      ReportsService,
       EventTemplateEntityService,
       LocationEntityService,
       UserEntityService
