@@ -5,4 +5,4 @@ import {Config} from './config';
  */
 export const CONFIG: Config = new Config('Blue Gloves 4 All',
     'www.gloveygloversonsgloveemporium.org',
-    '/assets/images/logos/gloves-logo.png');
+    '/assets/images/logos/gloves-banner.png');

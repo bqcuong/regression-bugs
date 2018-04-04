@@ -6,6 +6,7 @@ import {EventComponent} from './event/event.component';
 import { NavItem } from './sidenav/nav-item';
 import {ExportComponent} from './export/export.component';
 import {AuthGuardService} from './auth/auth-guard.service';
+import {ReportsComponent} from './reports/reports.component';
 
 /**
  * The actual available routes. Which links are routed to which components.
@@ -13,6 +14,7 @@ import {AuthGuardService} from './auth/auth-guard.service';
 const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'privacy', component: PrivacyComponent },
+    { path: 'reports', component: ReportsComponent, canActivate: [AuthGuardService]},
     { path: 'event', component: EventComponent, canActivate: [AuthGuardService]},
     { path: 'export', component: ExportComponent, canActivate: [AuthGuardService]},
     // TODO: route dashboard to the DashboardComponent when it is created.
@@ -28,7 +30,7 @@ const routes: Routes = [
  */
 export const NAV_ITEMS: NavItem[] = [
     new NavItem('Dashboard', '/dashboard'),
-    // new NavItem('Reports', '/reports'),
+    new NavItem('Reports', '/reports'),
     new NavItem('Observe', '/event'),
     NavItem.createNavItemWithSubItems('Settings', [
         // new NavItem('Account', '/account'),

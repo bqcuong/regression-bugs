@@ -6,9 +6,19 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import {
     MatButtonModule,
-    MatCardModule, MatCheckboxModule, MatDialogModule, MatDividerModule, MatFormFieldModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatDividerModule,
+    MatFormFieldModule,
     MatIconModule,
-    MatInputModule, MatListModule, MatSidenavModule, MatToolbarModule
+    MatInputModule,
+    MatListModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatTabsModule,
+    MatSelectModule,
+    MatProgressBarModule
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
@@ -23,45 +33,51 @@ import { ExportComponent } from './export/export.component';
 import {TokenInterceptor} from './auth/token-interceptor.service';
 import { AuthService} from './auth/auth.service';
 import {AuthGuardService} from './auth/auth-guard.service';
+import { ReportsComponent } from './reports/reports.component';
+import {ReportsService} from './reports/reports.service';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    DynamicFormComponent,
-    DynamicFormQuestionComponent,
-    LoginComponent,
-    PrivacyComponent,
-    EventComponent,
-    SidenavComponent,
-    ExportComponent
-  ],
-  imports: [
-    BrowserModule,
-    HttpClientModule,
-    AppRoutingModule,
-    MatFormFieldModule,
-    MatInputModule,
-    BrowserAnimationsModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatDialogModule,
-    MatIconModule,
-    ReactiveFormsModule,
-    MatToolbarModule,
-    MatSidenavModule,
-    MatListModule
-  ],
-  providers: [ MediaMatcher,
-      ConfigService,
-      AuthService,
-      AuthGuardService,
-      {
-          provide: HTTP_INTERCEPTORS,
-          useClass: TokenInterceptor,
-          multi: true
-      }],
-  bootstrap: [ AppComponent ]
+    declarations: [
+        AppComponent,
+        DynamicFormComponent,
+        DynamicFormQuestionComponent,
+        LoginComponent,
+        PrivacyComponent,
+        EventComponent,
+        SidenavComponent,
+        ExportComponent,
+        ReportsComponent
+    ],
+    imports: [
+        BrowserModule,
+        HttpClientModule,
+        AppRoutingModule,
+        MatFormFieldModule,
+        MatInputModule,
+        BrowserAnimationsModule,
+        MatCardModule,
+        MatCheckboxModule,
+        MatDividerModule,
+        MatButtonModule,
+        MatDialogModule,
+        MatIconModule,
+        ReactiveFormsModule,
+        MatToolbarModule,
+        MatSidenavModule,
+        MatListModule,
+        MatTabsModule,
+        MatSelectModule,
+        MatProgressBarModule
+    ],
+    providers: [MediaMatcher,
+        ConfigService,
+        AuthService,
+        AuthGuardService,
+        ReportsService,
+        {provide: HTTP_INTERCEPTORS,
+        useClass: TokenInterceptor,
+        multi: true
+        }],
+    bootstrap: [ AppComponent ]
 })
 export class AppModule { }
