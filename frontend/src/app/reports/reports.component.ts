@@ -258,6 +258,7 @@ localhost:8080/events/count/quarter
      * a helder function to convert a number to its ordinal (1st, 2nd, etc.) string value
      */
     getGetOrdinal(n: number): string {
+        // https://stackoverflow.com/questions/13627308/add-st-nd-rd-and-th-ordinal-suffix-to-a-number
         const s = ['th', 'st', 'nd', 'rd'],
             v = n % 100;
         return n + (s[(v - 20) % 10] || s[v] || s[0]);

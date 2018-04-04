@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {ConfigService} from "../config/config.service";
 import {Config} from "../config/config";
@@ -53,7 +53,7 @@ export class ReportsService {
         } else {
             const httpOptions = {
                 headers: new HttpHeaders({
-                    'Content-Type':  'application/json',
+                    'Content-Type': 'application/json',
                 })
             };
             return this.http.get(url, httpOptions);
