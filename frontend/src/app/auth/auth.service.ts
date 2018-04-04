@@ -17,7 +17,7 @@ export class AuthService {
 
     constructor(private http: HttpClient, private configService: ConfigService) {
         this.config = configService.getConfig();
-        this.tokenURL = this.config.backendURL + this.config.backendPort + '/oauth/token';
+        this.tokenURL = this.config.backendURL + ':' + this.config.backendPort + '/oauth/token';
     }
 
     // todo Move the following impl specific details into config
