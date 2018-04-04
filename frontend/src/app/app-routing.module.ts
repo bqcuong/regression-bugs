@@ -31,6 +31,7 @@ const routes: Routes = [
     { path: 'dashboard', redirectTo: 'reports', pathMatch: 'full', canActivate: [AuthGuardService]}, // a protected page
     // TODO: route password-recovery to the PasswordRecoveryComponent when it is created.
     { path: 'password-recovery', pathMatch: 'full', redirectTo: 'privacy'}, // an unprotected page just for testing
+    // todo: route route to dashboard when made
     { path: '', redirectTo: 'login', pathMatch: 'full'}
 ];
 
