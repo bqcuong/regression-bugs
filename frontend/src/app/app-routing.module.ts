@@ -3,9 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent} from './login/login.component';
 import {PrivacyComponent} from './privacy/privacy.component';
 import {EventComponent} from './event/event.component';
-import { NavItem } from './nav-item';
+import { NavItem } from './sidenav/nav-item';
 import {ExportComponent} from './export/export.component';
-import {AuthGuardService} from './auth-guard.service';
+import {AuthGuardService} from './auth/auth-guard.service';
 import {ReportsComponent} from './reports/reports.component';
 
 /**
