@@ -3,9 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent} from './login/login.component';
 import {PrivacyComponent} from './privacy/privacy.component';
 import {EventComponent} from './event/event.component';
-import { NavItem } from './nav-item';
+import { NavItem } from './sidenav/nav-item';
 import {ExportComponent} from './export/export.component';
-import {AuthGuardService} from './auth-guard.service';
+import {AuthGuardService} from './auth/auth-guard.service';
+import {LocationResolverService} from './location/service/location-resolver.service';
+import {UserResolverService} from './user/service/user-resolver.service';
+import {QuestionResolverService} from './questions/service/question-resolver.service';
+import {ReportsComponent} from './reports/reports.component';
 
 /**
  * The actual available routes. Which links are routed to which components.
@@ -13,7 +17,15 @@ import {AuthGuardService} from './auth-guard.service';
 const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'privacy', component: PrivacyComponent },
-    { path: 'event', component: EventComponent, canActivate: [AuthGuardService]},
+    { path: 'event',
+        component: EventComponent,
+        canActivate: [AuthGuardService],
+        resolve: {
+            locationResolver: LocationResolverService,
+            userResolver: UserResolverService,
+            questionResolver: QuestionResolverService
+        }},
+    { path: 'reports', component: ReportsComponent, canActivate: [AuthGuardService]},
     { path: 'export', component: ExportComponent, canActivate: [AuthGuardService]},
     // TODO: route dashboard to the DashboardComponent when it is created.
     { path: 'dashboard', redirectTo: 'event', pathMatch: 'full', canActivate: [AuthGuardService]}, // a protected page
@@ -28,7 +40,7 @@ const routes: Routes = [
  */
 export const NAV_ITEMS: NavItem[] = [
     new NavItem('Dashboard', '/dashboard'),
-    // new NavItem('Reports', '/reports'),
+    new NavItem('Reports', '/reports'),
     new NavItem('Observe', '/event'),
     NavItem.createNavItemWithSubItems('Settings', [
         // new NavItem('Account', '/account'),
@@ -46,7 +58,12 @@ export const NAV_ITEMS: NavItem[] = [
 
 @NgModule({
     exports: [ RouterModule ],
-    imports: [ RouterModule.forRoot(routes) ]
+    imports: [ RouterModule.forRoot(routes) ],
+    providers: [
+        QuestionResolverService,
+        UserResolverService,
+        LocationResolverService
+    ]
 })
 export class AppRoutingModule {}
 

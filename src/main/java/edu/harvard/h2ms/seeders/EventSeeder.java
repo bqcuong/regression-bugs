@@ -29,51 +29,46 @@ public class EventSeeder {
 
 	final Logger log = LoggerFactory.getLogger(EventSeeder.class);
 	@Autowired
-    private EventRepository eventRepository;
-	
-	@Autowired UserRepository userRepository;
-    
+	private EventRepository eventRepository;
+
 	@Autowired
-    private QuestionRepository questionRepository;
-	
+	UserRepository userRepository;
+
+	@Autowired
+	private QuestionRepository questionRepository;
+
 	@Autowired
 	private EventTemplateRepository eventTemplateRepository;
 
-    @Autowired
-    public EventSeeder(EventRepository eventRepository) {
-        this.eventRepository = eventRepository;
-    }
+	@Autowired
+	public EventSeeder(EventRepository eventRepository) {
+		this.eventRepository = eventRepository;
+	}
 
-    @EventListener
-    public void seed(ContextRefreshedEvent event) {
-        seedEventTable();
-    }
-    
-    static final String EMAIL = "jqadams2@h2ms.org";
-    static final String PASSWORD = "password";
+	@EventListener
+	public void seed(ContextRefreshedEvent event) {
+		seedEventTable();
+	}
 
-    private void seedEventTable() {
-       if (eventRepository.count() == 0) {
-    	   
+	static final String EMAIL = "jqadams2@h2ms.org";
+	static final String PASSWORD = "password";
 
-           // Sample User Data
-           User observer = new User("John2", "Quincy2", "Adams2", EMAIL, PASSWORD);
-           observer.setType("other");
-           userRepository.save(observer);
-           User subject = new User("Jane2", "Doe2", "Sa2m", "sample2@email.com", "password");
-           subject.setType("doctor");
-           userRepository.save(subject);
+	private void seedEventTable() {
+		if (eventRepository.count() == 0) {
 
-           List<List<String>> records = asList(
-        		   
-        			   asList("true"),
-        			   asList("false"));
-           
-           for(List<String> record: records) {
-        	   
-        	   String qval0 = record.get(0);
-        	   
-        	   
+			// Sample User Data
+			User observer = new User("John2", "Quincy2", "Adams2", EMAIL, PASSWORD, "other");
+			userRepository.save(observer);
+			User subject = new User("Jane2", "Doe2", "Sa2m", "sample2@email.com", "password", "doctor");
+			userRepository.save(subject);
+
+			List<List<String>> records = asList(
+					asList("true"), asList("false"), asList("true"), asList("true"));
+
+			for (List<String> record : records) {
+
+				String qval0 = record.get(0);
+
 				// Creates and persists event
 				Event event = new Event();
 				Set<Answer> answers = new HashSet<>();
@@ -85,7 +80,7 @@ public class EventSeeder {
 				question.setQuestion("Washed?");
 				answer.setQuestion(question);
 				// values are: true, false
-				answer.setValue(qval0); 
+				answer.setValue(qval0);
 				answers.add(answer);
 				event.setAnswers(answers);
 				event.setLocation("Location_01");
@@ -95,10 +90,8 @@ public class EventSeeder {
 				event.setObserver(observer);
 				event.setTimestamp(new Date(System.currentTimeMillis()));
 				eventRepository.save(event);
-           
-           }
-           
-    	   
-       }
-    }
+
+			}
+		}
+	}
 }

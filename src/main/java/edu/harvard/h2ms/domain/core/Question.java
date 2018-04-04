@@ -23,31 +23,32 @@ import java.util.Set;
 @Entity
 public class Question {
 
-    /* Properties */
+	/* Properties */
 	@Id
-	@GeneratedValue(strategy= GenerationType.AUTO)
-    @Column
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column
+	private Long id;
 
-	@NotNull
+//	@NotNull
 	@Column
     private Integer priority;
 
     @ElementCollection
     private List<String> options;
 
-    @NotNull
+//    @NotNull
     @Column
     private String question;
 
-    @NotNull
+//    @NotNull
 	@Column
     private Boolean required;
 
-    @NotNull
+//    @NotNull
     @Column
     private String answerType;
 
+//	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_template_id")
 	private EventTemplate eventTemplate;
@@ -124,5 +125,12 @@ public class Question {
 		this.answerType = answerType;
 	}
 
-
+    @Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Question [id=").append(id).append(", priority=").append(priority).append(", options=")
+				.append(options).append(", question=").append(question).append(", required=").append(required)
+				.append(", answerType=").append(answerType).append("]");
+		return builder.toString();
+	}
 }

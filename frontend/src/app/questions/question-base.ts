@@ -5,7 +5,7 @@ export class QuestionBase<T> {
     required: boolean;
     priority: number;
     answerType: string;
-    options: Array<string>;
+    options: Array<object>;
 
     constructor(params: {
         value?: T,
@@ -14,7 +14,7 @@ export class QuestionBase<T> {
         required?: boolean,
         priority?: number,
         answerType?: string,
-        options?: Array<string>
+        options?: Array<object>
     } = {}) {
         this.value = params.value;
         this.id = params.id === undefined ? 0 : params.id;
