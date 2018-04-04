@@ -1,49 +1,46 @@
 package edu.harvard.h2ms.controllers;
 
-import edu.harvard.h2ms.H2MSRestAppInitializer;
-import edu.harvard.h2ms.domain.core.*;
-import edu.harvard.h2ms.repository.EventRepository;
-import edu.harvard.h2ms.repository.EventTemplateRepository;
-import edu.harvard.h2ms.repository.QuestionRepository;
-import edu.harvard.h2ms.repository.UserRepository;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.Assert;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.WebApplicationContext;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.context.WebApplicationContext;
+
+import edu.harvard.h2ms.domain.core.Answer;
+import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.domain.core.User;
+import edu.harvard.h2ms.repository.EventRepository;
+import edu.harvard.h2ms.repository.EventTemplateRepository;
+import edu.harvard.h2ms.repository.QuestionRepository;
+import edu.harvard.h2ms.repository.UserRepository;
 
 @RunWith(SpringRunner.class)
 @WebAppConfiguration

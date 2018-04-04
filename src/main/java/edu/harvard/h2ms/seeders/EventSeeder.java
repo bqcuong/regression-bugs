@@ -4,6 +4,7 @@ import static java.lang.Boolean.TRUE;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -21,6 +22,7 @@ import edu.harvard.h2ms.repository.EventRepository;
 import edu.harvard.h2ms.repository.EventTemplateRepository;
 import edu.harvard.h2ms.repository.QuestionRepository;
 import edu.harvard.h2ms.repository.UserRepository;
+import static java.util.Arrays.asList;
 
 @Component
 public class EventSeeder {
@@ -62,54 +64,40 @@ public class EventSeeder {
            subject.setType("doctor");
            userRepository.save(subject);
 
-           // Creates and persists event
-           Event event = new Event();
-           Set<Answer> answers = new HashSet<>();
-           Answer answer = new Answer();
-           Question question = new Question();
-           question.setPriority(1);
-           question.setRequired(TRUE);
-           question.setAnswerType("Boolean");
-           question.setQuestion("Washed?");
-           answer.setQuestion(question);
-           answer.setValue("true");
-           answers.add(answer);
-           event.setAnswers(answers);
-           event.setLocation("Location_01");
-           event.setSubject(subject);
-           event.setObserver(observer);
-           event.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
-           event.setObserver(observer);
-           event.setTimestamp(new Date(System.currentTimeMillis()));
-           eventRepository.save(event);
+           List<List<String>> records = asList(
+        		   
+        			   asList("true"),
+        			   asList("false"));
            
+           for(List<String> record: records) {
+        	   
+        	   String qval0 = record.get(0);
+        	   
+        	   
+				// Creates and persists event
+				Event event = new Event();
+				Set<Answer> answers = new HashSet<>();
+				Answer answer = new Answer();
+				Question question = new Question();
+				question.setPriority(1);
+				question.setRequired(TRUE);
+				question.setAnswerType("Boolean");
+				question.setQuestion("Washed?");
+				answer.setQuestion(question);
+				// values are: true, false
+				answer.setValue(qval0); 
+				answers.add(answer);
+				event.setAnswers(answers);
+				event.setLocation("Location_01");
+				event.setSubject(subject);
+				event.setObserver(observer);
+				event.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
+				event.setObserver(observer);
+				event.setTimestamp(new Date(System.currentTimeMillis()));
+				eventRepository.save(event);
            
-//    	   Event event = new Event();
-//    	   Answer answer = new Answer();    	   
-//    	   Question question = questionRepository.findByQuestion("Washed?");    	
-//    	   Iterable<Question> questions = questionRepository.findAll();
-    	   
-    	   
-//    	   Question question = new Question();
-//    	   question.setQuestion("Washed?");
-//    	   question.setAnswerType("boolean");
-//    	   question.setRequired(false);
-//    	   question.setPriority(0);
-//    	   
-//    	   answer.setQuestion(question);
-//    	   answer.setValue("true");
-//    	   Set<Answer> answers = new HashSet<>();
-//    	   answers.add(answer);
-//    	   event.setAnswers(answers);
-//    	   User user = userRepository.findByFirstName("another");
-//    	   event.setSubject(user);
-//    	   event.setObserver(user);
-//    	   event.setLocation("location");
-//    	   event.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
-//    	   event.setTimestamp(new Date());
-//    	   
-//    	   eventRepository.save(event);
-    	   
+           }
+           
     	   
        }
     }

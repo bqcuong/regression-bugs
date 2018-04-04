@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +40,7 @@ public class ReportServiceImpl implements ReportService{
 		Writer writer = new StringWriter();
 		CSVWriter csvWriter = new CSVWriter(writer,
                 CSVWriter.DEFAULT_SEPARATOR,
-                CSVWriter.NO_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
 		
@@ -50,12 +53,12 @@ public class ReportServiceImpl implements ReportService{
 		return writer;
 	}
 	
-private Writer stringWriterReport(List<List<String>> data) {
+	private Writer stringWriterReport(List<List<String>> data) {
 		
 		Writer writer = new StringWriter();
 		CSVWriter csvWriter = new CSVWriter(writer,
                 CSVWriter.DEFAULT_SEPARATOR,
-                CSVWriter.NO_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_QUOTE_CHARACTER,
                 CSVWriter.DEFAULT_ESCAPE_CHARACTER,
                 CSVWriter.DEFAULT_LINE_END);
 		
@@ -94,7 +97,16 @@ private Writer stringWriterReport(List<List<String>> data) {
 		
 		List<List<String>> data = new ArrayList<List<String>>();
 		
-
+		// Doesn't assume all events have same answers
+		// get all the questions in events
+		Set<String> questionKeys = new HashSet<String>();
+	    for(Event event : events) {
+			for(Answer answer : event.getAnswers()) {
+				questionKeys.add(answer.getQuestion().getQuestion());
+			}
+	    }
+	    
+	    
 		Boolean isHeaderRow = true;
 		for(Event event : events) {
 			
@@ -108,10 +120,9 @@ private Writer stringWriterReport(List<List<String>> data) {
 				headerRow.add("subject_id");
 				headerRow.add("subject_type");
 				
-				int i = 0;
-				for(Answer answer : event.getAnswers()) {
-					headerRow.add("q"+i);
-					headerRow.add("v"+i);
+				// create event question columns
+				for(String question : questionKeys) {
+					headerRow.add("q_"+question);
 				}
 				
 				data.add(headerRow);
@@ -128,11 +139,22 @@ private Writer stringWriterReport(List<List<String>> data) {
 			row.add(event.getSubject().getEmail().toString());
 			row.add(event.getSubject().getType().toString());
 			
-			
+			Map<String, String> answerMap = new HashMap<>();
 			for(Answer answer : event.getAnswers()) {
-				row.add(answer.getQuestion().getQuestion());
-				row.add(answer.getValue());
+				String q = answer.getQuestion().getQuestion();
+				String a = answer.getValue();
+				answerMap.put(q, a);
 			}
+			
+			for(String key : questionKeys) {
+				if(answerMap.containsKey(key)) {
+					row.add(answerMap.get(key));
+				} else {
+					row.add("");
+				}
+			}
+			
+			
 			
 			data.add(row);	
 		}

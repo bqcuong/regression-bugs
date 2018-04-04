@@ -2,18 +2,24 @@ package edu.harvard.h2ms.seeders;
 
 import static java.util.Arrays.asList;
 
-import edu.harvard.h2ms.domain.core.User;
-import edu.harvard.h2ms.repository.UserRepository;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import edu.harvard.h2ms.domain.core.User;
+import edu.harvard.h2ms.repository.UserRepository;
+
 @Component
 public class UserSeeder {
     private UserRepository userRepository;
 
+    Set<String> questionKeys = new HashSet<String>();
+    
     @Autowired
     public UserSeeder(UserRepository userRepository) {
         this.userRepository = userRepository;
