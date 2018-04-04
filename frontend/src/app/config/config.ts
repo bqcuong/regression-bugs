@@ -7,7 +7,6 @@ export class Config {
     appName: string;
     websiteUrl: string;
     bannerURL: string;
-    faviconURL: string;
 
     constructor(appName: string, websiteUrl: string, logoURL: string) {
         this.appName = appName;
