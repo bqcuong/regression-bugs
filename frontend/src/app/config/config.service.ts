@@ -15,6 +15,7 @@ export class ConfigService {
         this.config = new Config(h2ms.CONFIG.appName,
             h2ms.CONFIG.websiteUrl,
             h2ms.CONFIG.bannerURL,
+            h2ms.CONFIG.backendURL,
             h2ms.CONFIG.backendPort);
     }
 
