@@ -29,4 +29,16 @@ public class ReportController {
 		}
 		
 	}
+	
+	@RequestMapping(value = "/events", method = RequestMethod.GET)
+	public void getEventsReport(HttpServletResponse response){
+		response.setContentType("text/plain; charset=utf-8");
+		try {
+			response.getWriter().print(reportService.createEventReport());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.opencsv.CSVWriter;
-import com.opencsv.bean.ColumnPositionMappingStrategy;
-import com.opencsv.bean.StatefulBeanToCsv;
-import com.opencsv.bean.StatefulBeanToCsvBuilder;
-import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
+
+import edu.harvard.h2ms.domain.core.Answer;
+import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.repository.EventRepository;
 
 @Component
 @Service("reportService")
@@ -29,6 +28,9 @@ public class ReportServiceImpl implements ReportService{
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private EventRepository eventRepository;
 	
 	private Writer stringWriterReport(Map<String, Double> data) {
 		
@@ -40,46 +42,33 @@ public class ReportServiceImpl implements ReportService{
                 CSVWriter.DEFAULT_LINE_END);
 		
 		data.forEach((k,v) -> csvWriter.writeNext(new String[] {(String)k,((Double)v).toString()}));
-		
+		try {
+			csvWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return writer;
 	}
 	
-	/*
-	 * https://stackoverflow.com/questions/43326129/how-to-write-bean-to-csv-using-opencsv-without-converting-to-string
-	 */
-	@SuppressWarnings("unchecked")
-	private Writer beanWriterReport(Map<String, Double> data) {
+private Writer stringWriterReport(List<List<String>> data) {
+		
 		Writer writer = new StringWriter();
+		CSVWriter csvWriter = new CSVWriter(writer,
+                CSVWriter.DEFAULT_SEPARATOR,
+                CSVWriter.NO_QUOTE_CHARACTER,
+                CSVWriter.DEFAULT_ESCAPE_CHARACTER,
+                CSVWriter.DEFAULT_LINE_END);
 		
-		@SuppressWarnings("rawtypes")
-		ColumnPositionMappingStrategy mappingStrategy =
-	            new ColumnPositionMappingStrategy();
-	    mappingStrategy.setType(MyReport.class);
-	    
-	    @SuppressWarnings("rawtypes")
-		StatefulBeanToCsvBuilder<MyReport> builder = new StatefulBeanToCsvBuilder(writer);
-	    @SuppressWarnings("rawtypes")
-		StatefulBeanToCsv beanWriter = builder
-	              .withMappingStrategy(mappingStrategy)
-	              .withSeparator(CSVWriter.DEFAULT_SEPARATOR)
-	              .withQuotechar(CSVWriter.NO_QUOTE_CHARACTER)
-	              .build();
-
-	    List<MyReport> myReports = new ArrayList<>();
-	    data.forEach((k,v) -> myReports.add(new MyReport(k,v)));
-	    
-	    try {
-			beanWriter.write(myReports);
-		} catch (CsvDataTypeMismatchException e) {
-			// TODO Auto-generated catch block
+		data.forEach((ls) -> csvWriter.writeNext(ls.toArray(new String[0])));
+		try {
+			csvWriter.close();
+		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (CsvRequiredFieldEmptyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		}		
 		return writer;
 	}
+	
+	
 	
 
 	@Override
@@ -87,7 +76,6 @@ public class ReportServiceImpl implements ReportService{
 	
 		Map<String, Double> complianceData = userService.findAvgHandWashCompliance();
 		Writer writer = stringWriterReport(complianceData);
-//		Writer writer = beanWriterReport(complianceData);
 		
 		
 		try {
@@ -99,6 +87,66 @@ public class ReportServiceImpl implements ReportService{
 		return writer.toString();
 	}
 	
+	@Override
+	public String createEventReport() {
+		// Fetches all events from the H2MS database
+		List<Event> events = Lists.newArrayList(eventRepository.findAll());
+		
+		List<List<String>> data = new ArrayList<List<String>>();
+		
+
+		Boolean isHeaderRow = true;
+		for(Event event : events) {
+			
+			if(isHeaderRow == true) {
+				List<String> headerRow = new ArrayList<String>();
+				headerRow.add("eventId");
+				headerRow.add("time");
+				headerRow.add("location");
+				headerRow.add("observer_id");
+				headerRow.add("observer_type");
+				headerRow.add("subject_id");
+				headerRow.add("subject_type");
+				
+				int i = 0;
+				for(Answer answer : event.getAnswers()) {
+					headerRow.add("q"+i);
+					headerRow.add("v"+i);
+				}
+				
+				data.add(headerRow);
+				
+				isHeaderRow = false;
+			}
+			List<String> row = new ArrayList<String>();
+			
+			row.add(event.getId().toString());
+			row.add(event.getTimestamp().toString());			
+			row.add(event.getLocation().toString());
+			row.add(event.getObserver().getEmail().toString());
+			row.add(event.getObserver().getType().toString());
+			row.add(event.getSubject().getEmail().toString());
+			row.add(event.getSubject().getType().toString());
+			
+			
+			for(Answer answer : event.getAnswers()) {
+				row.add(answer.getQuestion().getQuestion());
+				row.add(answer.getValue());
+			}
+			
+			data.add(row);	
+		}
+		
+		Writer writer = stringWriterReport(data);
+		
+		try {
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return writer.toString();
+	}
 	
 	private class MyReport {
 		private String userType;

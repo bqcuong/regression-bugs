@@ -56,10 +56,10 @@ public class EventSeeder {
 
            // Sample User Data
            User observer = new User("John2", "Quincy2", "Adams2", EMAIL, PASSWORD);
-           observer.setType("Other");
+           observer.setType("other");
            userRepository.save(observer);
            User subject = new User("Jane2", "Doe2", "Sa2m", "sample2@email.com", "password");
-           subject.setType("Doctor");
+           subject.setType("doctor");
            userRepository.save(subject);
 
            // Creates and persists event
