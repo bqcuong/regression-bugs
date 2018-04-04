@@ -6,4 +6,4 @@ import {Config} from './config';
 export const CONFIG: Config = new Config('H2MS',
     'www.h2ms.org',
     '/assets/images/banners/h2ms-banner.png',
-    '81');
+    81);

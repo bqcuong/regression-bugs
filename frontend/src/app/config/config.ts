@@ -7,9 +7,9 @@ export class Config {
     appName: string;
     websiteUrl: string;
     bannerURL: string;
-    backendPort: string;
+    backendPort: number;
 
-    constructor(appName: string, websiteUrl: string, logoURL: string, backendPort: string) {
+    constructor(appName: string, websiteUrl: string, logoURL: string, backendPort: number) {
         this.appName = appName;
         this.websiteUrl = websiteUrl;
         this.bannerURL = logoURL;
