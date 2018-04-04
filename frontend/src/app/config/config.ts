@@ -2,19 +2,21 @@
  * Config file to switch between different types of applications. Ex. Hand Hygiene, Blue Gloves, or Blue Masks.
  */
 export class Config {
+    servicesReturnFakeData = true;
+
     appName: string;
     websiteUrl: string;
-    logoURL: string;
+    bannerURL: string;
 
     constructor(appName: string, websiteUrl: string, logoURL: string) {
         this.appName = appName;
         this.websiteUrl = websiteUrl;
-        this.logoURL = logoURL;
+        this.bannerURL = logoURL;
     }
 
     public setConfig(config: Config) {
         this.appName = config.appName;
         this.websiteUrl = config.websiteUrl;
-        this.logoURL = config.logoURL;
+        this.bannerURL = config.bannerURL;
     }
 }

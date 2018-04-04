@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {delay} from "q";
+import {ConfigService} from "../config/config.service";
+import {Config} from "../config/config";
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/delay';
 
 @Injectable()
 export class ReportsService {
+
+    config: Config;
 
     numObsByYear = {
         '2017': 100,
@@ -37,24 +43,25 @@ export class ReportsService {
         '4th (2018)': 600
     };
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private configService: ConfigService) {
+        this.config = configService.getConfig();
     }
 
-    fetchReport(url: string, serveFakeData: boolean) {
-        if (!serveFakeData) {
+    fetchReport(url: string) {
+        if (this.config.servicesReturnFakeData) {
+            return Observable.of(this.fetchFakeData(url)).delay(350);
+        } else {
             const httpOptions = {
                 headers: new HttpHeaders({
                     'Content-Type':  'application/json',
                 })
             };
             return this.http.get(url, httpOptions);
-        } else {
-            return this.fetchFakeData(url);
         }
     }
 
     fetchFakeData(url: string) {
-        delay(1000);
+        ;
         if (url.indexOf('events/count/') !== -1) {
             if (url.indexOf('year') !== -1) {
                 return this.numObsByYear;
