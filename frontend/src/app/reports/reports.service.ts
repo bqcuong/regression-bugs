@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {ConfigService} from "../config/config.service";
-import {Config} from "../config/config";
+import {ConfigService} from '../config/config.service';
+import {Config} from '../config/config';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/delay';
