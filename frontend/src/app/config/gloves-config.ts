@@ -5,4 +5,6 @@ import {Config} from './config';
  */
 export const CONFIG: Config = new Config('Blue Gloves 4 All',
     'www.gloveygloversonsgloveemporium.org',
-    '/assets/images/banners/gloves-banner.png'); // todo: add gloves favicon
+    '/assets/images/banners/gloves-banner.png',
+    'http://test.h2ms.org',
+    81); // todo: add gloves favicon
