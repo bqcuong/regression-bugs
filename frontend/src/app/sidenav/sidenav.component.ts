@@ -47,7 +47,10 @@ export class SidenavComponent implements OnDestroy {
     }
 
     isSidebarOpenOnPageLoad() {
-        return this.location.path() !== '/login' && !this.isMobileResolution();
+        // Disabling for demo until I can get the push content to side working again. -Ben
+        return false;
+        // TODO: Re-enable default behavior
+        // return this.location.path() !== '/login' && !this.isMobileResolution();
     }
 
     private isMobileResolution() {
