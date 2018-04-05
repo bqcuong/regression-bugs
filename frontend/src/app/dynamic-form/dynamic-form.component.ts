@@ -60,7 +60,7 @@ export class DynamicFormComponent implements OnInit {
 
     openDialog(): void {
         const dialogRef = this.dialog.open(FormSubmissionDialogComponent, {
-            width: '250px',
+            width: '270px',
         });
     }
 }
@@ -73,7 +73,7 @@ export class FormSubmissionDialogComponent {
 
     constructor(public dialogRef: MatDialogRef <FormSubmissionDialogComponent>) {}
 
-    onNoClick(): void {
+    closeDialog(): void {
         this.dialogRef.close();
     }
 }
