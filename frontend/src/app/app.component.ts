@@ -1,10 +1,11 @@
 import {MediaMatcher} from '@angular/cdk/layout';
-import {ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
+import {AfterContentInit, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {ConfigService} from './config/config.service';
 import {Config} from './config/config';
 import {NavItem} from "./sidenav/nav-item";
 import {NAV_ITEMS} from "./app-routing.module";
 import {Location} from '@angular/common';
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-root',
@@ -26,7 +27,8 @@ export class AppComponent implements OnDestroy {
     constructor(private changeDetectorRef: ChangeDetectorRef,
                 private media: MediaMatcher,
                 private location: Location,
-                private configService: ConfigService) {
+                private configService: ConfigService,
+                private titleService: Title) {
         this.mobileQuery = media.matchMedia('(max-width: 600px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addListener(this._mobileQueryListener);
@@ -35,7 +37,7 @@ export class AppComponent implements OnDestroy {
         for (const navItem of this.navItems) {
             navItem.showSubItems = navItem.isCurrentlySelected(location.path());
         }
-
+        this.setTitle(this.config.appName);
     }
 
 
@@ -53,9 +55,20 @@ export class AppComponent implements OnDestroy {
 
     switchConfigFile() {
         this.configService.toggleConfig();
+        this.setTitle(this.config.appName);
     }
+
+    /**
+     * todo: move to app module
+     */
+    public setTitle(newTitle: string) {
+        this.titleService.setTitle(newTitle);
+    }
+
 
     ngOnDestroy(): void {
         this.mobileQuery.removeListener(this._mobileQueryListener);
     }
+
+
 }
