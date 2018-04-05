@@ -21,7 +21,7 @@ import {
     MatProgressBarModule
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import { DynamicFormComponent } from './dynamic-form/dynamic-form.component';
+import {DynamicFormComponent, FormSubmissionDialogComponent} from './dynamic-form/dynamic-form.component';
 import { DynamicFormQuestionComponent } from './dynamic-form-question/dynamic-form-question.component';
 import { LoginComponent } from './login/login.component';
 import { PrivacyComponent } from './privacy/privacy.component';
@@ -49,7 +49,8 @@ import {ReportsService} from './reports/reports.service';
     EventComponent,
     SidenavComponent,
     ExportComponent,
-    ReportsComponent
+    ReportsComponent,
+    FormSubmissionDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -70,8 +71,10 @@ import {ReportsService} from './reports/reports.service';
     MatListModule,
     MatTabsModule,
     MatSelectModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+      MatDialogModule
   ],
+    entryComponents: [FormSubmissionDialogComponent],
   providers: [ MediaMatcher,
       ConfigService,
       AuthService,
