@@ -42,7 +42,7 @@ export class SidenavComponent implements OnDestroy {
         for (const navItem of this.navItems) {
             navItem.showSubItems = navItem.isCurrentlySelected(location.path());
         }
-
+        this.setTitle(this.config.appName);
     }
 
     isInProduction() {
