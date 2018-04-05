@@ -59,6 +59,7 @@ public class User implements UserDetails {
     @Column
     private String notificationFrequency;
 
+    @NotNull
     @Column
     private String type;
 
@@ -74,26 +75,27 @@ public class User implements UserDetails {
         inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
-    
+
     @Column(name = "enabled")
     private boolean enabled;
-    
+
     @Column(name = "created_on")
     private Date createdOn;
-    
+
     @Column(name = "last_login")
     private Date lastLogin;
-    
+
     @Column(name = "reset_token")
     private String resetToken;
-    
-    
 
-    public User(String firstName, String middleName, String lastName, String email, String password) {
+
+
+    public User(String firstName, String middleName, String lastName, String email, String password, String type) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
         this.email = email;
+        this.type = type;
         setPassword(password);
     }
 
@@ -208,36 +210,36 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    
+
     public void setEnabled(boolean value) {
     	this.enabled = value;
     }
-    
+
     public Date getLastLogin() {
     	return lastLogin;
     }
-    
+
     public void setLastLogin(Date lastLogin) {
     	this.lastLogin = lastLogin;
     }
-    
+
     public Date getCreatedOn() {
     	return createdOn;
     }
-    
+
     public void setCreatedOn(Date createdOn) {
     	this.createdOn = createdOn;
     }
-    
+
     public String getResetToken() {
     	return resetToken;
     }
-    
+
     public void setResetToken(String resetToken) {
     	this.resetToken = resetToken;
     }
-    
-   
+
+
 
     @Override
     public String toString() {

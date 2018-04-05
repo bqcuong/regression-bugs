@@ -2,10 +2,10 @@ import {MediaMatcher} from '@angular/cdk/layout';
 import {ChangeDetectorRef, Component, OnDestroy, ViewChild} from '@angular/core';
 import {Location} from '@angular/common';
 import {NAV_ITEMS} from '../app-routing.module';
-import {NavItem} from '../nav-item';
+import {NavItem} from './nav-item';
 import {MatSidenav} from '@angular/material';
-import {ConfigService} from '../config.service';
-import {Config} from '../config';
+import {ConfigService} from '../config/config.service';
+import {Config} from '../config/config';
 
 @Component({
     selector: 'app-sidenav',
@@ -47,7 +47,10 @@ export class SidenavComponent implements OnDestroy {
     }
 
     isSidebarOpenOnPageLoad() {
-        return this.location.path() !== '/login' && !this.isMobileResolution();
+        // Disabling for demo until I can get the push content to side working again. -Ben
+        return false;
+        // TODO: Re-enable default behavior
+        // return this.location.path() !== '/login' && !this.isMobileResolution();
     }
 
     private isMobileResolution() {

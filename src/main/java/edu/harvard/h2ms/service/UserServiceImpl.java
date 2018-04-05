@@ -10,12 +10,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.springframework.stereotype.Repository;
 import edu.harvard.h2ms.repository.UserRepository;
+import edu.harvard.h2ms.service.utils.H2msRestUtils;
+
 import org.springframework.transaction.annotation.Transactional;
 import static edu.harvard.h2ms.service.utils.H2msRestUtils.calculateAverage;
-import static java.lang.Boolean.TRUE;
 
 @Service("userService")
 @Repository
@@ -41,8 +41,6 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 	}
 	
-	
-
 	@Autowired
 	private EventRepository eventRepository;
 
@@ -50,75 +48,36 @@ public class UserServiceImpl implements UserService {
 	private QuestionRepository questionRepository;
 
 	@Override
-	@Transactional(readOnly=true)
-	public Map<String, Double> findAvgHandWashCompliance() {
-
+	public Map<String, Double> findComplianceByUserType(Question question, List<Event> events) {
+		Map<String, Double> complianceResult = new HashMap<>();
+		
 		// Fetches all users from H2MS database
 		List<User> users = Lists.newArrayList(userRepository.findAll());
 		log.info("No. of users found: {}", users.size());
-		if(users.isEmpty()) { return null; }
+		if(users.isEmpty()) { return complianceResult; }
 
 		// Determines all the distinct types of users
 		List<String> distinctUserTypes = users.stream().map(User::getType).collect(Collectors.toList());
 		log.info("There are {} distinct user types ", distinctUserTypes.size());
-		if(distinctUserTypes.isEmpty()) { return null; }
-
-		// Fetches all events from the H2MS database
-		List<Event> events = Lists.newArrayList(eventRepository.findAll());
-		log.info("No. of events found: {}", events.size());
-		if(events.isEmpty()) { return null; }
-
-		return calcAvgHandWashCompByDistinctUserType(distinctUserTypes, events);
-	}
-
-	public Map<String, Double> calcAvgHandWashCompByDistinctUserType(List<String> distinctUserTypes, List<Event> events){
-
-		Map<String, Double> dataMap = new HashMap<String, Double>();
-		String answerValue = "true";
-		Double totalPopulation = null;
-		Double washedPopulation = null;
-
-		// Retrieves 'washed?' question object
-		List<Question> questions = Lists.newArrayList(questionRepository.findAll());
-		Optional<Question> keyQuestion = questions.stream()
-				.filter(question -> question.getQuestion().equals("Washed?"))
-				.findAny();
+		if(distinctUserTypes.isEmpty()) {
+			return complianceResult;
+		}
 
 		for (String type : distinctUserTypes) {
-			if(type == null) { continue; }
+			if(type == null)
+				continue;
 
-			// Retrieves total population (ie. how many times the questions was asked for each user type)
-			totalPopulation = Double.valueOf(events.stream()
-					.filter(event -> event.getSubject().getType().equals(type)).count());
-
-			// Retrieves the total count of events per user type where user took opportunity to wash hands
-			washedPopulation = Double.valueOf(events.stream()
-					.filter(event -> event.getSubject().getType().equals(type) &&
-							getAnswer(event.getAnswers(), keyQuestion).equals(answerValue))
-					.count());
-
-			// Calculates the average hand wash compliance for a given type
-			if(totalPopulation != null && washedPopulation != null)
-				dataMap.put(type, calculateAverage(washedPopulation, totalPopulation));
-
+			complianceResult.put(
+					type,
+					H2msRestUtils.calculateCompliance(question,
+					events.stream()
+						.filter(event -> event.getSubject().getType().equals(type))
+						.collect(Collectors.toSet()))
+					);
+			
 		}
-
-		return dataMap;
-	}
-
-	/**
-	 * Retrieves the provided answer for a particular question
-	 * @param answers
-	 * @param question
-	 * @return
-	 */
-	public String getAnswer(Set<Answer> answers, Optional<Question> question) {
-		for(Answer answer : answers) {
-			if(answer.getQuestion().getQuestion().equals(question.get().getQuestion())) {
-				return answer.getValue();
-			}
-		}
-		return null;
+		
+		return complianceResult;
 	}
 
 }

@@ -68,7 +68,7 @@ public class LocationControllerTests {
         this.mvc = MockMvcBuilders.webAppContextSetup(context)
                 .addFilter(springSecurityFilterChain)
                 .build();
-        User user = new User("John", "Quincy", "Adams", EMAIL, PASSWORD);
+        User user = new User("John", "Quincy", "Adams", EMAIL, PASSWORD, "Other");
         userRepository.save(user);
     }
 
