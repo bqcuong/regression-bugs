@@ -38,6 +38,7 @@ import {LocationEntityService} from './api/locationEntity.service';
 import {UserEntityService} from './api/userEntity.service';
 import {ReportsComponent} from './reports/reports.component';
 import {ReportsService} from './reports/reports.service';
+import { AboutComponent } from './about/about.component';
 
 @NgModule({
     declarations: [
@@ -51,6 +52,7 @@ import {ReportsService} from './reports/reports.service';
         ExportComponent,
         ReportsComponent,
         FormSubmissionDialogComponent,
+        AboutComponent
     ],
     imports: [
         BrowserModule,
