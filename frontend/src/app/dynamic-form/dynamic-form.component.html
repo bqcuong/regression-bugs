@@ -5,7 +5,9 @@
         </div>
 
         <div class="form-row">
-            <button type="submit" [disabled]="!form.valid">Save</button>
+            <mat-card-actions>
+                <button mat-button type="submit" disabled="!form.valid" color="primary">Save</button>
+            </mat-card-actions>
         </div>
     </form>
 </div>
