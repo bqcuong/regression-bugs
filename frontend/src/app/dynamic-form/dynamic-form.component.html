@@ -1,11 +1,15 @@
 <div>
-    <form (ngSubmit)="onSubmit()" [formGroup]="form">
+    <form [formGroup]="form">
         <div *ngFor="let question of questions" class="form-row">
             <app-question [question]="question" [form]="form"></app-question>
         </div>
 
         <div class="form-row">
-            <button type="submit" [disabled]="!form.valid">Save</button>
+            <mat-card-actions>
+                <a mat-raised-button (click)="onSubmit()" type="submit" [disabled]="!form.valid" color="primary">
+                    Save
+                </a>
+            </mat-card-actions>
         </div>
     </form>
 </div>
