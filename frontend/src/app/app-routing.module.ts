@@ -10,7 +10,7 @@ import {LocationResolverService} from './location/service/location-resolver.serv
 import {UserResolverService} from './user/service/user-resolver.service';
 import {QuestionResolverService} from './questions/service/question-resolver.service';
 import {ReportsComponent} from './reports/reports.component';
-import {AboutComponent} from "./about/about.component";
+import {AboutComponent} from './about/about.component';
 
 /**
  * The actual available routes. Which links are routed to which components.

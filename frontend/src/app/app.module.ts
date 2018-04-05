@@ -52,7 +52,7 @@ import { AboutComponent } from './about/about.component';
         ExportComponent,
         ReportsComponent,
         FormSubmissionDialogComponent,
-        AboutComponent,
+        AboutComponent
     ],
     imports: [
         BrowserModule,
