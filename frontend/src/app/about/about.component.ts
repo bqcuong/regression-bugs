@@ -7,14 +7,10 @@ import {Config} from '../config/config';
   templateUrl: './about.component.html',
   styleUrls: ['./about.component.css']
 })
-export class AboutComponent implements OnInit {
+export class AboutComponent {
     config: Config;
 
   constructor(private configService: ConfigService) {
       this.config = configService.getConfig();
   }
-
-  ngOnInit() {
-  }
-
 }
