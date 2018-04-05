@@ -42,7 +42,7 @@ const routes: Routes = [
  * TODO: Uncomment relevant navItem when a new page is created.
  */
 export const NAV_ITEMS: NavItem[] = [
-    new NavItem('Dashboard', '/dashboard'),
+    // new NavItem('Dashboard', '/dashboard'),
     new NavItem('Reports', '/reports'),
     new NavItem('Observe', '/event'),
     NavItem.createNavItemWithSubItems('Settings', [

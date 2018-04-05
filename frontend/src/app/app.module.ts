@@ -28,7 +28,6 @@ import {PrivacyComponent} from './privacy/privacy.component';
 import {EventComponent} from './event/event.component';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {ConfigService} from './config/config.service';
-import {SidenavComponent} from './sidenav/sidenav.component';
 import {ExportComponent} from './export/export.component';
 import {TokenInterceptor} from './auth/token-interceptor.service';
 import {AuthService} from './auth/auth.service';
@@ -48,7 +47,6 @@ import { AboutComponent } from './about/about.component';
         LoginComponent,
         PrivacyComponent,
         EventComponent,
-        SidenavComponent,
         ExportComponent,
         ReportsComponent,
         FormSubmissionDialogComponent,
