@@ -1,23 +1,27 @@
 <div [formGroup]="form">
 
-    <label [attr.for]="question.id"><h5>{{question.question}}</h5></label>
+    <mat-label [attr.for]="question.id"><h5>{{question.question}}</h5></mat-label>
 
     <div [ngSwitch]="question.answerType">
 
-        <input *ngSwitchCase="'textbox'" [formControlName]="question.id"
+        <input matInput *ngSwitchCase="'textbox'" [formControlName]="question.id"
                [id]="question.id" [type]="question.answerType">
 
-        <select [id]="question.id" *ngSwitchCase="'dropdown'" [formControlName]="question.id">
-            <option *ngFor="let opt of question.options" [value]="opt">{{opt}}</option>
-        </select>
+        <mat-form-field *ngSwitchCase="'dropdown'">
+            <mat-select [id]="question.id" [formControlName]="question.id">
+                <mat-option *ngFor="let opt of question.options" [value]="opt">{{opt}}</mat-option>
+            </mat-select>
+        </mat-form-field>
 
-        <select [id]="question.id" *ngSwitchCase="'user_dropdown'" [formControlName]="question.id">
-            <option *ngFor="let opt of question.options" [value]="opt.value">{{opt.name}}</option>
-        </select>
+        <mat-form-field *ngSwitchCase="'user_dropdown'">
+            <mat-select [id]="question.id"[formControlName]="question.id">
+                <mat-option *ngFor="let opt of question.options" [value]="opt.value">{{opt.name}}</mat-option>
+            </mat-select>
+
+        </mat-form-field>
 
         <mat-checkbox *ngSwitchCase="'checkbox'" [formControlName]="question.id"
                       [id]="question.id" [(ngModel)]="checked" color="primary"></mat-checkbox>
-
     </div>
 
     <div class="errorMessage" *ngIf="!isValid">{{question.question}} is required</div>
