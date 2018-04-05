@@ -7,13 +7,20 @@ export class Config {
     appName: string;
     websiteUrl: string;
     bannerURL: string;
+    logoURL: string;
     backendURL: string;
     backendPort: number;
 
-    constructor(appName: string, websiteUrl: string, logoURL: string, backendURL: string, backendPort: number) {
+    constructor(appName: string,
+                websiteUrl: string,
+                bannerURL: string,
+                logoURL: string,
+                backendURL: string,
+                backendPort: number) {
         this.appName = appName;
         this.websiteUrl = websiteUrl;
-        this.bannerURL = logoURL;
+        this.bannerURL = bannerURL;
+        this.logoURL = logoURL;
         this.backendURL = backendURL;
         this.backendPort = backendPort;
     }
@@ -22,6 +29,7 @@ export class Config {
         this.appName = config.appName;
         this.websiteUrl = config.websiteUrl;
         this.bannerURL = config.bannerURL;
+        this.logoURL = config.logoURL;
         this.backendURL = config.backendURL;
         this.backendPort = config.backendPort;
     }
