@@ -2,3 +2,7 @@
     margin-top: 50px;
     margin-bottom: 50px;
 }
+
+.placeholder-img{
+    max-height: 320px;
+}
