@@ -1,16 +1,16 @@
 import {MediaMatcher} from '@angular/cdk/layout';
-import {AfterContentInit, ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
+import {ChangeDetectorRef, Component, OnDestroy} from '@angular/core';
 import {ConfigService} from './config/config.service';
 import {Config} from './config/config';
-import {NavItem} from "./sidenav/nav-item";
-import {NAV_ITEMS} from "./app-routing.module";
+import {NavItem} from './sidenav/nav-item';
+import {NAV_ITEMS} from './app-routing.module';
 import {Location} from '@angular/common';
-import {Title} from "@angular/platform-browser";
+import {Title} from '@angular/platform-browser';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
 })
 
 /**
@@ -29,7 +29,7 @@ export class AppComponent implements OnDestroy {
                 private location: Location,
                 private configService: ConfigService,
                 private titleService: Title) {
-        this.mobileQuery = media.matchMedia('(max-width: 600px)');
+        this.mobileQuery = media.matchMedia('(max-width: 1050px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addListener(this._mobileQueryListener);
         this.config = configService.getConfig();
@@ -42,7 +42,7 @@ export class AppComponent implements OnDestroy {
 
 
     isInProduction() {
-        return window.location.hostname === 'www.h2ms.org';
+        return window.location.hostname === 'h2ms.org';
     }
 
     isSidebarOpenOnPageLoad() {
