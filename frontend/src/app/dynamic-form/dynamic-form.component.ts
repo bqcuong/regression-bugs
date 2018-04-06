@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Inject } from '@angular/core';
+import {Component, Input, OnInit, Inject, ViewEncapsulation} from '@angular/core';
 import { FormGroup } from '@angular/forms';
 
 import { QuestionBase } from '../questions/question-base';
@@ -11,7 +11,8 @@ import {MatDialog, MatDialogRef} from '@angular/material';
     selector: 'app-dynamic-form',
     templateUrl: './dynamic-form.component.html',
     providers: [ QuestionControlService,
-        EventEntityService]
+        EventEntityService],
+    encapsulation: ViewEncapsulation.None,
 })
 export class DynamicFormComponent implements OnInit {
 
