@@ -9,7 +9,7 @@ import {ConfigService} from '../config/config.service';
 @Component({
     selector: 'app-reports',
     templateUrl: './reports.component.html',
-    styleUrls: ['./reports.component.css']
+    styleUrls: ['./reports.component.css', '../card.css']
 })
 export class ReportsComponent implements OnInit {
 
