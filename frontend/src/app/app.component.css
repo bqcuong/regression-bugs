@@ -32,3 +32,24 @@ h1.app-name {
 .navbar-title:link {
     color:inherit;
 }
+
+.nav-item {
+    padding-left: 5px;
+    padding-right: 125px;
+}
+
+.selected-nav-item {
+    background-color: #dbdbdb;
+}
+
+.developer-nav-item {
+    background-color: #ffb401;
+}
+
+.developer-nav-item:hover {
+    background-color: #bd8401;
+}
+
+.mat-list-item {
+    user-select: none;
+}

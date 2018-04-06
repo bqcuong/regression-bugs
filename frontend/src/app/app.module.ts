@@ -28,7 +28,6 @@ import {PrivacyComponent} from './privacy/privacy.component';
 import {EventComponent} from './event/event.component';
 import {MediaMatcher} from '@angular/cdk/layout';
 import {ConfigService} from './config/config.service';
-import {SidenavComponent} from './sidenav/sidenav.component';
 import {ExportComponent} from './export/export.component';
 import {TokenInterceptor} from './auth/token-interceptor.service';
 import {AuthService} from './auth/auth.service';
@@ -38,6 +37,7 @@ import {LocationEntityService} from './api/locationEntity.service';
 import {UserEntityService} from './api/userEntity.service';
 import {ReportsComponent} from './reports/reports.component';
 import {ReportsService} from './reports/reports.service';
+import { AboutComponent } from './about/about.component';
 
 @NgModule({
     declarations: [
@@ -47,10 +47,10 @@ import {ReportsService} from './reports/reports.service';
         LoginComponent,
         PrivacyComponent,
         EventComponent,
-        SidenavComponent,
         ExportComponent,
         ReportsComponent,
         FormSubmissionDialogComponent,
+        AboutComponent
     ],
     imports: [
         BrowserModule,

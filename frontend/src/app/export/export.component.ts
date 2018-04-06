@@ -5,7 +5,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 @Component({
   selector: 'app-export',
   templateUrl: './export.component.html',
-  styleUrls: ['./export.component.css'],
+    styleUrls: ['./export.component.css', '../card.css'],
   providers: [HttpClient]
 })
 export class ExportComponent {
