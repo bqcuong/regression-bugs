@@ -12,7 +12,6 @@ import {MatDialog, MatDialogRef} from '@angular/material';
     templateUrl: './dynamic-form.component.html',
     providers: [ QuestionControlService,
         EventEntityService],
-    encapsulation: ViewEncapsulation.None,
 })
 export class DynamicFormComponent implements OnInit {
 
