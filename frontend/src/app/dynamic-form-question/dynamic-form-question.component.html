@@ -1,23 +1,30 @@
 <div [formGroup]="form">
-    <label [attr.for]="question.id">{{question.question}}</label>
 
     <div [ngSwitch]="question.answerType">
 
-        <input *ngSwitchCase="'textbox'" [formControlName]="question.id"
-               [id]="question.id" [type]="question.answerType">
+        <input matInput *ngSwitchCase="'textbox'" [formControlName]="question.id"
+               [id]="question.id" [type]="question.answerType" [required]="isRequired()">
 
-        <select [id]="question.id" *ngSwitchCase="'dropdown'" [formControlName]="question.id">
-            <option *ngFor="let opt of question.options" [value]="opt">{{opt}}</option>
-        </select>
+        <mat-form-field *ngSwitchCase="'dropdown'">
+            <mat-select [id]="question.id" [formControlName]="question.id"
+                        [required]="isRequired()">
+                <mat-option *ngFor="let opt of question.options" [value]="opt">{{opt}}</mat-option>
+            </mat-select>
+            <mat-placeholder>{{question.question}}</mat-placeholder>
+        </mat-form-field>
 
-        <select [id]="question.id" *ngSwitchCase="'user_dropdown'" [formControlName]="question.id">
-            <option *ngFor="let opt of question.options" [value]="opt.value">{{opt.name}}</option>
-        </select>
+        <mat-form-field *ngSwitchCase="'user_dropdown'">
+            <mat-select [id]="question.id" [formControlName]="question.id"
+                        [required]="isRequired()">
+                <mat-option *ngFor="let opt of question.options" [value]="opt.value">{{opt.name}}</mat-option>
+            </mat-select>
+            <mat-placeholder>{{question.question}}</mat-placeholder>
+        </mat-form-field>
 
         <mat-checkbox *ngSwitchCase="'checkbox'" [formControlName]="question.id"
-                      [id]="question.id" [(ngModel)]="checked"></mat-checkbox>
-
+                      [id]="question.id" [(ngModel)]="checked" color="primary">{{question.question}}
+        </mat-checkbox>
     </div>
 
-    <div class="errorMessage" *ngIf="!isValid">{{question.question}} is required</div>
+    <!--<div class="errorMessage" *ngIf="isRequired()">{{question.question}} is required</div>-->
 </div>

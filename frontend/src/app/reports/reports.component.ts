@@ -3,11 +3,13 @@ import {ReportsService} from './reports.service';
 import * as c3 from 'c3';
 import {ChartAPI} from 'c3';
 import {FormControl, Validators} from '@angular/forms';
+import {Config} from '../config/config';
+import {ConfigService} from '../config/config.service';
 
 @Component({
     selector: 'app-reports',
     templateUrl: './reports.component.html',
-    styleUrls: ['./reports.component.css']
+    styleUrls: ['./reports.component.css', '../card.css']
 })
 export class ReportsComponent implements OnInit {
 
@@ -15,44 +17,8 @@ export class ReportsComponent implements OnInit {
     // '../../../node_modules/patternfly/dist/css/patternfly.min.css',
     // '../../../node_modules/patternfly/dist/css/patternfly-additions.css'
 
-    /*
-/events/count/{timeframe}
+    config: Config;
 
-Example API points:
-localhost:8080/events/count/week
-  {
-  "1st (2017)" : 10,
-  "2nd (2017)": 5,
-  ...
-  "52nd (2017)": 3
-  }
-
-localhost:8080/events/count/month
-  {
-    "January (2017)": 30,
-    "February (2017)": 40
-  }
-
-localhost:8080/events/count/year
-  {
-    "2017": 300,
-    "2018": 1000
-  }
-
-localhost:8080/events/count/quarter
-  {
-  "Q1 (2017)": 100,
-  "Q2 (2017)": 200,
-  "Q3 (2017)": 300,
-  "Q4 (2017)": 400,
-  "Q1 (2018)": 500,
-  "Q2 (2018)": 600
-  }
-
- */
-
-    // todo: move h2ms-specific stuff to config
-    baseURL = 'http://localhost:8080/';
     plots = [{value: 'events/count/', viewValue: 'number of observations'}];
     timeGroupings = [{value: 'year', viewValue: 'year'},
         {value: 'quarter', viewValue: 'quarter'},
@@ -66,7 +32,6 @@ localhost:8080/events/count/quarter
 
     emptyJSONReturned: boolean;
 
-    // chart related variables
     chart: ChartAPI;
 
     /**
@@ -81,7 +46,8 @@ localhost:8080/events/count/quarter
     ]);
 
 
-    constructor(private reportsService: ReportsService) {
+    constructor(private reportsService: ReportsService, private configService: ConfigService) {
+        this.config = configService.getConfig();
     }
 
     ngOnInit() {
@@ -96,7 +62,8 @@ localhost:8080/events/count/quarter
         // todo: make sure valid input selection
         if (selectedPlot && selectedGrouping) {
             this.progressBarIsHidden = false;
-            this.reportsService.fetchReport(this.baseURL + selectedPlot + selectedGrouping)
+            this.reportsService.fetchReport(this.config.backendURL + ':' + this.config.backendPort + '/'
+                    + selectedPlot + selectedGrouping)
                 .subscribe(
                     response => {
                         if (JSON.stringify(response).indexOf('{}') !== -1) {

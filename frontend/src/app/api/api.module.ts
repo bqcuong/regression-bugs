@@ -1,19 +1,19 @@
 import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Configuration } from './configuration';
+import { Configuration } from '../configuration';
 
-import { BasicErrorControllerService } from './api/basicErrorController.service';
-import { EventControllerService } from './api/eventController.service';
-import { EventEntityService } from './api/eventEntity.service';
-import { EventTemplateEntityService } from './api/eventTemplateEntity.service';
-import { LocationEntityService } from './api/locationEntity.service';
-import { ProfileControllerService } from './api/profileController.service';
-import { QuestionEntityService } from './api/questionEntity.service';
-import { ReaderEntityService } from './api/readerEntity.service';
-import { RoleEntityService } from './api/roleEntity.service';
-import { UserEntityService } from './api/userEntity.service';
-import { WristBandEntityService } from './api/wristBandEntity.service';
+import { BasicErrorControllerService } from './basicErrorController.service';
+import { EventControllerService } from './eventController.service';
+import { EventEntityService } from './eventEntity.service';
+import { EventTemplateEntityService } from './eventTemplateEntity.service';
+import { LocationEntityService } from './locationEntity.service';
+import { ProfileControllerService } from './profileController.service';
+import { QuestionEntityService } from './questionEntity.service';
+import { ReaderEntityService } from './readerEntity.service';
+import { RoleEntityService } from './roleEntity.service';
+import { UserEntityService } from './userEntity.service';
+import { WristBandEntityService } from './wristBandEntity.service';
 
 @NgModule({
   imports:      [ CommonModule, HttpClientModule ],

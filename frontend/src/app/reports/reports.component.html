@@ -1,8 +1,7 @@
-<div class="card row">
-    <div class="col-md-3"></div>
-    <mat-card class="col-md-6">
+<div class="row">
+    <mat-card class="card">
         <div id="chart">
-            <img mat-card-image src="assets/images/chart-placeholder.png">
+            <img class="placeholder-img" mat-card-image src="assets/images/chart-placeholder.png">
         </div>
         <mat-card-content class="text-center">
             <mat-progress-bar mode="indeterminate" hidden="progressBarIsHidden"></mat-progress-bar>
@@ -12,7 +11,8 @@
                 <mat-tab label="Select Plot">
                     <section class="plotSelectionSection">
                         <mat-form-field>
-                            <mat-select placeholder="plot" #selectedPlot [formControl]="plotFormControl" required>
+                            <mat-select placeholder="plot" #selectedPlot
+                                        [formControl]="plotFormControl" required>
                                 <mat-option *ngFor="let plot of plots" [value]="plot.value">
                                     {{ plot.viewValue }}
                                 </mat-option>
@@ -22,8 +22,10 @@
                             </mat-error>
                         </mat-form-field>
                         <mat-form-field>
-                            <mat-select placeholder="grouped by" #selectedGrouping [formControl]="groupingFormControl" required>
-                                <mat-option *ngFor="let grouping of timeGroupings" [value]="grouping.value">
+                            <mat-select placeholder="grouped by" #selectedGrouping
+                                        [formControl]="groupingFormControl" required>
+                                <mat-option *ngFor="let grouping of timeGroupings"
+                                            [value]="grouping.value">
                                     {{ grouping.viewValue }}
                                 </mat-option>
                             </mat-select>
@@ -35,12 +37,12 @@
                 </mat-tab>
             </mat-tab-group>
             <mat-card-actions>
-                <button (click)="submit(selectedPlot.value, selectedGrouping.value)" mat-raised-button color="primary">
+                <button (click)="submit(selectedPlot.value, selectedGrouping.value)"
+                        mat-raised-button color="primary">
                     Submit
                 </button>
             </mat-card-actions>
         </mat-card-content>
     </mat-card>
-    <div class="col-md-3"></div>
 </div>
 

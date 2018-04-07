@@ -1,16 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormGroup} from '@angular/forms';
 
-import { QuestionBase } from '../questions/question-base';
-import { QuestionControlService } from '../questions/service/question-control.service';
-import {Answer, Event} from '../';
-import { EventEntityService} from '../';
+import {QuestionBase} from '../questions/question-base';
+import {QuestionControlService} from '../questions/service/question-control.service';
+import {Answer, Event, EventEntityService} from '../';
+import {MatDialog, MatDialogRef} from '@angular/material';
 
 @Component({
     selector: 'app-dynamic-form',
     templateUrl: './dynamic-form.component.html',
-    providers: [ QuestionControlService,
-        EventEntityService]
+    providers: [QuestionControlService, EventEntityService]
 })
 export class DynamicFormComponent implements OnInit {
 
@@ -18,7 +17,9 @@ export class DynamicFormComponent implements OnInit {
     form: FormGroup;
 
     constructor(private questionControlService: QuestionControlService,
-                private eventEntityService: EventEntityService) {  }
+                private eventEntityService: EventEntityService,
+                public dialog: MatDialog) {
+    }
 
     ngOnInit() {
         this.form = this.questionControlService.toFormGroup(this.questions);
@@ -51,6 +52,29 @@ export class DynamicFormComponent implements OnInit {
             timestamp: new Date()
         };
 
-        this.eventEntityService.saveEventUsingPOST(event).subscribe();
+        this.eventEntityService.saveEventUsingPOST(event).subscribe(() => this.openDialog());
+
+    }
+
+    openDialog(): void {
+        const dialogRef = this.dialog.open(FormSubmissionDialogComponent, {
+            width: '270px',
+        });
     }
 }
+
+@Component({
+    selector: 'app-form-submission-dialog',
+    templateUrl: 'form-submission-dialog.html',
+})
+export class FormSubmissionDialogComponent {
+
+    constructor(public dialogRef: MatDialogRef<FormSubmissionDialogComponent>) {
+    }
+
+    closeDialog(): void {
+        this.dialogRef.close();
+    }
+}
+
+
