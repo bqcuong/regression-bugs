@@ -26,7 +26,7 @@ public class EventTemplate {
     @Column
     private Long id;
 
-//	@NotNull
+	@NotNull
 	@Column
     private String name;
 

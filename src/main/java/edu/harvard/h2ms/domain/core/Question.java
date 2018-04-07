@@ -29,26 +29,26 @@ public class Question {
 	@Column
 	private Long id;
 
-//	@NotNull
+	@NotNull
 	@Column
     private Integer priority;
 
     @ElementCollection
     private List<String> options;
 
-//    @NotNull
+    @NotNull
     @Column
     private String question;
 
-//    @NotNull
+    @NotNull
 	@Column
     private Boolean required;
 
-//    @NotNull
+    @NotNull
     @Column
     private String answerType;
 
-//	@NotNull
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_template_id")
 	private EventTemplate eventTemplate;

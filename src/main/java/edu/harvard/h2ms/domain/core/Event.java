@@ -32,29 +32,29 @@ public class Event {
 	@Column
 	private Long id;
 
-//	@NotNull
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column
 	private Date timestamp;
 
-//	@NotNull
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "subject_id")
 	private User subject;
 
-//	@NotNull
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "event_template_id")
 	private EventTemplate eventTemplate;
 
-//	@NotNull
+	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "observer_id")
 	private User observer;
 
 
 	// TODO: Place holder until Location model is ready + updated according to data model
-//	@NotNull
+	@NotNull
 	@Column
 	private String location;
 
