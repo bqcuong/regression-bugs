@@ -52,8 +52,8 @@ public class Event {
 	@JoinColumn(name = "observer_id")
 	private User observer;
 
-	// TODO: Place holder until Location model is ready + updated according to data
-	// model
+
+	// TODO: Place holder until Location model is ready + updated according to data model
 	@NotNull
 	@Column
 	private String location;

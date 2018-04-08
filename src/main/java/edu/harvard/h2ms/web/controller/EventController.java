@@ -1,21 +1,26 @@
 package edu.harvard.h2ms.web.controller;
 
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Question;
 import edu.harvard.h2ms.exception.InvalidAnswerTypeException;
 import edu.harvard.h2ms.exception.InvalidTimeframeException;
-import edu.harvard.h2ms.exception.ResourceNotFoundException;
 import edu.harvard.h2ms.repository.QuestionRepository;
 import edu.harvard.h2ms.service.EventService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
+import edu.harvard.h2ms.service.ReportService;
 
 @RestController
 @RequestMapping(path = "/events")
@@ -28,6 +33,9 @@ public class EventController {
 
 	@Autowired
 	private QuestionRepository questionRepository;
+	
+	@Autowired
+	private ReportService reportService;
 
 	/**
 	 * Rest end point for retrieving all events in H2MS systems and returns results
@@ -90,6 +98,17 @@ public class EventController {
 		} catch (InvalidTimeframeException timeFrame) {
 			return new ResponseEntity<String>(timeFrame.getMessage(), HttpStatus.BAD_REQUEST);
 		}
-		
 	}
+	
+	/**
+	 * Event CSV dump
+	 * @param response
+	 */
+	@RequestMapping(value = "/export/csv", method = RequestMethod.GET)
+	public ResponseEntity<?> exportEvent(){
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.add("Content-Type", "text/csv; charset=utf-8");
+		return new ResponseEntity<String>(reportService.createEventReport(), httpHeaders, HttpStatus.OK);
+	}
+	
 }
