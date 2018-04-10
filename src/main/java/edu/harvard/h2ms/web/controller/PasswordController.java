@@ -137,18 +137,21 @@ public class PasswordController {
 		
 		User user = new User();
 		user.setFirstName(requestParams.get("firstName"));
+		user.setMiddleName(requestParams.get("middleName"));
 		user.setLastName(requestParams.get("lastName"));
 		user.setEmail(requestParams.get("email"));
-		user.setPassword("password");
-		String userType = requestParams.get("type");
+		user.setPassword(requestParams.get("password"));
 		
-		user.setType(userType);
+		// User created will need verification
 		user.setVerified(false);
+		
+		//TODO: User can set their own type? Probably not a good idea.
+		String userType = requestParams.get("type");
+		user.setType(userType);
 		
 		String token = UUID.randomUUID().toString();
 		user.setResetToken(token);
-		
-		
+				
 		if(userRepository.findByEmail(user.getEmail())!= null) {
 			final String MSG = "user email already taken";
 			log.info(MSG);
@@ -163,10 +166,7 @@ public class PasswordController {
 		
 		//TODO: is there a password policy?
 		
-		
 		userRepository.save(user);
-		
-		
 		
 		SimpleMailMessage message = new SimpleMailMessage();
 		
@@ -186,8 +186,6 @@ public class PasswordController {
 		userService.save(user);
 		Map<String,String> entity = new HashMap<>();
 		entity.put("action", "user password reset");
-		
-		
 		
 		return new ResponseEntity<Object>(entity, HttpStatus.OK);
 	}

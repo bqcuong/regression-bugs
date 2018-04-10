@@ -218,7 +218,7 @@ public class User implements UserDetails {
     }
 
     public boolean isVerified() {
-    	return this.enabled;
+    	return this.verified;
     }
 
 
