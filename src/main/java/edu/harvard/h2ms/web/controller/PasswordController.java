@@ -8,10 +8,14 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriUtils;
 
 import edu.harvard.h2ms.domain.core.User;
+import edu.harvard.h2ms.repository.UserRepository;
 import edu.harvard.h2ms.service.EmailService;
 import edu.harvard.h2ms.service.UserService;
 
@@ -29,9 +34,15 @@ import edu.harvard.h2ms.service.UserService;
  */
 @RestController
 @RequestMapping(path="/api/passwords")
+@PropertySources({
+	@PropertySource(value = "classpath:application.properties",          ignoreResourceNotFound = true),
+	@PropertySource(value = "classpath:application.properties.override", ignoreResourceNotFound = true)
+})
 public class PasswordController {
 	
 	final Logger log = LoggerFactory.getLogger(PasswordController.class);
+	@Value("${application.security.properties.admin.usertype}")
+	private String adminUserType;
 	
 	@Autowired
 	private UserService userService;
@@ -41,6 +52,9 @@ public class PasswordController {
 	
 	@Autowired
 	public JavaMailSender emailSender;
+	
+	@Autowired
+	private UserRepository userRepository;
 	
 	/**
 	 * Sets the reset parameter
@@ -105,6 +119,7 @@ public class PasswordController {
 		User user = userService.findUserByResetToken(token);
 		if(user != null) {
 			user.setPassword(password);
+			user.setVerified(true);
 			// Save user
 			userService.save(user);
 		} else 
@@ -112,4 +127,53 @@ public class PasswordController {
 		
 		return new ResponseEntity<Object>(entity, HttpStatus.OK);
 	}
+	
+
+	/**
+	 * Restful API for User registration by email
+	 */
+	@RequestMapping(value = "/registration/email", method = RequestMethod.POST)
+	public ResponseEntity<?> registerUserByEmail(@RequestBody Map<String, String> requestParams) {
+		
+		User user = new User();
+		user.setFirstName(requestParams.get("firstName"));
+		user.setLastName(requestParams.get("lastName"));
+		user.setEmail(requestParams.get("email"));
+		user.setPassword("password");
+		String userType = requestParams.get("type");
+		
+		user.setType("Unassigned");
+		user.setVerified(false);
+		
+		String token = UUID.randomUUID().toString();
+		user.setResetToken(token);
+		
+		
+		if(userRepository.findByEmail(user.getEmail())!= null) {
+			final String MSG = "user email already taken";
+			log.info(MSG);
+			return new ResponseEntity<String>(MSG, HttpStatus.CONFLICT);
+		}
+		
+		if(userType == adminUserType) {
+			final String MSG = "admin user cannot be created using standard email registration";
+			log.info(MSG);
+			return new ResponseEntity<String>(MSG, HttpStatus.FORBIDDEN);
+		}
+		
+		//TODO: is there a password policy?
+		
+		
+		userRepository.save(user);
+		
+		
+		Map<String,String> entity = new HashMap<>();
+		entity.put("action", "user password reset");
+		
+		
+		
+		return new ResponseEntity<Object>(entity, HttpStatus.OK);
+	}
+	
+	
 }
