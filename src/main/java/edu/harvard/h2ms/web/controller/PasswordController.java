@@ -131,41 +131,34 @@ public class PasswordController {
 
 	/**
 	 * Restful API for User registration by email
+	 * *****************************************
+	 *   FRONT END DEV: DO NOT ASK FOR PASSWORD - it'll be clobbered
+	 * *****************************************
 	 */
 	@RequestMapping(value = "/newuser/email", method = RequestMethod.POST)
-	public ResponseEntity<?> registerUserByEmail(@RequestBody Map<String, String> requestParams) {
-		
-		User user = new User();
-		user.setFirstName(requestParams.get("firstName"));
-		user.setMiddleName(requestParams.get("middleName"));
-		user.setLastName(requestParams.get("lastName"));
-		user.setEmail(requestParams.get("email"));
-		user.setPassword(requestParams.get("password"));
+	public ResponseEntity<?> registerUserByEmail(@RequestBody User user) {
 		
 		// User created will need verification
 		user.setVerified(false);
 		
-		//TODO: User can set their own type? Probably not a good idea.
-		String userType = requestParams.get("type");
-		user.setType(userType);
-		
 		String token = UUID.randomUUID().toString();
 		user.setResetToken(token);
-				
+		
+		//TODO: user password can't be set
+		user.setPassword(token);
 		if(userRepository.findByEmail(user.getEmail())!= null) {
 			final String MSG = "user email already taken";
 			log.info(MSG);
 			return new ResponseEntity<String>(MSG, HttpStatus.CONFLICT);
 		}
 		
-		if(userType == adminUserType) {
+		if(user.getType() == adminUserType) {
 			final String MSG = "admin user cannot be created using standard email registration";
 			log.info(MSG);
 			return new ResponseEntity<String>(MSG, HttpStatus.FORBIDDEN);
 		}
 		
 		//TODO: is there a password policy?
-		
 		userRepository.save(user);
 		
 		SimpleMailMessage message = new SimpleMailMessage();
