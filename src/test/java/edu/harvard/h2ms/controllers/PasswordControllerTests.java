@@ -36,13 +36,13 @@ public class PasswordControllerTests {
 	
 	private static final Log log = LogFactory.getLog(PasswordControllerTests.class);
 	
-    static final String EMAIL = "jqadams@h2ms.org";
-    static final String FIRSTNAME = "John";
-    static final String MIDDLENAME = "Quincy";
-    static final String LASTNAME = "Adams";
-    static final String TYPE = "Doctor";
-    static final String PASSWORD = "password";
-    static final String NEWPASSWORD = "newpassword";
+    static final String EMAIL        = "jqadams@h2ms.org";
+    static final String FIRSTNAME    = "John";
+    static final String MIDDLENAME   = "Quincy";
+    static final String LASTNAME     = "Adams";
+    static final String TYPE         = "Doctor";
+    static final String PASSWORD     = "password";
+    static final String NEWPASSWORD  = "newpassword";
     static final String CONTENT_TYPE = "application/json;charset=UTF-8";
     
     @Autowired
@@ -74,29 +74,25 @@ public class PasswordControllerTests {
      */
     @Test
     @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-    public void test_csvExport_EventController_exportEvent() throws Exception {
+    public void test_register_passwordController_registerUserByEmail() throws Exception {
     	
     	ObjectMapper mapper1 = new ObjectMapper();
-    	ObjectNode objectNode1 = mapper1.createObjectNode();
-    	objectNode1.put("firstName",  FIRSTNAME );
-    	objectNode1.put("middleName", MIDDLENAME);
-    	objectNode1.put("lastName",   LASTNAME  );
-    	objectNode1.put("email",      EMAIL     );
-    	objectNode1.put("password",   PASSWORD  );
-    	objectNode1.put("type",       TYPE      );
+
     	
-    	log.debug("Test: user info for registration "+objectNode1.toString());
+    	User user = new User(FIRSTNAME, MIDDLENAME, LASTNAME, EMAIL, PASSWORD, TYPE);
+    	
+    	log.debug("Test: user info for registration "+mapper1.writeValueAsString(user));
 
     	 MockHttpServletResponse result = mvc.perform(post(String.format("/registration/newuser/email"))
     			 .contentType(MediaType.APPLICATION_JSON)
-    			 .content(objectNode1.toString())
+    			 .content(mapper1.writeValueAsString(user))
     			 .accept(MediaType.APPLICATION_JSON))
                  .andExpect(status().isOk())
                  .andReturn()
                  .getResponse();
     			 
 
-        log.debug("Test: user info for registration shintest");
+        log.debug("Test: user info for registration");
         log.debug(result.getContentAsString());
         
         User registeredUser = userRepository.findByEmail(EMAIL);
@@ -106,6 +102,8 @@ public class PasswordControllerTests {
         
         // should NOT be verified right after registration
         assertFalse(registeredUser.isVerified());
+        
+        assertEquals(registeredUser.getFirstName(), FIRSTNAME);
         
         ObjectMapper mapper2 = new ObjectMapper();
         ObjectNode objectNode2 = mapper2.createObjectNode();
@@ -128,6 +126,9 @@ public class PasswordControllerTests {
         
         // should be verified after password reset
         assertTrue(verifiedUser.isVerified());
+
+        // should still be the same
+        assertEquals(verifiedUser.getFirstName(), FIRSTNAME);
         
     }
 }
