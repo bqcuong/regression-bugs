@@ -33,7 +33,7 @@ import edu.harvard.h2ms.service.UserService;
  *
  */
 @RestController
-@RequestMapping(path="/api/passwords")
+@RequestMapping(path= {"/api/passwords", "/registration"})
 @PropertySources({
 	@PropertySource(value = "classpath:application.properties",          ignoreResourceNotFound = true),
 	@PropertySource(value = "classpath:application.properties.override", ignoreResourceNotFound = true)
@@ -132,7 +132,7 @@ public class PasswordController {
 	/**
 	 * Restful API for User registration by email
 	 */
-	@RequestMapping(value = "/registration/email", method = RequestMethod.POST)
+	@RequestMapping(value = "/newuser/email", method = RequestMethod.POST)
 	public ResponseEntity<?> registerUserByEmail(@RequestBody Map<String, String> requestParams) {
 		
 		User user = new User();
@@ -142,7 +142,7 @@ public class PasswordController {
 		user.setPassword("password");
 		String userType = requestParams.get("type");
 		
-		user.setType("Unassigned");
+		user.setType(userType);
 		user.setVerified(false);
 		
 		String token = UUID.randomUUID().toString();
@@ -167,6 +167,23 @@ public class PasswordController {
 		userRepository.save(user);
 		
 		
+		
+		SimpleMailMessage message = new SimpleMailMessage();
+		
+		/** user email address **/
+		message.setTo(user.getEmail());
+		
+		/** uncomment for quick test: **/
+		//message.setTo("my.email.address@gmail.com");
+		
+		message.setSubject("h2msreset token - new user registration");
+		message.setText("please use the password reset token: "+user.getResetToken());
+		
+		// actually send the message
+		emailService.sendEmail(message);
+		
+		// Save user
+		userService.save(user);
 		Map<String,String> entity = new HashMap<>();
 		entity.put("action", "user password reset");
 		
