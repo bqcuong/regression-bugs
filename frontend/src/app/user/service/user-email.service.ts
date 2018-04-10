@@ -4,7 +4,7 @@ import {Router} from '@angular/router';
 @Injectable()
 export class UserEmailService {
 
-    localStorageKey = 'UserEmail';
+    localStorageKey = 'MyLittleUserEmailKey';
 
     constructor(private router: Router) {
     }
