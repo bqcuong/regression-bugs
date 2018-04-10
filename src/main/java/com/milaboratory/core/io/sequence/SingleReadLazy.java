@@ -56,6 +56,16 @@ public abstract class SingleReadLazy implements SingleRead {
 
     abstract byte getQualityOffset();
 
+    SingleReadLazy setReadId(long readId) {
+        final byte qo = getQualityOffset();
+        return new SingleReadLazy(readId, buffer, descriptionFrom, sequenceOffset, qualityOffset, dataLength, descriptionLength, replaceWildcards) {
+            @Override
+            byte getQualityOffset() {
+                return qo;
+            }
+        };
+    }
+
     @Override
     public String getDescription() {
         if (description == null)
