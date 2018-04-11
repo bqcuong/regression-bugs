@@ -60,6 +60,11 @@ public class PasswordController {
     /**
      * Sets the reset parameter e.g.,  http://localhost:8080/api/passwords/reset/admin@h2ms.org
      *
+     * @param email                 The user's email
+     * @param resetPasswordCallback The url that the user will be redirected to so that they can
+     *                              enter a new password. The token is appended to the callback as a
+     *                              path variable.
+     * @param request               Allows access to the server's name. e.x. h2ms.org
      * @return ok signal : {"action": "user reset token set"}
      */
     @RequestMapping(value = "/reset/{email:.+}", method = RequestMethod.GET)
@@ -88,7 +93,7 @@ public class PasswordController {
             // uncomment for quick test:
 //            message.setTo("my.email.address@gmail.com");
 
-            message.setSubject("Reset Password - " + request.getRemoteHost());
+            message.setSubject("Reset Password - " + request.getServerName());
 
             String messageText = "Please click the following link to reset your password: " +
                     resetPasswordCallback + "/" + token;
