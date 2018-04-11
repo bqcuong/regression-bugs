@@ -16,11 +16,10 @@ export class TokenInterceptor implements HttpInterceptor {
     constructor(public auth: AuthService) {}
 
     intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (this.auth.isLoggedIn()) {
+        if (request.url !== this.auth.getTokenURL()
+            && this.auth.isLoggedIn()) {
             request = request.clone({
-                setHeaders: {
-                    Authorization: `Bearer ${this.auth.getToken()}`
-                }
+                headers: request.headers.set('Authorization', `Bearer ${this.auth.getToken()}`)
             });
         }
         return next.handle(request); // todo handle refresh response
