@@ -14,19 +14,18 @@ export class ExportComponent {
 
   saveFile() {
     const headers = new HttpHeaders();
-    headers.append('Accept', 'text/plain');
-    // TODO: need to append authentication in headers, and set real URL for REST call
-    this.httpClient.get('/api/rest/call/here', { headers: headers })
-      .toPromise()
-      .then(response => this.saveToFileSystem(response));
+    headers.append('Accept', 'text/csv');
+    this.httpClient.get('http://test.h2ms.org:81/events/export/csv', { headers: headers, responseType: 'text' })
+        .subscribe((response) => {
+            this.saveToFileSystem(response);
+        });
   }
 
   private saveToFileSystem(response) {
-    const contentDispositionHeader: string = response.headers.get('Content-Disposition');
-    const parts: string[] = contentDispositionHeader.split(';');
-    // assumes that filename comes in index 1 of Content-Disposition
-    const filename = parts[1].split('=')[1];
-    const blob = new Blob([response._body], { type: 'text/csv' });
+    const now = new Date();
+    const timestamp = '' + now.getFullYear() + (now.getMonth() + 1) + now.getDate() +  now.getHours() + now.getMinutes() + now.getSeconds();
+    const filename = 'events-'.concat(timestamp).concat('.csv');
+    const blob = new Blob([response], { type: 'text/csv' });
     saveAs(blob, filename);
   }
 
