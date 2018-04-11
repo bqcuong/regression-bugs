@@ -57,7 +57,7 @@ export class DynamicFormComponent implements OnInit {
     }
 
     openDialog(): void {
-        const dialogRef = this.dialog.open(FormSubmissionDialogComponent, {
+        this.dialog.open(FormSubmissionDialogComponent, {
             width: '270px',
         });
     }

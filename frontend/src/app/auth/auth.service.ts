@@ -1,12 +1,11 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/delay';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Oauth} from './oauth';
-import {ConfigService} from "../config/config.service";
-import {Config} from "../config/config";
-
+import {ConfigService} from '../config/config.service';
+import {Config} from '../config/config';
 
 
 @Injectable()
@@ -17,7 +16,7 @@ export class AuthService {
 
     constructor(private http: HttpClient, private configService: ConfigService) {
         this.config = configService.getConfig();
-        this.tokenURL = this.config.backendURL + ':' + this.config.backendPort + '/oauth/token';
+        this.tokenURL = this.config.backendHostname + ':' + this.config.backendPort + '/oauth/token';
     }
 
     // todo Move the following impl specific details into config

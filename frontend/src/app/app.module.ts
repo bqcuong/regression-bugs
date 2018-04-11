@@ -14,14 +14,17 @@ import {
     MatIconModule,
     MatInputModule,
     MatListModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatTabsModule,
+    MatProgressBarModule,
     MatSelectModule,
-    MatProgressBarModule
+    MatSidenavModule,
+    MatTabsModule,
+    MatToolbarModule
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {DynamicFormComponent, FormSubmissionDialogComponent} from './dynamic-form/dynamic-form.component';
+import {
+    DynamicFormComponent,
+    FormSubmissionDialogComponent
+} from './dynamic-form/dynamic-form.component';
 import {DynamicFormQuestionComponent} from './dynamic-form-question/dynamic-form-question.component';
 import {LoginComponent} from './login/login.component';
 import {PrivacyComponent} from './privacy/privacy.component';
@@ -37,7 +40,13 @@ import {LocationEntityService} from './api/locationEntity.service';
 import {UserEntityService} from './api/userEntity.service';
 import {ReportsComponent} from './reports/reports.component';
 import {ReportsService} from './reports/reports.service';
-import { AboutComponent } from './about/about.component';
+import {AboutComponent} from './about/about.component';
+import {
+    FailedSubmissionDialogComponent,
+    ForgotPasswordComponent,
+    SuccessSubmissionDialogComponent
+} from './forgot-password/forgot-password.component';
+import {ResetPasswordComponent} from './reset-password/reset-password.component';
 
 @NgModule({
     declarations: [
@@ -50,7 +59,11 @@ import { AboutComponent } from './about/about.component';
         ExportComponent,
         ReportsComponent,
         FormSubmissionDialogComponent,
-        AboutComponent
+        SuccessSubmissionDialogComponent,
+        FailedSubmissionDialogComponent,
+        AboutComponent,
+        ForgotPasswordComponent,
+        ResetPasswordComponent
     ],
     imports: [
         BrowserModule,
@@ -74,12 +87,16 @@ import { AboutComponent } from './about/about.component';
         MatProgressBarModule,
         MatDialogModule
     ],
-    entryComponents: [FormSubmissionDialogComponent],
-    providers: [MediaMatcher,
+    entryComponents: [
+        FormSubmissionDialogComponent,
+        SuccessSubmissionDialogComponent,
+        FailedSubmissionDialogComponent
+    ],
+    providers: [
+        MediaMatcher,
         ConfigService,
         AuthService,
-        AuthGuardService,
-        {
+        AuthGuardService, {
             provide: HTTP_INTERCEPTORS,
             useClass: TokenInterceptor,
             multi: true
