@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import {Component, Inject, Optional} from '@angular/core';
 import { saveAs } from 'file-saver/FileSaver';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {BASE_PATH} from '../variables';
+import {ConfigService} from '../config/config.service';
+import {Config} from '../config/config';
 
 @Component({
   selector: 'app-export',
@@ -10,13 +13,19 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class ExportComponent {
 
-  constructor(private httpClient: HttpClient) { }
+  config: Config;
+  basePath: string;
+
+  constructor(private httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configService: ConfigService) {
+      this.config = configService.getConfig();
+      this.basePath = basePath ? basePath : this.config.backendURL + ':' + this.config.backendPort;
+  }
 
   saveFile() {
     const headers = new HttpHeaders();
     headers.append('Accept', 'text/plain');
     // TODO: need to append authentication in headers, and set real URL for REST call
-    this.httpClient.get('/api/rest/call/here', { headers: headers })
+    this.httpClient.get(this.basePath.concat('/api/rest/call/here'), { headers: headers })
       .toPromise()
       .then(response => this.saveToFileSystem(response));
   }

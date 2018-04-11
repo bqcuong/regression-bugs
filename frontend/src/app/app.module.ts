@@ -38,6 +38,8 @@ import {UserEntityService} from './api/userEntity.service';
 import {ReportsComponent} from './reports/reports.component';
 import {ReportsService} from './reports/reports.service';
 import { AboutComponent } from './about/about.component';
+import {BASE_PATH} from './variables';
+import {Config} from './config/config';
 
 @NgModule({
     declarations: [

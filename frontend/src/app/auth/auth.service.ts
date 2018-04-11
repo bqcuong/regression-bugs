@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Inject, Injectable, Optional} from '@angular/core';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/delay';
@@ -6,6 +6,7 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Oauth} from './oauth';
 import {ConfigService} from "../config/config.service";
 import {Config} from "../config/config";
+import {BASE_PATH} from '../variables';
 
 
 
@@ -15,9 +16,9 @@ export class AuthService {
     config: Config;
     tokenURL: string;
 
-    constructor(private http: HttpClient, private configService: ConfigService) {
+    constructor(private http: HttpClient, private configService: ConfigService, @Optional()@Inject(BASE_PATH) basePath: string) {
         this.config = configService.getConfig();
-        this.tokenURL = this.config.backendURL + ':' + this.config.backendPort + '/oauth/token';
+        this.tokenURL = basePath ? basePath : this.config.backendURL + ':' + this.config.backendPort + '/oauth/token';
     }
 
     // todo Move the following impl specific details into config

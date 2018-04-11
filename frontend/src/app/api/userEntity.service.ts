@@ -27,6 +27,8 @@ import { User } from '../model/user';
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
 import { CustomHttpUrlEncodingCodec }                        from '../encoder';
+import {Config} from '../config/config';
+import {ConfigService} from '../config/config.service';
 
 
 @Injectable()
@@ -35,14 +37,23 @@ export class UserEntityService {
     protected basePath = 'http://test.h2ms.org:81';
     public defaultHeaders = new HttpHeaders();
     public configuration = new Configuration();
+    config: Config;
 
-    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
+    constructor(protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration,
+                @Optional() configService: ConfigService) {
         if (basePath) {
             this.basePath = basePath;
         }
         if (configuration) {
             this.configuration = configuration;
             this.basePath = basePath || configuration.basePath || this.basePath;
+        }
+
+        this.config = configService.getConfig();
+        const baseURL = this.config.backendURL,
+            port = this.config.backendPort;
+        if (baseURL && port) {
+            this.basePath = baseURL.concat(':').concat(String(port));
         }
     }
 
