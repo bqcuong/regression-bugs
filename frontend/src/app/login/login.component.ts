@@ -31,13 +31,14 @@ export class LoginComponent implements OnInit {
         this.auth.login(email, password)
             .subscribe(
                 response => {
-                    this.userEmailService.setEmail(email); // set email for observer form submission
+                    this.userEmailService.setEmail(email);
                     this.router.navigate(['dashboard']);
                 },
                 error => {
                     if (error.status === 401) {
                         alert('login failed');
-                        if (this.loginAttempts-- === 0) {
+                        this.loginAttempts--;
+                        if (this.loginAttempts === 0) {
                             this.router.navigate(['password-recovery']);
                         }
                     }

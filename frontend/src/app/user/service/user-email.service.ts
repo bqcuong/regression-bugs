@@ -16,8 +16,8 @@ export class UserEmailService {
     getEmail(): string {
         const stored = localStorage.getItem(this.localStorageKey);
 
-        // If we don't have an email, something is wrong.
         if (!!stored) {
+            console.log('UserEmailService: cannot find user email');
             this.router.navigate(['login']);
         }
         return stored;
