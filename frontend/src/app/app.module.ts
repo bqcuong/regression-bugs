@@ -41,12 +41,15 @@ import {UserEntityService} from './api/userEntity.service';
 import {ReportsComponent} from './reports/reports.component';
 import {ReportsService} from './reports/reports.service';
 import {AboutComponent} from './about/about.component';
+import {UserEmailService} from './user/service/user-email.service';
 import {
-    FailedSubmissionDialogComponent,
     ForgotPasswordComponent,
-    SuccessSubmissionDialogComponent
+    SuccessfullySentPasswordRecoveryEmailComponent
 } from './forgot-password/forgot-password.component';
-import {ResetPasswordComponent} from './reset-password/reset-password.component';
+import {
+    ResetPasswordComponent,
+    SuccessfullyResetPasswordComponent
+} from './reset-password/reset-password.component';
 
 @NgModule({
     declarations: [
@@ -59,8 +62,8 @@ import {ResetPasswordComponent} from './reset-password/reset-password.component'
         ExportComponent,
         ReportsComponent,
         FormSubmissionDialogComponent,
-        SuccessSubmissionDialogComponent,
-        FailedSubmissionDialogComponent,
+        SuccessfullySentPasswordRecoveryEmailComponent,
+        SuccessfullyResetPasswordComponent,
         AboutComponent,
         ForgotPasswordComponent,
         ResetPasswordComponent
@@ -89,14 +92,15 @@ import {ResetPasswordComponent} from './reset-password/reset-password.component'
     ],
     entryComponents: [
         FormSubmissionDialogComponent,
-        SuccessSubmissionDialogComponent,
-        FailedSubmissionDialogComponent
+        SuccessfullySentPasswordRecoveryEmailComponent,
+        SuccessfullyResetPasswordComponent
     ],
     providers: [
         MediaMatcher,
         ConfigService,
         AuthService,
-        AuthGuardService, {
+        AuthGuardService,
+        UserEmailService, {
             provide: HTTP_INTERCEPTORS,
             useClass: TokenInterceptor,
             multi: true

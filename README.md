@@ -1,5 +1,6 @@
 # Hand Hygiene Monitoring System (H2MS)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/5342cd4d3e763521a58f/maintainability)](https://codeclimate.com/github/2018swecapstone/h2ms/maintainability)
 
 
 ## Build
