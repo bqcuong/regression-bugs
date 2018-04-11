@@ -11,9 +11,9 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 })
 export class ResetPasswordComponent implements OnInit {
 
-    private email = 'admin@h2ms.org';
-    private resetToken: string;
-    private hide = true;
+    email = 'admin@h2ms.org';
+    resetToken: string;
+    hide = true;
     private config;
 
     constructor(private http: HttpClient,
