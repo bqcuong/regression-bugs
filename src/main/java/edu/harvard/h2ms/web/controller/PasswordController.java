@@ -133,8 +133,13 @@ public class PasswordController {
 
 
     /**
-     * Restful API for User registration by email ***************************************** FRONT
-     * END DEV: DO NOT ASK FOR PASSWORD - it'll be clobbered *****************************************
+     * Restful API for User registration by email
+     *
+     * *****************************************
+     *
+     * FRONT END DEV: DO NOT ASK FOR PASSWORD - it'll be clobbered
+     *
+     * *****************************************
      */
     @RequestMapping(value = "/newuser/email", method = RequestMethod.POST)
     public ResponseEntity<?> registerUserByEmail(@RequestBody User user) {
