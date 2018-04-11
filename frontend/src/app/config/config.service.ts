@@ -12,12 +12,14 @@ export class ConfigService {
     config: Config;
 
     constructor() {
-        this.config = new Config(h2ms.CONFIG.appName,
-            h2ms.CONFIG.websiteUrl,
-            h2ms.CONFIG.bannerUrl,
-            h2ms.CONFIG.logoUrl,
-            h2ms.CONFIG.backendHostname,
-            h2ms.CONFIG.backendPort);
+        const defaultConfig = h2ms.CONFIG;
+        this.config = new Config(defaultConfig.appName,
+            defaultConfig.frontendHostname,
+            defaultConfig.frontendPort,
+            defaultConfig.bannerUrl,
+            defaultConfig.logoUrl,
+            defaultConfig.backendHostname,
+            defaultConfig.backendPort);
     }
 
     getConfig(): Config {

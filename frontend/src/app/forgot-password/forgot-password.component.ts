@@ -2,8 +2,8 @@ import {Component} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {ConfigService} from '../config/config.service';
 import {Config} from '../config/config';
-import {MatDialog, MatDialogRef} from "@angular/material";
-import {FormSubmissionDialogComponent} from "../dynamic-form/dynamic-form.component";
+import {MatDialog} from '@angular/material';
+import {DIALOG_STYLE} from '../../dialog/dialog';
 
 @Component({
     selector: 'app-forgot-password',
@@ -21,51 +21,26 @@ export class ForgotPasswordComponent {
     }
 
     sendRecoveryEmail(emailAddress: string) {
-        const url = this.config.getBackendUrl() + '/api/passwords/reset/' + emailAddress;
-        this.http.get(url).subscribe(
+        const callbackUrl = encodeURIComponent(this.config.getFrontendUrl() + '/reset-password/' + emailAddress);
+        const sendRecoveryEmailUrl = this.config.getBackendUrl() + '/api/passwords/reset/' + encodeURIComponent(emailAddress)
+            + '?resetPasswordCallback=' + callbackUrl;
+
+        this.http.get(sendRecoveryEmailUrl).subscribe(
             data => this.successDialog(),
             error => {
-                this.errorDialog();
+                alert('Failed to send recovery email. Please contact a developer about this issue.');
                 console.log(error);
             }
         );
     }
 
     successDialog(): void {
-        this.dialog.open(SuccessSubmissionDialogComponent, {
-            width: '270px',
-        });
-    }
-
-    errorDialog(): void {
-        this.dialog.open(FailedSubmissionDialogComponent, {
-            width: '270px',
-        });
+        this.dialog.open(SuccessfullySentPasswordRecoveryEmailComponent, DIALOG_STYLE);
     }
 }
 
 @Component({
     templateUrl: 'success-submission-dialog.html'
 })
-export class SuccessSubmissionDialogComponent {
-
-    constructor(public dialogRef: MatDialogRef<FormSubmissionDialogComponent>) {
-    }
-
-    closeDialog(): void {
-        this.dialogRef.close();
-    }
-}
-
-@Component({
-    templateUrl: 'failed-submission-dialog.html'
-})
-export class FailedSubmissionDialogComponent {
-
-    constructor(public dialogRef: MatDialogRef<FormSubmissionDialogComponent>) {
-    }
-
-    closeDialog(): void {
-        this.dialogRef.close();
-    }
+export class SuccessfullySentPasswordRecoveryEmailComponent {
 }

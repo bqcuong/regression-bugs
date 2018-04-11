@@ -3,6 +3,8 @@ import {ActivatedRoute} from '@angular/router';
 import 'rxjs/add/operator/switchMap';
 import {ConfigService} from '../config/config.service';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {MatDialog} from '@angular/material';
+import {DIALOG_STYLE} from '../../dialog/dialog';
 
 @Component({
     selector: 'app-reset-password',
@@ -11,20 +13,24 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 })
 export class ResetPasswordComponent implements OnInit {
 
-    email = 'admin@h2ms.org';
+    email: string;
     resetToken: string;
     hide = true;
     private config;
 
     constructor(private http: HttpClient,
                 private route: ActivatedRoute,
-                private configService: ConfigService) {
+                private configService: ConfigService,
+                private dialog: MatDialog) {
         this.config = configService.getConfig();
     }
 
     ngOnInit() {
         this.route.paramMap.subscribe(
-            params => this.resetToken = params.get('resetToken')
+            params => {
+                this.resetToken = params.get('resetToken');
+                this.email = params.get('email');
+            }
         );
     }
 
@@ -40,11 +46,22 @@ export class ResetPasswordComponent implements OnInit {
                 headers: headers
             }
         ).subscribe(
-            data => alert('success'),
+            data => this.successDialog(),
             error => {
                 alert('fail');
                 console.log(error);
             }
         );
     }
+
+    successDialog(): void {
+        this.dialog.open(SuccessfullyResetPasswordComponent, DIALOG_STYLE);
+    }
 }
+
+@Component({
+    templateUrl: 'success-submission-dialog.html'
+})
+export class SuccessfullyResetPasswordComponent {
+}
+

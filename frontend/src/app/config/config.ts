@@ -5,20 +5,23 @@ export class Config {
     servicesReturnFakeData = false;
 
     appName: string;
-    websiteUrl: string;
+    frontendHostname: string;
+    frontendPort: number;
     bannerUrl: string;
     logoUrl: string;
     backendHostname: string;
     backendPort: number;
 
     constructor(appName: string,
-                websiteUrl: string,
+                frontendHostname: string,
+                frontendPort: number,
                 bannerUrl: string,
                 logoUrl: string,
                 backendHostname: string,
                 backendPort: number) {
         this.appName = appName;
-        this.websiteUrl = websiteUrl;
+        this.frontendHostname = frontendHostname;
+        this.frontendPort = frontendPort;
         this.bannerUrl = bannerUrl;
         this.logoUrl = logoUrl;
         this.backendHostname = backendHostname;
@@ -27,11 +30,16 @@ export class Config {
 
     public setConfig(config: Config) {
         this.appName = config.appName;
-        this.websiteUrl = config.websiteUrl;
+        this.frontendHostname = config.frontendHostname;
+        this.frontendPort = config.frontendPort;
         this.bannerUrl = config.bannerUrl;
         this.logoUrl = config.logoUrl;
         this.backendHostname = config.backendHostname;
         this.backendPort = config.backendPort;
+    }
+
+    public getFrontendUrl() {
+        return this.frontendHostname + ':' + this.frontendPort;
     }
 
     public getBackendUrl() {
