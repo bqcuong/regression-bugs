@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 
 import edu.harvard.h2ms.domain.core.Event;
 import edu.harvard.h2ms.domain.core.Question;
+import edu.harvard.h2ms.domain.core.User;
 import edu.harvard.h2ms.exception.InvalidAnswerTypeException;
 import edu.harvard.h2ms.exception.InvalidTimeframeException;
 import edu.harvard.h2ms.exception.ResourceNotFoundException;
 import edu.harvard.h2ms.repository.AnswerRepository;
 import edu.harvard.h2ms.repository.EventRepository;
 import edu.harvard.h2ms.repository.QuestionRepository;
+import edu.harvard.h2ms.repository.UserRepository;
 import edu.harvard.h2ms.service.utils.H2msRestUtils;
 
 import org.slf4j.Logger;
@@ -36,6 +38,9 @@ public class EventServiceImpl implements EventService {
 	@Autowired
 	private QuestionRepository questionRepository;
 	
+	@Autowired
+	private UserRepository userRepository;
+	
 	/**
 	 * Retrieves all events from the H2MS system, extracts the timestamps and parses
 	 * them, returns count per distinctly parsed timestamp Ex. If system has 1 event
@@ -58,6 +63,22 @@ public class EventServiceImpl implements EventService {
 		log.info("Parsed {} timestamps by {}", groupedEvents.size(), timeframe);
 
 		return H2msRestUtils.frequencyCounter(groupedEvents);
+	}
+	
+	/**
+	 * Retrieves all events from the H2MS system, groups by observer.
+	 * 
+	 * @return
+	 */
+	@Transactional(readOnly = true)
+	public Map<String, Long> findEventCountByObserver() {
+		Map<String, Long> countByObserver = new HashMap<>();
+		
+		for(User user : userRepository.findAll()) {
+			countByObserver.put(user.getEmail(), eventRepository.countByObserver(user));
+		}
+
+		return countByObserver;
 	}
 
 	/**

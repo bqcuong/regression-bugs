@@ -67,6 +67,7 @@ public class EventControllerTests {
     private MockMvc mvc;
     private Question booleanQuestion;
     private Question optionsQuestion;
+    private User observer;
     
     @Autowired
     UserRepository userRepository;
@@ -92,7 +93,7 @@ public class EventControllerTests {
                 .build();
 
         // Sample User Data
-        User observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD, "Other");
+        observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD, "Other");
         userRepository.save(observer);
         
         User subject = new User("Jane", "Doe", "Sam", "sample@email.com", "password", "Doctor");
@@ -153,9 +154,36 @@ public class EventControllerTests {
                 .andReturn()
                 .getResponse();
         
-        assertThat(result.getContentAsString(), containsString("13th (2018)"));
+        Map<String, Long> mapResult = TestHelpers.getLongMap(result.getContentAsString());
+        
+        assertThat(mapResult.get("13th (2018)"), is(1L));  
     }
 
+    /**
+     * Tests the success of the /count/observer endpoint.
+     * The endpoint is used for retrieving all events grouped by
+     * observer.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_Success_EventController_findEventCountByObserver() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        // Makes API calls and checks for success status
+        MockHttpServletResponse result = mvc.perform(get("/events/count/observer")
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+        
+        log.debug(result.getContentAsString());
+ 
+        Map<String, Long> mapResult = TestHelpers.getLongMap(result.getContentAsString());
+        assertThat(mapResult.get(observer.getEmail()), is(1L));        
+    }
+    
     /**
      * Tests the success of the /compliance/{question}/{timeframe} endpoint.
      * The endpoint is used for retrieving compliance rate grouped by a

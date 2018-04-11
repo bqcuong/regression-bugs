@@ -45,4 +45,6 @@ public interface EventService {
 	 * @throws InvalidTimeframeException
 	 */
 	Map<String, Double> findComplianceByTimeframe(String timeframe, Question question, List<Event> events) throws InvalidTimeframeException;
+
+	Map<String, Long> findEventCountByObserver();
 }
