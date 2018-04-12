@@ -17,7 +17,7 @@ export class AuthService {
     private readonly tokenURL: string;
     private isRefreshingToken: boolean;
     private localStorageKey = 'h2msCookie';
-    private localStoreageKeyRefreshTimeout = 'asdfkjas;dfkj';
+    private localStorageKeyRefreshTimeout = 'asdfkjas;dfkj';
     private client_id = 'h2ms';
     // todo secure secret
     private secret = 'secret';
@@ -44,7 +44,7 @@ export class AuthService {
                 if (response && response.access_token) {
                     localStorage.setItem(this.localStorageKey, JSON.stringify(response));
                     const timeout = '' + (((response.expires_in) * 1000) + (new Date()).getTime());
-                    localStorage.setItem(this.localStoreageKeyRefreshTimeout, timeout);
+                    localStorage.setItem(this.localStorageKeyRefreshTimeout, timeout);
                     return response;
                 }
             });
@@ -59,7 +59,7 @@ export class AuthService {
 
     getToken() {
         const currentTime = (new Date()).getTime();
-        const timeoutTime = (+localStorage.getItem(this.localStoreageKeyRefreshTimeout));
+        const timeoutTime = (+localStorage.getItem(this.localStorageKeyRefreshTimeout));
         if (timeoutTime < currentTime) {
             return this.refreshToken().map(response => response.access_token);
         }
@@ -86,7 +86,7 @@ export class AuthService {
                     if (response && response.access_token) {
                         localStorage.setItem(this.localStorageKey, JSON.stringify(response));
                         const timeout = '' + (((response.expires_in) * 1000) + (new Date()).getTime());
-                        localStorage.setItem(this.localStoreageKeyRefreshTimeout, timeout);
+                        localStorage.setItem(this.localStorageKeyRefreshTimeout, timeout);
                         this.isRefreshingToken = false;
                     } else {
                         this.isRefreshingToken = false;
