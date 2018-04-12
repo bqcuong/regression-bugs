@@ -19,42 +19,42 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-  public SecurityConfig() {
-    super(true);
-  }
+    public SecurityConfig() {
+        super(true);
+    }
 
-  private static final String[] AUTH_WHITELIST = {
-    "/",
-    "/login",
-    "/webjars/**",
-    "/api/passwords/**",
-    "/registration/**",
+    private static final String[] AUTH_WHITELIST = {
+            "/",
+            "/login",
+            "/webjars/**",
+            "/api/passwords/**",
+            "/registration/**",
 
-    // swagger ui
-    "/swagger-resources",
-    "/swagger-resources/**",
-    "/swagger-ui.html",
-    "/v2/api-docs"
-  };
+            // swagger ui
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs"
+    };
 
-  @Override
-  public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers(AUTH_WHITELIST).antMatchers(HttpMethod.OPTIONS, "/**");
-  }
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().antMatchers(AUTH_WHITELIST).antMatchers(HttpMethod.OPTIONS, "/**");
+    }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
-    http.authorizeRequests().anyRequest().authenticated();
-  }
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.authorizeRequests().anyRequest().authenticated();
+    }
 
-  @Bean
-  @Override
-  public AuthenticationManager authenticationManagerBean() throws Exception {
-    return super.authenticationManagerBean();
-  }
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 
-  @Bean
-  public PasswordEncoder getEncoder() {
-    return new BCryptPasswordEncoder();
-  }
+    @Bean
+    public PasswordEncoder getEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 }

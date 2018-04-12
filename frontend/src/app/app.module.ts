@@ -14,14 +14,17 @@ import {
     MatIconModule,
     MatInputModule,
     MatListModule,
-    MatSidenavModule,
-    MatToolbarModule,
-    MatTabsModule,
+    MatProgressBarModule,
     MatSelectModule,
-    MatProgressBarModule
+    MatSidenavModule,
+    MatTabsModule,
+    MatToolbarModule
 } from '@angular/material';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {DynamicFormComponent, FormSubmissionDialogComponent} from './dynamic-form/dynamic-form.component';
+import {
+    DynamicFormComponent,
+    FormSubmissionDialogComponent
+} from './dynamic-form/dynamic-form.component';
 import {DynamicFormQuestionComponent} from './dynamic-form-question/dynamic-form-question.component';
 import {LoginComponent} from './login/login.component';
 import {PrivacyComponent} from './privacy/privacy.component';
@@ -37,10 +40,18 @@ import {LocationEntityService} from './api/locationEntity.service';
 import {UserEntityService} from './api/userEntity.service';
 import {ReportsComponent} from './reports/reports.component';
 import {ReportsService} from './reports/reports.service';
-import { AboutComponent } from './about/about.component';
+import {AboutComponent} from './about/about.component';
 import {BASE_PATH} from './variables';
 import {Config} from './config/config';
-import {UserEmailService} from "./user/service/user-email.service";
+import {UserEmailService} from './user/service/user-email.service';
+import {
+    ForgotPasswordComponent,
+    SuccessfullySentPasswordRecoveryEmailComponent
+} from './forgot-password/forgot-password.component';
+import {
+    ResetPasswordComponent,
+    SuccessfullyResetPasswordComponent
+} from './reset-password/reset-password.component';
 
 @NgModule({
     declarations: [
@@ -53,7 +64,11 @@ import {UserEmailService} from "./user/service/user-email.service";
         ExportComponent,
         ReportsComponent,
         FormSubmissionDialogComponent,
-        AboutComponent
+        SuccessfullySentPasswordRecoveryEmailComponent,
+        SuccessfullyResetPasswordComponent,
+        AboutComponent,
+        ForgotPasswordComponent,
+        ResetPasswordComponent
     ],
     imports: [
         BrowserModule,
@@ -77,13 +92,17 @@ import {UserEmailService} from "./user/service/user-email.service";
         MatProgressBarModule,
         MatDialogModule
     ],
-    entryComponents: [FormSubmissionDialogComponent],
-    providers: [MediaMatcher,
+    entryComponents: [
+        FormSubmissionDialogComponent,
+        SuccessfullySentPasswordRecoveryEmailComponent,
+        SuccessfullyResetPasswordComponent
+    ],
+    providers: [
+        MediaMatcher,
         ConfigService,
         AuthService,
         AuthGuardService,
-        UserEmailService,
-        {
+        UserEmailService, {
             provide: HTTP_INTERCEPTORS,
             useClass: TokenInterceptor,
             multi: true
