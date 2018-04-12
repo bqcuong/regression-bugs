@@ -9,6 +9,7 @@ import edu.harvard.h2ms.exception.InvalidTimeframeException;
 import edu.harvard.h2ms.exception.ResourceNotFoundException;
 import edu.harvard.h2ms.repository.AnswerRepository;
 import edu.harvard.h2ms.repository.EventRepository;
+import edu.harvard.h2ms.repository.LocationRepository;
 import edu.harvard.h2ms.repository.QuestionRepository;
 import edu.harvard.h2ms.service.utils.H2msRestUtils;
 
@@ -30,6 +31,9 @@ public class EventServiceImpl implements EventService {
 
 	final Logger log = LoggerFactory.getLogger(EventServiceImpl.class);
 
+	@Autowired
+	private LocationRepository locationRepository;
+	
 	@Autowired
 	private EventRepository eventRepository;
 
@@ -120,6 +124,25 @@ public class EventServiceImpl implements EventService {
 			log.error(message);	
 			throw new InvalidAnswerTypeException("boolean", question.getAnswerType());
 		}
+	}
+
+	@Override
+	public Map<String, Double> findComplianceByLocation(Question question, List<Event> events) {
+		// Group events by time frame
+		Map<String, Set<Event>> groupedEvents = H2msRestUtils.groupEventsByLocation(locationRepository.findAll(), events);
+
+		// Calculate compliance for each grouping
+		Map<String, Double> compliance = groupedEvents.entrySet().stream()
+				.collect(Collectors.toMap(
+						e -> e.getKey(),
+						e -> H2msRestUtils.calculateCompliance(question, e.getValue()
+				)));
+
+		for (Map.Entry<String, Double> entry : compliance.entrySet()) {
+			log.debug("Compliance for {} is {}", entry.getKey(), entry.getValue());
+		}
+
+		return compliance;
 	}
 	
 }
