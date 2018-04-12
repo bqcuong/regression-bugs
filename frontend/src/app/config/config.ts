@@ -5,32 +5,44 @@ export class Config {
     servicesReturnFakeData = false;
 
     appName: string;
-    websiteUrl: string;
-    bannerURL: string;
-    logoURL: string;
-    backendURL: string;
+    frontendHostname: string;
+    frontendPort: number;
+    bannerUrl: string;
+    logoUrl: string;
+    backendHostname: string;
     backendPort: number;
 
     constructor(appName: string,
-                websiteUrl: string,
-                bannerURL: string,
-                logoURL: string,
-                backendURL: string,
+                frontendHostname: string,
+                frontendPort: number,
+                bannerUrl: string,
+                logoUrl: string,
+                backendHostname: string,
                 backendPort: number) {
         this.appName = appName;
-        this.websiteUrl = websiteUrl;
-        this.bannerURL = bannerURL;
-        this.logoURL = logoURL;
-        this.backendURL = backendURL;
+        this.frontendHostname = frontendHostname;
+        this.frontendPort = frontendPort;
+        this.bannerUrl = bannerUrl;
+        this.logoUrl = logoUrl;
+        this.backendHostname = backendHostname;
         this.backendPort = backendPort;
     }
 
     public setConfig(config: Config) {
         this.appName = config.appName;
-        this.websiteUrl = config.websiteUrl;
-        this.bannerURL = config.bannerURL;
-        this.logoURL = config.logoURL;
-        this.backendURL = config.backendURL;
+        this.frontendHostname = config.frontendHostname;
+        this.frontendPort = config.frontendPort;
+        this.bannerUrl = config.bannerUrl;
+        this.logoUrl = config.logoUrl;
+        this.backendHostname = config.backendHostname;
         this.backendPort = config.backendPort;
+    }
+
+    public getFrontendUrl() {
+        return this.frontendHostname + ':' + this.frontendPort;
+    }
+
+    public getBackendUrl() {
+        return this.backendHostname + ':' + this.backendPort;
     }
 }
