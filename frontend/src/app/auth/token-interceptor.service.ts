@@ -16,16 +16,15 @@ export class TokenInterceptor implements HttpInterceptor {
     intercept(request: HttpRequest<any>, next: HttpHandler) {
         if (request.url !== this.auth.getTokenURL()
             && this.auth.isLoggedIn()) {
-            this.auth.getToken().subscribe(token => {
+            return this.auth.getToken().flatMap((token) => {
                 request = request.clone({
                     headers: request.headers.set('Authorization', `Bearer ${token}`)
                 });
-                console.log('inside interceptor, token: ' + token + ', req: ' + JSON.stringify(request));
-
-                return next.handle(request).subscribe();
+                return next.handle(request);
             });
+
+
         } else {
-            console.log('inside interceptor, auth url used, no token needed: ');
             return next.handle(request);
         }
     }

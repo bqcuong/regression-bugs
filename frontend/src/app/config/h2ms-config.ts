@@ -7,5 +7,5 @@ export const CONFIG: Config = new Config('H2MS',
     'www.h2ms.org',
     '/assets/images/banners/h2ms-banner.png',
     '/assets/images/logos/h2ms-logo.png',
-    'http://localhost',
-    8080);
+    'http://test.h2ms.org',
+    81);
