@@ -1,6 +1,10 @@
-import { Component } from '@angular/core';
+import {Component, Inject, Optional} from '@angular/core';
 import { saveAs } from 'file-saver/FileSaver';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {ConfigService} from '../config/config.service';
+import {Configuration} from '../configuration';
+import {BASE_PATH} from '../variables';
+import {Config} from '../config/config';
 
 @Component({
   selector: 'app-export',
@@ -10,12 +14,34 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class ExportComponent {
 
-  constructor(private httpClient: HttpClient) { }
+    protected basePath = 'https://test.h2ms.org:81';
+    public configuration = new Configuration();
+    config: Config;
+
+    constructor(private httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration,
+              @Optional() configService: ConfigService) {
+        if (basePath) {
+            this.basePath = basePath;
+        }
+        if (configuration) {
+            this.configuration = configuration;
+            this.basePath = basePath || configuration.basePath || this.basePath;
+        }
+
+        if (configService) {
+            this.config = configService.getConfig();
+            const baseURL = this.config.backendHostname,
+                port = this.config.backendPort;
+            if (baseURL && port) {
+                this.basePath = baseURL.concat(':').concat(String(port));
+            }
+        }
+    }
 
   saveFile() {
     const headers = new HttpHeaders();
     headers.append('Accept', 'text/csv');
-    this.httpClient.get('http://test.h2ms.org:81/events/export/csv', { headers: headers, responseType: 'text' })
+    this.httpClient.get(this.basePath.concat('/events/export/csv'), { headers: headers, responseType: 'text' })
         .subscribe(
             (response) => {
             this.saveToFileSystem(response);
