@@ -2,11 +2,9 @@ import { Injectable } from '@angular/core';
 import {
     HttpRequest,
     HttpHandler,
-    HttpEvent,
-    HttpInterceptor,
+    HttpInterceptor
 } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { Observable } from 'rxjs/Observable';
 
 
 
@@ -15,14 +13,19 @@ export class TokenInterceptor implements HttpInterceptor {
 
     constructor(public auth: AuthService) {}
 
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        if (this.auth.isLoggedIn()) {
-            request = request.clone({
-                setHeaders: {
-                    Authorization: `Bearer ${this.auth.getToken()}`
-                }
+    intercept(request: HttpRequest<any>, next: HttpHandler) {
+        if (request.url !== this.auth.getTokenURL()
+            && this.auth.isLoggedIn()) {
+            return this.auth.getToken().flatMap((token) => {
+                request = request.clone({
+                    headers: request.headers.set('Authorization', `Bearer ${token}`)
+                });
+                return next.handle(request);
             });
+
+
+        } else {
+            return next.handle(request);
         }
-        return next.handle(request); // todo handle refresh response
     }
 }

@@ -61,7 +61,6 @@ export class ReportsService {
     }
 
     fetchFakeData(url: string) {
-        ;
         if (url.indexOf('events/count/') !== -1) {
             if (url.indexOf('year') !== -1) {
                 return this.numObsByYear;
