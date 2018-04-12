@@ -4,7 +4,9 @@ import 'rxjs/add/operator/switchMap';
 import {ConfigService} from '../config/config.service';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {MatDialog} from '@angular/material';
-import {DIALOG_STYLE} from '../../dialog/dialog';
+import {DIALOG_STYLE} from '../forms-common/dialog';
+import {REQUIRED_PASSWORD, REQUIRED_PASSWORD_ERROR_MESSAGE} from '../forms-common/form-controls';
+import {FormControl} from '@angular/forms';
 
 @Component({
     selector: 'app-reset-password',
@@ -12,6 +14,9 @@ import {DIALOG_STYLE} from '../../dialog/dialog';
     styleUrls: ['./reset-password.component.css', '../card.css']
 })
 export class ResetPasswordComponent implements OnInit {
+
+    private passwordFormControl: FormControl = REQUIRED_PASSWORD;
+    private passwordErrorMessage = REQUIRED_PASSWORD_ERROR_MESSAGE;
 
     email: string;
     resetToken: string;
@@ -35,6 +40,11 @@ export class ResetPasswordComponent implements OnInit {
     }
 
     savePassword(password: string) {
+        if (this.passwordFormControl.invalid) {
+            console.log('Submit sent when password was invalid.');
+            return;
+        }
+
         let headers = new HttpHeaders();
         headers = headers.set('Content-Type', 'application/json');
 

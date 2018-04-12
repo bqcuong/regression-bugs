@@ -5,7 +5,7 @@ import {QuestionBase} from '../questions/question-base';
 import {QuestionControlService} from '../questions/service/question-control.service';
 import {Answer, Event, EventEntityService} from '../';
 import {MatDialog, MatDialogRef} from '@angular/material';
-import {DIALOG_STYLE} from '../../dialog/dialog';
+import {DIALOG_STYLE} from '../forms-common/dialog';
 
 @Component({
     selector: 'app-dynamic-form',

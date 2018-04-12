@@ -3,7 +3,9 @@ import {HttpClient} from '@angular/common/http';
 import {ConfigService} from '../config/config.service';
 import {Config} from '../config/config';
 import {MatDialog} from '@angular/material';
-import {DIALOG_STYLE} from '../../dialog/dialog';
+import {DIALOG_STYLE} from '../forms-common/dialog';
+import {REQUIRED_EMAIL, REQUIRED_EMAIL_ERROR_MESSAGE} from '../forms-common/form-controls';
+import {FormControl} from '@angular/forms';
 
 @Component({
     selector: 'app-forgot-password',
@@ -13,6 +15,8 @@ import {DIALOG_STYLE} from '../../dialog/dialog';
 export class ForgotPasswordComponent {
 
     private config: Config;
+    private emailFormControl: FormControl = REQUIRED_EMAIL;
+    private emailErrorMessage = REQUIRED_EMAIL_ERROR_MESSAGE;
 
     constructor(private http: HttpClient,
                 private configService: ConfigService,
@@ -21,6 +25,11 @@ export class ForgotPasswordComponent {
     }
 
     sendRecoveryEmail(emailAddress: string) {
+        if (this.emailFormControl.invalid) {
+            console.log('Submit sent when email was invalid.');
+            return;
+        }
+
         const callbackUrl = encodeURIComponent(this.config.getFrontendUrl() + '/reset-password/' + emailAddress);
         const sendRecoveryEmailUrl = this.config.getBackendUrl() + '/api/passwords/reset/' + encodeURIComponent(emailAddress)
             + '?resetPasswordCallback=' + callbackUrl;
