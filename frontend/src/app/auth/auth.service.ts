@@ -43,8 +43,7 @@ export class AuthService {
             .do(response => {
                 if (response && response.access_token) {
                     localStorage.setItem(this.localStorageKey, JSON.stringify(response));
-                    const timeout = '' + ((10 * 1000) + (new Date()).getTime());
-                    // const timeout = '' + (((response.expires_in) * 1000) + (new Date()).getTime());
+                    const timeout = '' + (((response.expires_in) * 1000) + (new Date()).getTime());
                     localStorage.setItem(this.localStoreageKeyRefreshTimeout, timeout);
                     return response;
                 }
@@ -86,8 +85,7 @@ export class AuthService {
                 .do(response => {
                     if (response && response.access_token) {
                         localStorage.setItem(this.localStorageKey, JSON.stringify(response));
-                        const timeout = '' + ((10 * 1000) + (new Date()).getTime());
-                        // const timeout = '' + (((response.expires_in) * 1000) + (new Date()).getTime());
+                        const timeout = '' + (((response.expires_in) * 1000) + (new Date()).getTime());
                         localStorage.setItem(this.localStoreageKeyRefreshTimeout, timeout);
                         this.isRefreshingToken = false;
                     } else {
