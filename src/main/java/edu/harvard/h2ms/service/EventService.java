@@ -46,5 +46,19 @@ public interface EventService {
 	 */
 	Map<String, Double> findComplianceByTimeframe(String timeframe, Question question, List<Event> events) throws InvalidTimeframeException;
 
+  /**
+	 * Retrieves counts of events by Observers.
+   *
+	 * @return Count by observer
+	 */
 	Map<String, Long> findEventCountByObserver();
+
+  
+  /**
+	 * Retrieves compliance and returns results grouped by the location.
+	 *
+	 * @param events List of events to process
+	 * @return Compliance by location
+	 */
+	Map<String, Double> findComplianceByLocation(Question question, List<Event> events);
 }
