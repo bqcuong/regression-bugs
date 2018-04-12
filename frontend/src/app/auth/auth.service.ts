@@ -17,7 +17,7 @@ export class AuthService {
     private readonly tokenURL: string;
     private isRefreshingToken: boolean;
     private localStorageKey = 'h2msCookie';
-    private localStorageKeyRefreshTimeout = 'asdfkjas;dfkj';
+    private localStorageKeyRefreshTimeout = 'h2msTimeoutCookie';
     private client_id = 'h2ms';
     // todo secure secret
     private secret = 'secret';
