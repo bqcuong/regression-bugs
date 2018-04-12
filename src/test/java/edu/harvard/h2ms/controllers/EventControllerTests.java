@@ -232,7 +232,64 @@ public class EventControllerTests {
     }
     
     
+    /**
+     * Tests the success of the /compliance/{question}/location endpoint.
+     * The end point is used for retrieving compliance rate grouped by a
+     * location.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_Success_EventController_findComplianceByLocation() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        // Makes API calls and checks for success status
+        MockHttpServletResponse result = mvc.perform(get(String.format("/events/compliance/%d/location", booleanQuestion.getId()))
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        log.debug(result.getContentAsString());
+        
+        Map<String, Double> mapResult = TestHelpers.getDoubleMap(result.getContentAsString());
+        
+        assertThat(mapResult.get("Location_01"), is(1.0));
+    }
     
+    /**
+     * Tests the failure of the /compliance/{question}/{timeframe} endpoint
+     * when a question is not found.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_NotFound_EventController_findComplianceByLocation() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        // Makes API calls and checks for success status
+        mvc.perform(get("/events/compliance/0/location")
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    /**
+     * Tests the failure of the /compliance/{question}/location endpoint
+     * when a question is not of boolean type.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_InvalidQuestionType_EventController_findComplianceByLocation() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        mvc.perform(get(String.format("/events/compliance/%d/location", optionsQuestion.getId()))
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
     
     /**
      * Tests event export by looking at the CSV output
