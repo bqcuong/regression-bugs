@@ -19,10 +19,10 @@ import {FormControl} from '@angular/forms';
 })
 export class LoginComponent implements OnInit {
 
-    private emailFormControl: FormControl = REQUIRED_EMAIL;
-    private emailErrorMessage = REQUIRED_EMAIL_ERROR_MESSAGE;
-    private passwordFormControl: FormControl = REQUIRED_PASSWORD;
-    private passwordErrorMessage = REQUIRED_PASSWORD_ERROR_MESSAGE;
+    emailFormControl: FormControl = REQUIRED_EMAIL;
+    emailErrorMessage = REQUIRED_EMAIL_ERROR_MESSAGE;
+    passwordFormControl: FormControl = REQUIRED_PASSWORD;
+    passwordErrorMessage = REQUIRED_PASSWORD_ERROR_MESSAGE;
     hide = true;
     loginAttempts = 2;
     config: Config;

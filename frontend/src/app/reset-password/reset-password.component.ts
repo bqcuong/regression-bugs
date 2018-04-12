@@ -15,8 +15,8 @@ import {FormControl} from '@angular/forms';
 })
 export class ResetPasswordComponent implements OnInit {
 
-    private passwordFormControl: FormControl = REQUIRED_PASSWORD;
-    private passwordErrorMessage = REQUIRED_PASSWORD_ERROR_MESSAGE;
+    passwordFormControl: FormControl = REQUIRED_PASSWORD;
+    passwordErrorMessage = REQUIRED_PASSWORD_ERROR_MESSAGE;
 
     email: string;
     resetToken: string;

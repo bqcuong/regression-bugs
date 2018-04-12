@@ -15,8 +15,8 @@ import {FormControl} from '@angular/forms';
 export class ForgotPasswordComponent {
 
     private config: Config;
-    private emailFormControl: FormControl = REQUIRED_EMAIL;
-    private emailErrorMessage = REQUIRED_EMAIL_ERROR_MESSAGE;
+    emailFormControl: FormControl = REQUIRED_EMAIL;
+    emailErrorMessage = REQUIRED_EMAIL_ERROR_MESSAGE;
 
     constructor(private http: HttpClient,
                 private configService: ConfigService,
