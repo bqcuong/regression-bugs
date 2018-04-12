@@ -1,5 +1,13 @@
 package edu.harvard.h2ms.domain.core;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -18,19 +26,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
 
-	@JsonIgnore
+    @JsonIgnore
     @Transient
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -70,9 +70,9 @@ public class User implements UserDetails {
 
     @ManyToMany
     @JoinTable(
-        name = "user_role",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
+            name = "user_role",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
 
@@ -148,8 +148,8 @@ public class User implements UserDetails {
     }
 
     public void setEmail(String email) {
-    	if(email != null)
-    		this.email = email.toLowerCase();
+        if (email != null)
+            this.email = email.toLowerCase();
     }
 
     public String getNotificationFrequency() {
@@ -176,7 +176,7 @@ public class User implements UserDetails {
         // This would be better as a Bean but I couldn't figure out why @Autowired
         // wasn't doing the right thing in an entity.
         if (password != null)
-        	this.password = new BCryptPasswordEncoder().encode(password);
+            this.password = new BCryptPasswordEncoder().encode(password);
     }
 
     public Set<Role> getRoles() {
@@ -212,44 +212,43 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return this.enabled;
     }
-    
+
     public void setEnabled(boolean value) {
-    	this.enabled = value;
+        this.enabled = value;
     }
 
     public boolean isVerified() {
-    	return this.verified;
+        return this.verified;
     }
 
 
     public void setVerified(boolean value) {
-    	this.verified = value;
+        this.verified = value;
     }
 
     public Date getLastLogin() {
-    	return lastLogin;
+        return lastLogin;
     }
 
     public void setLastLogin(Date lastLogin) {
-    	this.lastLogin = lastLogin;
+        this.lastLogin = lastLogin;
     }
 
     public Date getCreatedOn() {
-    	return createdOn;
+        return createdOn;
     }
 
     public void setCreatedOn(Date createdOn) {
-    	this.createdOn = createdOn;
+        this.createdOn = createdOn;
     }
 
     public String getResetToken() {
-    	return resetToken;
+        return resetToken;
     }
 
     public void setResetToken(String resetToken) {
-    	this.resetToken = resetToken;
+        this.resetToken = resetToken;
     }
-
 
 
     @Override

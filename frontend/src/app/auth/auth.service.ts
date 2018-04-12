@@ -9,7 +9,6 @@ import {Config} from '../config/config';
 import {Router} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
 
-
 @Injectable()
 export class AuthService {
 
@@ -26,7 +25,7 @@ export class AuthService {
                 private configService: ConfigService,
                 private router: Router) {
         this.config = configService.getConfig();
-        this.tokenURL = this.config.backendURL + ':' + this.config.backendPort + '/oauth/token';
+        this.tokenURL = this.config.backendHostname + ':' + this.config.backendPort + '/oauth/token';
         this.isRefreshingToken = false;
     }
 

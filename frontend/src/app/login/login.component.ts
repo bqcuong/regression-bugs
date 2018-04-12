@@ -4,6 +4,13 @@ import {Router} from '@angular/router';
 import {ConfigService} from '../config/config.service';
 import {Config} from '../config/config';
 import {UserEmailService} from '../user/service/user-email.service';
+import {
+    REQUIRED_EMAIL,
+    REQUIRED_EMAIL_ERROR_MESSAGE,
+    REQUIRED_PASSWORD,
+    REQUIRED_PASSWORD_ERROR_MESSAGE
+} from '../forms-common/form-controls';
+import {FormControl} from '@angular/forms';
 
 @Component({
     selector: 'app-login',
@@ -12,6 +19,10 @@ import {UserEmailService} from '../user/service/user-email.service';
 })
 export class LoginComponent implements OnInit {
 
+    emailFormControl: FormControl = REQUIRED_EMAIL;
+    emailErrorMessage = REQUIRED_EMAIL_ERROR_MESSAGE;
+    passwordFormControl: FormControl = REQUIRED_PASSWORD;
+    passwordErrorMessage = REQUIRED_PASSWORD_ERROR_MESSAGE;
     hide = true;
     loginAttempts = 2;
     config: Config;
@@ -28,6 +39,14 @@ export class LoginComponent implements OnInit {
     }
 
     submit(email: string, password: string): void {
+        if (this.emailFormControl.invalid) {
+            console.log('Submit sent when email was invalid.');
+            return;
+        } else if (this.passwordFormControl.invalid) {
+            console.log('Submit sent when password was invalid.');
+            return;
+        }
+
         this.auth.login(email, password)
             .subscribe(
                 response => {
