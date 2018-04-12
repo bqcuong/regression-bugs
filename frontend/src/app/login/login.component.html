@@ -19,7 +19,6 @@
                 <mat-error *ngIf="passwordFormControl.invalid">{{passwordErrorMessage()}}
                 </mat-error>
             </mat-form-field>
-            <mat-checkbox color="primary">Remember me</mat-checkbox>
             <mat-card-actions>
                 <button (click)="submit(email.value, password.value)" mat-raised-button
                         color="primary"
