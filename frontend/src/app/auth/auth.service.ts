@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/delay';
@@ -7,8 +7,7 @@ import {Oauth} from './oauth';
 import {ConfigService} from '../config/config.service';
 import {Config} from '../config/config';
 import {Router} from '@angular/router';
-import {timer} from "rxjs/observable/timer";
-
+import {Observable} from 'rxjs/Observable';
 
 
 @Injectable()
@@ -18,12 +17,10 @@ export class AuthService {
     private readonly tokenURL: string;
     private isRefreshingToken: boolean;
     private localStorageKey = 'h2msCookie';
+    private localStoreageKeyRefreshTimeout = 'asdfkjas;dfkj';
     private client_id = 'h2ms';
     // todo secure secret
     private secret = 'secret';
-
-    private timer;
-    private timerSubscription;
 
     constructor(private http: HttpClient,
                 private configService: ConfigService,
@@ -46,9 +43,10 @@ export class AuthService {
             .do(response => {
                 if (response && response.access_token) {
                     localStorage.setItem(this.localStorageKey, JSON.stringify(response));
-                    // subtract 10s from refresh time to account for travel delay
-                    this.timer = timer(0, (response.expires_in - 10) * 1000);
-                    this.timerSubscription = this.timer.subscribe(() => this.refreshToken());
+                    const timeout = '' + (((response.expires_in) * 1000) + (new Date()).getTime());
+                    localStorage.setItem(this.localStoreageKeyRefreshTimeout,
+                        timeout);
+                    console.log('timeout is ' + timeout);
                     return response;
                 }
             });
@@ -57,14 +55,19 @@ export class AuthService {
     logout(): void {
         if (localStorage.removeItem(this.localStorageKey)) {
             // todo: place logout request to backend
-            this.timerSubscription;
         }
         this.router.navigate(['login']);
     }
 
-    getToken(): string {
-
-        return JSON.parse(localStorage.getItem(this.localStorageKey)).access_token;
+    getToken() {
+        console.log('getting token');
+        const currentTime = (new Date()).getTime();
+        const timeoutTime = (+localStorage.getItem(this.localStoreageKeyRefreshTimeout));
+        if (timeoutTime < currentTime) {
+            console.log('token timeout, current: ' + currentTime + ', timeout: ' + timeoutTime);
+            return this.refreshToken().map(response => response.access_token);
+        }
+        return Observable.of(JSON.parse(localStorage.getItem(this.localStorageKey)).access_token);
     }
 
     isLoggedIn(): boolean {
@@ -82,12 +85,19 @@ export class AuthService {
             };
             const dataString = 'grant_type=refresh_token&client_id=' + this.client_id + '&refresh_token='
                 + JSON.parse(localStorage.getItem(this.localStorageKey)).refresh_token;
+            console.log('refreshing token');
             return this.http.post<Oauth>(this.tokenURL, dataString, httpOptions)
                 .do(response => {
                     if (response && response.access_token) {
+                        console.log('token refresh success');
                         localStorage.setItem(this.localStorageKey, JSON.stringify(response));
+                        localStorage.setItem(this.localStoreageKeyRefreshTimeout,
+                            '' + (((response.expires_in) * 1000) + (new Date()).getTime()));
                         this.isRefreshingToken = false;
-                        return response;
+                    } else {
+                        console.log('token refresh failed');
+                        this.isRefreshingToken = false;
+                        this.router.navigate(['login']);
                     }
                 });
         }

@@ -25,7 +25,7 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 
-	@Value("${h2ms.oauth.tokenTimeout:36000}")
+	@Value("${h2ms.oauth.tokenTimeout:10}")
 	private int expiration;
 
 	@Override
