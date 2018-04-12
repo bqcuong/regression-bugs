@@ -122,7 +122,7 @@ public class EventControllerTests {
         answer.setValue("true");
         answers.add(answer);
         event.setAnswers(answers);
-        event.setLocation("Location_01");
+        event.setLocation("Massachusetts General Hospital");
         event.setSubject(subject);
         event.setObserver(observer);
         event.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
@@ -255,7 +255,7 @@ public class EventControllerTests {
         
         Map<String, Double> mapResult = TestHelpers.getDoubleMap(result.getContentAsString());
         
-        assertThat(mapResult.get("Location_01"), is(1.0));
+        assertThat(mapResult.get("Massachusetts General Hospital"), is(1.0));
     }
     
     /**
@@ -289,7 +289,7 @@ public class EventControllerTests {
                 .header("Authorization", "Bearer " + accessToken)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
-    }
+    }	
     
     /**
      * Tests event export by looking at the CSV output
@@ -329,7 +329,7 @@ public class EventControllerTests {
         // ** compare to expected body **
         log.debug("Test: event dump body");
         nextLine = reader.readNext();
-        String [] correctBody = {"1","2018-03-28 00:00:00.0","Location_01","jqadams@h2ms.org","Other","sample@email.com","Doctor","true"};
+        String [] correctBody = {"1","2018-03-28 00:00:00.0","Massachusetts General Hospital","jqadams@h2ms.org","Other","sample@email.com","Doctor","true"};
         log.debug(Arrays.toString(nextLine));
         for(int i = 0; i < correctHeader.length; i++) {
         	assertThat(nextLine[i], is(correctBody[i]));
