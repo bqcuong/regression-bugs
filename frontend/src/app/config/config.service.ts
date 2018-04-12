@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Config} from './config';
 import * as h2ms from './h2ms-config';
+import * as h2msLocal from './local-h2ms-config';
+import * as glovesLocal from './local-h2ms-config';
 import * as gloves from './gloves-config';
 
 /**
@@ -9,15 +11,18 @@ import * as gloves from './gloves-config';
 @Injectable()
 export class ConfigService {
     useH2MSConfig = true;
+    useLocalConfig = false;
     config: Config;
 
     constructor() {
-        this.config = new Config(h2ms.CONFIG.appName,
-            h2ms.CONFIG.websiteUrl,
-            h2ms.CONFIG.bannerURL,
-            h2ms.CONFIG.logoURL,
-            h2ms.CONFIG.backendURL,
-            h2ms.CONFIG.backendPort);
+        const defaultConfig = h2ms.CONFIG;
+        this.config = new Config(defaultConfig.appName,
+            defaultConfig.frontendHostname,
+            defaultConfig.frontendPort,
+            defaultConfig.bannerUrl,
+            defaultConfig.logoUrl,
+            defaultConfig.backendHostname,
+            defaultConfig.backendPort);
     }
 
     getConfig(): Config {
@@ -36,7 +41,11 @@ export class ConfigService {
     }
 
     private updateConfig() {
-        if (this.useH2MSConfig) {
+        if (this.useLocalConfig && this.useH2MSConfig) {
+            this.config.setConfig(h2msLocal.CONFIG);
+        } else if (this.useLocalConfig) {
+            this.config.setConfig(glovesLocal.CONFIG);
+        } else if (this.useH2MSConfig) {
             this.config.setConfig(h2ms.CONFIG);
         } else {
             this.config.setConfig(gloves.CONFIG);
