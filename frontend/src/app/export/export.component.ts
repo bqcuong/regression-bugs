@@ -16,9 +16,14 @@ export class ExportComponent {
     const headers = new HttpHeaders();
     headers.append('Accept', 'text/csv');
     this.httpClient.get('http://test.h2ms.org:81/events/export/csv', { headers: headers, responseType: 'text' })
-        .subscribe((response) => {
+        .subscribe(
+            (response) => {
             this.saveToFileSystem(response);
-        });
+            },
+            (error) => {
+                alert('Error downloading data file. Please report this error to a developer.');
+                console.log(error);
+            });
   }
 
   private saveToFileSystem(response) {
