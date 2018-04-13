@@ -1,18 +1,16 @@
 package edu.harvard.h2ms.service.utils;
 
-import edu.harvard.h2ms.domain.core.Answer;
 import edu.harvard.h2ms.domain.core.Event;
+import edu.harvard.h2ms.domain.core.Location;
 import edu.harvard.h2ms.domain.core.Question;
 import edu.harvard.h2ms.exception.InvalidTimeframeException;
 
 import static java.util.Arrays.asList;
-import edu.harvard.h2ms.service.EventServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class H2msRestUtils {
@@ -201,5 +199,27 @@ public class H2msRestUtils {
         nf.setRoundingMode(RoundingMode.HALF_UP);
         return Double.valueOf(nf.format(result));
     }
+
+    /**
+     * Groups events by locations
+     * 
+     * @param locations
+     * @param events
+     * @return grouped events
+     */
+	public static Map<String, Set<Event>> groupEventsByLocation(Iterable<Location> locations, List<Event> events) {
+		Map<String, Set<Event>> eventsByLocation = new HashMap<>();
+		
+		for (Location location : locations) {
+			eventsByLocation.put(
+					location.getName(),
+					events.stream()
+						.filter(event -> event.getLocation().equals(location.getName()))
+						.collect(Collectors.toSet())
+					);
+		}
+		
+		return eventsByLocation;
+	}
 
 }

@@ -62,7 +62,58 @@ public class EventController {
 		}
 
 	}
+	
+	/**
+	 * Rest end point for retrieving all events in H2MS systems and returns results
+	 * grouped by an observer
+	 * 
+	 * Example: /events/count/observer
+	 * 
+	 * @return ResponseEntity
+	 * 				- 200 OK with JSON Map<String, Long> with results
+	 * 				- 400 Bad Request
+	 */
+	@RequestMapping(value = "/count/observer", method = RequestMethod.GET)
+	public ResponseEntity<?> findEventCountByObserver() {
+		log.info("Searching for all events grouping by observer");
+		
+		return new ResponseEntity<Map<String, Long>>(eventService.findEventCountByObserver(),
+					HttpStatus.OK);
+	}
+	
 
+	/**
+	 * Rest end point for getting compliance of a specific question grouped by the
+	 * location.
+	 * 
+	 * Example: /events/compliance/19/location
+	 *
+	 * @param questionId
+	 *            - ID for Question
+	 * 
+	 * @return ResponseEntity - 200 OK with JSON Map<String, Double> with compliance
+	 *         results - 400 Bad Request on incorrect time frame - 404 Not Found if
+	 *         question not found
+	 * 
+	 */	
+	@RequestMapping(value = "/compliance/{questionId}/location", method = RequestMethod.GET)
+	public ResponseEntity<?> findComplianceByLocation(@PathVariable Long questionId) {		
+		List<Event> events;
+		Question question = questionRepository.findOne(questionId);
+		
+		if(question == null) {
+			return new ResponseEntity<String>("Question not found.", HttpStatus.NOT_FOUND);
+		}
+		
+		try {	
+			events = eventService.findEventsForCompliance(question);
+			return new ResponseEntity<Map<String, Double>>(
+					eventService.findComplianceByLocation(question, events), HttpStatus.OK);
+		} catch (InvalidAnswerTypeException answerType) {
+			return new ResponseEntity<String>(answerType.getMessage(), HttpStatus.BAD_REQUEST);
+		}
+	}
+	
 	/**
 	 * Rest end point for getting compliance of a specific question grouped by a
 	 * specified time frame (i.e. week, month, year, quarter) Compliance is defined
