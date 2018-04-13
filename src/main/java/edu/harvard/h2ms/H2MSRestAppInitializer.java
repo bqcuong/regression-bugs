@@ -7,16 +7,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * H2MS Rest Application
+ *
  * @version 1.0
  */
 @SpringBootApplication
 public class H2MSRestAppInitializer {
 
-	private static final Logger log = LoggerFactory.getLogger(H2MSRestAppInitializer.class);
-	
-	
-	public static void main(String[] args) {
+  private static final Logger log = LoggerFactory.getLogger(H2MSRestAppInitializer.class);
 
-		SpringApplication.run(H2MSRestAppInitializer.class, args);
-	}
+  public static void main(String[] args) {
+
+    SpringApplication.run(H2MSRestAppInitializer.class, args);
+  }
 }
