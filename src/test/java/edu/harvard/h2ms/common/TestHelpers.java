@@ -25,15 +25,31 @@ public class TestHelpers {
 	 * This can be used to read the JSON result of a compliance endpoint.
 	 * 
 	 * @param json
-	 * @return
+	 * @return Map<String, Double>
 	 */
-	public static Map<String, Double> getDoubleMap(String json) {
-		Map<String, Double> result;
-		
+	public static Map<String, Double> getDoubleMap(String json) {		
 		ObjectMapper objectMapper = new ObjectMapper();
 		TypeFactory typeFactory = TypeFactory.defaultInstance();
 		
 		MapType mapType = typeFactory.constructMapType(HashMap.class, String.class, Double.class);
+		try {
+			return objectMapper.readValue(json, mapType);
+		} catch(Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * This can be used to read the JSON result of a count endpoint.
+	 * 
+	 * @param json
+	 * @return Map<String, Long>
+	 */	
+	public static Map<String, Long> getLongMap(String json) {		
+		ObjectMapper objectMapper = new ObjectMapper();
+		TypeFactory typeFactory = TypeFactory.defaultInstance();
+		
+		MapType mapType = typeFactory.constructMapType(HashMap.class, String.class, Long.class);
 		try {
 			return objectMapper.readValue(json, mapType);
 		} catch(Exception e) {
@@ -61,5 +77,4 @@ public class TestHelpers {
         JacksonJsonParser jsonParser = new JacksonJsonParser();
         return jsonParser.parseMap(resultString).get("access_token").toString();
     }
-    
 }

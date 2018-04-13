@@ -62,6 +62,25 @@ public class EventController {
 		}
 
 	}
+	
+	/**
+	 * Rest end point for retrieving all events in H2MS systems and returns results
+	 * grouped by an observer
+	 * 
+	 * Example: /events/count/observer
+	 * 
+	 * @return ResponseEntity
+	 * 				- 200 OK with JSON Map<String, Long> with results
+	 * 				- 400 Bad Request
+	 */
+	@RequestMapping(value = "/count/observer", method = RequestMethod.GET)
+	public ResponseEntity<?> findEventCountByObserver() {
+		log.info("Searching for all events grouping by observer");
+		
+		return new ResponseEntity<Map<String, Long>>(eventService.findEventCountByObserver(),
+					HttpStatus.OK);
+	}
+	
 
 	/**
 	 * Rest end point for getting compliance of a specific question grouped by the
