@@ -22,12 +22,12 @@ export class AuthService {
     // todo secure secret
     private secret = 'secret';
 
-    constructor(private http: HttpClient, 
-                private configService: ConfigService, 
+    constructor(private http: HttpClient,
+                private configService: ConfigService,
                 @Optional() @Inject(BASE_PATH) basePath: string,
                 private router: Router) {
         this.config = configService.getConfig();
-        this.tokenURL = basePath ? basePath : this.config.backendHostname + ':' + this.config.backendPort + '/oauth/token';
+        this.tokenURL = basePath ? basePath : this.config.getBackendUrl() + '/oauth/token';
         this.isRefreshingToken = false;
     }
 

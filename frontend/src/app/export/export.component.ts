@@ -30,11 +30,7 @@ export class ExportComponent {
 
         if (configService) {
             this.config = configService.getConfig();
-            const baseURL = this.config.backendHostname,
-                port = this.config.backendPort;
-            if (baseURL && port) {
-                this.basePath = baseURL.concat(':').concat(String(port));
-            }
+            this.basePath = this.config.getBackendUrl();
         }
     }
 

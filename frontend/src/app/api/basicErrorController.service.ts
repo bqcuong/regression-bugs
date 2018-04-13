@@ -45,11 +45,9 @@ export class BasicErrorControllerService {
             this.basePath = basePath || configuration.basePath || this.basePath;
         }
 
-        this.config = configService.getConfig();
-        const baseURL = this.config.backendURL,
-            port = this.config.backendPort;
-        if (baseURL && port) {
-            this.basePath = baseURL.concat(':').concat(String(port));
+        if (configService) {
+            this.config = configService.getConfig();
+            this.basePath = this.config.getBackendUrl();
         }
     }
 
