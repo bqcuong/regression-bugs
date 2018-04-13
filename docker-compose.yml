@@ -18,7 +18,7 @@ services:
       - db
     command: db:5432
 
-  h2ms:
+  backend:
     image: cscie599/h2ms
     ports:
       # external:internal

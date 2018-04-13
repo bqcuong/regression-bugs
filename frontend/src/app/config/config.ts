@@ -43,6 +43,6 @@ export class Config {
     }
 
     public getBackendUrl() {
-        return this.backendHostname + ':' + this.backendPort;
+        return this.backendHostname + ':' + this.backendPort + '/api';
     }
 }
