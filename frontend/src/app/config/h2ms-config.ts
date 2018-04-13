@@ -9,4 +9,4 @@ export const CONFIG: Config = new Config('H2MS',
     '/assets/images/banners/h2ms-banner.png',
     '/assets/images/logos/h2ms-logo.png',
     'http://test.h2ms.org',
-    81);
+    80);
