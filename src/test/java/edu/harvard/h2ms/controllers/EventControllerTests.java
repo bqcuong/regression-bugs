@@ -67,6 +67,7 @@ public class EventControllerTests {
     private MockMvc mvc;
     private Question booleanQuestion;
     private Question optionsQuestion;
+    private User observer;
     
     @Autowired
     UserRepository userRepository;
@@ -92,7 +93,7 @@ public class EventControllerTests {
                 .build();
 
         // Sample User Data
-        User observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD, "Other");
+        observer = new User("John", "Quincy", "Adams", EMAIL, PASSWORD, "Other");
         userRepository.save(observer);
         
         User subject = new User("Jane", "Doe", "Sam", "sample@email.com", "password", "Doctor");
@@ -122,7 +123,7 @@ public class EventControllerTests {
         answer.setValue("true");
         answers.add(answer);
         event.setAnswers(answers);
-        event.setLocation("Location_01");
+        event.setLocation("Massachusetts General Hospital");
         event.setSubject(subject);
         event.setObserver(observer);
         event.setEventTemplate(eventTemplateRepository.findByName("Handwashing Event"));
@@ -153,9 +154,36 @@ public class EventControllerTests {
                 .andReturn()
                 .getResponse();
         
-        assertThat(result.getContentAsString(), containsString("13th (2018)"));
+        Map<String, Long> mapResult = TestHelpers.getLongMap(result.getContentAsString());
+        
+        assertThat(mapResult.get("13th (2018)"), is(1L));  
     }
 
+    /**
+     * Tests the success of the /count/observer endpoint.
+     * The endpoint is used for retrieving all events grouped by
+     * observer.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_Success_EventController_findEventCountByObserver() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        // Makes API calls and checks for success status
+        MockHttpServletResponse result = mvc.perform(get("/events/count/observer")
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+        
+        log.debug(result.getContentAsString());
+ 
+        Map<String, Long> mapResult = TestHelpers.getLongMap(result.getContentAsString());
+        assertThat(mapResult.get(observer.getEmail()), is(1L));        
+    }
+    
     /**
      * Tests the success of the /compliance/{question}/{timeframe} endpoint.
      * The endpoint is used for retrieving compliance rate grouped by a
@@ -232,7 +260,64 @@ public class EventControllerTests {
     }
     
     
+    /**
+     * Tests the success of the /compliance/{question}/location endpoint.
+     * The end point is used for retrieving compliance rate grouped by a
+     * location.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_Success_EventController_findComplianceByLocation() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        // Makes API calls and checks for success status
+        MockHttpServletResponse result = mvc.perform(get(String.format("/events/compliance/%d/location", booleanQuestion.getId()))
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse();
+
+        log.debug(result.getContentAsString());
+        
+        Map<String, Double> mapResult = TestHelpers.getDoubleMap(result.getContentAsString());
+        
+        assertThat(mapResult.get("Massachusetts General Hospital"), is(1.0));
+    }
     
+    /**
+     * Tests the failure of the /compliance/{question}/{timeframe} endpoint
+     * when a question is not found.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_NotFound_EventController_findComplianceByLocation() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        // Makes API calls and checks for success status
+        mvc.perform(get("/events/compliance/0/location")
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    /**
+     * Tests the failure of the /compliance/{question}/location endpoint
+     * when a question is not of boolean type.
+     */
+    @Test
+    @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+    public void test_InvalidQuestionType_EventController_findComplianceByLocation() throws Exception {
+
+        final String accessToken = obtainAccessToken(mvc, "jqadams@h2ms.org", "password");
+
+        mvc.perform(get(String.format("/events/compliance/%d/location", optionsQuestion.getId()))
+                .header("Authorization", "Bearer " + accessToken)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }	
     
     /**
      * Tests event export by looking at the CSV output
@@ -272,7 +357,7 @@ public class EventControllerTests {
         // ** compare to expected body **
         log.debug("Test: event dump body");
         nextLine = reader.readNext();
-        String [] correctBody = {"1","2018-03-28 00:00:00.0","Location_01","jqadams@h2ms.org","Other","sample@email.com","Doctor","true"};
+        String [] correctBody = {"1","2018-03-28 00:00:00.0","Massachusetts General Hospital","jqadams@h2ms.org","Other","sample@email.com","Doctor","true"};
         log.debug(Arrays.toString(nextLine));
         for(int i = 0; i < correctHeader.length; i++) {
         	assertThat(nextLine[i], is(correctBody[i]));
