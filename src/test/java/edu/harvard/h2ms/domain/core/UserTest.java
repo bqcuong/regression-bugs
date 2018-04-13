@@ -19,58 +19,58 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class UserTest {
-    @Autowired private TestEntityManager entityManager;
+  @Autowired private TestEntityManager entityManager;
 
-    @Autowired private UserRepository userRepository;
+  @Autowired private UserRepository userRepository;
 
-    private PasswordEncoder passwordEncoder;
+  private PasswordEncoder passwordEncoder;
 
-    @Before
-    public void setUp() {
-        passwordEncoder = new BCryptPasswordEncoder();
-    }
+  @Before
+  public void setUp() {
+    passwordEncoder = new BCryptPasswordEncoder();
+  }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testFirstNameRequired() {
-        User user = new User(null, "Quincy", "Adams", "jqadams@h2ms.org", "password", "Other");
-        entityManager.persist(user);
-    }
+  @Test(expected = ConstraintViolationException.class)
+  public void testFirstNameRequired() {
+    User user = new User(null, "Quincy", "Adams", "jqadams@h2ms.org", "password", "Other");
+    entityManager.persist(user);
+  }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testLastNameRequired() {
-        User user = new User("John", "Quincy", null, "jqadams@h2ms.org", "password", "Other");
-        entityManager.persist(user);
-    }
+  @Test(expected = ConstraintViolationException.class)
+  public void testLastNameRequired() {
+    User user = new User("John", "Quincy", null, "jqadams@h2ms.org", "password", "Other");
+    entityManager.persist(user);
+  }
 
-    @Test(expected = ConstraintViolationException.class)
-    public void testEmailRequired() {
-        User user = new User("John", "Quincy", null, null, "password", "Other");
-        entityManager.persist(user);
-    }
-    
-    @Test
-    public void testEmailIsLowerCase() {
-        User user = new User("John", "Quincy", null, "JqAdAmS@h2Ms.OrG", "password", "Other");
-        assertThat(user.getEmail(), is("jqadams@h2ms.org"));
-    }
-    
-    @Test(expected = ConstraintViolationException.class)
-    public void testPasswordRequired() {
-        User user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", null, "Other");
-        entityManager.persist(user);
-    }
+  @Test(expected = ConstraintViolationException.class)
+  public void testEmailRequired() {
+    User user = new User("John", "Quincy", null, null, "password", "Other");
+    entityManager.persist(user);
+  }
 
-    @Test
-    public void testPasswordIsHashed() {
-        User user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", "password", "Other");
-        entityManager.persist(user);
+  @Test
+  public void testEmailIsLowerCase() {
+    User user = new User("John", "Quincy", null, "JqAdAmS@h2Ms.OrG", "password", "Other");
+    assertThat(user.getEmail(), is("jqadams@h2ms.org"));
+  }
 
-        User found = userRepository.findByEmail("jqadams@h2ms.org");
+  @Test(expected = ConstraintViolationException.class)
+  public void testPasswordRequired() {
+    User user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", null, "Other");
+    entityManager.persist(user);
+  }
 
-        // Password is not cleartext
-        assertThat(user.getPassword(), is(not("password")));
+  @Test
+  public void testPasswordIsHashed() {
+    User user = new User("John", "Quincy", "Adams", "jqadams@h2ms.org", "password", "Other");
+    entityManager.persist(user);
 
-        // Hashed password is "password"
-        assertThat(passwordEncoder.matches("password", user.getPassword()), is(true));
-    }
+    User found = userRepository.findByEmail("jqadams@h2ms.org");
+
+    // Password is not cleartext
+    assertThat(user.getPassword(), is(not("password")));
+
+    // Hashed password is "password"
+    assertThat(passwordEncoder.matches("password", user.getPassword()), is(true));
+  }
 }

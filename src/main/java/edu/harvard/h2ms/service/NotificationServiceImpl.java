@@ -9,14 +9,11 @@ import org.springframework.stereotype.Service;
 @Component
 @Service("notificationService")
 public class NotificationServiceImpl {
-	
-	 private static final Log log = LogFactory.getLog(NotificationServiceImpl.class);
-	 
-	 @Scheduled(fixedRate = 10000)
-	 public void pollNotifications() {
-		 log.info("****polling notifications");
-	 }
-	
 
+  private static final Log log = LogFactory.getLog(NotificationServiceImpl.class);
+
+  @Scheduled(fixedRate = 10000)
+  public void pollNotifications() {
+    log.info("****polling notifications");
+  }
 }
-

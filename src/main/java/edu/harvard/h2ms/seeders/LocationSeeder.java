@@ -10,27 +10,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class LocationSeeder {
 
-    private LocationRepository locationRepository;
+  private LocationRepository locationRepository;
 
-    @Autowired
-    public LocationSeeder(LocationRepository locationRepository)
-    {
-        this.locationRepository = locationRepository;
-    }
+  @Autowired
+  public LocationSeeder(LocationRepository locationRepository) {
+    this.locationRepository = locationRepository;
+  }
 
-    @EventListener
-    public void seed(ContextRefreshedEvent event) {
-        seedLocationTable();
-    }
+  @EventListener
+  public void seed(ContextRefreshedEvent event) {
+    seedLocationTable();
+  }
 
-    private void seedLocationTable() {
-        Location location = new Location();
-        location.setType("Hospital");
-        location.setName("Massachusetts General Hospital");
-        location.setCountry("USA");
-        location.setAddress("55 Fruit Street Boston, MA");
-        location.setZip("02114");
-        locationRepository.save(location);
-    }
-
+  private void seedLocationTable() {
+    Location location = new Location();
+    location.setType("Hospital");
+    location.setName("Massachusetts General Hospital");
+    location.setCountry("USA");
+    location.setAddress("55 Fruit Street Boston, MA");
+    location.setZip("02114");
+    locationRepository.save(location);
+  }
 }
