@@ -1,9 +1,10 @@
-import {Injectable} from '@angular/core';
+import {Inject, Injectable, Optional} from '@angular/core';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/delay';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Oauth} from './oauth';
+import {BASE_PATH} from '../variables';
 import {ConfigService} from '../config/config.service';
 import {Config} from '../config/config';
 import {Router} from '@angular/router';
@@ -23,9 +24,10 @@ export class AuthService {
 
     constructor(private http: HttpClient,
                 private configService: ConfigService,
+                @Optional() @Inject(BASE_PATH) basePath: string,
                 private router: Router) {
         this.config = configService.getConfig();
-        this.tokenURL = this.config.backendHostname + ':' + this.config.backendPort + '/oauth/token';
+        this.tokenURL = basePath ? basePath : this.config.getBackendUrl() + '/oauth/token';
         this.isRefreshingToken = false;
     }
 
