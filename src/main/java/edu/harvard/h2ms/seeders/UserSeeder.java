@@ -8,13 +8,29 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
+@PropertySources({
+  @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true),
+  @PropertySource(
+    value = "classpath:application.properties.override",
+    ignoreResourceNotFound = true
+  )
+})
 public class UserSeeder {
   private UserRepository userRepository;
+
+  @Value("${application.security.properties.admin.usertype}")
+  private String adminUserType;
+
+  @Value("${application.security.properties.admin.password}")
+  private String adminPassword;
 
   Set<String> questionKeys = new HashSet<String>();
 
@@ -42,8 +58,8 @@ public class UserSeeder {
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
-        user.setPassword("password");
-        user.setType("Admin");
+        user.setPassword(adminPassword);
+        user.setType(adminUserType);
         userRepository.save(user);
       }
     }

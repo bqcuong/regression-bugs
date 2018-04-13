@@ -39,6 +39,10 @@ public class EmailServiceImpl implements EmailService, ApplicationListener<Appli
   private String emailServerType;
 
   private static GreenMail greenMail = null;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 036dfcfdb7a0df99244e6baf6082306597a1aaca
   /**
    * http://blog.netgloo.com/2014/11/13/run-code-at-spring-boot-startup/ This event is executed as
    * late as conceivably possible to indicate that the application is ready to service requests.

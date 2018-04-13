@@ -62,8 +62,8 @@ export class ReportsComponent implements OnInit {
         // todo: make sure valid input selection
         if (selectedPlot && selectedGrouping) {
             this.progressBarIsHidden = false;
-            this.reportsService.fetchReport(this.config.backendURL + ':' + this.config.backendPort + '/'
-                    + selectedPlot + selectedGrouping)
+            this.reportsService.fetchReport(this.config.getBackendUrl() + '/'
+                + selectedPlot + selectedGrouping)
                 .subscribe(
                     response => {
                         if (JSON.stringify(response).indexOf('{}') !== -1) {

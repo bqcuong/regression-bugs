@@ -60,7 +60,7 @@ public class User implements UserDetails {
   private Set<Role> roles;
 
   @Column(name = "enabled")
-  private boolean enabled;
+  private boolean enabled = true;
 
   @Column(name = "created_on")
   private Date createdOn;
@@ -70,6 +70,9 @@ public class User implements UserDetails {
 
   @Column(name = "reset_token")
   private String resetToken;
+
+  @Column(name = "verified")
+  private boolean verified;
 
   public User(
       String firstName,
@@ -194,11 +197,19 @@ public class User implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return true;
+    return this.enabled;
   }
 
   public void setEnabled(boolean value) {
     this.enabled = value;
+  }
+
+  public boolean isVerified() {
+    return this.verified;
+  }
+
+  public void setVerified(boolean value) {
+    this.verified = value;
   }
 
   public Date getLastLogin() {
