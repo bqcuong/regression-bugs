@@ -41,12 +41,16 @@ public class Notification {
   @Column(name = "notification_body")
   private String notificationBody;
 
+  // dummy constructor
+  public Notification() {}
+
   public Notification(
       String name, String reportType, String notificationTitle, String notificationBody) {
     this.name = name;
     this.reportType = reportType;
     this.notificationTitle = notificationTitle;
     this.notificationBody = notificationBody;
+    this.subscribers = new HashSet();
   }
 
   public void addSubscriber(User user) {
