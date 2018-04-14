@@ -1,9 +1,12 @@
 package edu.harvard.h2ms.domain.core;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -12,11 +15,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @Entity
 @Table(name = "notifications")
 public class Notification {
+
+  private static final Log log = LogFactory.getLog(Notification.class);
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -46,6 +54,16 @@ public class Notification {
   @Column(name = "notification_body")
   private String notificationBody;
 
+  /**
+   * Keeps track of last notification time for each user email See:
+   * https://stackoverflow.com/questions/19199701/how-to-jpa-mapping-a-hashmap
+   */
+  @ElementCollection
+  @CollectionTable(name = "last_notification")
+  @MapKeyColumn(name = "user_email_col")
+  @Column(name = "last_notified_time_col")
+  private Map<String, Long> emailLastNotifiedTimes;
+
   // dummy constructor
   public Notification() {
     super();
@@ -61,13 +79,18 @@ public class Notification {
   }
 
   public void addUser(User user) {
+    log.info("adding user: " + user);
+    log.info("users (before) " + this.users);
     users.add(user);
+    log.info("users (after) " + this.users);
   }
 
   public Set<User> getUser() {
-    Set<User> users = new HashSet<User>();
-    users.addAll(this.users);
-    return users;
+    //    Set<User> users = new HashSet<User>();
+
+    log.info("users " + this.users);
+    //    users.addAll(this.users);
+    return this.users;
   }
 
   public void setUsers(Set<User> users) {
@@ -112,6 +135,18 @@ public class Notification {
 
   public void setNotificationBody(String notificationBody) {
     this.notificationBody = notificationBody;
+  }
+
+  public Map<String, Long> getEmailLastNotifiedTimes() {
+    return this.emailLastNotifiedTimes;
+  }
+
+  public void setEmailLastNotifiedTimes(Map<String, Long> emailLastNotifiedTimes) {
+    this.emailLastNotifiedTimes = emailLastNotifiedTimes;
+  }
+
+  public void setEmailLastNotifiedTime(String email, Long unixtime) {
+    this.emailLastNotifiedTimes.put(email, unixtime);
   }
 
   @Override

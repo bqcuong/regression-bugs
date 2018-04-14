@@ -6,6 +6,7 @@ import edu.harvard.h2ms.repository.NotificationRepository;
 import edu.harvard.h2ms.repository.UserRepository;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +27,26 @@ public class NotificationController {
 
   @Autowired private UserRepository userRepository;
 
+  /**
+   * Subscribes user to notifications
+   *
+   * @param requestParams
+   * @return
+   */
   @RequestMapping(value = "/subscribe", method = RequestMethod.POST)
   public ResponseEntity<?> subscribeUser(@RequestBody Map<String, String> requestParams) {
 
-    String email = requestParams.get("email");
-    String notificationName = requestParams.get("notificationName");
-
+    String email = (String) requestParams.get("email");
+    String notificationName = (String) requestParams.get("notificationName");
+    log.info("searching for user by email " + requestParams);
     User user = userRepository.findByEmail(email);
     if (user == null) {
       final String MSG = "user email not found";
       log.info(MSG);
       return new ResponseEntity<String>(MSG, HttpStatus.NOT_FOUND);
     }
+
+    log.info("user found " + user);
 
     Notification notification = notificationRepository.findOneByName(notificationName);
     if (notification == null) {
@@ -46,12 +55,15 @@ public class NotificationController {
       return new ResponseEntity<String>(MSG, HttpStatus.NOT_FOUND);
     }
 
-    notification.addUser(user);
+    //    notification.addUser(user);
+    Set<User> users = notification.getUser();
+    users.add(user);
+    notification.setUsers(users);
 
     Map<String, String> entity = new HashMap<>();
     entity.put("action", "user subscribed to notification");
-    entity.put("user", "email");
-    entity.put("notificationname", notificationName);
+    entity.put("user", email);
+    entity.put("notificationName", notificationName);
 
     return new ResponseEntity<Object>(entity, HttpStatus.OK);
   }
