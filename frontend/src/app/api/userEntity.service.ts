@@ -155,7 +155,7 @@ export class UserEntityService {
      *
      * @param param0 param0
      */
-    public findByEmailUserUsingGET(param0?: string): Observable<ResourceUser> {
+    public findByEmailUserUsingGET(param0?: string): Observable<ResourcesUser> {
 
         let queryParameters = new HttpParams({encoder: new CustomHttpUrlEncodingCodec()});
         if (param0 !== undefined) {
@@ -177,7 +177,7 @@ export class UserEntityService {
         let consumes: string[] = [
         ];
 
-        return this.httpClient.get<any>(`${this.basePath}/users/search/findByEmail`,
+        return this.httpClient.get<any>(`${this.basePath}/users`,
             {
                 params: queryParameters,
                 headers: headers,

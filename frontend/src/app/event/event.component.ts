@@ -21,7 +21,7 @@ export class EventComponent implements OnInit {
     ngOnInit() {
         const locationResolver = this.actr.snapshot.data.locationResolver;
         const questionResolver = this.actr.snapshot.data.questionResolver;
-        const userResolver = this.actr.snapshot.data.userResolver;
+        const usersResolver = this.actr.snapshot.data.usersResolver;
 
         // Add a question for Location, and populate it's options with results from locationResolver
         const locOptions = locationResolver._embedded.locations.map(location => location.name);
@@ -33,8 +33,8 @@ export class EventComponent implements OnInit {
         }
         this.questions.push(new DropdownQuestion(locParams));
 
-        // Add a question for Subject, and populate it's options with results from userResolver
-        const subjectOptions = userResolver._embedded.users.map(user => {
+        // Add a question for Subject, and populate it's options with results from usersResolver
+        const subjectOptions = usersResolver._embedded.users.map(user => {
             return { value: user._links.self.href, name: user.lastName.concat(', ').concat(user.firstName) };
         });
         const subjectParams = {
