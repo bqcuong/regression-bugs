@@ -3,7 +3,7 @@ import {FormGroup} from '@angular/forms';
 
 import {QuestionBase} from '../questions/question-base';
 import {QuestionControlService} from '../questions/service/question-control.service';
-import {Answer, Event, EventEntityService, User} from '../';
+import {Answer, Event, EventEntityService, ResourceUser} from '../';
 import {MatDialog, MatDialogRef} from '@angular/material';
 import {DIALOG_STYLE} from '../forms-common/dialog';
 import {Config} from '../config/config';
@@ -24,7 +24,7 @@ export class DynamicFormComponent implements OnInit {
     protected basePath = 'https://test.h2ms.org:81';
     configuration: Configuration;
     config: Config;
-    loggedInUser: User;
+    loggedInUser: ResourceUser;
 
     constructor(private questionControlService: QuestionControlService,
                 private eventEntityService: EventEntityService,
