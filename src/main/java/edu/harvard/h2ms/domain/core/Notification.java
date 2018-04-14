@@ -1,5 +1,6 @@
 package edu.harvard.h2ms.domain.core;
 
+import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -46,6 +47,16 @@ public class Notification {
     this.reportType = reportType;
     this.notificationTitle = notificationTitle;
     this.notificationBody = notificationBody;
+  }
+
+  public void addSubscriber(User user) {
+    subscribers.add(user);
+  }
+
+  public Set<User> getSubscribers() {
+    Set<User> users = new HashSet<User>();
+    users.addAll(this.subscribers);
+    return users;
   }
 
   public Long getId() {
