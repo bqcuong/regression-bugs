@@ -29,12 +29,15 @@ public class NotificationServiceImpl {
     log.info("****polling notifications");
 
     for (Notification notification : notificationRepository.findAll()) {
-      log.info("notification Name" + notification.getName());
+
+      this.notifyUsers(notification);
     }
   }
 
   private void notifyUsers(Notification notification) {
-    for (User user : notification.getSubscribers()) {
+    log.info("notification Name" + notification.getName());
+
+    for (User user : notification.getUser()) {
       // TODO: add intervals
       user.getEmail();
 

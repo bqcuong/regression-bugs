@@ -2,8 +2,10 @@ package edu.harvard.h2ms.domain.core;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -21,13 +23,16 @@ public class Notification {
   @Column(name = "ID")
   private Long id;
 
-  @ManyToMany
-  @JoinTable(
-    name = "user_role",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "notification_id")
+  @ManyToMany(
+    cascade = {CascadeType.ALL},
+    fetch = FetchType.EAGER
   )
-  private Set<User> subscribers;
+  @JoinTable(
+    name = "notification_user",
+    joinColumns = @JoinColumn(name = "notification_id"),
+    inverseJoinColumns = @JoinColumn(name = "user_id")
+  )
+  private Set<User> users = new HashSet<>();
 
   @Column(name = "name")
   private String name;
@@ -42,7 +47,9 @@ public class Notification {
   private String notificationBody;
 
   // dummy constructor
-  public Notification() {}
+  public Notification() {
+    super();
+  }
 
   public Notification(
       String name, String reportType, String notificationTitle, String notificationBody) {
@@ -50,17 +57,21 @@ public class Notification {
     this.reportType = reportType;
     this.notificationTitle = notificationTitle;
     this.notificationBody = notificationBody;
-    this.subscribers = new HashSet();
+    //    this.subscribers = new HashSet();
   }
 
-  public void addSubscriber(User user) {
-    subscribers.add(user);
+  public void addUser(User user) {
+    users.add(user);
   }
 
-  public Set<User> getSubscribers() {
+  public Set<User> getUser() {
     Set<User> users = new HashSet<User>();
-    users.addAll(this.subscribers);
+    users.addAll(this.users);
     return users;
+  }
+
+  public void setUsers(Set<User> users) {
+    this.users = users;
   }
 
   public Long getId() {
