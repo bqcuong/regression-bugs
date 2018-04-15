@@ -75,7 +75,7 @@ public class NotificationServiceImpl {
         log.info("after reset" + notification.getEmailLastNotifiedTimes().get(user.getEmail()));
 
       } else {
-        log.info("user " + user.getEmail() + " is notready to be notified");
+        log.info("user " + user.getEmail() + " is not ready to be notified");
       }
     }
   }
@@ -113,12 +113,13 @@ public class NotificationServiceImpl {
     long lastNotificationTime = notification.getEmailLastNotifiedTimes().get(userEmail);
 
     // TODO: have interval interpretation mechanism based on user interval preference
-    long interval = 1000L;
+    long interval = 30L;
 
     long currentTime = getUnixTime();
 
     long deltaNotificationTime = currentTime - lastNotificationTime;
 
+    log.info("deltaNotificationTime:" + deltaNotificationTime);
     if (deltaNotificationTime > interval) {
       return true;
     } else {
@@ -135,7 +136,6 @@ public class NotificationServiceImpl {
   public void subscribeUserNotification(User user, Notification notification) {
 
     notification.addUser(user);
-    notificationRepository.save(notification);
     log.info("subscribed:" + notification.getUser());
     resetEmailLastNotifiedTime(notification, user);
   }

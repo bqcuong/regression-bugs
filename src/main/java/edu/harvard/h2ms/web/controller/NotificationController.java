@@ -60,11 +60,8 @@ public class NotificationController {
     }
 
     notificationService.subscribeUserNotification(user, notification);
-    //    notification.addUser(user);
-    //    Set<User> users = notification.getUser();
-    //    users.add(user);
-    //    notification.setUsers(users);
 
+    // Prepare return message
     Map<String, String> entity = new HashMap<>();
     entity.put("action", "user subscribed to notification");
     entity.put("user", email);
