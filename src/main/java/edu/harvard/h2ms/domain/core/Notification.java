@@ -80,9 +80,9 @@ public class Notification {
 
   public void addUser(User user) {
 
-    log.info("users (before) " + this.users);
+    log.debug("users (before) " + this.users);
     users.add(user);
-    log.info("users (after) " + this.users);
+    log.debug("users (after) " + this.users);
   }
 
   public Set<User> getUser() {

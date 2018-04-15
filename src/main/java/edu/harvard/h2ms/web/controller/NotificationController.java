@@ -41,7 +41,7 @@ public class NotificationController {
     String email = (String) requestParams.get("email");
     String notificationName = (String) requestParams.get("notificationName");
 
-    log.info("searching for user by email " + requestParams);
+    log.debug("searching for user by email " + requestParams);
 
     User user = userRepository.findByEmail(email);
     if (user == null) {
@@ -50,7 +50,7 @@ public class NotificationController {
       return new ResponseEntity<String>(MSG, HttpStatus.NOT_FOUND);
     }
 
-    log.info("user found " + user);
+    log.debug("user found " + user);
 
     Notification notification = notificationRepository.findOneByName(notificationName);
     if (notification == null) {

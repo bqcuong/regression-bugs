@@ -121,7 +121,7 @@ public class NotificationControllerTests {
             .andReturn()
             .getResponse();
 
-    log.info(result1.getContentAsString());
+    log.debug(result1.getContentAsString());
 
     // Subscribe 1st user
 
@@ -145,11 +145,11 @@ public class NotificationControllerTests {
             .andReturn()
             .getResponse();
 
-    log.info(result2.getContentAsString());
+    log.debug(result2.getContentAsString());
 
     Notification notification1 = notificationRepository.findOneByName(NOTIFICATION_NAME);
 
-    log.info("shintest: " + notification1.getUser());
+    log.debug("Notification users: " + notification1.getUser());
 
     Set<User> notifiedUsers1 = notification1.getUser();
 
@@ -178,11 +178,11 @@ public class NotificationControllerTests {
             .andReturn()
             .getResponse();
 
-    log.info(result3.getContentAsString());
+    log.debug(result3.getContentAsString());
 
     Notification notification2 = notificationRepository.findOneByName(NOTIFICATION_NAME);
 
-    log.info("shintest: " + notification2.getUser());
+    log.debug("Notification users: " + notification2.getUser());
 
     Set<User> notifiedUsers2 = notification2.getUser();
 

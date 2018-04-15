@@ -48,14 +48,14 @@ public class UserServiceImpl implements UserService {
 
     // Fetches all users from H2MS database
     List<User> users = Lists.newArrayList(userRepository.findAll());
-    log.info("No. of users found: {}", users.size());
+    log.debug("No. of users found: {}", users.size());
     if (users.isEmpty()) {
       return complianceResult;
     }
 
     // Determines all the distinct types of users
     List<String> distinctUserTypes = users.stream().map(User::getType).collect(Collectors.toList());
-    log.info("There are {} distinct user types ", distinctUserTypes.size());
+    log.debug("There are {} distinct user types ", distinctUserTypes.size());
     if (distinctUserTypes.isEmpty()) {
       return complianceResult;
     }
