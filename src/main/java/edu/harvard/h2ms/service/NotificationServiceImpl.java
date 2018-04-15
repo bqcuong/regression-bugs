@@ -17,126 +17,164 @@ import org.springframework.stereotype.Service;
 @Service("notificationService")
 public class NotificationServiceImpl {
 
-  private static final Log log = LogFactory.getLog(NotificationServiceImpl.class);
+	// this determines how long it takes for next notification
+	public enum NotificationFrequency {
+		HALFMINUTE("HALFMINUTE", 30L), // for testing
+		DAILY("DAILY", 86400L),
+		WEEKLY("WEEKLY", 604800L),
+		MONTHLY("MONTHLY", 2592000L),
+		UNDEFINED("UNDEFINED", 0L);
 
-  @Autowired private NotificationRepository notificationRepository;
+		public final String stringRepresentation;
+		public final long seconds;
 
-  @Autowired private UserRepository userRepository;
+		NotificationFrequency(String stringRepresentation, long seconds) {
+			this.stringRepresentation = stringRepresentation;
+			this.seconds = seconds;
+		}
 
-  @Autowired private EmailService emailService;
+		public static NotificationFrequency getNotificationFrequency(String stringRepresentation) {
 
-  @Scheduled(fixedRate = 10000)
-  public void pollNotifications() {
-    log.info("****polling notifications");
+			for (NotificationFrequency nf : NotificationFrequency.class.getEnumConstants()) {
+				if (nf.stringRepresentation == stringRepresentation) {
+					return nf;
+				}
+			}
+			return UNDEFINED;
+		}
+	}
 
-    for (Notification notification : notificationRepository.findAll()) {
+	private static final Log log = LogFactory.getLog(NotificationServiceImpl.class);
 
-      this.notifyUsers(notification);
-    }
-  }
+	@Autowired private NotificationRepository notificationRepository;
 
-  private void notifyUsers(Notification notification) {
-    log.info("notification Name: " + notification.getName());
-    log.info("notification subscribers: " + notification.getUser());
-    Map<String, Long> x = notification.getEmailLastNotifiedTimes();
+	@Autowired private UserRepository userRepository;
 
-    for (String userEmail : x.keySet()) {
-      User user = userRepository.findByEmail(userEmail);
-      log.info("Evaluating user" + user.getEmail());
+	@Autowired private EmailService emailService;
 
-      if (isTimeToNotify(notification, user)) {
-        log.info("user " + user.getEmail() + " is ready to be notified");
+	@Scheduled(fixedRate = 10000)
+	public void pollNotifications() {
+		log.info("****polling notifications");
 
-        //        user.getEmail();
+		for (Notification notification : notificationRepository.findAll()) {
 
-        SimpleMailMessage message = new SimpleMailMessage();
+			this.notifyUsers(notification);
+		}
+	}
 
-        // user email address
-        message.setTo(user.getEmail());
+	private void notifyUsers(Notification notification) {
+		log.debug("notification Name: " + notification.getName());
+		log.debug("notification subscribers: " + notification.getUser());
+		Map<String, Long> x = notification.getEmailLastNotifiedTimes();
 
-        // uncomment for quick test:
-        // message.setTo("my.email.address@gmail.com");
+		for (String userEmail : x.keySet()) {
+			User user = userRepository.findByEmail(userEmail);
+			log.debug("Evaluating user" + user.getEmail());
 
-        message.setSubject(notification.getNotificationTitle());
+			if (isTimeToNotify(notification, user)) {
+				log.debug("user " + user.getEmail() + " is ready to be notified");
 
-        String messageText = notification.getNotificationBody();
+				//        user.getEmail();
 
-        message.setText(messageText);
+				SimpleMailMessage message = new SimpleMailMessage();
 
-        // actually send the message
-        emailService.sendEmail(message);
+				// user email address
+				message.setTo(user.getEmail());
 
-        log.info("email sent " + message);
+				// uncomment for quick test:
+				// message.setTo("my.email.address@gmail.com");
 
-        log.info("before reset" + notification.getEmailLastNotifiedTimes().get(user.getEmail()));
-        // finally, not the time in which the last email was sent for the user
-        resetEmailLastNotifiedTime(notification, user);
+				message.setSubject(notification.getNotificationTitle());
 
-        log.info("after reset" + notification.getEmailLastNotifiedTimes().get(user.getEmail()));
+				String messageText = notification.getNotificationBody();
 
-      } else {
-        log.info("user " + user.getEmail() + " is not ready to be notified");
-      }
-    }
-  }
+				message.setText(messageText);
 
-  /** @return current unix time */
-  private static long getUnixTime() {
+				// actually send the message
+				emailService.sendEmail(message);
 
-    return System.currentTimeMillis() / 1000L;
-  }
+				log.debug("email sent " + message);
 
-  /**
-   * Sets the user notification time to current time
-   *
-   * @param notification
-   * @param user
-   */
-  private void resetEmailLastNotifiedTime(Notification notification, User user) {
+				log.debug("before reset" + notification.getEmailLastNotifiedTimes().get(user.getEmail()));
+				// finally, not the time in which the last email was sent for the user
+				resetEmailLastNotifiedTime(notification, user);
 
-    notification.setEmailLastNotifiedTime(user.getEmail(), getUnixTime());
-    notificationRepository.save(notification);
-  }
+				log.debug("after reset" + notification.getEmailLastNotifiedTimes().get(user.getEmail()));
 
-  /**
-   * Determines whether user should be notified or not based on requested user notfication interval
-   *
-   * <p>Formula: dNT = currentTime - lastNotificationtime Business Rule: dNT > interval time =>
-   * notify default => do not notify
-   *
-   * @param notification
-   * @param user
-   * @return
-   */
-  private static boolean isTimeToNotify(Notification notification, User user) {
-    String userEmail = user.getEmail();
-    long lastNotificationTime = notification.getEmailLastNotifiedTimes().get(userEmail);
+			} else {
+				log.debug("user " + user.getEmail() + " is not ready to be notified");
+			}
+		}
+	}
 
-    // TODO: have interval interpretation mechanism based on user interval preference
-    long interval = 30L;
+	/** @return current unix time */
+	private static long getUnixTime() {
 
-    long currentTime = getUnixTime();
+		return System.currentTimeMillis() / 1000L;
+	}
 
-    long deltaNotificationTime = currentTime - lastNotificationTime;
+	/**
+	 * Sets the user notification time to current time
+	 *
+	 * @param notification
+	 * @param user
+	 */
+	private void resetEmailLastNotifiedTime(Notification notification, User user) {
 
-    log.info("deltaNotificationTime:" + deltaNotificationTime);
-    if (deltaNotificationTime > interval) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+		notification.setEmailLastNotifiedTime(user.getEmail(), getUnixTime());
+		notificationRepository.save(notification);
+	}
 
-  /**
-   * Adds user to notification's subscription list
-   *
-   * @param user
-   * @param notification
-   */
-  public void subscribeUserNotification(User user, Notification notification) {
+	/**
+	 * Determines whether user should be notified or not based on requested user notfication interval
+	 *
+	 * <p>Formula: dNT = currentTime - lastNotificationtime Business Rule: dNT > interval time =>
+	 * notify default => do not notify
+	 *
+	 * @param notification
+	 * @param user
+	 * @return
+	 */
+	private static boolean isTimeToNotify(Notification notification, User user) {
+		String userEmail = user.getEmail();
+		long lastNotificationTime = notification.getEmailLastNotifiedTimes().get(userEmail);
 
-    notification.addUser(user);
-    log.info("subscribed:" + notification.getUser());
-    resetEmailLastNotifiedTime(notification, user);
-  }
+		// TODO: have interval interpretation mechanism based on user interval preference
+
+		String stringNotificationFrequency = user.getNotificationFrequency();
+
+		NotificationFrequency notificationFrequency =
+				NotificationFrequency.getNotificationFrequency(stringNotificationFrequency);
+
+		// define how long to wait for each notification frequency
+		if (notificationFrequency == NotificationFrequency.UNDEFINED) {
+			notificationFrequency = notificationFrequency.HALFMINUTE;
+		}
+
+		long interval = notificationFrequency.seconds;
+
+		long currentTime = getUnixTime();
+
+		long deltaNotificationTime = currentTime - lastNotificationTime;
+
+		log.debug("deltaNotificationTime:" + deltaNotificationTime);
+		if (deltaNotificationTime > interval) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Adds user to notification's subscription list
+	 *
+	 * @param user
+	 * @param notification
+	 */
+	public void subscribeUserNotification(User user, Notification notification) {
+
+		notification.addUser(user);
+		log.debug("subscribed:" + notification.getUser());
+		resetEmailLastNotifiedTime(notification, user);
+	}
 }

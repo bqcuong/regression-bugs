@@ -152,8 +152,8 @@ public class NotificationControllerTests {
     log.info("shintest: " + notification1.getUser());
 
     Set<User> notifiedUsers1 = notification1.getUser();
-    
- // subscriber count should be 1 now.
+
+    // subscriber count should be 1 now.
     assertThat(notifiedUsers1.size(), is(1));
 
     // Subscribe 2nd user
@@ -185,7 +185,7 @@ public class NotificationControllerTests {
     log.info("shintest: " + notification2.getUser());
 
     Set<User> notifiedUsers2 = notification2.getUser();
-    
+
     // subscriber count should've increased to 2 now.
     assertThat(notifiedUsers2.size(), is(2));
   }
