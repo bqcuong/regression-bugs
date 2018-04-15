@@ -58,7 +58,7 @@ public class Notification {
    * Keeps track of last notification time for each user email See:
    * https://stackoverflow.com/questions/19199701/how-to-jpa-mapping-a-hashmap
    */
-  @ElementCollection
+  @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(name = "last_notification")
   @MapKeyColumn(name = "user_email_col")
   @Column(name = "last_notified_time_col")
@@ -79,7 +79,7 @@ public class Notification {
   }
 
   public void addUser(User user) {
-    log.info("adding user: " + user);
+
     log.info("users (before) " + this.users);
     users.add(user);
     log.info("users (after) " + this.users);
@@ -88,9 +88,9 @@ public class Notification {
   public Set<User> getUser() {
     //    Set<User> users = new HashSet<User>();
 
-    log.info("users " + this.users);
+    //    log.info("users " + this.users);
     //    users.addAll(this.users);
-    return this.users;
+    return users;
   }
 
   public void setUsers(Set<User> users) {

@@ -4,9 +4,9 @@ import edu.harvard.h2ms.domain.core.Notification;
 import edu.harvard.h2ms.domain.core.User;
 import edu.harvard.h2ms.repository.NotificationRepository;
 import edu.harvard.h2ms.repository.UserRepository;
+import edu.harvard.h2ms.service.NotificationServiceImpl;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +25,8 @@ public class NotificationController {
 
   @Autowired private NotificationRepository notificationRepository;
 
+  @Autowired private NotificationServiceImpl notificationService;
+
   @Autowired private UserRepository userRepository;
 
   /**
@@ -38,7 +40,9 @@ public class NotificationController {
 
     String email = (String) requestParams.get("email");
     String notificationName = (String) requestParams.get("notificationName");
+
     log.info("searching for user by email " + requestParams);
+
     User user = userRepository.findByEmail(email);
     if (user == null) {
       final String MSG = "user email not found";
@@ -55,10 +59,11 @@ public class NotificationController {
       return new ResponseEntity<String>(MSG, HttpStatus.NOT_FOUND);
     }
 
+    notificationService.subscribeUserNotification(user, notification);
     //    notification.addUser(user);
-    Set<User> users = notification.getUser();
-    users.add(user);
-    notification.setUsers(users);
+    //    Set<User> users = notification.getUser();
+    //    users.add(user);
+    //    notification.setUsers(users);
 
     Map<String, String> entity = new HashMap<>();
     entity.put("action", "user subscribed to notification");

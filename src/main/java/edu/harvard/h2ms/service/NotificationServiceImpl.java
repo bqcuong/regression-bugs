@@ -4,6 +4,7 @@ import edu.harvard.h2ms.domain.core.Notification;
 import edu.harvard.h2ms.domain.core.User;
 import edu.harvard.h2ms.repository.NotificationRepository;
 import edu.harvard.h2ms.repository.UserRepository;
+import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,10 @@ public class NotificationServiceImpl {
   private void notifyUsers(Notification notification) {
     log.info("notification Name: " + notification.getName());
     log.info("notification subscribers: " + notification.getUser());
+    Map<String, Long> x = notification.getEmailLastNotifiedTimes();
 
-    for (User user : notification.getUser()) {
-
+    for (String userEmail : x.keySet()) {
+      User user = userRepository.findByEmail(userEmail);
       log.info("Evaluating user" + user.getEmail());
 
       if (isTimeToNotify(notification, user)) {
@@ -68,7 +70,7 @@ public class NotificationServiceImpl {
 
         log.info("before reset" + notification.getEmailLastNotifiedTimes().get(user.getEmail()));
         // finally, not the time in which the last email was sent for the user
-        NotificationServiceImpl.resetEmailLastNotifiedTime(notification, user);
+        resetEmailLastNotifiedTime(notification, user);
 
         log.info("after reset" + notification.getEmailLastNotifiedTimes().get(user.getEmail()));
 
@@ -90,9 +92,10 @@ public class NotificationServiceImpl {
    * @param notification
    * @param user
    */
-  private static void resetEmailLastNotifiedTime(Notification notification, User user) {
+  private void resetEmailLastNotifiedTime(Notification notification, User user) {
 
     notification.setEmailLastNotifiedTime(user.getEmail(), getUnixTime());
+    notificationRepository.save(notification);
   }
 
   /**
@@ -132,6 +135,8 @@ public class NotificationServiceImpl {
   public void subscribeUserNotification(User user, Notification notification) {
 
     notification.addUser(user);
+    notificationRepository.save(notification);
+    log.info("subscribed:" + notification.getUser());
     resetEmailLastNotifiedTime(notification, user);
   }
 }
