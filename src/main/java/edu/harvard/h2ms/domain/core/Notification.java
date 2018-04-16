@@ -75,7 +75,6 @@ public class Notification {
     this.reportType = reportType;
     this.notificationTitle = notificationTitle;
     this.notificationBody = notificationBody;
-    //    this.subscribers = new HashSet();
   }
 
   public void addUser(User user) {
@@ -86,10 +85,6 @@ public class Notification {
   }
 
   public Set<User> getUser() {
-    //    Set<User> users = new HashSet<User>();
-
-    //    log.info("users " + this.users);
-    //    users.addAll(this.users);
     return users;
   }
 
