@@ -36,7 +36,7 @@ public class NotificationServiceImpl {
     public static NotificationFrequency getNotificationFrequency(String stringRepresentation) {
 
       for (NotificationFrequency nf : NotificationFrequency.class.getEnumConstants()) {
-        if (nf.stringRepresentation == stringRepresentation) {
+        if (nf.stringRepresentation.equals(stringRepresentation)) {
           return nf;
         }
       }
@@ -72,9 +72,7 @@ public class NotificationServiceImpl {
       log.debug("Evaluating user" + user.getEmail());
 
       if (isTimeToNotify(notification, user)) {
-        log.debug("user " + user.getEmail() + " is ready to be notified");
-
-        //        user.getEmail();
+        log.debug("user " + user.getEmail() + " is ready to be notified")
 
         SimpleMailMessage message = new SimpleMailMessage();
 
@@ -139,8 +137,7 @@ public class NotificationServiceImpl {
     String userEmail = user.getEmail();
     long lastNotificationTime = notification.getEmailLastNotifiedTimes().get(userEmail);
 
-    // TODO: have interval interpretation mechanism based on user interval preference
-
+    // interval interpretation mechanism
     String stringNotificationFrequency = user.getNotificationFrequency();
 
     NotificationFrequency notificationFrequency =
