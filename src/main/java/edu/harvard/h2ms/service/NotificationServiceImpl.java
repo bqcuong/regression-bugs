@@ -72,7 +72,7 @@ public class NotificationServiceImpl {
       log.debug("Evaluating user" + user.getEmail());
 
       if (isTimeToNotify(notification, user)) {
-        log.debug("user " + user.getEmail() + " is ready to be notified")
+        log.debug("user " + user.getEmail() + " is ready to be notified");
 
         SimpleMailMessage message = new SimpleMailMessage();
 
