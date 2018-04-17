@@ -4,7 +4,7 @@ import {UserEntityService} from '../../index';
 import {Observable} from 'rxjs/Observable';
 
 @Injectable()
-export class UserResolverService implements Resolve<any> {
+export class UsersResolverService implements Resolve<any> {
     constructor(private userService: UserEntityService) { }
 
     resolve(route: ActivatedRouteSnapshot, rstate: RouterStateSnapshot): Observable<any> {

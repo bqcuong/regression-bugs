@@ -3,13 +3,14 @@ import {FormGroup} from '@angular/forms';
 
 import {QuestionBase} from '../questions/question-base';
 import {QuestionControlService} from '../questions/service/question-control.service';
-import {Answer, Event, EventEntityService} from '../';
+import {Answer, Event, EventEntityService, ResourceUser} from '../';
 import {MatDialog, MatDialogRef} from '@angular/material';
 import {DIALOG_STYLE} from '../forms-common/dialog';
 import {Config} from '../config/config';
 import {Configuration} from '../configuration';
 import {ConfigService} from '../config/config.service';
 import {BASE_PATH} from '../variables';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
     selector: 'app-dynamic-form',
@@ -23,10 +24,12 @@ export class DynamicFormComponent implements OnInit {
     protected basePath = 'https://test.h2ms.org:81';
     configuration: Configuration;
     config: Config;
+    loggedInUser: ResourceUser;
 
     constructor(private questionControlService: QuestionControlService,
                 private eventEntityService: EventEntityService,
                 public dialog: MatDialog,
+                private actr: ActivatedRoute,
                 @Optional()@Inject(BASE_PATH) basePath: string,
                 @Optional() configuration: Configuration,
                 @Optional() configService: ConfigService) {
@@ -46,6 +49,7 @@ export class DynamicFormComponent implements OnInit {
 
     ngOnInit() {
         this.form = this.questionControlService.toFormGroup(this.questions);
+        this.loggedInUser = this.actr.snapshot.data.userByEmailResolver._embedded.users[0];
     }
 
     onSubmit() {
@@ -70,12 +74,13 @@ export class DynamicFormComponent implements OnInit {
             eventTemplate: this.basePath.concat('/eventTemplates/1'),
             answers: answers,
             location: this.form.value['location'],
-            observer: this.form.value['subject'],
+            observer: this.loggedInUser._links.self.href,
             subject: this.form.value['subject'],
             timestamp: new Date()
         };
 
-        this.eventEntityService.saveEventUsingPOST(event).subscribe(() => this.openDialog());
+        this.eventEntityService.saveEventUsingPOST(event)
+            .subscribe(() => this.openDialog());
 
     }
 

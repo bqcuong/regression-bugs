@@ -46,4 +46,4 @@ services:
     ports:
       - "8082:80"
     depends_on:
-      - h2ms
+      - backend
