@@ -27,3 +27,4 @@ nbdist/
 node_modules/
 /bin/
 /out.log
+/test.txt

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
@@ -58,6 +59,9 @@ public class User implements UserDetails {
     inverseJoinColumns = @JoinColumn(name = "role_id")
   )
   private Set<Role> roles;
+
+  @ManyToMany(mappedBy = "users")
+  private Set<Notification> notifications = new HashSet<>();
 
   @Column(name = "enabled")
   private boolean enabled = true;
