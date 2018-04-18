@@ -1,11 +1,12 @@
 package edu.harvard.h2ms.config;
 
-import edu.harvard.h2ms.domain.core.Answer;
-import edu.harvard.h2ms.domain.core.EventTemplate;
-import edu.harvard.h2ms.domain.core.Question;
-import edu.harvard.h2ms.domain.core.User;
+import java.util.Set;
+import java.util.regex.Pattern;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.type.filter.RegexPatternTypeFilter;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -17,15 +18,30 @@ import org.springframework.web.filter.CorsFilter;
 public class RestConfig extends RepositoryRestConfigurerAdapter {
 
   /**
-   * Exposes the ID's for certain entities. This goes against the HATEOAS concept built-in to Spring
-   * Data REST, but maybe it makes some things easier for the front-end folks.
+   * Exposes the ID's for all entities. This goes against the HATEOAS concept built-in to Spring
+   * Data REST, it makes some things easier for the front-end folks.
+   *
+   * <p>Credit for this solution: https://jira.spring.io/browse/DATAREST-161
    */
   @Override
   public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
-    config.exposeIdsFor(Question.class);
-    config.exposeIdsFor(Answer.class);
-    config.exposeIdsFor(EventTemplate.class);
-    config.exposeIdsFor(User.class);
+    final ClassPathScanningCandidateComponentProvider provider =
+        new ClassPathScanningCandidateComponentProvider(false);
+
+    provider.addIncludeFilter(new RegexPatternTypeFilter(Pattern.compile(".*")));
+    final Set<BeanDefinition> beans = provider.findCandidateComponents("edu.harvard.h2ms.domain");
+
+    for (BeanDefinition bean : beans) {
+      Class<?> idExposedClasses = null;
+
+      try {
+        idExposedClasses = Class.forName(bean.getBeanClassName());
+        config.exposeIdsFor(Class.forName(idExposedClasses.getName()));
+      } catch (ClassNotFoundException e) {
+        // Can't throw ClassNotFoundException due to the method signature. Need to cast it
+        throw new RuntimeException("Failed to expose `id` field due to", e);
+      }
+    }
   }
 
   /**
