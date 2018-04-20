@@ -14,25 +14,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
 public class LocationServiceTests {
-
-  @TestConfiguration
-  static class LocationServiceContextConfiguration {
-    @Bean
-    public LocationService locationService() {
-      return new LocationServiceImpl();
-    }
-  }
-
   @Autowired private TestEntityManager entityManager;
-
-  @Autowired private LocationService locationService;
 
   @Autowired private LocationRepository locationRepository;
 
@@ -72,7 +59,7 @@ public class LocationServiceTests {
   @Test
   /** Tests that location service findTopLevel only returns top level entities. */
   public void whenFindTopLevel_thenReturnsTopLevelOnly() {
-    Set<Location> topLevel = locationService.findTopLevel();
+    Set<Location> topLevel = locationRepository.findTopLevel();
     assertThat(topLevel, contains(hospitalLocation));
     assertThat(topLevel, not(contains(wardLocation)));
   }
