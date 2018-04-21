@@ -3,7 +3,6 @@ package edu.harvard.h2ms.service;
 import edu.harvard.h2ms.domain.core.Notification;
 import edu.harvard.h2ms.domain.core.User;
 import edu.harvard.h2ms.repository.NotificationRepository;
-import edu.harvard.h2ms.repository.UserRepository;
 import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,13 +47,13 @@ public class NotificationServiceImpl {
 
   @Autowired private NotificationRepository notificationRepository;
 
-  @Autowired private UserRepository userRepository;
+  //  @Autowired private UserRepository userRepository;
 
   @Autowired private EmailService emailService;
 
   @Scheduled(fixedRate = 10000)
   public void pollNotifications() {
-    log.debug("****polling notifications");
+    log.info("****polling notifications");
 
     for (Notification notification : notificationRepository.findAll()) {
 
@@ -65,14 +64,12 @@ public class NotificationServiceImpl {
   private void notifyUsers(Notification notification) {
     log.debug("notification Name: " + notification.getName());
     log.debug("notification subscribers: " + notification.getUser());
-    Map<String, Long> x = notification.getEmailLastNotifiedTimes();
+    //    Map<String, Long> x = notification.getEmailLastNotifiedTimes();
 
-    for (String userEmail : x.keySet()) {
-      User user = userRepository.findByEmail(userEmail);
-      log.debug("Evaluating user" + user.getEmail());
-
-      if (isTimeToNotify(notification, user)) {
-        log.debug("user " + user.getEmail() + " is ready to be notified");
+    Map<String, Long> lastNotified = notification.getEmailLastNotifiedTimes();
+    for (User user : notification.getUser()) {
+      if (lastNotified.containsKey(user.getEmail()) && isTimeToNotify(notification, user)) {
+        log.info("user " + user.getEmail() + " is ready to be notified");
 
         SimpleMailMessage message = new SimpleMailMessage();
 
@@ -103,6 +100,27 @@ public class NotificationServiceImpl {
         log.debug("user " + user.getEmail() + " is not ready to be notified");
       }
     }
+
+    //    for (String userEmail : x.keySet()) {
+    //      User user = userRepository.findByEmail(userEmail);
+    //      log.info("Evaluating user" + user.getEmail());
+    //
+    //      //      notification.getUser().contains(user) == true &&
+    //
+    //      log.info("notification.getUser().contains(user)" +
+    // notification.getUser().contains(user));
+    //      for (User iu : notification.getUser()) {
+    //        log.info("iu.getID" + iu.getId());
+    //        log.info("user" + user.getId());
+    //        log.info("user = user" + iu.equals(user));
+    //        log.info("userhash" + user.hashCode());
+    //        log.info("iuhash" + iu.hashCode());
+    //        log.info("" + notification.getUser().contains(user));
+    //      }
+    //      log.info(notification.getUser().);
+    //      if (isTimeToNotify(notification, user)) {
+
+    //    }
   }
 
   /** @return current unix time */
