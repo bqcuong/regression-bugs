@@ -50,7 +50,7 @@ public class User implements UserDetails {
 
   @NotNull @Column private String type;
 
-  @NotNull @Column private String password;
+  @Column @JsonIgnore private String password;
 
   @ManyToMany
   @JoinTable(
