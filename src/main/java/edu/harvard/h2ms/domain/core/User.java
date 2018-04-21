@@ -36,7 +36,7 @@ public class User implements UserDetails {
   @Column(name = "ID")
   private Long id;
 
-  @NotNull @Column private String firstName;
+  @NotNull @Column @JsonIgnore private String firstName;
 
   @Column private String middleName;
 
