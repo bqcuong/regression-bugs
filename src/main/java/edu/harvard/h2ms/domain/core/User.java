@@ -240,29 +240,6 @@ public class User implements UserDetails {
     this.resetToken = resetToken;
   }
 
-  //  @Override
-  //  public boolean equals(Object o) {
-  //    if (o == this) {
-  //      return true;
-  //    }
-  //
-  //    if (!(o instanceof User)) {
-  //      return false;
-  //    }
-  //
-  //    User user = (User) o;
-  //
-  //    return user.getId() == this.getId();
-  //  }
-  //
-  //  @Override
-  //  public int hashCode() {
-  //    int result = 42;
-  //    result = 69 * result + this.id.hashCode();
-  //    result = 69 * result + this.email.hashCode();
-  //    return result;
-  //  }
-
   @Override
   public String toString() {
     StringBuilder builder = new StringBuilder();
