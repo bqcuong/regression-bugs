@@ -38,6 +38,7 @@ public class NotificationServiceImpl {
 
     /**
      * Returns interval in seconds, with UNDEFINED if string representation don't fit
+     *
      * @param stringRepresentation
      * @return
      */
@@ -58,10 +59,7 @@ public class NotificationServiceImpl {
 
   @Autowired private EmailService emailService;
 
-  /**
-   * Polls notifications at set duration
-   * (modify fixedRate for polling frequency)
-   */
+  /** Polls notifications at set duration (modify fixedRate for polling frequency) */
   @Scheduled(fixedRate = 10000)
   public void pollNotifications() {
     log.debug("****polling notifications");
@@ -73,7 +71,8 @@ public class NotificationServiceImpl {
   }
 
   /**
-   * Scans subscribers for notification.  Users due for notifications are sent notification email
+   * Scans subscribers for notification. Users due for notifications are sent notification email
+   *
    * @param notification
    */
   private void notifyUsers(Notification notification) {
@@ -84,9 +83,8 @@ public class NotificationServiceImpl {
     for (User user : notification.getUser()) {
       if (lastNotified.containsKey(user.getEmail()) && isTimeToNotify(notification, user)) {
         log.info("user " + user.getEmail() + " is ready to be notified");
-        
 
-        // Create email 
+        // Create email
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(user.getEmail());
         message.setSubject(notification.getNotificationTitle());
@@ -98,7 +96,7 @@ public class NotificationServiceImpl {
 
         log.debug("email sent " + message);
         log.debug("before reset" + notification.getEmailLastNotifiedTimes().get(user.getEmail()));
-        
+
         // finally, not the time in which the last email was sent for the user
         resetEmailLastNotifiedTime(notification, user);
 
@@ -194,7 +192,7 @@ public class NotificationServiceImpl {
 
   /**
    * Removes user from notification's subscription list
-   * 
+   *
    * @param user
    * @param notification
    */

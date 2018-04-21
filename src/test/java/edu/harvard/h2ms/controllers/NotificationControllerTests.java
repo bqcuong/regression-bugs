@@ -188,5 +188,37 @@ public class NotificationControllerTests {
 
     // subscriber count should've increased to 2 now.
     assertThat(notifiedUsers2.size(), is(2));
+
+    // Unsubscribe 1st user
+    // compose POST request JSON payload
+    ObjectMapper mapper4 = new ObjectMapper();
+    ObjectNode objectNode4 = mapper3.createObjectNode();
+    objectNode4.put("notificationName", NOTIFICATION_NAME);
+    objectNode4.put("email", NOTIFICATION_EMAIL2);
+
+    MockHttpServletResponse result4 =
+        mvc.perform(
+                post(String.format("/notifications/unsubscribe"))
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectNode4.toString())
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.action", is("user unsubscribed to notification")))
+            .andExpect(jsonPath("$.notificationName", is(NOTIFICATION_NAME)))
+            .andExpect(jsonPath("$.user", is(NOTIFICATION_EMAIL2)))
+            .andReturn()
+            .getResponse();
+
+    log.debug(result3.getContentAsString());
+
+    Notification notification3 = notificationRepository.findOneByName(NOTIFICATION_NAME);
+
+    log.debug("Notification users: " + notification3.getUser());
+
+    Set<User> notifiedUsers3 = notification3.getUser();
+
+    // subscriber count should've decreased to 1 now.
+    assertThat(notifiedUsers3.size(), is(1));
   }
 }
