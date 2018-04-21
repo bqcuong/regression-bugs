@@ -69,4 +69,45 @@ public class NotificationController {
 
     return new ResponseEntity<Object>(entity, HttpStatus.OK);
   }
+
+  /**
+   * Subscribes user to notifications
+   *
+   * @param requestParams
+   * @return
+   */
+  @RequestMapping(value = "/unsubscribe", method = RequestMethod.POST)
+  public ResponseEntity<?> unsubscribeUser(@RequestBody Map<String, String> requestParams) {
+
+    String email = (String) requestParams.get("email");
+    String notificationName = (String) requestParams.get("notificationName");
+
+    log.debug("searching for user by email " + requestParams);
+
+    User user = userRepository.findByEmail(email);
+    if (user == null) {
+      final String MSG = "user email not found";
+      log.info(MSG);
+      return new ResponseEntity<String>(MSG, HttpStatus.NOT_FOUND);
+    }
+
+    log.debug("user found " + user);
+
+    Notification notification = notificationRepository.findOneByName(notificationName);
+    if (notification == null) {
+      final String MSG = "notification not found";
+      log.info(MSG);
+      return new ResponseEntity<String>(MSG, HttpStatus.NOT_FOUND);
+    }
+
+    notificationService.unsubscribeUserNotification(user, notification);
+
+    // Prepare return message
+    Map<String, String> entity = new HashMap<>();
+    entity.put("action", "user unsubscribed to notification");
+    entity.put("user", email);
+    entity.put("notificationName", notificationName);
+
+    return new ResponseEntity<Object>(entity, HttpStatus.OK);
+  }
 }

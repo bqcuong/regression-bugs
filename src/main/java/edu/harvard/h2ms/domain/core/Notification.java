@@ -84,6 +84,12 @@ public class Notification {
     log.debug("users (after) " + this.users);
   }
 
+  public void removeUser(User user) {
+    log.info("users (before) " + this.users);
+    users.remove(user);
+    log.info("users (after) " + this.users);
+  }
+
   public Set<User> getUser() {
     return users;
   }

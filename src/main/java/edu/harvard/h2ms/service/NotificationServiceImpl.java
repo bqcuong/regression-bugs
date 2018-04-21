@@ -174,4 +174,10 @@ public class NotificationServiceImpl {
     log.debug("subscribed:" + notification.getUser());
     resetEmailLastNotifiedTime(notification, user);
   }
+
+  public void unsubscribeUserNotification(User user, Notification notification) {
+    notification.removeUser(user);
+    log.debug("unsubscribed:" + notification.getUser());
+    resetEmailLastNotifiedTime(notification, user);
+  }
 }
