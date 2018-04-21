@@ -1,6 +1,8 @@
 package edu.harvard.h2ms.repository;
 
 import edu.harvard.h2ms.domain.core.Location;
+import java.util.Set;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
@@ -10,6 +12,11 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
  */
 @RepositoryRestResource(collectionResourceRel = "locations", path = "locations")
 public interface LocationRepository extends PagingAndSortingRepository<Location, Long> {
-
   Location findByName(String name);
+
+  /**
+   * Returns all the parentless-locations, e.g. the top level locations.
+   */
+  @Query("from Location as location where location.parent is null")
+  Set<Location> findTopLevel();
 }
