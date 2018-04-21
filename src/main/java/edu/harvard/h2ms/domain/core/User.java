@@ -36,7 +36,7 @@ public class User implements UserDetails {
   @Column(name = "ID")
   private Long id;
 
-  @NotNull @Column private String firstName;
+  @NotNull @Column @JsonIgnore private String firstName;
 
   @Column private String middleName;
 
@@ -239,29 +239,6 @@ public class User implements UserDetails {
   public void setResetToken(String resetToken) {
     this.resetToken = resetToken;
   }
-
-  //  @Override
-  //  public boolean equals(Object o) {
-  //    if (o == this) {
-  //      return true;
-  //    }
-  //
-  //    if (!(o instanceof User)) {
-  //      return false;
-  //    }
-  //
-  //    User user = (User) o;
-  //
-  //    return user.getId() == this.getId();
-  //  }
-  //
-  //  @Override
-  //  public int hashCode() {
-  //    int result = 42;
-  //    result = 69 * result + this.id.hashCode();
-  //    result = 69 * result + this.email.hashCode();
-  //    return result;
-  //  }
 
   @Override
   public String toString() {
