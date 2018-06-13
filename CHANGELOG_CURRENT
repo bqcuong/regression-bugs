@@ -1,2 +1,5 @@
-Fixes IllegalState exception in Sorter with empty input
+Major revision and fix for affine scoring alignment algorithms
 Tools for (low) quality trimming
+`setFloatingRightBound` and `setFloatingLeftBound` generalized on `AbstractKAlignerParameters`
+Fix for `setReadId` for `SingleReadLazy`
+Fixes IllegalState exception in Sorter with empty input
