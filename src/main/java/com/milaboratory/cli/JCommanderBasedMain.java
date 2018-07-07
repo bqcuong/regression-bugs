@@ -15,12 +15,12 @@
  */
 package com.milaboratory.cli;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.*;
 
 import java.io.PrintStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -88,7 +88,7 @@ public class JCommanderBasedMain implements ActionHelper {
         JCommander commander = new JCommander(mainParameters);
         commander.setProgramName(command);
         for (Action a : actions.values())
-            commander.addCommand(a.command(), a.params());
+            addCommand(commander, a);
 
         // Getting command name
         String commandName = args[0];
@@ -163,6 +163,77 @@ public class JCommanderBasedMain implements ActionHelper {
         return ProcessResult.Ok;
     }
 
+    private static void addCommand(JCommander commander, Action action) {
+        commander.addCommand(action.command(), action.params());
+
+        try {
+            // processing force hide; this is a dirty hack to overcome
+            // issues (by design) with reflection and inheritance in JCommander
+            JCommander innerCommander = commander.getCommands().get(action.command());
+            out:
+            for (String hiddenOpt : action.params().forceHideParameters()) {
+                for (ParameterDescription pd : innerCommander.getParameters()) {
+                    if (!pd.getLongestName().equals(hiddenOpt))
+                        continue;
+
+                    WrappedParameter oldWP = pd.getParameter();
+                    WrappedParameter newWP = new WrappedParameter(oldWP.getParameter()) {
+                        @Override
+                        public boolean hidden() { return true; }
+                    };
+
+                    Field field = pd.getClass().getDeclaredField("m_wrappedParameter");
+                    field.setAccessible(true);
+                    field.set(pd, newWP);
+                    field.setAccessible(false);
+
+                    // this would change the global behaviour, don't use it for now,
+                    // leave here for possible use in future
+                    //
+                    // Parameter annotation = pd.getParameter().getParameter();
+                    // pd.getParameter().hidden()
+                    // changeAnnotationValue(annotation, "hidden", true);
+
+                    assert pd.getParameter().hidden();
+                    continue out;
+                }
+                throw new RuntimeException();
+            }
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
+        }
+    }
+
+    /**
+     * Changes the annotation value for the given key of the given annotation to newValue and returns the previous
+     * value.
+     *
+     * https://stackoverflow.com/a/28118436/946635
+     */
+    @SuppressWarnings("unchecked")
+    private static Object changeAnnotationValue(Annotation annotation, String key, Object newValue) {
+        Object handler = Proxy.getInvocationHandler(annotation);
+        Field f;
+        try {
+            f = handler.getClass().getDeclaredField("memberValues");
+        } catch (NoSuchFieldException | SecurityException e) {
+            throw new IllegalStateException(e);
+        }
+        f.setAccessible(true);
+        Map<String, Object> memberValues;
+        try {
+            memberValues = (Map<String, Object>) f.get(handler);
+        } catch (IllegalArgumentException | IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+        Object oldValue = memberValues.get(key);
+        if (oldValue == null || oldValue.getClass() != newValue.getClass()) {
+            throw new IllegalArgumentException();
+        }
+        memberValues.put(key, newValue);
+        return oldValue;
+    }
+
     private MainParameters getMainParameters() {
         return shortVersionInfoCallback != null ?
                 new MainParametersWithVersion() :
@@ -175,7 +246,7 @@ public class JCommanderBasedMain implements ActionHelper {
         tmpCommander.setProgramName(command);
         for (Action a : actions.values())
             if (!a.getClass().isAnnotationPresent(HiddenAction.class))
-                tmpCommander.addCommand(a.command(), a.params());
+                addCommand(tmpCommander, a);
         StringBuilder builder = new StringBuilder();
         tmpCommander.usage(builder);
         outputStream.print(builder);
