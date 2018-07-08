@@ -21,9 +21,7 @@ import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class JCommanderBasedMain implements ActionHelper {
     // LinkedHashMap to preserve order of actions
@@ -152,7 +150,7 @@ public class JCommanderBasedMain implements ActionHelper {
             if (action.params().help()) {
                 printActionHelp(commander, action);
             } else {
-                printDeprecationNotes(action);
+                printDeprecationNotes(commander, action);
                 action.params().validate();
                 action.go(this);
             }
@@ -274,7 +272,9 @@ public class JCommanderBasedMain implements ActionHelper {
             printActionHelp(commander, action);
     }
 
-    protected void printDeprecationNotes(Action action) {
+    protected static void printDeprecationNotes(JCommander commander, Action action) {
+        JCommander ajc = commander.getCommands().get(action.command());
+        List<ParameterDescription> aParameters = ajc.getParameters();
         ActionParameters params = action.params();
         for (Field field : params.getClass().getFields()) {
             Parameter parameter = field.getAnnotation(Parameter.class);
@@ -288,6 +288,15 @@ public class JCommanderBasedMain implements ActionHelper {
                 if (value == null)
                     continue;
 
+                ParameterDescription pd = null;
+                for (ParameterDescription p : aParameters)
+                    if (Objects.equals(parameter, p.getParameter().getParameter())) {
+                        pd = p;
+                        break;
+                    }
+                if (pd == null || !pd.isAssigned())
+                    continue;
+                
                 String message = "WARNING: " + Arrays.toString(parameter.names()) + " is deprecated";
                 if (!deprecated.version().isEmpty())
                     message += " (since version " + deprecated.version() + ").";
