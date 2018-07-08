@@ -41,7 +41,14 @@ public abstract class ActionParametersWithOutput extends ActionParameters {
                     continue;
                 File file = new File(fileName);
                 if (file.exists())
-                    throw new ParameterException("File " + fileName + " already exists. Use -f option to overwrite it.");
+                    handleExistenceOfOutputFile(fileName);
             }
+    }
+
+    /**
+     * Specifies behaviour in the case with output exists (default is to throw exception)
+     */
+    public void handleExistenceOfOutputFile(String outFileName) {
+        throw new ParameterException("File " + outFileName + " already exists. Use -f option to overwrite it.");
     }
 }

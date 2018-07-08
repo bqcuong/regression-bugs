@@ -21,6 +21,7 @@ import com.milaboratory.primitivio.Serializer;
 import com.milaboratory.primitivio.annotations.Serializable;
 import org.apache.commons.io.IOUtils;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -34,9 +35,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * Calculates file checksum + info based on:
- * its' name
- * content = first N + middle N + last N + bytes + it's length
+ * Calculates file checksum + info based on: its' name content = first N + middle N + last N + bytes + it's length
  * modification date.
  *
  * If descriptor has neither content checksum nor modification date, the files always supposed to be changed.
@@ -183,6 +182,15 @@ public class LightFileDescriptor {
         int result = Objects.hash(name, lastModified);
         result = 31 * result + Arrays.hashCode(checksum);
         return result;
+    }
+
+    /**
+     * A string representation of this.
+     */
+    public String toBase64() {
+        return name
+                + (checksum == null ? "null" : DatatypeConverter.printBase64Binary(checksum))
+                + (lastModified == null ? "null" : lastModified);
     }
 
     public static final class IO implements Serializer<LightFileDescriptor> {
