@@ -20,6 +20,7 @@ import com.milaboratory.test.TestUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,5 +55,14 @@ public class LightFileDescriptorTest {
         Assert.assertFalse(d1.checkModified(d2));
         Assert.assertFalse(d1.checkModified(d3));
         Assert.assertTrue(d2.checkModified(d3));
+    }
+
+    @Test
+    public void test3() throws URISyntaxException, IOException {
+        Path f = Paths.get(SingleFastqReaderTest.class.getClassLoader().getResource("sequences/sample_r1.fastq").toURI());
+        LightFileDescriptor d = LightFileDescriptor.calculate(f, true, true, 1000000);
+        String serialized = GlobalObjectMappers.PRETTY.writeValueAsString(d);
+        LightFileDescriptor deserialized = GlobalObjectMappers.PRETTY.readValue(serialized, LightFileDescriptor.class);
+        Assert.assertEquals(d, deserialized);
     }
 }

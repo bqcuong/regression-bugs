@@ -15,6 +15,9 @@
  */
 package com.milaboratory.util;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.milaboratory.primitivio.PrimitivI;
 import com.milaboratory.primitivio.PrimitivO;
 import com.milaboratory.primitivio.Serializer;
@@ -40,7 +43,11 @@ import java.util.Objects;
  *
  * If descriptor has neither content checksum nor modification date, the files always supposed to be changed.
  */
-@Serializable(by = LightFileDescriptor.IO.class)
+@Serializable(by = LightFileDescriptor.IO.class)      // serialize using binary format by default
+@JsonAutoDetect(                                      // enable json for output purposes
+        fieldVisibility = JsonAutoDetect.Visibility.ANY,
+        isGetterVisibility = JsonAutoDetect.Visibility.NONE,
+        getterVisibility = JsonAutoDetect.Visibility.NONE)
 public class LightFileDescriptor {
     private static int MD5_LENGTH = 16;
     private static int DEFAULT_CHUNK = 1024;
@@ -48,7 +55,10 @@ public class LightFileDescriptor {
     public final byte[] checksum;
     public final Long lastModified;
 
-    private LightFileDescriptor(String name, byte[] checksum, Long lastModified) {
+    @JsonCreator
+    private LightFileDescriptor(@JsonProperty("name") String name,
+                                @JsonProperty("checksum") byte[] checksum,
+                                @JsonProperty("lastModified") Long lastModified) {
         this.name = name;
         this.checksum = checksum;
         this.lastModified = lastModified;
@@ -192,6 +202,7 @@ public class LightFileDescriptor {
                 + (checksum == null ? "null" : DatatypeConverter.printBase64Binary(checksum))
                 + (lastModified == null ? "null" : lastModified);
     }
+
 
     public static final class IO implements Serializer<LightFileDescriptor> {
         @Override
