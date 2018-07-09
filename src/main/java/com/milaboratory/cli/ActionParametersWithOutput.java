@@ -35,20 +35,20 @@ public abstract class ActionParametersWithOutput extends ActionParameters {
     public void validate() {
         if (help)
             return;
-        if (!isForceOverwrite())
-            for (String fileName : getOutputFiles()) {
-                if (fileName.equals("."))
-                    continue;
-                File file = new File(fileName);
-                if (file.exists())
-                    handleExistenceOfOutputFile(fileName);
-            }
+        for (String fileName : getOutputFiles()) {
+            if (fileName.equals("."))
+                continue;
+            File file = new File(fileName);
+            if (file.exists())
+                handleExistenceOfOutputFile(fileName);
+        }
     }
 
     /**
      * Specifies behaviour in the case with output exists (default is to throw exception)
      */
     public void handleExistenceOfOutputFile(String outFileName) {
-        throw new ParameterException("File " + outFileName + " already exists. Use -f option to overwrite it.");
+        if (!isForceOverwrite())
+            throw new ParameterException("File " + outFileName + " already exists. Use -f option to overwrite it.");
     }
 }
