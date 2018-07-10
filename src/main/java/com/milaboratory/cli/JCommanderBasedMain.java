@@ -180,7 +180,7 @@ public class JCommanderBasedMain implements ActionHelper {
                         public boolean hidden() { return true; }
                     };
 
-                    Field field = pd.getClass().getDeclaredField("m_wrappedParameter");
+                    Field field = pd.getClass().getDeclaredField("wrappedParameter");
                     field.setAccessible(true);
                     field.set(pd, newWP);
                     field.setAccessible(false);
@@ -353,26 +353,26 @@ public class JCommanderBasedMain implements ActionHelper {
 
     public static class MainParameters {
         @Parameter(names = {"-h", "--help"}, help = true, description = "Displays this help message.")
-        public Boolean help;
+        public boolean help;
 
         public boolean help() {
-            return help != null && help;
+            return help;
         }
     }
 
     public static class MainParametersWithVersion extends MainParameters {
         @Parameter(names = {"-v"}, help = true, description = "Output short version information.")
-        public Boolean shortVersion;
+        public boolean shortVersion = false;
 
         @Parameter(names = {"--version"}, help = true, description = "Output full version information.")
-        public Boolean fullVersion;
+        public boolean fullVersion = false;
 
         public boolean shortVersion() {
-            return shortVersion != null && shortVersion;
+            return shortVersion;
         }
 
         public boolean fullVersion() {
-            return fullVersion != null && fullVersion;
+            return fullVersion;
         }
     }
 }

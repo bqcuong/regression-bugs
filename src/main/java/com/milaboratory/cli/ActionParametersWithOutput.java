@@ -23,12 +23,12 @@ import java.util.List;
 
 public abstract class ActionParametersWithOutput extends ActionParameters {
     @Parameter(names = {"-f", "--force"}, description = "Force overwrite of output file(s).")
-    public Boolean force;
+    public boolean force = false;
 
     protected abstract List<String> getOutputFiles();
 
     public boolean isForceOverwrite() {
-        return force != null && force;
+        return force;
     }
 
     @Override
