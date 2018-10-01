@@ -2,6 +2,7 @@ package resources.others.pmdbug1393;
 
 public class PMDBug1393 
 {
+	@SuppressWarnings("unused")
 	public static void main(String[] args)
     {
 		int[] a = {1,2,3};
