@@ -32,7 +32,7 @@ public final class PMDRunner {
 
 	public static int run(String[] args) throws Exception {
 		final PMDParameters params = PMDCommandLineInterface.extractParameters(new PMDParameters(), args, "pmd");
-		final PMDConfiguration configuration = PMDParameters.transformParametersIntoConfiguration(params);
+		final PMDConfiguration configuration = params.toConfiguration();
 
 		try {
 			int violations = PMD.doPMD(configuration);
