@@ -58,8 +58,8 @@ public class SqlStringConcatentation extends BaseSecurityRule {
     
     public SqlStringConcatentation() {
     	super();
-    	this.propertyDescriptors.add(standardSqlRegexDescriptor);
-    	this.propertyDescriptors.add(customSqlRegexDescriptor);
+    	definePropertyDescriptor(standardSqlRegexDescriptor);
+    	definePropertyDescriptor(customSqlRegexDescriptor);
 
     }
     

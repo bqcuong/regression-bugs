@@ -96,9 +96,9 @@ public class BaseSecurityRule extends AbstractJavaRule {
 	
 	public BaseSecurityRule() {
 		super();
-		this.propertyDescriptors.add(this.sourceDescriptor);
-    	this.propertyDescriptors.add(this.unsafeTypesDescriptor);
-    	this.propertyDescriptors.add(this.safeTypesDescriptor);    	
+		definePropertyDescriptor(this.sourceDescriptor);
+    	definePropertyDescriptor(this.unsafeTypesDescriptor);
+    	definePropertyDescriptor(this.safeTypesDescriptor);    	
 	}
 
 

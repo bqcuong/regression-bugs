@@ -130,12 +130,12 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 
 	public DfaSecurityRule() {
 		super();
-		this.propertyDescriptors.add(this.sinkDescriptor);
-		this.propertyDescriptors.add(this.sanitizerDescriptor);
-		this.propertyDescriptors.add(this.sinkAnnotationsDescriptor);
-		this.propertyDescriptors.add(this.generatorAnnotationsDescriptor);
-		this.propertyDescriptors.add(this.annotationsPackagesDescriptor);
-		this.propertyDescriptors.add(this.maxDataFlowsDescriptor);
+		definePropertyDescriptor(this.sinkDescriptor);
+		definePropertyDescriptor(this.sanitizerDescriptor);
+		definePropertyDescriptor(this.sinkAnnotationsDescriptor);
+		definePropertyDescriptor(this.generatorAnnotationsDescriptor);
+		definePropertyDescriptor(this.annotationsPackagesDescriptor);
+		definePropertyDescriptor(this.maxDataFlowsDescriptor);
 	}
 
 	@Override
