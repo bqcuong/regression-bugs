@@ -7,7 +7,7 @@ The ruleset contains rules intended to identify security violations that map to 
 Author: Joe Hemler - Gotham Digital Science (labs@gdssecurity.com)
 Author: Alberto Fernández (infjaf@gmail.com)
  
-Below are instructions for running PMD 5.3.X with the GDS Secure Coding Ruleset.
+Below are instructions for running PMD 5.8.0 with the GDS Secure Coding Ruleset.
 
 
 # Basic Usage Steps
@@ -136,6 +136,6 @@ Therefore, GDS Secure Coding Ruleset is not officially supported in Eclipse at t
 GDS PMD Secure Coding Ruleset is released under the Reciprocal Public License 1.5 (RPL1.5)
 http://www.opensource.org/licenses/rpl1.5
 
-(C) Copyright 2014-2017 Alberto Fernández 
+(C) Copyright 2014-2018 Alberto Fernández 
 
 (C) Copyright 2012 Gotham Digital Science, LLC -- All Rights Reserved 
