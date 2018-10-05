@@ -21,7 +21,7 @@ public final class PMDRunner {
 	}
 
 	public static int run(String directory, String ruleset) throws Exception {
-		int violations = run(new String[] { "-d", directory, "-R", ruleset, "-f", "text", "-language", "java" });
+		int violations = run(new String[] { "-d", directory, "-R", ruleset, "-f", "text", "-language", "java" , "-no-cache"});
 		return violations;
 
 	}
