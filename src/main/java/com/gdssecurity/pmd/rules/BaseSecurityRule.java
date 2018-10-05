@@ -31,6 +31,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.gdssecurity.pmd.SecurityRuleViolation;
 
 import net.sourceforge.pmd.Report;
@@ -116,7 +118,9 @@ public class BaseSecurityRule extends AbstractJavaRule {
 		Set<String> ret = new HashSet<String>();
 		List<String> props = getProperty(descriptor);
 		for (String value: props) {
-			ret.add(value.trim());
+			if (!StringUtils.isBlank(value)) {
+				ret.add(value.trim());
+			}
 		}
 		
 		return ret;
