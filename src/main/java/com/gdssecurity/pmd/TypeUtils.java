@@ -60,15 +60,14 @@ public class TypeUtils {
 			for (ASTImportDeclaration imp : imports) {
 				ASTName importName = imp.getFirstChildOfType(ASTName.class);
 				if (importName != null) {
-					String importPackage = importName.getImage();
-					if (imp.isImportOnDemand()) {
-						names.add(importPackage + "." + className);
-					}
-					else if (importPackage.endsWith("." + className)) {
-						names.add(importPackage);
-					}	
-					else if (importPackage.endsWith(".*")) {
-						names.add(StringUtils.replace(importPackage, ".*", "") + "." + className);
+					String importedPackageName = importName.getImage();
+					if (!StringUtils.isBlank(importedPackageName)) {
+						if (imp.isImportOnDemand()) {
+							names.add(importedPackageName + "." + className);
+						}
+						else if (importedPackageName.endsWith("." + className)) {
+							names.add(importedPackageName);
+						}
 					}
 				}
 			}
@@ -78,7 +77,7 @@ public class TypeUtils {
 			if (!pacage.isEmpty()) {
 				ASTPackageDeclaration dec = pacage.get(0);
 				ASTName packageName = dec.getFirstChildOfType(ASTName.class);
-				if (packageName != null) {
+				if (packageName != null && !StringUtils.isBlank(packageName.getImage())) {
 					names.add(packageName.getImage() + "." + className);
 				}
 			}

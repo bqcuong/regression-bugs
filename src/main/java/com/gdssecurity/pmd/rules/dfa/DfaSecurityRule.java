@@ -606,31 +606,7 @@ public class DfaSecurityRule extends BaseSecurityRule implements Executable {
 				isTainted(node);
 				continue;
 			}
-			if (node.jjtGetNumChildren() > 0 && node.jjtGetChild(0).getClass() == ASTPrimaryPrefix.class && node.jjtGetChild(0).jjtGetNumChildren() > 0 && node.jjtGetChild(0).jjtGetChild(0).getClass() == ASTAllocationExpression.class) {
-				Node allocation = (ASTAllocationExpression) node.jjtGetChild(0).jjtGetChild(0);
-				ASTClassOrInterfaceType interfaceType = allocation.getFirstChildOfType(ASTClassOrInterfaceType.class);
-				if (interfaceType != null && interfaceType.getType() != null) {
-					String type = interfaceType.getType().getCanonicalName();
-					List<ASTPrimarySuffix> suffixes = node.jjtGetChild(0).findChildrenOfType(ASTPrimarySuffix.class);
-					if (!suffixes.isEmpty()) {
-						ASTPrimarySuffix s = suffixes.get(suffixes.size() -1);
-						String method = s.getImage();
-						if (isSanitizerMethod(type, method) || isGenerator(type, method)) {
-							continue;
-						} else if (isSink(type, method)) {
-							analyzeSinkMethodArgs(s);
-						}
-						else if (isSafeType(getReturnType(s, type, method))) {
-							continue;
-						}
-						else if (isSource(type, method) || isUsedOverTaintedVariable(s) || isAnyArgumentTainted(s)) {
-							return true;
-						}
-						
-					}
-				}
-					
-			}
+
 			if (isMethodCall(node)) {
 				String method = getMethod(node);
 				if(StringUtils.isBlank(method)) {
