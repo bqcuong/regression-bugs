@@ -42,6 +42,9 @@ public class TypeUtils {
 
 	private List<String> generateClassNames(String className, ASTName astName) {
 		List<String> names = new ArrayList<String>();
+		if (StringUtils.isBlank(className)) {
+			return names;
+		}
 		names.add(className);
 		if (!className.contains(".")) {
 			names.add("java.lang." + className);
@@ -58,11 +61,14 @@ public class TypeUtils {
 				ASTName importName = imp.getFirstChildOfType(ASTName.class);
 				if (importName != null) {
 					String importPackage = importName.getImage();
-					if (importPackage.endsWith("." + className)) {
+					if (imp.isImportOnDemand()) {
+						names.add(importPackage + "." + className);
+					}
+					else if (importPackage.endsWith("." + className)) {
 						names.add(importPackage);
 					}	
-					if (importPackage.endsWith(".*")) {
-						names.add(importPackage + "." + className);
+					else if (importPackage.endsWith(".*")) {
+						names.add(StringUtils.replace(importPackage, ".*", "") + "." + className);
 					}
 				}
 			}
