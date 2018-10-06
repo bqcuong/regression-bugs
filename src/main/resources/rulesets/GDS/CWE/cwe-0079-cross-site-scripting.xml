@@ -11,7 +11,7 @@
    </description>
 
 	<rule class="com.gdssecurity.pmd.rules.dfa.DfaSecurityRule" name="CrossSiteScripting"
-		message="Cross-Site Scripting (Reflected)" dfa="true" typeResolution="true"
+		message="Cross-Site Scripting" dfa="true" typeResolution="true"
 		externalInfoUrl="https://cwe.mitre.org/data/definitions/79.html">
 		<description>
 	This rule utilizes the PMD data flow analysis (DFA) layer to help trace input from source to sink. 
