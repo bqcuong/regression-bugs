@@ -18,4 +18,24 @@ public class SanitizersTest {
 		);
 		Assert.assertEquals(1, violations);
 	}
+	
+	@Test
+	public void testSanitizersESAPI() throws Exception {
+		int violations = 
+				PMDRunner.run(
+						"src/test/java/resources/cwe931xss/XSSSanitizersESAPI.java", 
+						PMDRunner.RULESET_XSS
+		);
+		Assert.assertEquals(0, violations);
+	}
+	@Test
+	public void testSanitizersOWASPEncoder() throws Exception {
+		int violations = 
+				PMDRunner.run(
+						"src/test/java/resources/cwe931xss/XSSSanitizersOWASPEncoder.java", 
+						PMDRunner.RULESET_XSS
+		);
+		Assert.assertEquals(0, violations);
+	}
+	
 }
