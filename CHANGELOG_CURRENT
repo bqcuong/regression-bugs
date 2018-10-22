@@ -1,3 +1,4 @@
+JDK 8
 New `knownObject` record type for `PrimitivIO` (:warning: stream format changed, not backward compatible)
 Separate PrimitivI/O state objects
 Better error messaging for fastq reader
