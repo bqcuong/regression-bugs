@@ -70,7 +70,7 @@ public class PotentialVariableDeclarationFunction implements CtConsumableFunctio
 
 		CtElement scopeElement = input;
 		//Search input and then all parents until first CtPackage for element which may represents the declaration of this local variable
-		while (scopeElement != null && !(scopeElement instanceof CtPackage) && scopeElement.isParentInitialized()) {
+		while (scopeElement != null && !(scopeElement instanceof CtPackage)) {
 			CtElement parent = scopeElement.getParent();
 			if (parent instanceof CtType<?>) {
 				if (includingFields) {
