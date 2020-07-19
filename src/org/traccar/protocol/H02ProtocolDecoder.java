@@ -184,9 +184,7 @@ public class H02ProtocolDecoder extends BaseProtocolDecoder {
             .number("(d+),")
             .number("(d+)#")
             .or()
-            .expression(",.*")
-            .or()
-            .text("#")
+            .any()
             .groupEnd()
             .compile();
 
