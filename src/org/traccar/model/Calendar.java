@@ -69,8 +69,8 @@ public class Calendar extends ExtendedModel {
     public boolean checkMoment(Date date) {
         if (calendar != null) {
             Period period = new Period(new DateTime(date), new Dur(0, 0, 0, 0));
-            Predicate<CalendarComponent> periodRule = new PeriodRule<>(period);
-            Filter<CalendarComponent> filter = new Filter<>(new Predicate[] {periodRule}, Filter.MATCH_ANY);
+            PeriodRule<CalendarComponent> periodRule = new PeriodRule<>(period);
+            Filter<CalendarComponent> filter = new Filter<>(new PeriodRule[] {periodRule}, Filter.MATCH_ANY);
             Collection<CalendarComponent> events = filter.filter(calendar.getComponents(CalendarComponent.VEVENT));
             if (events != null && !events.isEmpty()) {
                 return true;
