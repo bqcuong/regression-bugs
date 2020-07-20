@@ -247,12 +247,7 @@ public class ReferenceStripFeeder extends ReferenceFeeder {
         if (holeLocations.isEmpty()) {
             return null;
         }
-        try {
-            MainFrame.cameraPanel.getCameraView(camera).showFilteredImage(image, 500);
-        }
-        catch (Exception e) {
-            // if we aren't running in the UI this will fail, and that's okay
-        }
+        MainFrame.cameraPanel.getCameraView(camera).showFilteredImage(image, 500);
         return holeLocations.get(0);
     }
 
