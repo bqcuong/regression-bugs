@@ -37,7 +37,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.webfirmframework.wffweb.util.data.NameValue;
 
-import de.undercouch.bson4jackson.BsonFactory;
+//import de.undercouch.bson4jackson.BsonFactory;
 
 public class WffBinaryMessageUtilTest {
 
@@ -306,28 +306,28 @@ public class WffBinaryMessageUtilTest {
         return nameValues;
     }
     
-    @Test
-    public void testWffBinaryMessageBytesLengthIsLowerThanBson() throws Exception {
-        
-        List<NameValue> nameValues = getProducedNameValues();
-
-        byte[] message = WffBinaryMessageUtil.VERSION_1.getWffBinaryMessageBytes(nameValues);
-        
-        Map<String, List<String>> jsonObject = getProducedJsonObject();
-        
-        ObjectMapper bsonMapper = new ObjectMapper(
-                new BsonFactory());
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bsonMapper.writeValue(baos, jsonObject);
-        byte[] bsonBytes = baos.toByteArray();
-        assertTrue(message.length < bsonBytes.length);
-        
-        if (message.length < bsonBytes.length) {
-            System.out.println("the length of wff binary message is lower than bson bytes, the ratio wff binary message:bson = " + (message.length + ":" + bsonBytes.length)+ ", gain is " + (bsonBytes.length - message.length) + " bytes");
-        }
-        
-    }
+//    @Test
+//    public void testWffBinaryMessageBytesLengthIsLowerThanBson() throws Exception {
+//
+//        List<NameValue> nameValues = getProducedNameValues();
+//
+//        byte[] message = WffBinaryMessageUtil.VERSION_1.getWffBinaryMessageBytes(nameValues);
+//
+//        Map<String, List<String>> jsonObject = getProducedJsonObject();
+//
+//        ObjectMapper bsonMapper = new ObjectMapper(
+//                new BsonFactory());
+//
+//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//        bsonMapper.writeValue(baos, jsonObject);
+//        byte[] bsonBytes = baos.toByteArray();
+//        assertTrue(message.length < bsonBytes.length);
+//
+//        if (message.length < bsonBytes.length) {
+//            System.out.println("the length of wff binary message is lower than bson bytes, the ratio wff binary message:bson = " + (message.length + ":" + bsonBytes.length)+ ", gain is " + (bsonBytes.length - message.length) + " bytes");
+//        }
+//
+//    }
 
     private Map<String, List<String>> getProducedJsonObject() {
         Map<String, List<String>> jsonObject = new HashMap<String, List<String>>();
