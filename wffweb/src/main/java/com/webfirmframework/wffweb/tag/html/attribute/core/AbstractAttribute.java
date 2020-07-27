@@ -47,9 +47,9 @@ public abstract class AbstractAttribute extends AbstractTagBase {
 
     private volatile Set<String> attributeValueSet;
 
-    private transient final Set<AbstractHtml> ownerTags;
+    private transient Set<AbstractHtml> ownerTags;
 
-    private final StringBuilder tagBuilder;
+    private StringBuilder tagBuilder;
 
     // private AttributeValueChangeListener valueChangeListener;
 
