@@ -49,7 +49,7 @@ subprojects {
     }
 
     configurations {
-        javancss
+        // javancss
     }
 
     configurations {
@@ -63,7 +63,7 @@ subprojects {
         testCompile 'org.truth0:truth:0.23'
         testCompile 'com.google.jimfs:jimfs:1.0'
         testCompile 'org.jooq:joor:0.9.5'
-        javancss 'org.codehaus.javancss:javancss:33.54'
+        // javancss 'org.codehaus.javancss:javancss:33.54'
     }
 
     test {
@@ -128,23 +128,23 @@ subprojects {
     //        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
     //    }
 
-    task javancss(dependsOn: 'classes') << {
-        ant {
-            logging.level = LogLevel.INFO
-            taskdef(name:'javancss', classname:'javancss.JavancssAntTask', classpath: configurations.javancss.asPath)
-            javancss(
-                srcdir:'src/main/java',
-                abortOnFail:'true',
-                generateReport:'true',
-                packageMetrics:'true',
-                classMetrics:'false',
-                functionMetrics:'false'
-                // outputFile: reportName,
-            )
-        }
-    }
+    // task javancss(dependsOn: 'classes') << {
+    //     ant {
+    //         logging.level = LogLevel.INFO
+    //         taskdef(name:'javancss', classname:'javancss.JavancssAntTask', classpath: configurations.javancss.asPath)
+    //         javancss(
+    //             srcdir:'src/main/java',
+    //             abortOnFail:'true',
+    //             generateReport:'true',
+    //             packageMetrics:'true',
+    //             classMetrics:'false',
+    //             functionMetrics:'false'
+    //             // outputFile: reportName,
+    //         )
+    //     }
+    // }
 
-    assemble.dependsOn javancss
+    // assemble.dependsOn javancss
 
     ///////// Publish Artifacts
     apply plugin: 'maven'
@@ -241,18 +241,18 @@ project (':capsule-util') {
     }
 }
 
-task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
-    dependsOn = subprojects.test
-    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories =  files(subprojects.sourceSets.main.output)
-    executionData = files(subprojects.jacocoTestReport.executionData)
-    reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
-        xml.destination = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
-    }
-}
+// task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+//     dependsOn = subprojects.test
+//     sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+//     classDirectories =  files(subprojects.sourceSets.main.output)
+//     executionData = files(subprojects.jacocoTestReport.executionData)
+//     reports {
+//         html.enabled = true
+//         xml.enabled = true
+//         csv.enabled = false
+//         xml.destination = "${buildDir}/reports/jacoco/test/jacocoTestReport.xml"
+//     }
+// }
 
 coveralls {
     sourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs).files.absolutePath
