@@ -220,6 +220,12 @@ project (':capsule') {
         options.noDeprecated = true
         excludes = [ "capsule/**" ]
     }
+
+    task copyToLib(type: Copy) {
+        from configurations.testCompile.allArtifacts.files
+        from configurations.testCompile
+        into "$buildDir/dependency-libs"
+    }
 }
 
 project (':capsule-util') {
