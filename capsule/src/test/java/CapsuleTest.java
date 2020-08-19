@@ -149,7 +149,7 @@ public class CapsuleTest {
         Path appCache = cache.resolve("apps").resolve("com.acme.Foo");
         assertTrue(!Files.isDirectory(appCache));
     }
-
+/*
     @Test
     public void testJDKClassPath() throws Exception {
         assumeTrue(!isCI());
@@ -182,7 +182,7 @@ public class CapsuleTest {
                 appCache.resolve("lib").resolve("a.jar"),
                 appCache.resolve("lib").resolve("b.jar"));
     }
-
+*/
     @Test
     public void testLogLevel() throws Exception {
         setSTDERR(DEVNULL);
