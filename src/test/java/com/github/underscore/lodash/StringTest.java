@@ -1965,6 +1965,17 @@ _.repeat('abc', 0);
                 + "<root>\n  <a>\n  </a>\n</root>", U.toXml((Map<String, Object>) U.fromJson(json3)));
     }
 
+	@SuppressWarnings("unchecked")
+    @Test
+    public void toXmlFromJson21() {
+        final String json = "{\"a\": [0]}";
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<root>\n"
+                + "  <a>0</a>\n"
+                + "</root>",
+            U.toXml((Map<String, Object>) U.fromJson(json)));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void toXml() {
