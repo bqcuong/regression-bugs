@@ -21,3 +21,7 @@ processResources {
 		rename 'stagemonitor-dispatcher.*jar', 'stagemonitor-dispatcher.jar.gradlePleaseDontExtract'
 	}
 }
+
+test {
+	exclude "**/IndexSelectorIntegrationTest.class"
+}
