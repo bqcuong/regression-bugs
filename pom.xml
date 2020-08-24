@@ -24,18 +24,18 @@
     <repositories>
         <repository>
             <id>routeconverter-thirdparty</id>
-            <url>http://subversion.routeconverter.com/public/RouteThirdParty</url>
+            <url>https://subversion.routeconverter.com/public/RouteThirdParty</url>
         </repository>
         <repository>
             <id>spring-plugins-repository</id>
-            <url>http://repo.spring.io/plugins-release/</url>
+            <url>https://repo.spring.io/plugins-release/</url>
         </repository>
     </repositories>
 
     <pluginRepositories>
         <pluginRepository>
             <id>routeconverter-thirdparty</id>
-            <url>http://subversion.routeconverter.com/public/RouteThirdParty</url>
+            <url>https://subversion.routeconverter.com/public/RouteThirdParty</url>
         </pluginRepository>
     </pluginRepositories>
 
