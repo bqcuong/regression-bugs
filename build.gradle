@@ -68,7 +68,9 @@ subprojects {
 
     test {
         systemProperty "java.protocol.handler.pkgs", "co.paralleluniverse.filesystem"
-
+        filter {
+            excludeTest "Capsule", "testJDKClassPath"
+        }
         beforeTest { desc ->
             logger.quiet("Running test: " + desc)
         }
