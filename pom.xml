@@ -280,7 +280,10 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>2.19.1</version>
         <configuration>
-					<excludes><exclude>**/MavenLaucherTest.java</exclude></excludes>
+	  <excludes>
+		<exclude>**/MavenLaucherTest.java</exclude>
+		<exclude>**/CtTypeInformationTest.java</exclude>
+	  </excludes>
           <!-- "If you want to use a basic plain old Java classpath, [...] set useManifestOnlyJar=false and useSystemClassLoader=true".
           https://maven.apache.org/surefire/maven-surefire-plugin/examples/class-loading.html -->
           <useSystemClassLoader>true</useSystemClassLoader>
