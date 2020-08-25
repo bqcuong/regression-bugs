@@ -282,6 +282,9 @@
         <configuration>
           <!-- "If you want to use a basic plain old Java classpath, [...] set useManifestOnlyJar=false and useSystemClassLoader=true".
           https://maven.apache.org/surefire/maven-surefire-plugin/examples/class-loading.html -->
+	  <excludes>
+		<exclude>**/MavenLauncherTest.java</exclude>
+	  </excludes>
           <useSystemClassLoader>true</useSystemClassLoader>
           <useManifestOnlyJar>false</useManifestOnlyJar>
         </configuration>
