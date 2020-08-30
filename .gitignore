@@ -18,7 +18,7 @@ Servers/
 .DS_Store
 
 # Scripts
-*.sh
+#*.sh
 
 # jenv
 .java-version
